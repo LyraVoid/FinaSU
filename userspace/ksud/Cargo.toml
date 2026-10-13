@@ -33,7 +33,7 @@ rustix = { version = "1", features = [
     "all-apis",
 ] }
 android_logger = { version = "0.15", default-features = false }
-zip = { version = "8",  features = [
+zip = { version = "9",  features = [
     "deflate",
     "deflate64",
     "time",
@@ -57,14 +57,14 @@ getopts = "0.2"
 ksuinit = { path = "../ksuinit" }
 adb_client = { git = "https://github.com/KernelSU2/adb_client" }
 prop-rs-android = { git = "https://github.com/KernelSU2/ksu_props", rev = "ddb6ee7294467f7f25bad2118e9e24eee104144b" }
-mlua = { version = "=0.12.0", features = ["lua55", "vendored"] }
+mlua = { version = "=0.12.2", features = ["lua55", "vendored"] }
 
 [dev-dependencies]
-zip = { version = "8", features = ["deflate"], default-features = false }
+zip = { version = "9", features = ["deflate"], default-features = false }
 zip-extensions = { version = "0.14", features = ["deflate", "lzma", "xz"], default-features = false }
 java-properties = { git = "https://github.com/KernelSU2/java-properties.git", branch = "master", default-features = false }
 encoding_rs = "0.8"
-mlua = { version = "=0.12.0", features = ["lua55", "vendored"] }
+mlua = { version = "=0.12.2", features = ["lua55", "vendored"] }
 
 [build-dependencies]
 cc = "1"
