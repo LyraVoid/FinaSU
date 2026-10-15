@@ -337,6 +337,13 @@
     <string name="settings_support_links_hidden">Gizli</string>
     <string name="settings_theme_store_mode">Tema magazasi modu</string>
     <string name="settings_theme_store_mode_summary">Temalarin uygulamada mi yoksa tarayicida mi indirilecegini secin.</string>
+    <string name="settings_home_info">Ana sayfa bilgileri</string>
+    <string name="settings_hide_home_fingerprint">Parmak izini gizle</string>
+    <string name="settings_hide_home_fingerprint_summary">Cihaz parmak izi satırını ana sayfa bilgi kartından kaldırır.</string>
+    <string name="settings_hide_home_zygisk">Zygisk\'i gizle</string>
+    <string name="settings_hide_home_zygisk_summary">Zygisk uygulaması satırını ana sayfa bilgi kartından kaldırır.</string>
+    <string name="settings_hide_home_susfs">SUSFS\'i gizle</string>
+    <string name="settings_hide_home_susfs_summary">SUSFS satırını ana sayfa bilgi kartından kaldırır.</string>
     <string name="settings_category_general">Genel</string>
     <string name="settings_category_appearance">Görünüm</string>
     <string name="settings_category_behavior">Davranış</string>

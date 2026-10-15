@@ -347,6 +347,13 @@
     <string name="settings_support_links_hidden">隐去</string>
     <string name="settings_theme_store_mode">道韵仙市模式</string>
     <string name="settings_theme_store_mode_summary">选择在洞天之内纳取道韵，还是借外域之窗承接。</string>
+    <string name="settings_home_info">首页玄录</string>
+    <string name="settings_hide_home_fingerprint">隐去仙门印玺</string>
+    <string name="settings_hide_home_fingerprint_summary">隐去首页玄录中仙门印玺之一行。</string>
+    <string name="settings_hide_home_zygisk">隐去 Zygisk 之施行</string>
+    <string name="settings_hide_home_zygisk_summary">隐去首页玄录中 Zygisk 施行之一行。</string>
+    <string name="settings_hide_home_susfs">隐去 SUSFS</string>
+    <string name="settings_hide_home_susfs_summary">隐去首页玄录中 SUSFS 之一行。</string>
     <string name="settings_category_general">凡尘设置</string>
     <string name="settings_category_appearance">道韵外观</string>
     <string name="settings_category_behavior">功法运转</string>

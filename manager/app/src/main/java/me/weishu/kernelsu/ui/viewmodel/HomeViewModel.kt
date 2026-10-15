@@ -211,6 +211,9 @@ class HomeViewModel(
 
     private suspend fun resolveZygiskProvider(): String? {
         val status = settingsRepo.getFolkZygiskStatus().getOrNull() ?: return null
+        // No provider means the home card has no Zygisk row to name, the same test the settings
+        // group uses to decide whether its switch exists.
+        if (!status.providesImplementation()) return null
         val injecting = status.injectionState == "injected" ||
             status.injectionState == "partial" ||
             status.injectionState == "starting"

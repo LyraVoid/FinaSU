@@ -21,6 +21,9 @@ interface SettingsRepository {
     var colorContrast: String
     var statsTopLayout: String
     var listWorkingCardModeHidden: Boolean
+    var hideHomeFingerprint: Boolean
+    var hideHomeZygisk: Boolean
+    var hideHomeSusfs: Boolean
     var enablePredictiveBack: Boolean
     var enableNavigationBadge: Boolean
     var pageScale: Float

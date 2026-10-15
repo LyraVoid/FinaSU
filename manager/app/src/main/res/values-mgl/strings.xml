@@ -347,6 +347,13 @@
     <string name="settings_support_links_hidden">隐匿</string>
     <string name="settings_theme_store_mode">Сэдвийн дэлгүүрийн горим</string>
     <string name="settings_theme_store_mode_summary">Сэдвийг апп дотор эсвэл хөтөч дээр татахыг сонгоно.</string>
+    <string name="settings_home_info">首页魔法录</string>
+    <string name="settings_hide_home_fingerprint">隐匿魔法界指纹</string>
+    <string name="settings_hide_home_fingerprint_summary">从首页魔法录中隐去魔法界指纹。</string>
+    <string name="settings_hide_home_zygisk">隐匿 Zygisk 施行</string>
+    <string name="settings_hide_home_zygisk_summary">从首页魔法录中隐去 Zygisk 施行。</string>
+    <string name="settings_hide_home_susfs">隐匿 SUSFS</string>
+    <string name="settings_hide_home_susfs_summary">从首页魔法录中隐去 SUSFS。</string>
     <string name="settings_category_general">通用</string>
     <string name="settings_category_appearance">外观</string>
     <string name="settings_category_behavior">行为</string>

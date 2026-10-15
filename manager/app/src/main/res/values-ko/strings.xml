@@ -335,6 +335,13 @@
     <string name="settings_support_links_hidden">숨김</string>
     <string name="settings_theme_store_mode">테마 스토어 모드</string>
     <string name="settings_theme_store_mode_summary">테마를 앱에서 내려받을지 브라우저에서 내려받을지 선택합니다.</string>
+    <string name="settings_home_info">홈 정보</string>
+    <string name="settings_hide_home_fingerprint">핑거프린트 숨기기</string>
+    <string name="settings_hide_home_fingerprint_summary">홈 정보 카드에서 핑거프린트 행을 제거합니다.</string>
+    <string name="settings_hide_home_zygisk">Zygisk 숨기기</string>
+    <string name="settings_hide_home_zygisk_summary">홈 정보 카드에서 Zygisk 구현 행을 제거합니다.</string>
+    <string name="settings_hide_home_susfs">SUSFS 숨기기</string>
+    <string name="settings_hide_home_susfs_summary">홈 정보 카드에서 SUSFS 행을 제거합니다.</string>
     <string name="settings_category_general">일반</string>
     <string name="settings_category_appearance">화면</string>
     <string name="settings_category_behavior">동작</string>

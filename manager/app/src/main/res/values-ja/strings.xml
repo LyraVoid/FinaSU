@@ -335,6 +335,13 @@
     <string name="settings_support_links_hidden">非表示</string>
     <string name="settings_theme_store_mode">テーマストアのモード</string>
     <string name="settings_theme_store_mode_summary">テーマをアプリ内でダウンロードするか、ブラウザで行うかを選びます。</string>
+    <string name="settings_home_info">ホームの情報</string>
+    <string name="settings_hide_home_fingerprint">フィンガープリントを隠す</string>
+    <string name="settings_hide_home_fingerprint_summary">ホームの情報カードからフィンガープリントの行を削除します。</string>
+    <string name="settings_hide_home_zygisk">Zygisk を隠す</string>
+    <string name="settings_hide_home_zygisk_summary">ホームの情報カードから Zygisk の実装の行を削除します。</string>
+    <string name="settings_hide_home_susfs">SUSFS を隠す</string>
+    <string name="settings_hide_home_susfs_summary">ホームの情報カードから SUSFS の行を削除します。</string>
     <string name="settings_category_general">一般</string>
     <string name="settings_category_appearance">外観</string>
     <string name="settings_category_behavior">動作</string>

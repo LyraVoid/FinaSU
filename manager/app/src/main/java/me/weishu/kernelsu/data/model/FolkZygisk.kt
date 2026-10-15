@@ -13,7 +13,17 @@ data class FolkZygiskStatus(
     val startupFailures: Long,
     val startupBlocked: Boolean,
 ) {
+    /**
+     * Whether anything is actually injecting through Zygisk, the same test the home card uses to
+     * decide its Zygisk row exists: the built-in engine when it is enabled or already injecting, or
+     * any external provider module.
+     */
+    fun providesImplementation(): Boolean =
+        (enabled && (engineAvailable || injectionState in INJECTING_STATES)) || externalProviders.isNotEmpty()
+
     companion object {
+        private val INJECTING_STATES = setOf("injected", "partial", "starting")
+
         fun fromJson(json: JSONObject): FolkZygiskStatus {
             check(json.get("schema_version") == 1) { "Unsupported FolkZygisk schema" }
             fun boolean(key: String): Boolean = json.get(key) as? Boolean

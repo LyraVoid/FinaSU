@@ -339,6 +339,13 @@ Przed kontynuowaniem upewnij się, że bootloader jest odblokowany!</string>
     <string name="settings_support_links_hidden">Ukryte</string>
     <string name="settings_theme_store_mode">Tryb sklepu z motywami</string>
     <string name="settings_theme_store_mode_summary">Wybierz, czy motywy maja byc pobierane w aplikacji, czy w przegladarce.</string>
+    <string name="settings_home_info">Informacje na stronie głównej</string>
+    <string name="settings_hide_home_fingerprint">Ukryj odcisk</string>
+    <string name="settings_hide_home_fingerprint_summary">Usuwa wiersz odcisku urządzenia z karty informacji na stronie głównej.</string>
+    <string name="settings_hide_home_zygisk">Ukryj Zygisk</string>
+    <string name="settings_hide_home_zygisk_summary">Usuwa wiersz implementacji Zygisk z karty informacji na stronie głównej.</string>
+    <string name="settings_hide_home_susfs">Ukryj SUSFS</string>
+    <string name="settings_hide_home_susfs_summary">Usuwa wiersz SUSFS z karty informacji na stronie głównej.</string>
     <string name="settings_category_general">Ogólne</string>
     <string name="settings_category_appearance">Wygląd</string>
     <string name="settings_category_behavior">Zachowanie</string>

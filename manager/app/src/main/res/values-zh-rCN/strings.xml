@@ -297,6 +297,13 @@
     <string name="settings_support_links_hidden">隐藏</string>
     <string name="settings_theme_store_mode">主题商店模式</string>
     <string name="settings_theme_store_mode_summary">选择在应用内下载主题，还是交给浏览器下载。</string>
+    <string name="settings_home_info">首页信息</string>
+    <string name="settings_hide_home_fingerprint">隐藏系统指纹</string>
+    <string name="settings_hide_home_fingerprint_summary">从首页信息卡片中移除系统指纹行。</string>
+    <string name="settings_hide_home_zygisk">隐藏 Zygisk 实现</string>
+    <string name="settings_hide_home_zygisk_summary">从首页信息卡片中移除 Zygisk 实现行。</string>
+    <string name="settings_hide_home_susfs">隐藏 SUSFS</string>
+    <string name="settings_hide_home_susfs_summary">从首页信息卡片中移除 SUSFS 行。</string>
     <string name="settings_category_general">通用</string>
     <string name="settings_category_appearance">外观</string>
     <string name="settings_category_behavior">行为</string>

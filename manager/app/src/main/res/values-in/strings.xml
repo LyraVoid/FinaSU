@@ -335,6 +335,13 @@
     <string name="settings_support_links_hidden">Disembunyikan</string>
     <string name="settings_theme_store_mode">Mode toko tema</string>
     <string name="settings_theme_store_mode_summary">Pilih apakah tema diunduh di aplikasi atau di browser.</string>
+    <string name="settings_home_info">Info beranda</string>
+    <string name="settings_hide_home_fingerprint">Sembunyikan sidik jari</string>
+    <string name="settings_hide_home_fingerprint_summary">Hapus baris sidik jari perangkat dari kartu info beranda.</string>
+    <string name="settings_hide_home_zygisk">Sembunyikan Zygisk</string>
+    <string name="settings_hide_home_zygisk_summary">Hapus baris implementasi Zygisk dari kartu info beranda.</string>
+    <string name="settings_hide_home_susfs">Sembunyikan SUSFS</string>
+    <string name="settings_hide_home_susfs_summary">Hapus baris SUSFS dari kartu info beranda.</string>
     <string name="settings_category_general">Umum</string>
     <string name="settings_category_appearance">Tampilan</string>
     <string name="settings_category_behavior">Perilaku</string>

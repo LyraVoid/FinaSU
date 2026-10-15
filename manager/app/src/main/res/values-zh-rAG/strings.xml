@@ -347,6 +347,13 @@
     <string name="settings_support_links_hidden">藏起来喵</string>
     <string name="settings_theme_store_mode">主题商店模式喵</string>
     <string name="settings_theme_store_mode_summary">要在应用里下载主题，还是交给浏览器喵？</string>
+    <string name="settings_home_info">首页信息喵</string>
+    <string name="settings_hide_home_fingerprint">藏起系统指纹喵</string>
+    <string name="settings_hide_home_fingerprint_summary">把系统指纹这行从首页信息卡里拿掉喵～</string>
+    <string name="settings_hide_home_zygisk">藏起 Zygisk 实现喵</string>
+    <string name="settings_hide_home_zygisk_summary">把 Zygisk 实现那行藏起来喵～</string>
+    <string name="settings_hide_home_susfs">藏起 SUSFS 喵</string>
+    <string name="settings_hide_home_susfs_summary">把 SUSFS 那行藏起来喵～</string>
     <string name="settings_category_general">通用</string>
     <string name="settings_category_appearance">外观</string>
     <string name="settings_category_behavior">行为</string>

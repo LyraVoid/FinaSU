@@ -347,6 +347,13 @@
     <string name="settings_support_links_hidden">隱藏</string>
     <string name="settings_theme_store_mode">主題商店模式</string>
     <string name="settings_theme_store_mode_summary">選擇在應用程式內下載主題，還是交給瀏覽器下載。</string>
+    <string name="settings_home_info">首頁資訊</string>
+    <string name="settings_hide_home_fingerprint">隱藏系統指紋</string>
+    <string name="settings_hide_home_fingerprint_summary">從首頁資訊卡片移除系統指紋列。</string>
+    <string name="settings_hide_home_zygisk">隱藏 Zygisk 實作</string>
+    <string name="settings_hide_home_zygisk_summary">從首頁資訊卡片移除 Zygisk 實作列。</string>
+    <string name="settings_hide_home_susfs">隱藏 SUSFS</string>
+    <string name="settings_hide_home_susfs_summary">從首頁資訊卡片移除 SUSFS 列。</string>
     <string name="settings_category_general">一般</string>
     <string name="settings_category_appearance">外觀</string>
     <string name="settings_category_behavior">行為</string>

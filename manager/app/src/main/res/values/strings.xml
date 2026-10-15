@@ -415,6 +415,13 @@
     <string name="plugin_search_hint">Search plugins</string>
     <string name="superuser_search_hint">Search apps</string>
     <string name="module_search_hint">Search modules</string>
+    <string name="settings_home_info">Home info</string>
+    <string name="settings_hide_home_fingerprint">Hide fingerprint</string>
+    <string name="settings_hide_home_fingerprint_summary">Remove the device fingerprint row from the home info card.</string>
+    <string name="settings_hide_home_zygisk">Hide Zygisk</string>
+    <string name="settings_hide_home_zygisk_summary">Remove the Zygisk implementation row from the home info card.</string>
+    <string name="settings_hide_home_susfs">Hide SUSFS</string>
+    <string name="settings_hide_home_susfs_summary">Remove the SUSFS row from the home info card.</string>
     <string name="settings_category_general">General</string>
     <string name="settings_category_appearance">Appearance</string>
     <string name="settings_category_behavior">Behavior</string>

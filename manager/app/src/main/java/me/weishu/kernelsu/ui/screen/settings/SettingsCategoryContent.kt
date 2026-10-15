@@ -10,6 +10,7 @@ import androidx.compose.material.icons.filled.AdminPanelSettings
 import androidx.compose.material.icons.filled.Apps
 import androidx.compose.material.icons.filled.DeveloperMode
 import androidx.compose.material.icons.filled.Description
+import androidx.compose.material.icons.filled.Fingerprint
 import androidx.compose.material.icons.filled.FlashOn
 import androidx.compose.material.icons.filled.FontDownload
 import androidx.compose.material.icons.filled.GridView
@@ -25,9 +26,11 @@ import androidx.compose.material.icons.filled.ShoppingBag
 import androidx.compose.material.icons.filled.SystemUpdate
 import androidx.compose.material.icons.filled.SystemUpdateAlt
 import androidx.compose.material.icons.filled.Translate
+import androidx.compose.material.icons.filled.Vaccines
 import androidx.compose.material.icons.filled.VerifiedUser
 import androidx.compose.material.icons.filled.Wallpaper
 import androidx.compose.material.icons.rounded.SpaceDashboard
+import androidx.compose.material.icons.rounded.VisibilityOff
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -309,6 +312,41 @@ fun AppearanceCategoryContent(uiState: SettingsUiState, actions: SettingsScreenA
             }
         }
     )
+
+    // The identifying rows only, mirroring FP: the base facts of the card stay visible everywhere.
+    val zygiskRowPresent = uiState.folkZygiskStatus?.providesImplementation() == true
+    SegmentedColumn(
+        modifier = GroupModifier,
+        title = stringResource(R.string.settings_home_info),
+    ) {
+        item {
+            SegmentedSwitchItem(
+                icon = Icons.Filled.Fingerprint,
+                title = stringResource(R.string.settings_hide_home_fingerprint),
+                summary = stringResource(R.string.settings_hide_home_fingerprint_summary),
+                checked = uiState.hideHomeFingerprint,
+                onCheckedChange = actions.onSetHideHomeFingerprint,
+            )
+        }
+        item(visible = zygiskRowPresent) {
+            SegmentedSwitchItem(
+                icon = Icons.Filled.Vaccines,
+                title = stringResource(R.string.settings_hide_home_zygisk),
+                summary = stringResource(R.string.settings_hide_home_zygisk_summary),
+                checked = uiState.hideHomeZygisk,
+                onCheckedChange = actions.onSetHideHomeZygisk,
+            )
+        }
+        item(visible = uiState.susfsDetected) {
+            SegmentedSwitchItem(
+                icon = Icons.Rounded.VisibilityOff,
+                title = stringResource(R.string.settings_hide_home_susfs),
+                summary = stringResource(R.string.settings_hide_home_susfs_summary),
+                checked = uiState.hideHomeSusfs,
+                onCheckedChange = actions.onSetHideHomeSusfs,
+            )
+        }
+    }
 
     AdvancedTitleSettings()
 

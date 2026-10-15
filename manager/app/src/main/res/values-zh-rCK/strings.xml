@@ -347,6 +347,13 @@
     <string name="settings_support_links_hidden">收起来</string>
     <string name="settings_theme_store_mode">门面铺子进货模式</string>
     <string name="settings_theme_store_mode_summary">选在店里自己进货，还是交给外头的浏览器去进。</string>
+    <string name="settings_home_info">首页信息牌</string>
+    <string name="settings_hide_home_fingerprint">收起饭庄指纹</string>
+    <string name="settings_hide_home_fingerprint_summary">把饭庄指纹这行从首页信息牌上撤掉。</string>
+    <string name="settings_hide_home_zygisk">收起 Zygisk 实现</string>
+    <string name="settings_hide_home_zygisk_summary">把 Zygisk 实现这行从首页信息牌上撤掉。</string>
+    <string name="settings_hide_home_susfs">收起 SUSFS</string>
+    <string name="settings_hide_home_susfs_summary">把 SUSFS 这行从首页信息牌上撤掉。</string>
     <string name="settings_category_general">家常</string>
     <string name="settings_category_appearance">门面</string>
     <string name="settings_category_behavior">脾性</string>

@@ -335,6 +335,13 @@
     <string name="settings_support_links_hidden">Ẩn</string>
     <string name="settings_theme_store_mode">Chế độ cửa hàng chủ đề</string>
     <string name="settings_theme_store_mode_summary">Chọn tải chủ đề trong ứng dụng hay trên trình duyệt.</string>
+    <string name="settings_home_info">Thông tin trang chủ</string>
+    <string name="settings_hide_home_fingerprint">Ẩn fingerprint</string>
+    <string name="settings_hide_home_fingerprint_summary">Xóa dòng fingerprint của thiết bị khỏi thẻ thông tin trang chủ.</string>
+    <string name="settings_hide_home_zygisk">Ẩn Zygisk</string>
+    <string name="settings_hide_home_zygisk_summary">Xóa dòng triển khai Zygisk khỏi thẻ thông tin trang chủ.</string>
+    <string name="settings_hide_home_susfs">Ẩn SUSFS</string>
+    <string name="settings_hide_home_susfs_summary">Xóa dòng SUSFS khỏi thẻ thông tin trang chủ.</string>
     <string name="settings_category_general">Chung</string>
     <string name="settings_category_appearance">Giao diện</string>
     <string name="settings_category_behavior">Hành vi</string>

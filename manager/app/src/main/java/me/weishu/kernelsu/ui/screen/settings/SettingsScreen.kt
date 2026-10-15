@@ -113,6 +113,9 @@ fun rememberSettingsActions(
         onSetSupportLinksStyle = viewModel::setSupportLinksStyle,
         onSetThemeStoreMode = viewModel::setThemeStoreMode,
         onSetLayoutVariant = viewModel::setLayoutVariant,
+        onSetHideHomeFingerprint = viewModel::setHideHomeFingerprint,
+        onSetHideHomeZygisk = viewModel::setHideHomeZygisk,
+        onSetHideHomeSusfs = viewModel::setHideHomeSusfs,
         onSetEnableNavigationBadge = viewModel::setEnableNavigationBadge,
         onSetEnablePredictiveBack = { enabled ->
             viewModel.setEnablePredictiveBack(enabled)

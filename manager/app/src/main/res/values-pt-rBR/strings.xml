@@ -337,6 +337,13 @@
     <string name="settings_support_links_hidden">Oculto</string>
     <string name="settings_theme_store_mode">Modo da loja de temas</string>
     <string name="settings_theme_store_mode_summary">Escolha se os temas sao baixados no app ou no navegador.</string>
+    <string name="settings_home_info">Informações da tela inicial</string>
+    <string name="settings_hide_home_fingerprint">Ocultar impressão digital</string>
+    <string name="settings_hide_home_fingerprint_summary">Remove a linha da impressão digital do dispositivo do cartão de informações da tela inicial.</string>
+    <string name="settings_hide_home_zygisk">Ocultar Zygisk</string>
+    <string name="settings_hide_home_zygisk_summary">Remove a linha da implementação do Zygisk do cartão de informações da tela inicial.</string>
+    <string name="settings_hide_home_susfs">Ocultar SUSFS</string>
+    <string name="settings_hide_home_susfs_summary">Remove a linha do SUSFS do cartão de informações da tela inicial.</string>
     <string name="settings_category_general">Geral</string>
     <string name="settings_category_appearance">Aparência</string>
     <string name="settings_category_behavior">Comportamento</string>

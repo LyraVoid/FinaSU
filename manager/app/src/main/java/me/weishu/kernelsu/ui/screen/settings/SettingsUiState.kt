@@ -30,6 +30,9 @@ data class SettingsUiState(
     val supportLinksStyle: String = SupportLinksStyle.DEFAULT,
     val themeStoreMode: String = ThemeStoreMode.UNSET,
     val layoutVariant: String = LayoutVariant.DEFAULT,
+    val hideHomeFingerprint: Boolean = false,
+    val hideHomeZygisk: Boolean = false,
+    val hideHomeSusfs: Boolean = false,
 
     // Su Compat
     val suCompatStatus: String = "",
@@ -69,6 +72,8 @@ data class SettingsUiState(
     val folkZygiskReadError: Boolean = false,
     val isFolkZygiskWriting: Boolean = false,
     val folkZygiskRebootPending: Boolean = false,
+    /** Whether the kernel reports a usable SUSFS: gates the home card's SUSFS row switch. */
+    val susfsDetected: Boolean = false,
     // Sui extension
     val suiStatus: SuiStatus? = null,
     val isSuiLoading: Boolean = true,
@@ -130,6 +135,9 @@ data class SettingsScreenActions(
     val onSetSupportLinksStyle: (String) -> Unit,
     val onSetThemeStoreMode: (String) -> Unit,
     val onSetLayoutVariant: (String) -> Unit,
+    val onSetHideHomeFingerprint: (Boolean) -> Unit,
+    val onSetHideHomeZygisk: (Boolean) -> Unit,
+    val onSetHideHomeSusfs: (Boolean) -> Unit,
     val onSetEnableNavigationBadge: (Boolean) -> Unit,
     val onSetEnablePredictiveBack: (Boolean) -> Unit,
     val onSetPageScale: (Float) -> Unit,

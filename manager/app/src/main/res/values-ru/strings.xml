@@ -337,6 +337,13 @@
     <string name="settings_support_links_hidden">Скрыто</string>
     <string name="settings_theme_store_mode">Режим магазина тем</string>
     <string name="settings_theme_store_mode_summary">Выберите, скачивать темы в приложении или в браузере.</string>
+    <string name="settings_home_info">Информация на главной</string>
+    <string name="settings_hide_home_fingerprint">Скрыть подпись</string>
+    <string name="settings_hide_home_fingerprint_summary">Убирает строку подписи устройства с карточки информации на главном экране.</string>
+    <string name="settings_hide_home_zygisk">Скрыть Zygisk</string>
+    <string name="settings_hide_home_zygisk_summary">Убирает строку реализации Zygisk с карточки информации на главном экране.</string>
+    <string name="settings_hide_home_susfs">Скрыть SUSFS</string>
+    <string name="settings_hide_home_susfs_summary">Убирает строку SUSFS с карточки информации на главном экране.</string>
     <string name="settings_category_general">Общие</string>
     <string name="settings_category_appearance">Внешний вид</string>
     <string name="settings_category_behavior">Поведение</string>

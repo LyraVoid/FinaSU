@@ -337,6 +337,13 @@
     <string name="settings_support_links_hidden">مخفي</string>
     <string name="settings_theme_store_mode">وضع متجر السمات</string>
     <string name="settings_theme_store_mode_summary">اختر تنزيل السمات داخل التطبيق أو في المتصفح.</string>
+    <string name="settings_home_info">معلومات الرئيسية</string>
+    <string name="settings_hide_home_fingerprint">إخفاء البصمة</string>
+    <string name="settings_hide_home_fingerprint_summary">إزالة سطر بصمة الجهاز من بطاقة معلومات الرئيسية.</string>
+    <string name="settings_hide_home_zygisk">إخفاء Zygisk</string>
+    <string name="settings_hide_home_zygisk_summary">إزالة سطر تنفيذ Zygisk من بطاقة معلومات الرئيسية.</string>
+    <string name="settings_hide_home_susfs">إخفاء SUSFS</string>
+    <string name="settings_hide_home_susfs_summary">إزالة سطر SUSFS من بطاقة معلومات الرئيسية.</string>
     <string name="settings_category_general">عام</string>
     <string name="settings_category_appearance">المظهر</string>
     <string name="settings_category_behavior">السلوك</string>

@@ -347,6 +347,13 @@
     <string name="settings_support_links_hidden">隐匿</string>
     <string name="settings_theme_store_mode">圣光主题集市模式</string>
     <string name="settings_theme_store_mode_summary">择定圣光主题是于圣殿内降下，还是交由下界之窗承接。</string>
+    <string name="settings_home_info">首页圣示</string>
+    <string name="settings_hide_home_fingerprint">隐去圣域印记</string>
+    <string name="settings_hide_home_fingerprint_summary">隐去首页圣示中圣域印记之一行。</string>
+    <string name="settings_hide_home_zygisk">隐去 Zygisk 之施行</string>
+    <string name="settings_hide_home_zygisk_summary">隐去首页圣示中 Zygisk 施行之一行。</string>
+    <string name="settings_hide_home_susfs">隐去 SUSFS</string>
+    <string name="settings_hide_home_susfs_summary">隐去首页圣示中 SUSFS 之一行。</string>
     <string name="settings_category_general">圣域基础</string>
     <string name="settings_category_appearance">圣光外观</string>
     <string name="settings_category_behavior">神谕指令</string>

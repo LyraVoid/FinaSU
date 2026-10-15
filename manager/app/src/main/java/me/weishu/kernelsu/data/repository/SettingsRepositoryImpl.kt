@@ -112,6 +112,18 @@ class SettingsRepositoryImpl : SettingsRepository {
         get() = prefs.getBoolean("list_working_card_mode_hidden", false)
         set(value) = prefs.edit { putBoolean("list_working_card_mode_hidden", value) }
 
+    override var hideHomeFingerprint: Boolean
+        get() = prefs.getBoolean("hide_home_fingerprint", false)
+        set(value) = prefs.edit { putBoolean("hide_home_fingerprint", value) }
+
+    override var hideHomeZygisk: Boolean
+        get() = prefs.getBoolean("hide_home_zygisk", false)
+        set(value) = prefs.edit { putBoolean("hide_home_zygisk", value) }
+
+    override var hideHomeSusfs: Boolean
+        get() = prefs.getBoolean("hide_home_susfs", false)
+        set(value) = prefs.edit { putBoolean("hide_home_susfs", value) }
+
     override var enablePredictiveBack: Boolean
         get() = prefs.getBoolean("enable_predictive_back", false)
         set(value) = prefs.edit { putBoolean("enable_predictive_back", value) }

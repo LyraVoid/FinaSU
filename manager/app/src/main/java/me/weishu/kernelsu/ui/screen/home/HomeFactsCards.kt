@@ -53,6 +53,7 @@ internal fun HomeFactsTile(
     surfaceId: SurfaceId? = null,
     onSusfs: () -> Unit = {},
 ) {
+    val display = rememberHomeDisplaySettings()
     HomeTileCard(
         title = title,
         icon = icon,
@@ -73,10 +74,12 @@ internal fun HomeFactsTile(
             label = stringResource(R.string.home_device_model),
             value = state.systemInfo.deviceModel,
         )
-        HomeFactRow(
-            label = stringResource(R.string.home_fingerprint),
-            value = state.systemInfo.fingerprint,
-        )
+        if (!display.hideFingerprint) {
+            HomeFactRow(
+                label = stringResource(R.string.home_fingerprint),
+                value = state.systemInfo.fingerprint,
+            )
+        }
         HomeFactRow(
             label = stringResource(R.string.home_selinux_status),
             value = selinuxDisplayName(state.systemInfo.selinuxStatus),
@@ -85,13 +88,15 @@ internal fun HomeFactsTile(
             label = stringResource(R.string.home_seccomp_status),
             value = seccompDisplayName(state.systemInfo.seccompStatus),
         )
-        state.zygiskProvider?.let { provider ->
-            HomeFactRow(
-                label = stringResource(R.string.home_zygisk_implement),
-                value = provider,
-            )
+        if (!display.hideZygisk) {
+            state.zygiskProvider?.let { provider ->
+                HomeFactRow(
+                    label = stringResource(R.string.home_zygisk_implement),
+                    value = provider,
+                )
+            }
         }
-        SusfsHomeRow(state.susfs, onSusfs)
+        if (!display.hideSusfs) SusfsHomeRow(state.susfs, onSusfs)
     }
 }
 
@@ -129,6 +134,7 @@ internal fun InfoCard(
 ) {
     val selinuxDisplay = selinuxDisplayName(systemInfo.selinuxStatus)
     val seccompDisplay = seccompDisplayName(systemInfo.seccompStatus)
+    val display = rememberHomeDisplaySettings()
 
     HomeCard(modifier = modifier.fillMaxWidth()) {
         Column(
@@ -152,11 +158,13 @@ internal fun InfoCard(
                 label = stringResource(R.string.home_device_model),
                 value = systemInfo.deviceModel,
             )
-            InfoRow(
-                icon = Icons.Filled.Fingerprint,
-                label = stringResource(R.string.home_fingerprint),
-                value = systemInfo.fingerprint,
-            )
+            if (!display.hideFingerprint) {
+                InfoRow(
+                    icon = Icons.Filled.Fingerprint,
+                    label = stringResource(R.string.home_fingerprint),
+                    value = systemInfo.fingerprint,
+                )
+            }
             InfoRow(
                 icon = Icons.Filled.Security,
                 label = stringResource(R.string.home_selinux_status),
@@ -167,14 +175,14 @@ internal fun InfoCard(
                 label = stringResource(R.string.home_seccomp_status),
                 value = seccompDisplay,
             )
-            if (zygiskProvider != null) {
+            if (zygiskProvider != null && !display.hideZygisk) {
                 InfoRow(
                     icon = Icons.Filled.Vaccines,
                     label = stringResource(R.string.home_zygisk_implement),
                     value = zygiskProvider,
                 )
             }
-            if (susfs.detected) {
+            if (susfs.detected && !display.hideSusfs) {
                 val interactionSource = remember { MutableInteractionSource() }
                 val haptic = LocalHapticFeedback.current
                 val management = me.weishu.kernelsu.ui.screen.susfsManagementLabel(susfs.management)

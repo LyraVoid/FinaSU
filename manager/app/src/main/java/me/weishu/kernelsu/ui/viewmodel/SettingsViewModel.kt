@@ -21,6 +21,7 @@ import me.weishu.kernelsu.data.model.LayoutVariant
 import me.weishu.kernelsu.data.model.SupportLinksStyle
 import me.weishu.kernelsu.data.repository.SettingsRepository
 import me.weishu.kernelsu.data.repository.SettingsRepositoryImpl
+import me.weishu.kernelsu.data.susfs.SusfsRepository
 import me.weishu.kernelsu.ksuApp
 import me.weishu.kernelsu.ui.screen.settings.SettingsUiState
 import me.weishu.kernelsu.ui.theme.ColorMode
@@ -102,6 +103,15 @@ class SettingsViewModel(
             val folkZygiskResult = repo.getFolkZygiskStatus()
             val suiResult = repo.getSuiStatus()
 
+            // The home card's SUSFS row switch only makes sense when the kernel reports SUSFS.
+            val susfsDetected = try {
+                SusfsRepository().status().detected
+            } catch (e: kotlinx.coroutines.CancellationException) {
+                throw e
+            } catch (e: Exception) {
+                false
+            }
+
             if (generation != refreshGeneration) return@launch
             val suiManagement = if (suiResult.getOrNull()?.state == SuiStatus.STATE_ENABLED) {
                 refreshSuiManagement()
@@ -123,6 +133,10 @@ class SettingsViewModel(
                     supportLinksStyle = supportLinksStyle,
                     themeStoreMode = themeStoreMode,
                     layoutVariant = layoutVariant,
+                    hideHomeFingerprint = repo.hideHomeFingerprint,
+                    hideHomeZygisk = repo.hideHomeZygisk,
+                    hideHomeSusfs = repo.hideHomeSusfs,
+                    susfsDetected = susfsDetected,
                     colorStyle = colorStyle,
                     colorSpec = colorSpec,
                     suCompatStatus = suCompatStatus,
@@ -326,6 +340,21 @@ class SettingsViewModel(
         val normalized = LayoutVariant.fromValue(variant)
         repo.layoutVariant = normalized
         _uiState.update { it.copy(layoutVariant = normalized) }
+    }
+
+    fun setHideHomeFingerprint(hidden: Boolean) {
+        repo.hideHomeFingerprint = hidden
+        _uiState.update { it.copy(hideHomeFingerprint = hidden) }
+    }
+
+    fun setHideHomeZygisk(hidden: Boolean) {
+        repo.hideHomeZygisk = hidden
+        _uiState.update { it.copy(hideHomeZygisk = hidden) }
+    }
+
+    fun setHideHomeSusfs(hidden: Boolean) {
+        repo.hideHomeSusfs = hidden
+        _uiState.update { it.copy(hideHomeSusfs = hidden) }
     }
 
     fun setSuCompatMode(mode: Int) {

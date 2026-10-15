@@ -335,6 +335,13 @@
     <string name="settings_support_links_hidden">Oculto</string>
     <string name="settings_theme_store_mode">Modo de la tienda de temas</string>
     <string name="settings_theme_store_mode_summary">Elige si los temas se descargan en la aplicacion o en el navegador.</string>
+    <string name="settings_home_info">Información de inicio</string>
+    <string name="settings_hide_home_fingerprint">Ocultar huella</string>
+    <string name="settings_hide_home_fingerprint_summary">Quita la fila de la huella del dispositivo de la tarjeta de información de inicio.</string>
+    <string name="settings_hide_home_zygisk">Ocultar Zygisk</string>
+    <string name="settings_hide_home_zygisk_summary">Quita la fila de la implementación de Zygisk de la tarjeta de información de inicio.</string>
+    <string name="settings_hide_home_susfs">Ocultar SUSFS</string>
+    <string name="settings_hide_home_susfs_summary">Quita la fila de SUSFS de la tarjeta de información de inicio.</string>
     <string name="settings_category_general">General</string>
     <string name="settings_category_appearance">Apariencia</string>
     <string name="settings_category_behavior">Comportamiento</string>
