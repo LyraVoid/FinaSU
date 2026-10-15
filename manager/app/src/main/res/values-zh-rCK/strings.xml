@@ -345,6 +345,8 @@
     <string name="settings_support_links_finasu">瞧瞧 FinaSU</string>
     <string name="settings_support_links_legacy">给大厨捧个场与 KernelSU</string>
     <string name="settings_support_links_hidden">收起来</string>
+    <string name="settings_theme_store_mode">门面铺子进货模式</string>
+    <string name="settings_theme_store_mode_summary">选在店里自己进货，还是交给外头的浏览器去进。</string>
     <string name="settings_category_general">家常</string>
     <string name="settings_category_appearance">门面</string>
     <string name="settings_category_behavior">脾性</string>
@@ -642,6 +644,13 @@
     <string name="font_cancel">算了</string>
     <string name="theme_store_title">门面铺子</string>
     <string name="theme_store_subtitle">逛逛挑挑线上的门面</string>
+    <string name="theme_store_mode_builtin">自家进货</string>
+    <string name="theme_store_mode_builtin_desc">在铺子里逛货、进货、上架门面</string>
+    <string name="theme_store_mode_compat">外头进货</string>
+    <string name="theme_store_mode_compat_desc">让浏览器去进货，适合自家进货或上架老出岔子的家伙</string>
+    <string name="theme_store_mode_compat_hint">外头进货：文件会在浏览器里开。存下来，再打开 .fpt 就能上架门面。</string>
+    <string name="theme_store_mode_onboarding_title">挑个进货的路子</string>
+    <string name="theme_store_mode_onboarding_msg">您打算怎么逛货和上架？回头在设置里还能换。</string>
     <string name="theme_store_search_hint">翻找门面</string>
     <string name="theme_store_filter_title">挑挑拣拣</string>
     <string name="theme_store_filter_author">大厨</string>

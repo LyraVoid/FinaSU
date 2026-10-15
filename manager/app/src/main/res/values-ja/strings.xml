@@ -333,6 +333,8 @@
     <string name="settings_support_links_finasu">FinaSU について</string>
     <string name="settings_support_links_legacy">支援と KernelSU</string>
     <string name="settings_support_links_hidden">非表示</string>
+    <string name="settings_theme_store_mode">テーマストアのモード</string>
+    <string name="settings_theme_store_mode_summary">テーマをアプリ内でダウンロードするか、ブラウザで行うかを選びます。</string>
     <string name="settings_category_general">一般</string>
     <string name="settings_category_appearance">外観</string>
     <string name="settings_category_behavior">動作</string>
@@ -630,6 +632,13 @@
     <string name="font_cancel">キャンセル</string>
     <string name="theme_store_title">テーマストア</string>
     <string name="theme_store_subtitle">オンラインテーマを閲覧してダウンロード</string>
+    <string name="theme_store_mode_builtin">内蔵モード</string>
+    <string name="theme_store_mode_builtin_desc">アプリ内でテーマを閲覧・ダウンロード・適用します</string>
+    <string name="theme_store_mode_compat">互換モード</string>
+    <string name="theme_store_mode_compat_desc">内蔵のダウンロードや読み込みが失敗する端末向けに、ブラウザでテーマをダウンロードします</string>
+    <string name="theme_store_mode_compat_hint">互換モード: ファイルはブラウザで開きます。保存して .fpt を開くとテーマを適用できます。</string>
+    <string name="theme_store_mode_onboarding_title">テーマのダウンロード方法を選択</string>
+    <string name="theme_store_mode_onboarding_msg">テーマの閲覧と適用方法を選んでください。あとで設定から変更できます。</string>
     <string name="theme_store_search_hint">テーマを検索</string>
     <string name="theme_store_filter_title">フィルター</string>
     <string name="theme_store_filter_author">作者</string>

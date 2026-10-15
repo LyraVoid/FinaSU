@@ -10,6 +10,7 @@ import me.weishu.kernelsu.data.model.HomeLayoutStyle
 import me.weishu.kernelsu.data.model.NomountStatus
 import me.weishu.kernelsu.data.model.SupportLinksStyle
 import me.weishu.kernelsu.data.model.SuiStatus
+import me.weishu.kernelsu.data.themestore.ThemeStoreMode
 
 @Immutable
 data class SettingsUiState(
@@ -26,6 +27,7 @@ data class SettingsUiState(
     val enableWebDebugging: Boolean = false,
     val homeLayoutStyle: String = HomeLayoutStyle.DEFAULT,
     val supportLinksStyle: String = SupportLinksStyle.DEFAULT,
+    val themeStoreMode: String = ThemeStoreMode.UNSET,
 
     // Su Compat
     val suCompatStatus: String = "",
@@ -124,6 +126,7 @@ data class SettingsScreenActions(
     val onSetEnableWebDebugging: (Boolean) -> Unit,
     val onSetHomeLayoutStyle: (String) -> Unit,
     val onSetSupportLinksStyle: (String) -> Unit,
+    val onSetThemeStoreMode: (String) -> Unit,
     val onSetEnableNavigationBadge: (Boolean) -> Unit,
     val onSetEnablePredictiveBack: (Boolean) -> Unit,
     val onSetPageScale: (Float) -> Unit,

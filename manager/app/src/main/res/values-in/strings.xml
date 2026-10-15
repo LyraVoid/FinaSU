@@ -333,6 +333,8 @@
     <string name="settings_support_links_finasu">Pelajari FinaSU</string>
     <string name="settings_support_links_legacy">Dukungan dan KernelSU</string>
     <string name="settings_support_links_hidden">Disembunyikan</string>
+    <string name="settings_theme_store_mode">Mode toko tema</string>
+    <string name="settings_theme_store_mode_summary">Pilih apakah tema diunduh di aplikasi atau di browser.</string>
     <string name="settings_category_general">Umum</string>
     <string name="settings_category_appearance">Tampilan</string>
     <string name="settings_category_behavior">Perilaku</string>
@@ -630,6 +632,13 @@
     <string name="font_cancel">Batal</string>
     <string name="theme_store_title">Toko tema</string>
     <string name="theme_store_subtitle">Jelajahi dan unduh tema daring</string>
+    <string name="theme_store_mode_builtin">Mode bawaan</string>
+    <string name="theme_store_mode_builtin_desc">Jelajahi, unduh, dan terapkan tema di dalam aplikasi</string>
+    <string name="theme_store_mode_compat">Mode kompatibilitas</string>
+    <string name="theme_store_mode_compat_desc">Unduh tema di browser, untuk perangkat yang gagal mengunduh atau mengimpor di aplikasi</string>
+    <string name="theme_store_mode_compat_hint">Mode kompatibilitas: berkas dibuka di browser. Simpan lalu buka .fpt untuk memasang tema.</string>
+    <string name="theme_store_mode_onboarding_title">Pilih cara mengunduh tema</string>
+    <string name="theme_store_mode_onboarding_msg">Bagaimana Anda ingin menjelajahi dan memasang tema? Anda dapat mengubahnya nanti di Pengaturan.</string>
     <string name="theme_store_search_hint">Cari tema</string>
     <string name="theme_store_filter_title">Filter</string>
     <string name="theme_store_filter_author">Penulis</string>

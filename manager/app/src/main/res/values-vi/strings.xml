@@ -333,6 +333,8 @@
     <string name="settings_support_links_finasu">Tìm hiểu về FinaSU</string>
     <string name="settings_support_links_legacy">Ủng hộ và KernelSU</string>
     <string name="settings_support_links_hidden">Ẩn</string>
+    <string name="settings_theme_store_mode">Chế độ cửa hàng chủ đề</string>
+    <string name="settings_theme_store_mode_summary">Chọn tải chủ đề trong ứng dụng hay trên trình duyệt.</string>
     <string name="settings_category_general">Chung</string>
     <string name="settings_category_appearance">Giao diện</string>
     <string name="settings_category_behavior">Hành vi</string>
@@ -630,6 +632,13 @@
     <string name="font_cancel">Huỷ</string>
     <string name="theme_store_title">Cửa hàng chủ đề</string>
     <string name="theme_store_subtitle">Duyệt và tải xuống các chủ đề trực tuyến</string>
+    <string name="theme_store_mode_builtin">Chế độ tích hợp</string>
+    <string name="theme_store_mode_builtin_desc">Duyệt, tải và áp dụng chủ đề ngay trong ứng dụng</string>
+    <string name="theme_store_mode_compat">Chế độ tương thích</string>
+    <string name="theme_store_mode_compat_desc">Tải chủ đề trên trình duyệt, dành cho thiết bị mà tải hoặc nhập tích hợp gặp lỗi</string>
+    <string name="theme_store_mode_compat_hint">Chế độ tương thích: tệp sẽ mở trong trình duyệt. Hãy lưu lại rồi mở tệp .fpt để cài chủ đề.</string>
+    <string name="theme_store_mode_onboarding_title">Chọn cách tải chủ đề</string>
+    <string name="theme_store_mode_onboarding_msg">Bạn muốn duyệt và cài chủ đề như thế nào? Có thể đổi lại sau trong Cài đặt.</string>
     <string name="theme_store_search_hint">Tìm kiếm chủ đề</string>
     <string name="theme_store_filter_title">Bộ lọc</string>
     <string name="theme_store_filter_author">Tác giả</string>

@@ -52,6 +52,7 @@ class SettingsViewModel(
             val enableWebDebugging = repo.enableWebDebugging
             val homeLayoutStyle = repo.homeLayoutStyle
             val supportLinksStyle = repo.supportLinksStyle
+            val themeStoreMode = repo.themeStoreMode
             val colorStyle = repo.colorStyle
             val colorSpec = repo.colorSpec
             val isLkmMode = repo.isLkmMode()
@@ -118,6 +119,7 @@ class SettingsViewModel(
                     enableWebDebugging = enableWebDebugging,
                     homeLayoutStyle = homeLayoutStyle,
                     supportLinksStyle = supportLinksStyle,
+                    themeStoreMode = themeStoreMode,
                     colorStyle = colorStyle,
                     colorSpec = colorSpec,
                     suCompatStatus = suCompatStatus,
@@ -310,6 +312,11 @@ class SettingsViewModel(
         val normalized = SupportLinksStyle.fromValue(style)
         repo.supportLinksStyle = normalized
         _uiState.update { it.copy(supportLinksStyle = normalized) }
+    }
+
+    fun setThemeStoreMode(mode: String) {
+        repo.themeStoreMode = mode
+        _uiState.update { it.copy(themeStoreMode = mode) }
     }
 
     fun setSuCompatMode(mode: Int) {

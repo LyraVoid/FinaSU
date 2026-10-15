@@ -15,11 +15,13 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import me.weishu.kernelsu.Natives
 import me.weishu.kernelsu.data.modulestore.RepoHttp
+import me.weishu.kernelsu.data.repository.SettingsRepositoryImpl
 import me.weishu.kernelsu.data.themestore.DownloadProgress
 import me.weishu.kernelsu.data.themestore.DownloadStatus
 import me.weishu.kernelsu.data.themestore.LocalTheme
 import me.weishu.kernelsu.data.themestore.RemoteTheme
 import me.weishu.kernelsu.data.themestore.ThemeDownloader
+import me.weishu.kernelsu.data.themestore.ThemeStoreMode
 import me.weishu.kernelsu.data.themestore.normalizeStoreUrl
 import me.weishu.kernelsu.ksuApp
 import org.json.JSONArray
@@ -38,6 +40,29 @@ class ThemeStoreViewModel : ViewModel() {
     private val context: Context = ksuApp
     private val themeDownloader = ThemeDownloader(context)
     private val prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+
+    private val settingsRepository = SettingsRepositoryImpl()
+
+    /**
+     * How a theme reaches the user: downloaded in the app ([ThemeStoreMode.BUILTIN]), or handed to the
+     * browser ([ThemeStoreMode.COMPAT]) for devices where the in-app download or import trip over.
+     * [ThemeStoreMode.UNSET] means the user has not chosen yet and the screen shows its onboarding.
+     */
+    var themeStoreMode by mutableStateOf(settingsRepository.themeStoreMode)
+        private set
+
+    val isCompatMode: Boolean
+        get() = ThemeStoreMode.isCompat(themeStoreMode)
+
+    /** Re-reads the persisted mode, because the store can be revisited after the setting changed. */
+    fun syncThemeStoreMode() {
+        themeStoreMode = settingsRepository.themeStoreMode
+    }
+
+    fun updateThemeStoreMode(mode: String) {
+        settingsRepository.themeStoreMode = mode
+        themeStoreMode = mode
+    }
 
     private var allThemes: List<RemoteTheme> = emptyList()
 

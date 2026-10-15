@@ -345,6 +345,8 @@
     <string name="settings_support_links_finasu">探寻 FinaSU</string>
     <string name="settings_support_links_legacy">圣光援助与 KernelSU</string>
     <string name="settings_support_links_hidden">隐匿</string>
+    <string name="settings_theme_store_mode">圣光主题集市模式</string>
+    <string name="settings_theme_store_mode_summary">择定圣光主题是于圣殿内降下，还是交由下界之窗承接。</string>
     <string name="settings_category_general">圣域基础</string>
     <string name="settings_category_appearance">圣光外观</string>
     <string name="settings_category_behavior">神谕指令</string>
@@ -642,6 +644,13 @@
     <string name="font_cancel">罢手</string>
     <string name="theme_store_title">圣光主题商店</string>
     <string name="theme_store_subtitle">浏览并祈召在线圣光主题</string>
+    <string name="theme_store_mode_builtin">圣殿内置模式</string>
+    <string name="theme_store_mode_builtin_desc">于圣殿之内览阅、降召并披覆圣光主题</string>
+    <string name="theme_store_mode_compat">下界兼容模式</string>
+    <string name="theme_store_mode_compat_desc">借下界之窗降召圣光主题，适用于内置降召或引入失败的圣器</string>
+    <string name="theme_store_mode_compat_hint">下界兼容模式：圣光将于下界之窗开启。谨记封存，再开启 .fpt 以披覆主题。</string>
+    <string name="theme_store_mode_onboarding_title">择定降召圣光之法</string>
+    <string name="theme_store_mode_onboarding_msg">愿如何览阅并披覆圣光主题？日后可于圣殿设置中更改。</string>
     <string name="theme_store_search_hint">搜寻圣光主题</string>
     <string name="theme_store_filter_title">滤净</string>
     <string name="theme_store_filter_author">创造者</string>

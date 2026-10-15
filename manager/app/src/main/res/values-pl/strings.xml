@@ -337,6 +337,8 @@ Przed kontynuowaniem upewnij się, że bootloader jest odblokowany!</string>
     <string name="settings_support_links_finasu">Poznaj FinaSU</string>
     <string name="settings_support_links_legacy">Wsparcie i KernelSU</string>
     <string name="settings_support_links_hidden">Ukryte</string>
+    <string name="settings_theme_store_mode">Tryb sklepu z motywami</string>
+    <string name="settings_theme_store_mode_summary">Wybierz, czy motywy maja byc pobierane w aplikacji, czy w przegladarce.</string>
     <string name="settings_category_general">Ogólne</string>
     <string name="settings_category_appearance">Wygląd</string>
     <string name="settings_category_behavior">Zachowanie</string>
@@ -634,6 +636,13 @@ Przed kontynuowaniem upewnij się, że bootloader jest odblokowany!</string>
     <string name="font_cancel">Anuluj</string>
     <string name="theme_store_title">Sklep z motywami</string>
     <string name="theme_store_subtitle">Przeglądaj i pobieraj motywy online</string>
+    <string name="theme_store_mode_builtin">Tryb wbudowany</string>
+    <string name="theme_store_mode_builtin_desc">Przegladaj, pobieraj i stosuj motywy w aplikacji</string>
+    <string name="theme_store_mode_compat">Tryb zgodnosci</string>
+    <string name="theme_store_mode_compat_desc">Pobieraj motywy w przegladarce, dla urzadzen, na ktorych wbudowane pobieranie lub import zawodzi</string>
+    <string name="theme_store_mode_compat_hint">Tryb zgodnosci: plik otworzy sie w przegladarce. Zapisz go i otworz plik .fpt, aby zainstalowac motyw.</string>
+    <string name="theme_store_mode_onboarding_title">Wybierz sposob pobierania motywow</string>
+    <string name="theme_store_mode_onboarding_msg">Jak chcesz przegladac i instalowac motywy? Mozesz to zmienic pozniej w Ustawieniach.</string>
     <string name="theme_store_search_hint">Szukaj motywów</string>
     <string name="theme_store_filter_title">Filtry</string>
     <string name="theme_store_filter_author">Autor</string>

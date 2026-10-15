@@ -335,6 +335,8 @@
     <string name="settings_support_links_finasu">تعرّف على FinaSU</string>
     <string name="settings_support_links_legacy">الدعم وKernelSU</string>
     <string name="settings_support_links_hidden">مخفي</string>
+    <string name="settings_theme_store_mode">وضع متجر السمات</string>
+    <string name="settings_theme_store_mode_summary">اختر تنزيل السمات داخل التطبيق أو في المتصفح.</string>
     <string name="settings_category_general">عام</string>
     <string name="settings_category_appearance">المظهر</string>
     <string name="settings_category_behavior">السلوك</string>
@@ -632,6 +634,13 @@
     <string name="font_cancel">إلغاء</string>
     <string name="theme_store_title">متجر المظاهر</string>
     <string name="theme_store_subtitle">تصفح ونزّل المظاهر عبر الإنترنت</string>
+    <string name="theme_store_mode_builtin">الوضع المدمج</string>
+    <string name="theme_store_mode_builtin_desc">تصفّح السمات ونزّلها وطبّقها داخل التطبيق</string>
+    <string name="theme_store_mode_compat">وضع التوافق</string>
+    <string name="theme_store_mode_compat_desc">نزّل السمات في المتصفح للأجهزة التي تفشل فيها التنزيل أو الاستيراد المدمج</string>
+    <string name="theme_store_mode_compat_hint">وضع التوافق: سيُفتح الملف في متصفحك. احفظه ثم افتح ملف .fpt لتثبيت السمة.</string>
+    <string name="theme_store_mode_onboarding_title">اختر طريقة تنزيل السمات</string>
+    <string name="theme_store_mode_onboarding_msg">كيف تريد تصفّح السمات وتثبيتها؟ يمكنك تغيير ذلك لاحقًا في الإعدادات.</string>
     <string name="theme_store_search_hint">ابحث عن المظاهر</string>
     <string name="theme_store_filter_title">عوامل التصفية</string>
     <string name="theme_store_filter_author">المؤلف</string>

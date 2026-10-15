@@ -345,6 +345,8 @@
     <string name="settings_support_links_finasu">了解 FinaSU</string>
     <string name="settings_support_links_legacy">给绿宝石与 KernelSU</string>
     <string name="settings_support_links_hidden">隐藏</string>
+    <string name="settings_theme_store_mode">主世界主题商店模式</string>
+    <string name="settings_theme_store_mode_summary">选择在主世界内下载主题，还是交给浏览器下载。</string>
     <string name="settings_category_general">通用</string>
     <string name="settings_category_appearance">外观</string>
     <string name="settings_category_behavior">行为</string>
@@ -642,6 +644,13 @@
     <string name="font_cancel">取消</string>
     <string name="theme_store_title">主题商店</string>
     <string name="theme_store_subtitle">浏览并下载在线主题</string>
+    <string name="theme_store_mode_builtin">内置模式</string>
+    <string name="theme_store_mode_builtin_desc">在主世界内浏览、下载并应用主题</string>
+    <string name="theme_store_mode_compat">下界兼容模式</string>
+    <string name="theme_store_mode_compat_desc">借下界之门用浏览器下载主题，适合内置下载或导入失败的设备</string>
+    <string name="theme_store_mode_compat_hint">下界兼容模式：文件会在浏览器中打开。保存后打开 .fpt 即可安装主题。</string>
+    <string name="theme_store_mode_onboarding_title">选择主题下载方式</string>
+    <string name="theme_store_mode_onboarding_msg">你想在主世界怎么浏览和安装主题？之后可以在设置里修改。</string>
     <string name="theme_store_search_hint">搜索主题</string>
     <string name="theme_store_filter_title">筛选</string>
     <string name="theme_store_filter_author">作者</string>

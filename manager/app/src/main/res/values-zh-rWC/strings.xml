@@ -345,6 +345,8 @@
     <string name="settings_support_links_finasu">参悟 FinaSU</string>
     <string name="settings_support_links_legacy">道力支持与 KernelSU</string>
     <string name="settings_support_links_hidden">隐去</string>
+    <string name="settings_theme_store_mode">道韵仙市模式</string>
+    <string name="settings_theme_store_mode_summary">选择在洞天之内纳取道韵，还是借外域之窗承接。</string>
     <string name="settings_category_general">凡尘设置</string>
     <string name="settings_category_appearance">道韵外观</string>
     <string name="settings_category_behavior">功法运转</string>
@@ -642,6 +644,13 @@
     <string name="font_cancel">罢了</string>
     <string name="theme_store_title">道韵仙市</string>
     <string name="theme_store_subtitle">览阅并纳取云上道韵</string>
+    <string name="theme_store_mode_builtin">洞天内置模式</string>
+    <string name="theme_store_mode_builtin_desc">于洞天之内览阅、纳取并炼化道韵</string>
+    <string name="theme_store_mode_compat">外域兼容模式</string>
+    <string name="theme_store_mode_compat_desc">借外域之窗纳取道韵，适用于内置纳取或引入受阻的法器</string>
+    <string name="theme_store_mode_compat_hint">外域兼容模式：符箓将于外域之窗开启。谨记封存，再开启 .fpt 以炼化道韵。</string>
+    <string name="theme_store_mode_onboarding_title">择定纳取道韵之法</string>
+    <string name="theme_store_mode_onboarding_msg">愿如何览阅并炼化道韵？日后可于洞天设置中更易。</string>
     <string name="theme_store_search_hint">搜寻道韵</string>
     <string name="theme_store_filter_title">筛选</string>
     <string name="theme_store_filter_author">炼制者</string>

@@ -335,6 +335,8 @@
     <string name="settings_support_links_finasu">Узнайте о FinaSU</string>
     <string name="settings_support_links_legacy">Поддержка и KernelSU</string>
     <string name="settings_support_links_hidden">Скрыто</string>
+    <string name="settings_theme_store_mode">Режим магазина тем</string>
+    <string name="settings_theme_store_mode_summary">Выберите, скачивать темы в приложении или в браузере.</string>
     <string name="settings_category_general">Общие</string>
     <string name="settings_category_appearance">Внешний вид</string>
     <string name="settings_category_behavior">Поведение</string>
@@ -632,6 +634,13 @@
     <string name="font_cancel">Отмена</string>
     <string name="theme_store_title">Магазин тем</string>
     <string name="theme_store_subtitle">Просматривайте и скачивайте темы онлайн</string>
+    <string name="theme_store_mode_builtin">Встроенный режим</string>
+    <string name="theme_store_mode_builtin_desc">Просматривайте, скачивайте и применяйте темы в приложении</string>
+    <string name="theme_store_mode_compat">Режим совместимости</string>
+    <string name="theme_store_mode_compat_desc">Скачивайте темы в браузере — для устройств, где встроенное скачивание или импорт не работают</string>
+    <string name="theme_store_mode_compat_hint">Режим совместимости: файл откроется в браузере. Сохраните его и откройте .fpt, чтобы установить тему.</string>
+    <string name="theme_store_mode_onboarding_title">Выберите способ скачивания тем</string>
+    <string name="theme_store_mode_onboarding_msg">Как вы хотите просматривать и устанавливать темы? Это можно изменить позже в настройках.</string>
     <string name="theme_store_search_hint">Поиск тем</string>
     <string name="theme_store_filter_title">Фильтры</string>
     <string name="theme_store_filter_author">Автор</string>

@@ -345,6 +345,8 @@
     <string name="settings_support_links_finasu">了解一下 FinaSU 喵</string>
     <string name="settings_support_links_legacy">支持人家嘛喵与 KernelSU</string>
     <string name="settings_support_links_hidden">藏起来喵</string>
+    <string name="settings_theme_store_mode">主题商店模式喵</string>
+    <string name="settings_theme_store_mode_summary">要在应用里下载主题，还是交给浏览器喵？</string>
     <string name="settings_category_general">通用</string>
     <string name="settings_category_appearance">外观</string>
     <string name="settings_category_behavior">行为</string>
@@ -642,6 +644,13 @@
     <string name="font_cancel">取消喵</string>
     <string name="theme_store_title">主题商店喵</string>
     <string name="theme_store_subtitle">逛逛再下载在线主题喵</string>
+    <string name="theme_store_mode_builtin">内置模式喵</string>
+    <string name="theme_store_mode_builtin_desc">在应用里逛、下载、套用主题喵</string>
+    <string name="theme_store_mode_compat">兼容模式喵</string>
+    <string name="theme_store_mode_compat_desc">用浏览器下载主题喵，内置下载或导入不灵光的设备可以选这个喵</string>
+    <string name="theme_store_mode_compat_hint">兼容模式：文件会在浏览器里打开喵。存下来再打开 .fpt 就能装主题了喵。</string>
+    <string name="theme_store_mode_onboarding_title">挑一个下载主题的方式喵</string>
+    <string name="theme_store_mode_onboarding_msg">想怎么逛和装主题喵？以后在设置里还能改喵。</string>
     <string name="theme_store_search_hint">搜索主题喵</string>
     <string name="theme_store_filter_title">筛选喵</string>
     <string name="theme_store_filter_author">作者喵</string>

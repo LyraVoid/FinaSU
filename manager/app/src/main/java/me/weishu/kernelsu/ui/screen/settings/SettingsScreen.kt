@@ -111,6 +111,7 @@ fun rememberSettingsActions(
         onSetEnableWebDebugging = viewModel::setEnableWebDebugging,
         onSetHomeLayoutStyle = viewModel::setHomeLayoutStyle,
         onSetSupportLinksStyle = viewModel::setSupportLinksStyle,
+        onSetThemeStoreMode = viewModel::setThemeStoreMode,
         onSetEnableNavigationBadge = viewModel::setEnableNavigationBadge,
         onSetEnablePredictiveBack = { enabled ->
             viewModel.setEnablePredictiveBack(enabled)

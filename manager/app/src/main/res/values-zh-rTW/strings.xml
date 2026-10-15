@@ -345,6 +345,8 @@
     <string name="settings_support_links_finasu">深入瞭解 FinaSU</string>
     <string name="settings_support_links_legacy">協助發展與 KernelSU</string>
     <string name="settings_support_links_hidden">隱藏</string>
+    <string name="settings_theme_store_mode">主題商店模式</string>
+    <string name="settings_theme_store_mode_summary">選擇在應用程式內下載主題，還是交給瀏覽器下載。</string>
     <string name="settings_category_general">一般</string>
     <string name="settings_category_appearance">外觀</string>
     <string name="settings_category_behavior">行為</string>
@@ -642,6 +644,13 @@
     <string name="font_cancel">取消</string>
     <string name="theme_store_title">主題商店</string>
     <string name="theme_store_subtitle">瀏覽並下載線上主題</string>
+    <string name="theme_store_mode_builtin">內建模式</string>
+    <string name="theme_store_mode_builtin_desc">在應用程式內瀏覽、下載並套用主題</string>
+    <string name="theme_store_mode_compat">相容模式</string>
+    <string name="theme_store_mode_compat_desc">在瀏覽器中下載主題，適合內建下載或匯入失敗的裝置</string>
+    <string name="theme_store_mode_compat_hint">相容模式：檔案會在瀏覽器中開啟。儲存後開啟 .fpt 即可安裝主題。</string>
+    <string name="theme_store_mode_onboarding_title">選擇主題下載方式</string>
+    <string name="theme_store_mode_onboarding_msg">你想怎麼瀏覽和安裝主題？之後可以在設定裡修改。</string>
     <string name="theme_store_search_hint">搜尋主題</string>
     <string name="theme_store_filter_title">篩選</string>
     <string name="theme_store_filter_author">作者</string>

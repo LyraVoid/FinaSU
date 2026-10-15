@@ -57,6 +57,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -71,6 +72,7 @@ import me.weishu.kernelsu.data.themestore.DownloadProgress
 import me.weishu.kernelsu.data.themestore.DownloadStatus
 import me.weishu.kernelsu.data.themestore.LocalTheme
 import me.weishu.kernelsu.data.themestore.RemoteTheme
+import me.weishu.kernelsu.data.themestore.ThemeStoreMode
 import me.weishu.kernelsu.ui.component.material.ExpressiveScaffold
 import me.weishu.kernelsu.ui.component.material.SearchAppBar
 import me.weishu.kernelsu.ui.component.material.SnackBarHost
@@ -97,6 +99,10 @@ fun ThemeStoreScreen() {
     val pullToRefreshState = rememberPullToRefreshState()
     val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior(rememberTopAppBarState())
     val gridState = rememberLazyStaggeredGridState()
+    val uriHandler = LocalUriHandler.current
+
+    // The mode can change in Settings while this screen stays in the back stack.
+    LaunchedEffect(Unit) { viewModel.syncThemeStoreMode() }
 
     val progressMap by viewModel.downloadProgress.collectAsStateWithLifecycle()
 
@@ -112,6 +118,10 @@ fun ThemeStoreScreen() {
     var downloadingTheme by remember { mutableStateOf<RemoteTheme?>(null) }
     var completedTheme by remember { mutableStateOf<RemoteTheme?>(null) }
     var showFilter by remember { mutableStateOf(false) }
+    var onboardingDismissed by remember { mutableStateOf(false) }
+
+    // First visit only: ask how a theme should be handed over, exactly like the reference build.
+    val showOnboarding = !onboardingDismissed && viewModel.themeStoreMode == ThemeStoreMode.UNSET
 
     val downloading = downloadingTheme
     LaunchedEffect(progressMap, downloading) {
@@ -145,11 +155,15 @@ fun ThemeStoreScreen() {
                 topSearch = true,
                 navigationIcon = { TopBarBackButton(onClick = { navigator.pop() }) },
                 actions = {
-                    IconButton(onClick = { navigator.push(Route.MyThemes) }) {
-                        Icon(
-                            Icons.Filled.ColorLens,
-                            contentDescription = stringResource(R.string.my_themes_title),
-                        )
+                    // In compatibility mode the browser does the downloading, so the local library is
+                    // not the place to send people to.
+                    if (!viewModel.isCompatMode) {
+                        IconButton(onClick = { navigator.push(Route.MyThemes) }) {
+                            Icon(
+                                Icons.Filled.ColorLens,
+                                contentDescription = stringResource(R.string.my_themes_title),
+                            )
+                        }
                     }
                     IconButton(onClick = { showFilter = true }) {
                         Icon(
@@ -236,6 +250,7 @@ fun ThemeStoreScreen() {
             theme = detail,
             isDownloaded = viewModel.isThemeDownloaded(detail.id),
             isDownloading = viewModel.isThemeDownloading(detail.id),
+            compatMode = viewModel.isCompatMode,
             onApply = {
                 scope.launch {
                     val local = viewModel.localThemes.firstOrNull { it.id == detail.id }
@@ -245,8 +260,16 @@ fun ThemeStoreScreen() {
                 selectedTheme = null
             },
             onDownload = {
-                viewModel.startDownload(detail)
-                if (viewModel.isThemeDownloading(detail.id)) downloadingTheme = detail
+                if (viewModel.isCompatMode) {
+                    // Hand the CDN link to the browser; the saved .fpt comes back through the app's
+                    // own file-open import, so nothing else has to change.
+                    runCatching { uriHandler.openUri(detail.downloadUrl) }.onFailure {
+                        scope.launch { snackbarHostState.showSnackbar(downloadFailedMessage) }
+                    }
+                } else {
+                    viewModel.startDownload(detail)
+                    if (viewModel.isThemeDownloading(detail.id)) downloadingTheme = detail
+                }
                 selectedTheme = null
             },
             onDismiss = { selectedTheme = null },
@@ -318,6 +341,61 @@ fun ThemeStoreScreen() {
             onDismiss = { showFilter = false },
         )
     }
+
+    if (showOnboarding) {
+        ThemeStoreModeOnboardingDialog(
+            onPick = { mode -> viewModel.updateThemeStoreMode(mode) },
+            onDismiss = { onboardingDismissed = true },
+        )
+    }
+}
+
+@Composable
+private fun ThemeStoreModeOnboardingDialog(
+    onPick: (String) -> Unit,
+    onDismiss: () -> Unit,
+) {
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text(stringResource(R.string.theme_store_mode_onboarding_title)) },
+        text = {
+            Column {
+                Text(stringResource(R.string.theme_store_mode_onboarding_msg), style = FolkType.Summary)
+                Spacer(Modifier.height(16.dp))
+                ThemeStoreModeOption(
+                    title = stringResource(R.string.theme_store_mode_builtin),
+                    description = stringResource(R.string.theme_store_mode_builtin_desc),
+                    onClick = { onPick(ThemeStoreMode.BUILTIN) },
+                )
+                Spacer(Modifier.height(8.dp))
+                ThemeStoreModeOption(
+                    title = stringResource(R.string.theme_store_mode_compat),
+                    description = stringResource(R.string.theme_store_mode_compat_desc),
+                    onClick = { onPick(ThemeStoreMode.COMPAT) },
+                )
+            }
+        },
+        confirmButton = {},
+        dismissButton = {
+            TextButton(onClick = onDismiss) {
+                Text(stringResource(R.string.theme_store_cancel))
+            }
+        },
+    )
+}
+
+@Composable
+private fun ThemeStoreModeOption(
+    title: String,
+    description: String,
+    onClick: () -> Unit,
+) {
+    OutlinedButton(onClick = onClick, modifier = Modifier.fillMaxWidth()) {
+        Column(modifier = Modifier.fillMaxWidth()) {
+            Text(title, style = FolkType.Title)
+            Text(description, style = FolkType.Caption)
+        }
+    }
 }
 
 fun searchContentPadding(bottomPadding: androidx.compose.ui.unit.Dp) = PaddingValues(
@@ -371,6 +449,7 @@ private fun ThemeDetailDialog(
     theme: RemoteTheme,
     isDownloaded: Boolean,
     isDownloading: Boolean,
+    compatMode: Boolean,
     onApply: () -> Unit,
     onDownload: () -> Unit,
     onDismiss: () -> Unit,
@@ -388,6 +467,14 @@ private fun ThemeDetailDialog(
                 if (theme.description.isNotBlank()) {
                     Spacer(Modifier.height(8.dp))
                     Text(theme.description, style = FolkType.Summary)
+                }
+                if (compatMode && !isDownloaded) {
+                    Spacer(Modifier.height(8.dp))
+                    Text(
+                        stringResource(R.string.theme_store_mode_compat_hint),
+                        style = FolkType.Caption,
+                        color = MaterialTheme.colorScheme.primary,
+                    )
                 }
             }
         },

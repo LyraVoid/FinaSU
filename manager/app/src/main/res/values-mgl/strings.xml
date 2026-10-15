@@ -345,6 +345,8 @@
     <string name="settings_support_links_finasu">了解 FinaSU</string>
     <string name="settings_support_links_legacy">支持缔造者与 KernelSU</string>
     <string name="settings_support_links_hidden">隐匿</string>
+    <string name="settings_theme_store_mode">Сэдвийн дэлгүүрийн горим</string>
+    <string name="settings_theme_store_mode_summary">Сэдвийг апп дотор эсвэл хөтөч дээр татахыг сонгоно.</string>
     <string name="settings_category_general">通用</string>
     <string name="settings_category_appearance">外观</string>
     <string name="settings_category_behavior">行为</string>
@@ -642,6 +644,13 @@
     <string name="font_cancel">取消</string>
     <string name="theme_store_title">星幻主题商店</string>
     <string name="theme_store_subtitle">浏览并下载线上星幻主题</string>
+    <string name="theme_store_mode_builtin">Суулгасан горим</string>
+    <string name="theme_store_mode_builtin_desc">Апп дотроос сэдэв үзэж, татаж, хэрэглэнэ</string>
+    <string name="theme_store_mode_compat">Тохиромжтой горим</string>
+    <string name="theme_store_mode_compat_desc">Суулгасан таталт эсвэл импорт ажиллахгүй төхөөрөмжид сэдвийг хөтчөөр татна</string>
+    <string name="theme_store_mode_compat_hint">Тохиромжтой горим: файл хөтөч дээр нээгдэнэ. Хадгалаад .fpt файлыг нээж сэдвийг суулгана уу.</string>
+    <string name="theme_store_mode_onboarding_title">Сэдвийг хэрхэн татахыг сонгоно уу</string>
+    <string name="theme_store_mode_onboarding_msg">Сэдвийг хэрхэн үзэж, суулгах вэ? Дараа нь Тохиргооноос өөрчилж болно.</string>
     <string name="theme_store_search_hint">搜索主题</string>
     <string name="theme_store_filter_title">筛选</string>
     <string name="theme_store_filter_author">缔造者</string>

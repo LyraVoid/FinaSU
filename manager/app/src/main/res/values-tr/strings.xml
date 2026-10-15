@@ -335,6 +335,8 @@
     <string name="settings_support_links_finasu">FinaSU hakkında bilgi edinin</string>
     <string name="settings_support_links_legacy">Destek ve KernelSU</string>
     <string name="settings_support_links_hidden">Gizli</string>
+    <string name="settings_theme_store_mode">Tema magazasi modu</string>
+    <string name="settings_theme_store_mode_summary">Temalarin uygulamada mi yoksa tarayicida mi indirilecegini secin.</string>
     <string name="settings_category_general">Genel</string>
     <string name="settings_category_appearance">Görünüm</string>
     <string name="settings_category_behavior">Davranış</string>
@@ -632,6 +634,13 @@
     <string name="font_cancel">İptal</string>
     <string name="theme_store_title">Tema mağazası</string>
     <string name="theme_store_subtitle">Çevrimiçi temalara göz atın ve indirin</string>
+    <string name="theme_store_mode_builtin">Yerlesik mod</string>
+    <string name="theme_store_mode_builtin_desc">Temalari uygulama icinde gezin, indir ve uygula</string>
+    <string name="theme_store_mode_compat">Uyumluluk modu</string>
+    <string name="theme_store_mode_compat_desc">Yerlesik indirme veya ice aktarma sorunlu cihazlar icin temalari tarayicida indirin</string>
+    <string name="theme_store_mode_compat_hint">Uyumluluk modu: dosya tarayicinizda acilir. Kaydedin ve temayi kurmak icin .fpt dosyasini acin.</string>
+    <string name="theme_store_mode_onboarding_title">Temalarin nasil indirilecegini secin</string>
+    <string name="theme_store_mode_onboarding_msg">Temalara nasil goz atip kurmak istersiniz? Bunu daha sonra Ayarlardan degistirebilirsiniz.</string>
     <string name="theme_store_search_hint">Tema ara</string>
     <string name="theme_store_filter_title">Filtreler</string>
     <string name="theme_store_filter_author">Geliştirici</string>

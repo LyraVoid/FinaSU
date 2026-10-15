@@ -335,6 +335,8 @@
     <string name="settings_support_links_finasu">Saiba mais sobre o FinaSU</string>
     <string name="settings_support_links_legacy">Apoio e KernelSU</string>
     <string name="settings_support_links_hidden">Oculto</string>
+    <string name="settings_theme_store_mode">Modo da loja de temas</string>
+    <string name="settings_theme_store_mode_summary">Escolha se os temas sao baixados no app ou no navegador.</string>
     <string name="settings_category_general">Geral</string>
     <string name="settings_category_appearance">Aparência</string>
     <string name="settings_category_behavior">Comportamento</string>
@@ -632,6 +634,13 @@
     <string name="font_cancel">Cancelar</string>
     <string name="theme_store_title">Loja de temas</string>
     <string name="theme_store_subtitle">Navegue e baixe temas online</string>
+    <string name="theme_store_mode_builtin">Modo integrado</string>
+    <string name="theme_store_mode_builtin_desc">Navegue, baixe e aplique temas dentro do app</string>
+    <string name="theme_store_mode_compat">Modo de compatibilidade</string>
+    <string name="theme_store_mode_compat_desc">Baixe os temas no navegador, para aparelhos em que o download ou a importacao integrada falha</string>
+    <string name="theme_store_mode_compat_hint">Modo de compatibilidade: o arquivo abre no navegador. Salve-o e abra o .fpt para instalar o tema.</string>
+    <string name="theme_store_mode_onboarding_title">Escolha como os temas sao baixados</string>
+    <string name="theme_store_mode_onboarding_msg">Como voce quer navegar e instalar temas? Voce pode mudar isso depois nos Ajustes.</string>
     <string name="theme_store_search_hint">Pesquisar temas</string>
     <string name="theme_store_filter_title">Filtros</string>
     <string name="theme_store_filter_author">Autor</string>

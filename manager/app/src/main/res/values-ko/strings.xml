@@ -333,6 +333,8 @@
     <string name="settings_support_links_finasu">FinaSU 알아보기</string>
     <string name="settings_support_links_legacy">지원 및 KernelSU</string>
     <string name="settings_support_links_hidden">숨김</string>
+    <string name="settings_theme_store_mode">테마 스토어 모드</string>
+    <string name="settings_theme_store_mode_summary">테마를 앱에서 내려받을지 브라우저에서 내려받을지 선택합니다.</string>
     <string name="settings_category_general">일반</string>
     <string name="settings_category_appearance">화면</string>
     <string name="settings_category_behavior">동작</string>
@@ -630,6 +632,13 @@
     <string name="font_cancel">취소</string>
     <string name="theme_store_title">테마 스토어</string>
     <string name="theme_store_subtitle">온라인 테마를 탐색하고 다운로드합니다</string>
+    <string name="theme_store_mode_builtin">내장 모드</string>
+    <string name="theme_store_mode_builtin_desc">앱 안에서 테마를 둘러보고 내려받아 적용합니다</string>
+    <string name="theme_store_mode_compat">호환 모드</string>
+    <string name="theme_store_mode_compat_desc">내장 다운로드나 가져오기가 실패하는 기기를 위해 브라우저에서 테마를 내려받습니다</string>
+    <string name="theme_store_mode_compat_hint">호환 모드: 파일이 브라우저에서 열립니다. 저장한 뒤 .fpt를 열어 테마를 설치하세요.</string>
+    <string name="theme_store_mode_onboarding_title">테마 다운로드 방법 선택</string>
+    <string name="theme_store_mode_onboarding_msg">테마를 어떻게 둘러보고 설치할까요? 나중에 설정에서 바꿀 수 있습니다.</string>
     <string name="theme_store_search_hint">테마 검색</string>
     <string name="theme_store_filter_title">필터</string>
     <string name="theme_store_filter_author">제작자</string>
