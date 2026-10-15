@@ -52,13 +52,35 @@ internal suspend fun isDownloadAvailable(uri: Uri): Boolean = withContext(Dispat
     }.getOrDefault(false)
 }
 
+/**
+ * The release feed the manager checks for updates.
+ *
+ * It must point at FinaSU's own repository: pointing it upstream (tiann/KernelSU) compared a FinaSU
+ * build against KernelSU's releases, so once upstream's version code overtook FinaSU's the manager
+ * would have offered the KernelSU APK as a FinaSU update.
+ */
+private const val MANAGER_RELEASES_API = "https://api.github.com/repos/LyraVoid/FinaSU/releases/latest"
+
+/** Release assets are named `<manager>_v<versionName>_<versionCode>-<buildType>.apk`. */
+private val RELEASE_ASSET_NAME = Regex("v(.+?)_(\\d+)")
+
+/**
+ * Extracts the `(versionName, versionCode)` carried by a release asset name, or `null` when the
+ * name is not an APK or does not carry a version code.
+ */
+internal fun parseReleaseAssetName(name: String): Pair<String, Int>? {
+    if (!name.endsWith(".apk")) return null
+    val match = RELEASE_ASSET_NAME.find(name) ?: return null
+    val versionCode = match.groupValues[2].toIntOrNull() ?: return null
+    return match.groupValues[1] to versionCode
+}
+
 fun checkNewVersion(): LatestVersionInfo {
     if (!isNetworkAvailable(ksuApp)) return LatestVersionInfo()
-    val url = "https://api.github.com/repos/tiann/KernelSU/releases/latest"
     // default null value if failed
     val defaultValue = LatestVersionInfo()
     runCatching {
-        ksuApp.okhttpClient.newCall(Request.Builder().url(url).build()).execute()
+        ksuApp.okhttpClient.newCall(Request.Builder().url(MANAGER_RELEASES_API).build()).execute()
             .use { response ->
                 if (!response.isSuccessful) {
                     return defaultValue
@@ -70,21 +92,14 @@ fun checkNewVersion(): LatestVersionInfo {
                 val assets = json.getJSONArray("assets")
                 for (i in 0 until assets.length()) {
                     val asset = assets.getJSONObject(i)
-                    val name = asset.getString("name")
-                    if (!name.endsWith(".apk")) {
-                        continue
-                    }
-
-                    val regex = Regex("v(.+?)_(\\d+)-")
-                    val matchResult = regex.find(name) ?: continue
-                    matchResult.groupValues[1]
-                    val versionCode = matchResult.groupValues[2].toInt()
+                    val parsed = parseReleaseAssetName(asset.getString("name")) ?: continue
                     val downloadUrl = asset.getString("browser_download_url")
 
                     return LatestVersionInfo(
-                        versionCode,
-                        downloadUrl,
-                        changelog
+                        versionName = parsed.first,
+                        versionCode = parsed.second,
+                        downloadUrl = downloadUrl,
+                        changelog = changelog,
                     )
                 }
 

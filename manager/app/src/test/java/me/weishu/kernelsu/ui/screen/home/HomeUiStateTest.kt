@@ -97,7 +97,7 @@ class HomeUiStateTest {
     }
 
     @Test
-    fun `manager update opens FolkSU releases without installing a kernel`() {
+    fun `manager update opens FinaSU releases without installing a kernel`() {
         var openedUrl = ""
         var installClicked = false
         val actions = HomeActions(
@@ -105,7 +105,7 @@ class HomeUiStateTest {
             onOpenUrl = { openedUrl = it },
         )
         actions.openManagerReleases()
-        assertEquals("https://github.com/LyraVoid/FolkSU/releases", openedUrl)
+        assertEquals("https://github.com/LyraVoid/FinaSU/releases", openedUrl)
         assertFalse(installClicked)
     }
 

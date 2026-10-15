@@ -83,5 +83,5 @@ data class HomeActions(
     val onRetryRoot: () -> Unit = {},
     val onSusfs: () -> Unit = {},
 ) {
-    fun openManagerReleases() = onOpenUrl("https://github.com/LyraVoid/FolkSU/releases")
+    fun openManagerReleases() = onOpenUrl("https://github.com/LyraVoid/FinaSU/releases")
 }
