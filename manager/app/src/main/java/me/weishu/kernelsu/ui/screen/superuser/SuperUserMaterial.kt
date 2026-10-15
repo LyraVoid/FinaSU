@@ -37,9 +37,11 @@ import androidx.compose.material3.MenuDefaults
 import androidx.compose.material3.SelectableDropdownMenuItem
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.material3.pulltorefresh.PullToRefreshDefaults
 import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
+import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.material3.surfaceColorAtElevation
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -52,6 +54,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
@@ -59,12 +62,15 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import me.weishu.kernelsu.R
 import me.weishu.kernelsu.data.model.AppInfo
+import me.weishu.kernelsu.data.model.LayoutVariant
+import me.weishu.kernelsu.ui.LocalLayoutVariant
 import me.weishu.kernelsu.ui.component.AppIconImage
 import me.weishu.kernelsu.ui.component.ScrollToTopOnChange
 import me.weishu.kernelsu.ui.component.material.ExpressiveScaffold
 import me.weishu.kernelsu.ui.component.material.FolkIconButton
 import me.weishu.kernelsu.ui.component.material.SearchAppBar
 import me.weishu.kernelsu.ui.component.material.SegmentedColumn
+import me.weishu.kernelsu.ui.component.material.rememberSearchAppBarScrollBehavior
 import me.weishu.kernelsu.ui.component.material.SegmentedItem
 import me.weishu.kernelsu.ui.component.material.SegmentedListItem
 import me.weishu.kernelsu.ui.component.statustag.StatusTag
@@ -87,14 +93,21 @@ fun SuperUserPagerMaterial(
         localSearchText = uiState.searchStatus.searchText
     }
 
+    val m3eLayout = LocalLayoutVariant.current == LayoutVariant.M3E
+    val topAppBarScrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior(rememberTopAppBarState())
+    val searchBarScrollBehavior = rememberSearchAppBarScrollBehavior(topAppBarScrollBehavior)
+
     val haptic = LocalHapticFeedback.current
     val snackbarHostState = remember { SnackbarHostState() }
 
     ExpressiveScaffold(
         topBar = {
             SearchAppBar(
-                largeTitle = false,
-                topSearch = true,
+                largeTitle = m3eLayout,
+                topSearch = !m3eLayout,
+                inlineSearch = m3eLayout,
+                inlineSearchHint = stringResource(R.string.superuser_search_hint),
+                scrollBehavior = if (m3eLayout) searchBarScrollBehavior else null,
                 snackbarHostState = snackbarHostState,
                 title = { Text(stringResource(R.string.superuser)) },
                 searchText = localSearchText,
@@ -337,10 +350,20 @@ fun SuperUserPagerMaterial(
                 isBusy = { latestRefreshing.value },
             ) { latestGroupedApps.value }
 
+            val displayGroups =
+                if (m3eLayout && localSearchText.isNotBlank()) uiState.searchResults else uiState.groupedApps
+
             LazyColumn(
                 state = listState,
                 modifier = Modifier
-                    .fillMaxSize(),
+                    .fillMaxSize()
+                    .then(
+                        if (m3eLayout) {
+                            Modifier.nestedScroll(searchBarScrollBehavior.nestedScrollConnection)
+                        } else {
+                            Modifier
+                        }
+                    ),
                 verticalArrangement = Arrangement.spacedBy(2.dp),
                 contentPadding = PaddingValues(
                     start = 16.dp,
@@ -349,7 +372,7 @@ fun SuperUserPagerMaterial(
                     bottom = 16.dp + bottomInnerPadding
                 ),
             ) {
-                itemsIndexed(uiState.groupedApps, key = { _, item -> item.uid }) { index, group ->
+                itemsIndexed(displayGroups, key = { _, item -> item.uid }) { index, group ->
                     val expanded = expandedSearchUids.value.contains(group.uid)
                     val onToggleExpand = {
                         if (group.apps.size > 1) {
@@ -360,7 +383,7 @@ fun SuperUserPagerMaterial(
                             }
                         }
                     }
-                    SegmentedItem(index = index, count = uiState.groupedApps.size) {
+                    SegmentedItem(index = index, count = displayGroups.size) {
                         Column {
                             GroupItem(
                                 group = group,

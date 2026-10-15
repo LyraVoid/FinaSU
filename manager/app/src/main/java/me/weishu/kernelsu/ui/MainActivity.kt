@@ -270,6 +270,7 @@ open class MainActivity : FragmentActivity() {
                 LocalModuleDescriptionMaxLines provides uiState.moduleDescriptionMaxLines,
                 LocalHomeLayoutStyle provides uiState.homeLayoutStyle,
                 LocalSupportLinksStyle provides uiState.supportLinksStyle,
+                LocalLayoutVariant provides uiState.layoutVariant,
                 LocalWallpaperPage provides selectedMainPage,
                 LocalCapabilityState provides capability,
                 LocalAppAuthenticator provides authenticationSession.authenticator,

@@ -7,6 +7,7 @@ import me.weishu.kernelsu.data.model.FolkMountMode
 import me.weishu.kernelsu.data.model.FolkMountStatus
 import me.weishu.kernelsu.data.model.FolkZygiskStatus
 import me.weishu.kernelsu.data.model.HomeLayoutStyle
+import me.weishu.kernelsu.data.model.LayoutVariant
 import me.weishu.kernelsu.data.model.NomountStatus
 import me.weishu.kernelsu.data.model.SupportLinksStyle
 import me.weishu.kernelsu.data.model.SuiStatus
@@ -28,6 +29,7 @@ data class SettingsUiState(
     val homeLayoutStyle: String = HomeLayoutStyle.DEFAULT,
     val supportLinksStyle: String = SupportLinksStyle.DEFAULT,
     val themeStoreMode: String = ThemeStoreMode.UNSET,
+    val layoutVariant: String = LayoutVariant.DEFAULT,
 
     // Su Compat
     val suCompatStatus: String = "",
@@ -127,6 +129,7 @@ data class SettingsScreenActions(
     val onSetHomeLayoutStyle: (String) -> Unit,
     val onSetSupportLinksStyle: (String) -> Unit,
     val onSetThemeStoreMode: (String) -> Unit,
+    val onSetLayoutVariant: (String) -> Unit,
     val onSetEnableNavigationBadge: (Boolean) -> Unit,
     val onSetEnablePredictiveBack: (Boolean) -> Unit,
     val onSetPageScale: (Float) -> Unit,

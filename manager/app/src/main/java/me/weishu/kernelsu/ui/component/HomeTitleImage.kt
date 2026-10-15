@@ -17,6 +17,16 @@ import me.weishu.kernelsu.media.VisualMediaConfig
 import me.weishu.kernelsu.ui.theme.isInDarkTheme
 import me.weishu.kernelsu.wallpaper.AnimatedFileImage
 
+/**
+ * Whether a custom home title image is configured. When it is, the home page keeps the compact
+ * title so the image is not stretched by a large title.
+ */
+@Composable
+fun homeTitleImageActive(): Boolean {
+    val context = LocalContext.current
+    return VisualMediaConfig.titleEnabled && VisualMediaConfig.file(context, false) != null
+}
+
 @Composable
 fun HomeTitleImage() {
     val file = VisualMediaConfig.file(LocalContext.current, false)

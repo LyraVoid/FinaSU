@@ -2,6 +2,7 @@ package me.weishu.kernelsu.ui.screen.home
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.WindowInsetsSides
@@ -13,7 +14,11 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.LargeFlexibleTopAppBar
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.TopAppBarScrollBehavior
+import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AutoFixHigh
 import androidx.compose.material.icons.filled.Pause
@@ -26,6 +31,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.Dp
@@ -37,6 +43,9 @@ import me.weishu.kernelsu.media.MusicConfig
 import me.weishu.kernelsu.media.MusicManager
 import me.weishu.kernelsu.data.HomeMetrics
 import me.weishu.kernelsu.data.model.HomeLayoutStyle
+import me.weishu.kernelsu.data.model.LayoutVariant
+import me.weishu.kernelsu.ui.LocalLayoutVariant
+import me.weishu.kernelsu.ui.component.homeTitleImageActive
 import me.weishu.kernelsu.ui.component.material.ExpressiveScaffold
 import me.weishu.kernelsu.ui.component.material.expressiveTopAppBarColors
 import me.weishu.kernelsu.ui.component.rebootlistpopup.RebootListPopup
@@ -51,13 +60,18 @@ fun HomePagerMaterial(
     moduleEnabledCount: Int = 0,
     metrics: HomeMetrics = HomeMetrics(),
 ) {
+    // M3E gives the home page a large title, unless a custom title image is configured.
+    val largeTitle = LocalLayoutVariant.current == LayoutVariant.M3E && !homeTitleImageActive()
+    val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior(rememberTopAppBarState())
+
     ExpressiveScaffold(
-        topBar = { TopBar(state = state, actions = actions) },
+        topBar = { TopBar(state = state, actions = actions, largeTitle = largeTitle, scrollBehavior = scrollBehavior) },
         contentWindowInsets = WindowInsets.safeDrawing.only(WindowInsetsSides.Top + WindowInsetsSides.Horizontal)
     ) { innerPadding ->
         Column(
             modifier = Modifier
                 .padding(innerPadding)
+                .then(if (largeTitle) Modifier.nestedScroll(scrollBehavior.nestedScrollConnection) else Modifier)
                 .verticalScroll(rememberScrollState())
                 .padding(horizontal = 16.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp)
@@ -116,33 +130,50 @@ fun HomePagerMaterial(
 }
 
 @Composable
-private fun TopBar(state: HomeUiState, actions: HomeActions) {
-    TopAppBar(
-        title = { me.weishu.kernelsu.ui.component.HomeTitleImage() },
-        actions = {
-            if (state.susfs.detected) {
-                IconButton(onClick = actions.onSusfs) {
-                    Icon(androidx.compose.material.icons.Icons.Rounded.VisibilityOff, stringResource(R.string.susfs_title))
-                }
+private fun TopBar(
+    state: HomeUiState,
+    actions: HomeActions,
+    largeTitle: Boolean,
+    scrollBehavior: TopAppBarScrollBehavior,
+) {
+    val barActions: @Composable RowScope.() -> Unit = {
+        if (state.susfs.detected) {
+            IconButton(onClick = actions.onSusfs) {
+                Icon(androidx.compose.material.icons.Icons.Rounded.VisibilityOff, stringResource(R.string.susfs_title))
             }
-            if (MusicConfig.isMusicEnabled && MusicConfig.getMusicFile(LocalContext.current) != null) {
-                val playing by MusicManager.isPlaying.collectAsStateWithLifecycle()
-                IconButton(onClick = { MusicManager.toggle() }) {
-                    Icon(
-                        imageVector = if (playing) Icons.Filled.Pause else Icons.Filled.PlayArrow,
-                        contentDescription = stringResource(if (playing) R.string.media_pause else R.string.media_play),
-                    )
-                }
-            }
-            IconButton(onClick = actions.onInstallClick, enabled = !state.isLateLoadMode) {
+        }
+        if (MusicConfig.isMusicEnabled && MusicConfig.getMusicFile(LocalContext.current) != null) {
+            val playing by MusicManager.isPlaying.collectAsStateWithLifecycle()
+            IconButton(onClick = { MusicManager.toggle() }) {
                 Icon(
-                    imageVector = Icons.Filled.AutoFixHigh,
-                    contentDescription = stringResource(R.string.install),
+                    imageVector = if (playing) Icons.Filled.Pause else Icons.Filled.PlayArrow,
+                    contentDescription = stringResource(if (playing) R.string.media_pause else R.string.media_play),
                 )
             }
-            RebootListPopup()
-        },
-        colors = expressiveTopAppBarColors(),
-        windowInsets = WindowInsets.safeDrawing.only(WindowInsetsSides.Top + WindowInsetsSides.Horizontal),
-    )
+        }
+        IconButton(onClick = actions.onInstallClick, enabled = !state.isLateLoadMode) {
+            Icon(
+                imageVector = Icons.Filled.AutoFixHigh,
+                contentDescription = stringResource(R.string.install),
+            )
+        }
+        RebootListPopup()
+    }
+
+    if (largeTitle) {
+        LargeFlexibleTopAppBar(
+            title = { me.weishu.kernelsu.ui.component.HomeTitleImage() },
+            actions = barActions,
+            colors = expressiveTopAppBarColors(),
+            windowInsets = WindowInsets.safeDrawing.only(WindowInsetsSides.Top + WindowInsetsSides.Horizontal),
+            scrollBehavior = scrollBehavior,
+        )
+    } else {
+        TopAppBar(
+            title = { me.weishu.kernelsu.ui.component.HomeTitleImage() },
+            actions = barActions,
+            colors = expressiveTopAppBarColors(),
+            windowInsets = WindowInsets.safeDrawing.only(WindowInsetsSides.Top + WindowInsetsSides.Horizontal),
+        )
+    }
 }

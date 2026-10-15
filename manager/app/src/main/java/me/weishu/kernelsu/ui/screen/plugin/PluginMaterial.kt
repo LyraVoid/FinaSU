@@ -50,6 +50,8 @@ import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
+import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.material3.pulltorefresh.PullToRefreshDefaults
 import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
@@ -66,6 +68,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalHapticFeedback
@@ -77,10 +80,12 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import me.weishu.kernelsu.R
+import me.weishu.kernelsu.data.model.LayoutVariant
 import me.weishu.kernelsu.data.model.Plugin
 import me.weishu.kernelsu.data.model.PluginConfigField
 import me.weishu.kernelsu.modulebanner.ModuleCardConfig
 import me.weishu.kernelsu.modulebanner.PluginBannerSlot
+import me.weishu.kernelsu.ui.LocalLayoutVariant
 import me.weishu.kernelsu.ui.component.ScrollToTopOnChange
 import me.weishu.kernelsu.ui.component.bottombar.LocalFloatingBarReservedHeight
 import me.weishu.kernelsu.ui.component.bottombar.LocalFloatingBarVisible
@@ -95,6 +100,7 @@ import me.weishu.kernelsu.ui.component.material.FolkIconButton
 import me.weishu.kernelsu.ui.component.material.FolkSmallExtendedFloatingActionButton
 import me.weishu.kernelsu.ui.component.material.FolkTextButton
 import me.weishu.kernelsu.ui.component.material.SearchAppBar
+import me.weishu.kernelsu.ui.component.material.rememberSearchAppBarScrollBehavior
 import me.weishu.kernelsu.ui.component.material.SegmentedColumn
 import me.weishu.kernelsu.ui.component.material.SegmentedItemContainer
 import me.weishu.kernelsu.ui.component.material.SegmentedListItem
@@ -122,6 +128,10 @@ fun PluginPagerMaterial(
     val searchListState = rememberLazyListState()
     val refreshTick = remember { mutableIntStateOf(0) }
     var searchText by rememberSaveable { mutableStateOf("") }
+
+    val m3eLayout = LocalLayoutVariant.current == LayoutVariant.M3E
+    val topAppBarScrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior(rememberTopAppBarState())
+    val searchBarScrollBehavior = rememberSearchAppBarScrollBehavior(topAppBarScrollBehavior)
     val threshold = with(LocalDensity.current) { 100.dp.toPx() }
     val fabExpanded by remember {
         var lastIndex = 0
@@ -171,8 +181,11 @@ fun PluginPagerMaterial(
     ExpressiveScaffold(
         topBar = {
             SearchAppBar(
-                largeTitle = false,
-                topSearch = true,
+                largeTitle = m3eLayout,
+                topSearch = !m3eLayout,
+                inlineSearch = m3eLayout,
+                inlineSearchHint = stringResource(R.string.plugin_search_hint),
+                scrollBehavior = if (m3eLayout) searchBarScrollBehavior else null,
                 title = { Text(stringResource(R.string.plugin)) },
                 searchText = searchText,
                 onSearchTextChange = { searchText = it },
@@ -274,8 +287,17 @@ fun PluginPagerMaterial(
             ) { latestPlugins.value }
             PluginList(
                 bottomInnerPadding = bottomInnerPadding,
+                modifier = if (m3eLayout) {
+                    Modifier.nestedScroll(searchBarScrollBehavior.nestedScrollConnection)
+                } else {
+                    Modifier
+                },
                 listState = listState,
-                displayPlugins = uiState.plugins,
+                displayPlugins = if (m3eLayout && searchText.isNotBlank()) {
+                    uiState.plugins.matching(searchText)
+                } else {
+                    uiState.plugins
+                },
                 pending = uiState.pending,
                 actions = actions,
             )

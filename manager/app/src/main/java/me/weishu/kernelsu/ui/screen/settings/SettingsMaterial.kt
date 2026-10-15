@@ -19,9 +19,13 @@ import androidx.compose.material.icons.filled.Collections
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material3.Icon
+import androidx.compose.material3.LargeFlexibleTopAppBar
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.TopAppBarScrollBehavior
+import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -30,10 +34,13 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import me.weishu.kernelsu.R
+import me.weishu.kernelsu.data.model.LayoutVariant
+import me.weishu.kernelsu.ui.LocalLayoutVariant
 import me.weishu.kernelsu.ui.component.material.ExpressiveScaffold
 import me.weishu.kernelsu.ui.component.material.SegmentedColumn
 import me.weishu.kernelsu.ui.component.material.SegmentedListItem
@@ -65,6 +72,9 @@ fun SettingPagerMaterial(
     var showBottomSheet by remember { mutableStateOf(false) }
     var showProfileEditor by remember { mutableStateOf(false) }
 
+    val largeTitle = LocalLayoutVariant.current == LayoutVariant.M3E
+    val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior(rememberTopAppBarState())
+
     UninstallDialog(
         show = showUninstallDialog.value,
         onDismissRequest = { showUninstallDialog.value = false }
@@ -76,7 +86,7 @@ fun SettingPagerMaterial(
 
     ExpressiveScaffold(
         topBar = {
-            TopBar()
+            TopBar(largeTitle = largeTitle, scrollBehavior = scrollBehavior)
         },
         snackbarHost = { SnackBarHost(hostState = snackBarHost, modifier = Modifier.padding(bottom = bottomInnerPadding)) },
         contentWindowInsets = WindowInsets.safeDrawing.only(WindowInsetsSides.Top + WindowInsetsSides.Horizontal)
@@ -85,6 +95,7 @@ fun SettingPagerMaterial(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(paddingValues)
+                .then(if (largeTitle) Modifier.nestedScroll(scrollBehavior.nestedScrollConnection) else Modifier)
                 .wrapContentWidth(Alignment.CenterHorizontally)
                 .widthIn(max = SettingsContentMaxWidth)
                 .verticalScroll(rememberScrollState())
@@ -179,10 +190,19 @@ fun SettingPagerMaterial(
 }
 
 @Composable
-private fun TopBar() {
-    TopAppBar(
-        title = { Text(stringResource(R.string.settings)) },
-        colors = expressiveTopAppBarColors(),
-        windowInsets = WindowInsets.safeDrawing.only(WindowInsetsSides.Top + WindowInsetsSides.Horizontal),
-    )
+private fun TopBar(largeTitle: Boolean, scrollBehavior: TopAppBarScrollBehavior) {
+    if (largeTitle) {
+        LargeFlexibleTopAppBar(
+            title = { Text(stringResource(R.string.settings)) },
+            colors = expressiveTopAppBarColors(),
+            windowInsets = WindowInsets.safeDrawing.only(WindowInsetsSides.Top + WindowInsetsSides.Horizontal),
+            scrollBehavior = scrollBehavior,
+        )
+    } else {
+        TopAppBar(
+            title = { Text(stringResource(R.string.settings)) },
+            colors = expressiveTopAppBarColors(),
+            windowInsets = WindowInsets.safeDrawing.only(WindowInsetsSides.Top + WindowInsetsSides.Horizontal),
+        )
+    }
 }

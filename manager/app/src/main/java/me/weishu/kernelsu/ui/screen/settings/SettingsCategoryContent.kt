@@ -27,6 +27,7 @@ import androidx.compose.material.icons.filled.SystemUpdateAlt
 import androidx.compose.material.icons.filled.Translate
 import androidx.compose.material.icons.filled.VerifiedUser
 import androidx.compose.material.icons.filled.Wallpaper
+import androidx.compose.material.icons.rounded.SpaceDashboard
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -42,6 +43,7 @@ import me.weishu.kernelsu.R
 import me.weishu.kernelsu.data.model.FolkMountMode
 import me.weishu.kernelsu.data.model.FolkMountProvider
 import me.weishu.kernelsu.data.model.HomeLayoutStyle
+import me.weishu.kernelsu.data.model.LayoutVariant
 import me.weishu.kernelsu.data.model.NomountDriverState
 import me.weishu.kernelsu.data.model.SupportLinksStyle
 import me.weishu.kernelsu.data.themestore.ThemeStoreMode
@@ -223,6 +225,31 @@ fun AppearanceCategoryContent(uiState: SettingsUiState, actions: SettingsScreenA
                     leadingContent = { Icon(Icons.Filled.Apps, stringResource(id = R.string.settings_launcher_icon)) },
                     trailingContent = {
                         Icon(Icons.AutoMirrored.Filled.KeyboardArrowRight, null)
+                    }
+                )
+            }
+            add {
+                val supportedLayoutVariants = LayoutVariant.supported
+                val layoutVariantItems = supportedLayoutVariants.map { variant ->
+                    stringResource(
+                        when (variant) {
+                            LayoutVariant.M3E -> R.string.settings_layout_variant_m3e
+                            else -> R.string.settings_layout_variant_default
+                        }
+                    )
+                }
+                val selectedLayoutVariant =
+                    supportedLayoutVariants.indexOf(uiState.layoutVariant).coerceAtLeast(0)
+                SegmentedDropdownItem(
+                    icon = Icons.Rounded.SpaceDashboard,
+                    title = stringResource(id = R.string.settings_layout_variant),
+                    summary = stringResource(id = R.string.settings_layout_variant_summary),
+                    items = layoutVariantItems,
+                    selectedIndex = selectedLayoutVariant,
+                    onItemSelected = { index ->
+                        actions.onSetLayoutVariant(
+                            supportedLayoutVariants.getOrElse(index) { LayoutVariant.DEFAULT }
+                        )
                     }
                 )
             }

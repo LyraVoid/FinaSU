@@ -73,10 +73,12 @@ import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.SnackbarResult
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.material3.pulltorefresh.PullToRefreshDefaults
 import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.material3.rememberBottomSheetState
+import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
@@ -94,6 +96,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.layout.FixedScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
@@ -111,11 +114,13 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
 import me.weishu.kernelsu.R
+import me.weishu.kernelsu.data.model.LayoutVariant
 import me.weishu.kernelsu.data.model.Module
 import me.weishu.kernelsu.data.model.ModuleUpdateInfo
 import me.weishu.kernelsu.data.security.SecurityTarget
 import me.weishu.kernelsu.data.repository.isSoftRebootPreferred
 import me.weishu.kernelsu.modulebanner.ModuleCardConfig
+import me.weishu.kernelsu.ui.LocalLayoutVariant
 import me.weishu.kernelsu.ui.component.ObserveAsEvents
 import me.weishu.kernelsu.ui.component.ScrollToTopOnChange
 import me.weishu.kernelsu.ui.component.card.CardBannerDialog
@@ -130,6 +135,7 @@ import me.weishu.kernelsu.ui.component.material.FolkSmallExtendedFloatingActionB
 import me.weishu.kernelsu.ui.component.material.FolkTextButton
 import me.weishu.kernelsu.ui.component.material.SearchAppBar
 import me.weishu.kernelsu.ui.component.material.SnackBarHost
+import me.weishu.kernelsu.ui.component.material.rememberSearchAppBarScrollBehavior
 import me.weishu.kernelsu.ui.component.module.splicedLazyColumnGroup
 import me.weishu.kernelsu.ui.component.module.TwoColumnGrid
 import me.weishu.kernelsu.ui.util.reboot
@@ -154,6 +160,10 @@ fun ModulePagerMaterial(
 
     val listState = rememberLazyListState()
     val searchListState = rememberLazyListState()
+
+    val m3eLayout = LocalLayoutVariant.current == LayoutVariant.M3E
+    val topAppBarScrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior(rememberTopAppBarState())
+    val searchBarScrollBehavior = rememberSearchAppBarScrollBehavior(topAppBarScrollBehavior)
     val refreshTick = remember { mutableIntStateOf(0) }
     val threshold = with(LocalDensity.current) { 100.dp.toPx() }
     val fabExpanded by remember {
@@ -266,8 +276,11 @@ fun ModulePagerMaterial(
     ExpressiveScaffold(
         topBar = {
             SearchAppBar(
-                largeTitle = false,
-                topSearch = true,
+                largeTitle = m3eLayout,
+                topSearch = !m3eLayout,
+                inlineSearch = m3eLayout,
+                inlineSearchHint = stringResource(R.string.module_search_hint),
+                scrollBehavior = if (m3eLayout) searchBarScrollBehavior else null,
                 title = { Text(stringResource(R.string.module)) },
                 searchText = uiState.searchStatus.searchText,
                 onSearchTextChange = actions.onSearchTextChange,
@@ -422,10 +435,20 @@ fun ModulePagerMaterial(
                 refreshTick.intValue,
                 isBusy = { latestRefreshing.value },
             ) { latestModuleList.value }
+
+            val m3eSearchQuery = uiState.searchStatus.searchText
+            val displayModules =
+                if (m3eLayout && m3eSearchQuery.isNotBlank()) uiState.searchResults else uiState.moduleList
+
             ModuleList(
                 bottomInnerPadding = bottomInnerPadding,
+                modifier = if (m3eLayout) {
+                    Modifier.nestedScroll(searchBarScrollBehavior.nestedScrollConnection)
+                } else {
+                    Modifier
+                },
                 listState = listState,
-                displayModules = uiState.moduleList,
+                displayModules = displayModules,
                 updateInfoMap = uiState.updateInfo,
                 actions = actions,
                 onModuleAddShortcut = { module, type -> onModuleAddShortcut(module, type) },
