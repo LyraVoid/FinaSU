@@ -15,6 +15,7 @@
 #endif
 
 #include "feature/sulog.h"
+#include "kallrecon/dynsym.h"
 #include "infra/event_queue.h"
 #include "klog.h" // IWYU pragma: keep
 #include "sulog/event.h"
@@ -95,7 +96,7 @@ static void ksu_sulog_fill_task_info(struct ksu_sulog_event *event, __u16 event_
     event->retval = retval;
     event->pid = task_pid_nr(current);
     event->tgid = task_tgid_nr(current);
-    event->ppid = task_ppid_nr(current);
+    event->ppid = task_ppid_nr_ns(current, ksu_init_pid_ns());
     event->uid = current_uid().val;
     event->euid = current_euid().val;
     get_task_comm(event->comm, current);

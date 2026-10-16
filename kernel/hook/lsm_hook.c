@@ -148,7 +148,7 @@ int ksu_lsm_hook(struct ksu_lsm_hook *hook)
     if (scalls_count == 0) {
         unsigned long sym_size = sizeof(struct lsm_static_calls_table);
         u32 lsm_active_cnt = 5;
-        if (!kallsyms_lookup_size_offset(scalls_addr, &sym_size, NULL)) {
+        if (!ksu_lookup_size_offset(scalls_addr, &sym_size)) {
             pr_err("failed to get size\n");
         }
         unsigned long addr = find_kernel_symbol_exact("lsm_active_cnt");
@@ -284,7 +284,7 @@ int ksu_lsm_hook(struct ksu_lsm_hook *hook)
         goto out_unlock;
     }
     unsigned long heads_size = sizeof(struct security_hook_heads);
-    if (!kallsyms_lookup_size_offset(heads_addr, &heads_size, NULL)) {
+    if (!ksu_lookup_size_offset(heads_addr, &heads_size)) {
         pr_warn("lookup head size failed");
     }
 

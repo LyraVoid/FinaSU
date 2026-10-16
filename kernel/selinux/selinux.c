@@ -5,6 +5,7 @@
 #include "linux/version.h"
 #include "klog.h" // IWYU pragma: keep
 #include "ksu.h"
+#include "kallrecon/dynsym.h"
 
 /*
  * Cached SID values for frequently checked contexts.
@@ -33,7 +34,7 @@ static int transive_to_domain(const char *domain, struct cred *cred, bool clear_
 #else
     struct cred_security_struct *tsec;
 #endif
-    tsec = selinux_cred(cred);
+    tsec = ksu_selinux_cred(cred);
     if (!tsec) {
         pr_err("tsec == NULL!\n");
         return -1;
@@ -72,20 +73,20 @@ void setup_ksu_cred(void)
 void setenforce(bool enforce)
 {
 #ifdef CONFIG_SECURITY_SELINUX_DEVELOP
-    selinux_state.enforcing = enforce;
+    ksu_selinux_state->enforcing = enforce;
 #endif
 }
 
 bool getenforce(void)
 {
 #ifdef CONFIG_SECURITY_SELINUX_DISABLE
-    if (selinux_state.disabled) {
+    if (ksu_selinux_state->disabled) {
         return false;
     }
 #endif
 
 #ifdef CONFIG_SECURITY_SELINUX_DEVELOP
-    return selinux_state.enforcing;
+    return ksu_selinux_state->enforcing;
 #else
     return true;
 #endif
@@ -170,9 +171,9 @@ static bool is_sid_match(const struct cred *cred, u32 cached_sid, const char *fa
         return false;
     }
 #if LINUX_VERSION_CODE < KERNEL_VERSION(6, 18, 0)
-    const struct task_security_struct *tsec = selinux_cred(cred);
+    const struct task_security_struct *tsec = ksu_selinux_cred(cred);
 #else
-    const struct cred_security_struct *tsec = selinux_cred(cred);
+    const struct cred_security_struct *tsec = ksu_selinux_cred(cred);
 #endif
     if (!tsec) {
         return false;

@@ -16,7 +16,8 @@
 #include <uapi/linux/mount.h>
 
 #include "arch.h"
-#include "klog.h" // IWYU pragma: keep
+#include "klog.h"
+#include "kallrecon/dynsym.h" // IWYU pragma: keep
 #include "ksu.h"
 #include "infra/su_mount_ns.h"
 #include "util.h"
@@ -54,7 +55,7 @@ try_setns:
     rcu_read_lock();
     // &init_task is not init, but swapper/idle, which forks the init process
     // so we need find init process
-    struct pid *pid_struct = find_pid_ns(1, &init_pid_ns);
+    struct pid *pid_struct = find_pid_ns(1, ksu_init_pid_ns());
     if (unlikely(!pid_struct)) {
         rcu_read_unlock();
         pr_warn("failed to find pid_struct for PID 1\n");
@@ -68,7 +69,7 @@ try_setns:
         goto out;
     }
     struct path ns_path;
-    long ret = ns_get_path(&ns_path, pid1_task, &mntns_operations);
+    long ret = ns_get_path(&ns_path, pid1_task, ksu_mntns_operations);
     put_task_struct(pid1_task);
     if (ret) {
         pr_warn("failed get path for init mount namespace: %ld\n", ret);

@@ -12,7 +12,8 @@
 #include <linux/compat.h>
 
 #include "arch.h"
-#include "klog.h" // IWYU pragma: keep
+#include "klog.h"
+#include "kallrecon/dynsym.h" // IWYU pragma: keep
 #include "hook/syscall_hook_manager.h"
 #include "hook/tp_marker.h"
 #include "feature/sucompat.h"
@@ -143,7 +144,7 @@ void __init ksu_syscall_hook_manager_init(void)
     ksu_register_syscall_hook(__NR_faccessat, ksu_hook_faccessat);
 
 #ifdef CONFIG_HAVE_SYSCALL_TRACEPOINTS
-    ret = register_trace_prio_sys_enter(ksu_sys_enter_handler, NULL, INT_MIN);
+    ret = tracepoint_probe_register_prio(ksu_tracepoint_sys_enter, (void *)ksu_sys_enter_handler, NULL, INT_MIN);
 #ifndef CONFIG_KRETPROBES
     ksu_mark_running_process_locked();
 #endif
@@ -162,8 +163,8 @@ void __exit ksu_syscall_hook_manager_exit(void)
 {
     pr_info("hook_manager: ksu_hook_manager_exit called\n");
 #ifdef CONFIG_HAVE_SYSCALL_TRACEPOINTS
-    unregister_trace_sys_enter(ksu_sys_enter_handler, NULL);
-    tracepoint_synchronize_unregister();
+    tracepoint_probe_unregister(ksu_tracepoint_sys_enter, (void *)ksu_sys_enter_handler, NULL);
+    ksu_tracepoint_synchronize_unregister();
     pr_info("hook_manager: sys_enter tracepoint unregistered\n");
 #endif
 

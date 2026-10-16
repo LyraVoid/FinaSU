@@ -9,7 +9,8 @@
 #include "arch.h" // IWYU pragma: keep
 #include "policy/allowlist.h"
 #include "policy/feature.h"
-#include "klog.h" // IWYU pragma: keep
+#include "klog.h"
+#include "kallrecon/dynsym.h" // IWYU pragma: keep
 #include "ksu.h"
 #include "runtime/ksud_boot.h"
 #include "feature/kernel_umount.h"
@@ -682,12 +683,12 @@ static int do_set_init_pgrp(void __user *arg)
     struct pid *pids[PIDTYPE_MAX] = { 0 };
 #endif
 
-    write_lock_irq(&tasklist_lock);
+    write_lock_irq(ksu_tasklist_lock);
     struct task_struct *p = current->group_leader;
-    struct pid *init_group = task_pgrp(&init_task);
+    struct pid *init_group = task_pgrp(ksu_init_task());
 
     err = -EPERM;
-    if (task_session(p) != task_session(&init_task))
+    if (task_session(p) != task_session(ksu_init_task()))
         goto out;
 
     err = 0;
@@ -700,7 +701,7 @@ static int do_set_init_pgrp(void __user *arg)
     }
 
 out:
-    write_unlock_irq(&tasklist_lock);
+    write_unlock_irq(ksu_tasklist_lock);
 #if LINUX_VERSION_CODE >= KERNEL_VERSION(6, 15, 0)
     free_pids(pids);
 #endif

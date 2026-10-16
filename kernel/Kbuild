@@ -26,6 +26,24 @@ kernelsu-objs += infra/event_queue.o
 kernelsu-objs += infra/seccomp_cache.o
 kernelsu-objs += infra/su_mount_ns.o
 kernelsu-objs += infra/symbol_resolver.o
+kernelsu-objs += kallrecon/dynsym.o
+ifdef KBUILD_EXTMOD
+kernelsu-objs += kallrecon/dynsym_shim.o
+ifeq ($(CONFIG_ARM64),y)
+kernelsu-objs += kallrecon/dynsym_data.o
+endif
+endif
+
+kernelsu-objs += kallrecon/core.o
+kernelsu-objs += kallrecon/access.o
+kernelsu-objs += kallrecon/discover.o
+kernelsu-objs += kallrecon/symbol.o
+kernelsu-objs += kallrecon/slide.o
+kernelsu-objs += kallrecon/fastboot.o
+kernelsu-objs += kallrecon/hint.o
+kernelsu-objs += kallrecon/variant.o
+kernelsu-objs += kallrecon/shim.o
+kernelsu-objs += kallrecon/anchor.o
 
 ifneq ($(CONFIG_KSU_DISABLE_MANAGER),y)
 kernelsu-objs += manager/apk_sign.o
@@ -198,6 +216,6 @@ ccflags-y += -DKSU_PRESET_MANAGER_MASK=$(KSU_PRESET_MANAGER_MASK)
 ccflags-y += -DKSU_NEW_DCACHE_FLUSH=$(KSU_NEW_DCACHE_FLUSH)
 
 ccflags-y += -Wno-strict-prototypes -Wno-int-conversion -Wno-gcc-compat -Wno-missing-prototypes
-ccflags-y += -Wno-declaration-after-statement -Wno-unused-function
+ccflags-y += -Wno-declaration-after-statement -Wno-unused-function -Wno-unused-variable
 
 # Keep a new line here!! Because someone may append config

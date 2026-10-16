@@ -30,6 +30,7 @@
 #include "feature/selinux_hide.h"
 #include "feature/avc_spoof.h"
 #include "infra/symbol_resolver.h"
+#include "kallrecon/dynsym.h"
 
 #if defined(__x86_64__) && !defined(CONFIG_KSU_X86_PATCH_SYSCALL_DISPATCHER)
 #include <asm/cpufeature.h>
@@ -129,13 +130,15 @@ int __init kernelsu_init(void)
         pr_alert("shell is allowed at init!");
     }
 
+    ksu_init_symbol_resolver();
+    ksu_dynsym_init();
+
     ksu_cred = prepare_creds();
     if (!ksu_cred) {
         pr_err("prepare cred failed!\n");
         return -ENOSYS;
     }
 
-    ksu_init_symbol_resolver();
     ksu_syscall_hook_init();
 
     ksu_feature_init();

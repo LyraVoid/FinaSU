@@ -7,7 +7,8 @@
 
 #include <linux/cache.h>
 #include "../patch_memory.h"
-#include "klog.h" // IWYU pragma: keep
+#include "klog.h"
+#include "kallrecon/dynsym.h" // IWYU pragma: keep
 #include <linux/cpumask.h>
 #include <linux/gfp.h> // IWYU pragma: keep
 #include <linux/uaccess.h>
@@ -29,7 +30,7 @@
 // init_mm page tables.
 unsigned long phys_from_virt(unsigned long addr, int *err)
 {
-    struct mm_struct *mm = &init_mm;
+    struct mm_struct *mm = ksu_init_mm;
     pgd_t *pgd;
     p4d_t *p4d;
     pud_t *pud;
@@ -167,12 +168,12 @@ static int ksu_patch_text_cb(void *arg)
     int ret = 0;
 
     /* The last CPU becomes master */
-    if (atomic_inc_return(&pp->cpu_count) == num_online_cpus()) {
+    if (atomic_inc_return(&pp->cpu_count) == ksu_num_online_cpus()) {
         ret = ksu_patch_text_nosync(dst, src, len, flags);
         /* Notify other processors with an additional increment. */
         atomic_inc(&pp->cpu_count);
     } else {
-        while (atomic_read(&pp->cpu_count) <= num_online_cpus())
+        while (atomic_read(&pp->cpu_count) <= ksu_num_online_cpus())
             cpu_relax();
         ksu_isb();
     }
@@ -190,7 +191,7 @@ int ksu_patch_text(void *dst, void *src, size_t len, int flags)
         .flags = flags,
     };
 
-    return stop_machine(ksu_patch_text_cb, &info, cpu_online_mask);
+    return stop_machine(ksu_patch_text_cb, &info, ksu_cpu_online_mask());
 }
 
 // TODO:

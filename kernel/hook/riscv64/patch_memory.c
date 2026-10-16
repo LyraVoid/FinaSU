@@ -16,6 +16,7 @@
 #endif
 
 #include "infra/symbol_resolver.h"
+#include "kallrecon/dynsym.h"
 #include "../patch_memory.h"
 #include "insn.h"
 
@@ -117,11 +118,11 @@ static int patch_cpu(void *data)
 {
     struct patch_info *info = data;
 
-    if (atomic_inc_return(&info->arrived) == num_online_cpus()) {
+    if (atomic_inc_return(&info->arrived) == ksu_num_online_cpus()) {
         info->result = write_patch(info);
         atomic_inc_return_release(&info->arrived);
     } else {
-        while (atomic_read_acquire(&info->arrived) <= num_online_cpus())
+        while (atomic_read_acquire(&info->arrived) <= ksu_num_online_cpus())
             cpu_relax();
     }
     /* CPU data writes are coherent. Do not invoke remote fence IPIs while
@@ -153,7 +154,7 @@ int ksu_patch_text(void *dst, void *src, size_t len, int flags)
         return -ENOENT;
     cpus_read_lock();
     mutex_lock(text_lock);
-    ret = stop_machine_cpuslocked(patch_cpu, &info, cpu_online_mask);
+    ret = stop_machine_cpuslocked(patch_cpu, &info, ksu_cpu_online_mask());
     mutex_unlock(text_lock);
     cpus_read_unlock();
     return ret ? ret : info.result;

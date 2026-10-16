@@ -244,7 +244,7 @@ void __init ksu_app_profile_init(void)
     int ret;
     void *raw_spin_lock_irq_sym = find_kernel_symbol_exact("_raw_spin_lock_irq");
     void *seccomp_filter_release_sym = find_kernel_symbol_exact("seccomp_filter_release");
-    ret = kallsyms_lookup_size_offset(seccomp_filter_release_sym, &size, NULL);
+    ret = ksu_lookup_size_offset(seccomp_filter_release_sym, &size);
     if (!ret || !size) {
         pr_err("failed to get size of seccomp_filter_release: %d, use 128\n", ret);
         size = 128;
