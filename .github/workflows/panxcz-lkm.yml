@@ -1,0 +1,232 @@
+name: PanxCZ FinaSU LKM manager (android12-5.10)
+
+# One KMI, one ABI: this fork exists to install root on an X6833B running GKI
+# android12-5.10, with the SUSFS 2.3.0 guard already in the ramdisk patch.
+#
+#   kernelsu.ko  built in the DDK container, trusting THIS repo's signing key
+#   ksuinit      built from this tree, patched to load /susfs_guard_lkm.ko
+#   susfs guard  v2.3.0 r18.4, embedded as an asset and written by boot-patch
+#   ksud         built from this tree, with all three embedded
+#   APK          manager signed with the same key the module trusts
+
+on:
+  workflow_dispatch:
+
+env:
+  KMI: android12-5.10
+  GUARD_TAG: v2.3.0-r18.4
+  GUARD_REPO: inforcqb/susfs4ksu-lkm
+  DDK_IMAGE: ghcr.io/ylarod/ddk-min:android12-5.10-20260828
+
+jobs:
+  cert:
+    name: signing certificate the module will trust
+    runs-on: ubuntu-22.04
+    outputs:
+      size: ${{ steps.cert.outputs.size }}
+      hash: ${{ steps.cert.outputs.hash }}
+    steps:
+      - name: Extract certificate size and hash
+        id: cert
+        env:
+          KEYSTORE_B64: ${{ secrets.KEYSTORE }}
+          STORE_PASS: ${{ secrets.KEYSTORE_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
+        run: |
+          set -euo pipefail
+          test -n "$KEYSTORE_B64" || { echo "KEYSTORE secret is not set"; exit 1; }
+          printf '%s' "$KEYSTORE_B64" | base64 -d > key.jks
+          keytool -exportcert -alias "$KEY_ALIAS" -keystore key.jks \
+            -storepass "$STORE_PASS" -file cert.der >/dev/null
+          size=$(stat -c%s cert.der)
+          hash=$(sha256sum cert.der | cut -d' ' -f1)
+          echo "size=$(printf '0x%04x' "$size")" >> "$GITHUB_OUTPUT"
+          echo "hash=$hash" >> "$GITHUB_OUTPUT"
+          echo "module will trust: size=$(printf '0x%04x' "$size") sha256=$hash"
+
+  kernelsu:
+    name: kernelsu.ko
+    needs: cert
+    runs-on: ubuntu-22.04
+    container:
+      image: ghcr.io/ylarod/ddk-min:android12-5.10-20260828
+      options: --privileged
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Build the module
+        working-directory: kernel
+        run: |
+          set -euo pipefail
+          git config --global --add safe.directory '*'
+          make clean >/dev/null 2>&1 || true
+          CONFIG_KSU=m CC=clang make -j"$(nproc)" \
+            KSU_REQUIRE_PREINIT=1 \
+            KSU_EXPECTED_SIZE2="${{ needs.cert.outputs.size }}" \
+            KSU_EXPECTED_HASH2="${{ needs.cert.outputs.hash }}" \
+            KSU_SECOND_SIGNATURE_RELEASE=1
+          test -s kernelsu.ko
+          modinfo kernelsu.ko
+          llvm-strip -d kernelsu.ko
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: kernelsu-ko
+          path: kernel/kernelsu.ko
+          if-no-files-found: error
+
+  manager:
+    name: ksud + APK
+    needs: [cert, kernelsu]
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: kernelsu-ko
+          path: kernel
+
+      - name: Fetch the SUSFS guard LKM
+        run: |
+          set -euo pipefail
+          base="https://github.com/$GUARD_REPO/releases/download/$GUARD_TAG"
+          curl -sSL -o guard.ko "$base/susfs_guard_lkm-${KMI}.ko"
+          modinfo guard.ko
+          test "$(modinfo -F name guard.ko)" = susfs_guard_lkm
+          case "$(modinfo -F vermagic guard.ko)" in
+            5.10.*) ;;
+            *) echo "guard vermagic is not 5.10"; exit 1 ;;
+          esac
+
+      - name: Apply the ksuinit guard-loading patch
+        run: |
+          set -euo pipefail
+          git apply --verbose panxcz/ksuinit-load-susfs-guard.patch
+          grep -n 'susfs_guard_lkm.ko' userspace/ksuinit/src/init.rs
+
+      - name: Setup Rust and NDK
+        run: |
+          rustup update stable
+          rustup target add aarch64-linux-android
+      - uses: nttld/setup-ndk@v1
+        id: ndk
+        with:
+          ndk-version: r29
+
+      - uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: . -> target
+          cache-targets: false
+
+      - name: Build ksuinit (static, guard-aware)
+        env:
+          ANDROID_NDK_HOME: ${{ steps.ndk.outputs.ndk-path }}
+        run: |
+          set -euo pipefail
+          source .github/scripts/setup-rust-build.sh aarch64-linux-android 26
+          BUILTINS="$($CLANG_PATH --print-resource-dir)/lib/linux/libclang_rt.builtins-aarch64-android.a"
+          test -f "$BUILTINS"
+          export RUSTFLAGS="-C target-feature=+crt-static -C link-arg=-Wl,-z,max-page-size=16384 -C link-arg=-Wno-unused-command-line-argument -C link-arg=$BUILTINS"
+          cargo build --package ksuinit --target=aarch64-linux-android --release
+          file target/aarch64-linux-android/release/ksuinit | tee /tmp/ksuinit.file
+          grep -q 'statically linked' /tmp/ksuinit.file
+
+      - name: Stage the assets ksud embeds
+        run: |
+          set -euo pipefail
+          mkdir -p userspace/ksud/bin/aarch64
+          cp kernel/kernelsu.ko "userspace/ksud/bin/aarch64/${KMI}_kernelsu.ko"
+          cp guard.ko "userspace/ksud/bin/aarch64/${KMI}_susfs_guard.ko"
+          cp target/aarch64-linux-android/release/ksuinit userspace/ksud/bin/aarch64/ksuinit
+          ls -la userspace/ksud/bin/aarch64
+
+      - name: Build ksud
+        env:
+          ANDROID_NDK_HOME: ${{ steps.ndk.outputs.ndk-path }}
+        run: |
+          set -euo pipefail
+          source .github/scripts/setup-rust-build.sh aarch64-linux-android 26
+          cargo build --target aarch64-linux-android --release \
+            --manifest-path ./userspace/ksud/Cargo.toml
+          file target/aarch64-linux-android/release/ksud
+
+      - name: Build the manager APK
+        env:
+          ORG_GRADLE_PROJECT_KEYSTORE_FILE: ${{ github.workspace }}/key.jks
+          ORG_GRADLE_PROJECT_KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
+          ORG_GRADLE_PROJECT_KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
+          ORG_GRADLE_PROJECT_KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
+        run: |
+          set -euo pipefail
+          printf '%s' "${{ secrets.KEYSTORE }}" | base64 -d > key.jks
+          test -s key.jks
+          cd manager
+          ./gradlew --no-daemon clean assembleRelease
+
+      - name: Repack ksud into the APK and re-sign
+        env:
+          KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
+          KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
+        run: |
+          set -euo pipefail
+          python3 repack_apk.py repack \
+            -b release -t release -a arm64-v8a \
+            -K key.jks -A "$KEY_ALIAS" \
+            -P "$KEYSTORE_PASSWORD" -S "$KEY_PASSWORD" \
+            --strip
+          ls -la dist
+
+      - name: Verify the APK is the one this module trusts
+        env:
+          EXPECTED_HASH: ${{ needs.cert.outputs.hash }}
+          EXPECTED_SIZE: ${{ needs.cert.outputs.size }}
+        run: |
+          set -euo pipefail
+          apk=$(ls dist/*.apk | head -1)
+          python3 - "$apk" "$EXPECTED_HASH" "$EXPECTED_SIZE" <<'PY'
+          import hashlib, struct, sys
+          path, want_hash, want_size = sys.argv[1], sys.argv[2], int(sys.argv[3], 16)
+          data = open(path, 'rb').read()
+          eocd = data.rfind(b'PK\x05\x06')
+          cd_off = struct.unpack_from('<I', data, eocd + 16)[0]
+          assert data[cd_off - 16:cd_off] == b'APK Sig Block 42'
+          block_size = struct.unpack_from('<Q', data, cd_off - 24)[0]
+          start = cd_off - 8 - block_size
+          pos, end, v2 = start + 8, cd_off - 24, None
+          while pos < end:
+              pair_len = struct.unpack_from('<Q', data, pos)[0]
+              if struct.unpack_from('<I', data, pos + 8)[0] == 0x7109871A:
+                  v2 = data[pos + 12:pos + 8 + pair_len]
+              pos += 8 + pair_len
+          assert v2, 'no v2 signature block'
+          def lp(buf, p):
+              n = struct.unpack_from('<I', buf, p)[0]
+              return p + 4, p + 4 + n
+          s0, _ = lp(v2, 0)
+          s1, _ = lp(v2, s0)
+          signed0, signed_end = lp(v2, s1)
+          _, digests_end = lp(v2, signed0)
+          certs0, _ = lp(v2, digests_end)
+          c0, c1 = lp(v2, certs0)
+          cert = v2[c0:c1]
+          print(f'APK cert size {len(cert)} sha256 {hashlib.sha256(cert).hexdigest()}')
+          if len(cert) != want_size or hashlib.sha256(cert).hexdigest() != want_hash:
+              sys.exit('APK signing certificate does not match the module trusted key')
+          PY
+          unzip -l "$apk" | grep -q 'lib/arm64-v8a/libksud.so'
+          echo "APK and module agree"
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: finasu-manager-panxcz
+          path: |
+            dist/*.apk
+            kernel/kernelsu.ko
+            target/aarch64-linux-android/release/ksud
+          if-no-files-found: error
