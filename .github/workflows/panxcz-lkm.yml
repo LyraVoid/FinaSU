@@ -229,4 +229,6 @@ jobs:
             dist/*.apk
             kernel/kernelsu.ko
             target/aarch64-linux-android/release/ksud
+            userspace/ksud/bin/aarch64/ksuinit
+            guard.ko
           if-no-files-found: error
