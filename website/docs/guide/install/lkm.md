@@ -285,7 +285,7 @@ A/B 设备完成 OTA 后、尚未重启时，可选择“安装到未使用的�
 
 ```file-tree title="LKM 相关数据位置"
 /data/adb
-├── ksud                      # 用户态守护进程
+├── ksud                      # 用户态命令行工具
 ├── ksu/
 │   ├── .allowlist            # 授权状态
 │   ├── .dynamic_manager      # 管理器登记

@@ -210,7 +210,7 @@ LKM 只替换 ramdisk 中的 `kernelsu.ko` 和启动包装，不替换 Linux 内
 
 5. **尽快重启**
 
-   刷写成功后不要继续使用旧驱动运行服务。`/data/adb/ksud` 已经被替换，旧管理器依赖的守护进程可能在重启前出现异常。
+   刷写成功后不要继续使用旧驱动运行服务。`/data/adb/ksud` 已经被替换，旧管理器依赖的 `ksud` 调用可能在重启前出现异常。
 
 6. **验证并移除旧管理器**
 
@@ -585,7 +585,7 @@ GhostLock 需要与设备内核精确匹配的 profile，不能只凭 Android �
 
 ```file-tree title="KernelSU 系常见数据位置"
 /data/adb
-├── ksud                      # 用户态守护进程，切换时会被替换
+├── ksud                      # 用户态命令行工具，切换时会被替换
 ├── ksu/
 │   ├── .allowlist            # 授权状态
 │   ├── .dynamic_manager      # 管理器登记

@@ -215,7 +215,7 @@ APatch 用户通常已经有永久 Root，不需要走越狱。只有在无法�
 /data/adb
 ├── ap/                       # APatch 配置、二进制与状态
 ├── modules/                  # 已安装模块
-├── ksud                      # FinaSU 用户态守护进程（文件）
+├── ksud                      # FinaSU 用户态命令行工具（文件）
 └── ksu/                      # FinaSU 状态目录
 ```
 

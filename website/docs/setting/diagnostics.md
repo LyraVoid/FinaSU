@@ -13,7 +13,7 @@ copyright:
 
 ## SU 日志
 
-打开 KernelSU 系 SU 日志，记录 Root 执行、传统 SU、授权和守护进程事件。内核不支持或策略强制开启时，设置不可用或不可修改。详见 [SU 日志](/manager/su-log/)。
+打开 KernelSU 系 SU 日志，记录 Root 执行、传统 SU、授权和日志守护进程事件。内核不支持或策略强制开启时，设置不可用或不可修改。详见 [SU 日志](/manager/su-log/)。
 
 ## 发送日志
 

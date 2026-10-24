@@ -14,7 +14,7 @@ copyright:
 
 <Badge text="三种部署方式" type="warning" /> <Badge text="先确认再动手" type="danger" />
 
-FinaSU 由管理器 APK、内核驱动 `kernelsu.ko`、用户态守护进程 `ksud` 和内嵌引擎组成。它们可能来自同一次发布，但**安装位置和生效时机并不相同**：更新管理器 APK 不会自动替换正在运行的内核驱动，内置内核构建也不会因为安装新版 APK 而改变。
+FinaSU 由管理器 APK、内核驱动 `kernelsu.ko`、用户态命令行工具 `ksud` 和内嵌引擎组成。它们可能来自同一次发布，但**安装位置和生效时机并不相同**：更新管理器 APK 不会自动替换正在运行的内核驱动，内置内核构建也不会因为安装新版 APK 而改变。
 
 因此更新前必须先确认设备属于哪一种部署方式：**内置内核构建**、**LKM**，还是**越狱模式**。三者的驱动文件可以相同，加载方式和更新路径却完全不同。
 
@@ -420,7 +420,7 @@ make ... KSU_REQUIRE_PREINIT=1
 
 ```file-tree title="更新涉及的常见位置"
 /data/adb
-├── ksud                      # 用户态守护进程
+├── ksud                      # 用户态命令行工具
 ├── ksu/
 │   ├── .allowlist            # 授权与 Profile 状态
 │   ├── profile/

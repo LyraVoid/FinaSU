@@ -16,7 +16,7 @@ FinaSU 是面向 Android 的内核级 Root 方案。`su` 请求与白名单由�
 ## 组成
 
 - **内核驱动**：提供 `su`、白名单、App Profile、SUSFS 接口和隐藏能力。
-- **ksud**：用户态守护进程，处理开机事件、模块、插件、Zygisk、Sui 与 NoMount。
+- **ksud**：用户态命令行工具，由启动事件或管理器调用，处理模块、插件、Zygisk、Sui 与 NoMount。
 - **管理器**：安装与更新、超级用户管理、模块仓库、主题和设置界面。
 - **内置引擎**：Folk Mount、FolkZygisk、Sui 与 NoMount，由 `ksud` 按配置启动。
 

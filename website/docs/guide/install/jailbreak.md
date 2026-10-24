@@ -334,7 +334,7 @@ GhostLock 需要与设备内核精确匹配的 profile，不能只凭 Android �
 
 ```file-tree title="越狱相关位置"
 /data/adb
-├── ksud                      # FinaSU 用户态守护进程
+├── ksud                      # FinaSU 用户态命令行工具
 ├── ksu/
 │   ├── .allowlist            # 授权状态
 │   └── profile/              # App Profile

@@ -93,7 +93,7 @@ const docsSidebar: ThemeSidebarItem[] = [
         badge: { text: '必看', type: 'warning' },
       },
       {
-        text: '常见概念与基础',
+        text: '基础概念',
         link: '/guide/information/',
         icon: 'material-symbols:menu-book',
         badge: { text: '必看', type: 'warning' },
