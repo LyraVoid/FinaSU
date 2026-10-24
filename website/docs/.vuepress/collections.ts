@@ -229,14 +229,37 @@ const docsSidebar: ThemeSidebarItem[] = [
         link: '/manager/feature/',
         icon: 'ri:lightbulb-line',
       },
-      { text: '超级用户', link: '/manager/superuser/', icon: 'ri:admin-line' },
-      { text: 'App Profile', link: '/manager/app-profile/', icon: 'ri:user-settings-line' },
-      { text: '模块管理', link: '/manager/module/', icon: 'ri:puzzle-line' },
-      { text: '模块仓库', link: '/manager/module-store/', icon: 'ri:store-3-line' },
-      { text: 'Lua 插件', link: '/manager/plugin/', icon: 'ri:braces-line' },
-      { text: '内核模块', link: '/manager/kernel-module/', icon: 'ri:cpu-line' },
       {
-        text: '数据与权限',
+        text: '应用与权限',
+        icon: 'ri:admin-line',
+        collapsed: true,
+        items: [
+          { text: '超级用户', link: '/manager/superuser/', icon: 'ri:admin-line' },
+          {
+            text: 'App Profile',
+            link: '/manager/app-profile/',
+            icon: 'ri:user-settings-line',
+          },
+          {
+            text: '动态管理器',
+            link: '/manager/dynamic-manager/',
+            icon: 'ri:shield-keyhole-line',
+          },
+        ],
+      },
+      {
+        text: '模块与扩展',
+        icon: 'ri:apps-2-line',
+        collapsed: true,
+        items: [
+          { text: '模块管理', link: '/manager/module/', icon: 'ri:puzzle-line' },
+          { text: '模块仓库', link: '/manager/module-store/', icon: 'ri:store-3-line' },
+          { text: 'Lua 插件', link: '/manager/plugin/', icon: 'ri:braces-line' },
+          { text: '内核模块', link: '/manager/kernel-module/', icon: 'ri:cpu-line' },
+        ],
+      },
+      {
+        text: '诊断与数据',
         icon: 'ri:database-2-line',
         collapsed: true,
         items: [
@@ -245,11 +268,6 @@ const docsSidebar: ThemeSidebarItem[] = [
             text: '备份与 WebDAV',
             link: '/manager/backup/',
             icon: 'ri:cloud-line',
-          },
-          {
-            text: '动态管理器',
-            link: '/manager/dynamic-manager/',
-            icon: 'ri:smartphone-line',
           },
           {
             text: '/data/adb 存储结构',
