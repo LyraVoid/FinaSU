@@ -32,4 +32,4 @@ copyright:
 3. 保留可用的 `fastboot` 或 Recovery 环境。
 4. 阅读当前构建的确认对话框，不根据其他衍生项目的行为推断。
 
-无法启动时使用 [启动循环救援](/guide/rescue-bootloop/)。
+无法启动时使用 [救砖](/guide/rescue-bootloop/)。

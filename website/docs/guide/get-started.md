@@ -262,5 +262,5 @@ KMIS=android15-6.6 ./build.sh lkm
 :::
 
 ::: warning
-不要在未备份启动镜像时尝试不熟悉的模块或内核文件。无法开机时参见 [启动循环救援](/guide/rescue-bootloop/)。
+不要在未备份启动镜像时尝试不熟悉的模块或内核文件。无法开机时参见 [救砖](/guide/rescue-bootloop/)。
 :::

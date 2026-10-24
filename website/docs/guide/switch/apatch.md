@@ -21,4 +21,4 @@ APatch 使用内核补丁与自己的模块机制。FinaSU 不能接管正在运
 4. 按 [安装方式](/guide/install/) 安装 FinaSU。
 5. 在新的模块环境中逐个恢复兼容内容。
 
-若设备无法启动，立即按 [启动循环救援](/guide/rescue-bootloop/) 恢复原厂镜像。
+若设备无法启动，立即按 [救砖](/guide/rescue-bootloop/) 恢复原厂镜像。
