@@ -133,7 +133,7 @@ flowchart LR
 
 ## 安全基线
 
-:::: timeline 建议的日常安全顺序
+::: timeline 建议的日常安全顺序
 
 - 保持 SELinux 为 Enforcing，只有越狱或排错时才临时切到 Permissive
   time=系统 type=success
