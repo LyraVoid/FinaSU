@@ -170,4 +170,101 @@ const setting = defineCollection({
   ],
 })
 
-export const zhCollections = defineCollections([guide, manager, builtin, setting])
+const theme = defineCollection({
+  type: 'doc',
+  dir: 'theme',
+  linkPrefix: '/theme',
+  title: '主题',
+  sidebar: [
+    {
+      text: '主题基础',
+      icon: 'ri:palette-line',
+      collapsed: false,
+      items: [
+        { text: '主题预览与使用', link: '/theme/theme-use/' },
+        { text: '成为主题开发者', link: '/theme/theme-dev/' },
+        { text: '导出主题', link: '/theme/export/info/' },
+        { text: '分享主题', link: '/theme/export/share/' },
+      ],
+    },
+    {
+      text: '全局特性',
+      icon: 'ri:contrast-2-line',
+      collapsed: true,
+      items: [
+        { text: '夜间模式与颜色', link: '/theme/global/theme-style/' },
+        { text: '背景模糊', link: '/theme/global/blur/' },
+        { text: '透明度', link: '/theme/global/transparency/' },
+        { text: '自定义字体', link: '/theme/global/font/' },
+        { text: '背景音乐', link: '/theme/global/music/' },
+        { text: '音效', link: '/theme/global/sound/' },
+        { text: '震动触感', link: '/theme/global/haptic/' },
+        { text: '视频背景', link: '/theme/global/video/' },
+      ],
+    },
+    {
+      text: 'CircleUI',
+      icon: 'ri:circle-line',
+      collapsed: true,
+      items: [
+        { text: '概览', link: '/theme/theme-circle/start/' },
+        { text: '基础样式', link: '/theme/theme-circle/basic/' },
+        { text: '背景', link: '/theme/theme-circle/background/' },
+        { text: '工作卡片', link: '/theme/theme-circle/working-card/' },
+        { text: '组件隐藏', link: '/theme/theme-circle/component-hiding/' },
+        { text: '交互', link: '/theme/theme-circle/interaction/' },
+      ],
+    },
+    {
+      text: 'GridUI',
+      icon: 'ri:layout-grid-line',
+      collapsed: true,
+      items: [
+        { text: '概览', link: '/theme/theme-grid/' },
+        { text: '基础样式', link: '/theme/theme-grid/basic/' },
+        { text: '背景', link: '/theme/theme-grid/background/' },
+        { text: '工作卡片', link: '/theme/theme-grid/working-card/' },
+        { text: '组件隐藏', link: '/theme/theme-grid/component-hiding/' },
+        { text: '交互', link: '/theme/theme-grid/interaction/' },
+      ],
+    },
+    {
+      text: 'FocusUI',
+      icon: 'ri:focus-3-line',
+      collapsed: true,
+      items: [
+        { text: '概览', link: '/theme/theme-focus/' },
+        { text: '基础样式', link: '/theme/theme-focus/basic/' },
+        { text: '硬件信息', link: '/theme/theme-focus/hardware/' },
+        { text: '平板适配', link: '/theme/theme-focus/tablet/' },
+        { text: '交互', link: '/theme/theme-focus/interaction/' },
+      ],
+    },
+    {
+      text: 'DashboardUI',
+      icon: 'ri:dashboard-line',
+      collapsed: true,
+      items: [
+        { text: '概览', link: '/theme/theme-dashboard/start/' },
+        { text: '基础样式', link: '/theme/theme-dashboard/basic/' },
+        { text: '状态信息', link: '/theme/theme-dashboard/hardware/' },
+        { text: '统计入口', link: '/theme/theme-dashboard/statistics/' },
+        { text: '交互', link: '/theme/theme-dashboard/interaction/' },
+      ],
+    },
+    {
+      text: 'StatsUI',
+      icon: 'ri:bar-chart-2-line',
+      collapsed: true,
+      items: [
+        { text: '概览', link: '/theme/theme-statsui/start/' },
+        { text: '基础样式', link: '/theme/theme-statsui/basic/' },
+        { text: '硬件监控', link: '/theme/theme-statsui/hardware/' },
+        { text: '统计信息', link: '/theme/theme-statsui/statistics/' },
+        { text: '交互', link: '/theme/theme-statsui/interaction/' },
+      ],
+    },
+  ],
+})
+
+export const zhCollections = defineCollections([guide, manager, builtin, setting, theme])
