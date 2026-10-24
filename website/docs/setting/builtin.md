@@ -19,7 +19,7 @@ copyright:
 
 ## Sui
 
-管理内置 Shizuku API 后端、载荷、权限与诊断。Sui 需要 Zygisk 提供者。详见 [Sui](/builtin/sui/)。
+管理内置 Shizuku API 后端、载荷、权限与诊断。Sui 需要 Zygisk 提供者。详见 [Sui 使用指南](/guide/sui/)。
 
 ## Folk Mount
 

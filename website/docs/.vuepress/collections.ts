@@ -54,7 +54,7 @@ const docsSidebar: ThemeSidebarItem[] = [
       },
       {
         text: 'Sui 服务',
-        link: '/builtin/sui/',
+        link: '/guide/sui/',
         icon: 'ri:water-flash-line',
         badge: { text: '重磅', type: 'danger' },
       },
@@ -234,12 +234,6 @@ const docsSidebar: ThemeSidebarItem[] = [
         text: 'FolkZygisk',
         link: '/builtin/folkzygisk/',
         icon: 'ri:apps-2-line',
-      },
-      {
-        text: 'Sui',
-        link: '/builtin/sui/',
-        icon: 'ri:water-flash-line',
-        badge: { text: '重磅', type: 'danger' },
       },
       { text: 'NoMount', link: '/builtin/nomount/', icon: 'ri:folder-forbid-line' },
       {

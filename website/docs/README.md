@@ -45,7 +45,7 @@ config:
       - title: Sui
         icon: material-symbols:hub-outline
         details: 内置 Shizuku API 后端，为兼容应用提供受管理的系统 API 访问。
-        link: /builtin/sui/
+        link: /guide/sui/
       - title: SUSFS 与内核级隐藏
         icon: material-symbols:visibility-off-outline
         details: 在内核支持时提供挂载、SELinux 与审计日志层面的隐藏能力。
