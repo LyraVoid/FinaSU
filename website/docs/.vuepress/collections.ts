@@ -19,9 +19,31 @@ const docsSidebar: ThemeSidebarItem[] = [
       },
       {
         text: '安装与刷写',
-        link: '/guide/install/',
         icon: 'ri:download-line',
         badge: { text: '推荐', type: 'tip' },
+        collapsed: false,
+        items: [
+          {
+            text: '方案概览',
+            link: '/guide/install/',
+            icon: 'ri:list-check',
+          },
+          {
+            text: 'LKM',
+            link: '/guide/install/lkm/',
+            icon: 'ri:download-line',
+          },
+          {
+            text: 'Built-In',
+            link: '/guide/install/built-in/',
+            icon: 'ri:code-box-line',
+          },
+          {
+            text: '越狱模式',
+            link: '/guide/install/jailbreak/',
+            icon: 'ri:lock-unlock-line',
+          },
+        ],
       },
       {
         text: '切换到 FinaSU',

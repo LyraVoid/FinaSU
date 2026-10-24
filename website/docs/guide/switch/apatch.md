@@ -26,13 +26,13 @@ copyright:
 
 ::: danger APatch 改的是内核，不只是 ramdisk
 
-APatch 的 KernelPatch 通常写在 `boot` 的内核镜像里。只刷回 `init_boot` 不会移除它；反过来，只还原 APatch 的启动镜像也不能自动变成 FinaSU。切换时必须先回到不含 APatch 的内核状态。
+APatch 的 KernelPatch 通常写在 `boot` 的内核镜像里。只还原 `init_boot` 不会移除它；反过来，只还原 APatch 的启动镜像也不能自动变成 FinaSU。切换时必须先回到不含 APatch 的内核状态。
 
 :::
 
 ::: tip 最短路线
 
-备份 → 还原原厂 `boot` → 重启确认没有 Root → 安装 FinaSU → 用原厂 `init_boot`（存在时）或 `boot` 修补 → 刷回同一个分区 → 重启验证 **LKM**。
+备份 → 还原原厂 `boot` → 重启确认没有 Root → 安装 FinaSU → 用原厂 `init_boot`（存在时）或 `boot` 修补 → 刷入同一个分区 → 重启验证 **LKM**。
 
 :::
 
@@ -51,7 +51,7 @@ APatch 基本只能修补 `boot` 的内核镜像。即使设备有独立 `init_b
 
 :::
 
-::: warning 不要只刷 init_boot
+::: warning 不要只还原 init_boot
 
 APatch 的核心修改在 Linux 内核里。只刷 `init_boot` 会保留 APatch 内核补丁，设备仍然可能有 Root 或继续与 FinaSU 冲突。标准 APatch 切换至少要还原原厂 `boot`。
 
@@ -134,9 +134,9 @@ LKM 把 FinaSU 的 `kernelsu.ko` 放入启动镜像的 ramdisk，不替换 Linux
    - 没有 `init_boot`，或 KMI 是 `android12-*`：修补 `boot`。
    - 以安装页显示为准。
 
-6. **刷回对应分区**
+6. **刷入对应分区**
 
-   把修补后的镜像刷回原分区并重启。不要交叉刷写 `boot` 和 `init_boot`。
+   把修补后的镜像刷入原分区并重启。不要交叉刷写 `boot` 和 `init_boot`。
 
 7. **验证并清理**
 
@@ -155,7 +155,7 @@ LKM 把 FinaSU 的 `kernelsu.ko` 放入启动镜像的 ramdisk，不替换 Linux
 - 安装 FinaSU，修补原厂镜像
   time=替换
 
-- 刷回对应分区并重启
+- 刷入对应分区并重启
   time=生效
 
 - 验证 LKM、Root 和模块

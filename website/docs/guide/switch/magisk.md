@@ -24,7 +24,7 @@ FinaSU 的启动镜像修补会拒绝 Magisk 已修补的 ramdisk，并报出 `C
 
 ::: tip 最短路线
 
-备份 → 在 Magisk 中还原原厂镜像 → 重启确认没有 Root → 安装 FinaSU → 用原厂 `boot` 或 `init_boot` 修补 → 刷回同一个分区 → 重启验证 **LKM**。
+备份 → 在 Magisk 中还原原厂镜像 → 重启确认没有 Root → 安装 FinaSU → 用原厂 `boot` 或 `init_boot` 修补 → 刷入同一个分区 → 重启验证 **LKM**。
 
 :::
 
@@ -40,7 +40,7 @@ Magisk 通过修补启动镜像的 ramdisk 提供 Root。设备有独立 `init_b
 | 设备有 `init_boot`，Magisk 修补了它 | `init_boot` 的 ramdisk | 原厂 `init_boot` |
 | 不确定 Magisk 改了哪里 | 可能同时涉及 | 原厂 `boot` 和 `init_boot`（存在时） |
 | A/B 设备 | 当前槽位 | 当前槽位的对应分区 |
-| 管理器显示 `vendor_boot` | `vendor_boot` 的 ramdisk | 原厂 `vendor_boot` |
+| Magisk 修补了 `vendor_boot`（少数设备） | `vendor_boot` 的 ramdisk | 原厂 `vendor_boot` |
 
 :::
 
@@ -92,7 +92,7 @@ fastboot flash init_boot_a init_boot.img
 ```mermaid
 flowchart TD
     A["Magisk 永久 Root"] --> B{"目标部署方式"}
-    B -->|"LKM（推荐）"| C["还原原厂 boot/init_boot<br/>用 FinaSU 修补并刷回"]
+    B -->|"LKM（推荐）"| C["还原原厂 boot/init_boot<br/>用 FinaSU 修补并刷入"]
     B -->|"Built-In（进阶）"| D["还原原厂 boot<br/>重编并刷入完整内核"]
     B -->|"越狱（少用）"| E["不修改启动分区<br/>查看越狱指南"]
 ```
@@ -127,9 +127,9 @@ LKM 不替换 Linux 内核，只把 FinaSU 的 `kernelsu.ko` 放入启动镜像�
    - 没有 `init_boot`，或 KMI 是 `android12-*`：修补 `boot`。
    - 以安装页显示为准。
 
-6. **刷回对应分区**
+6. **刷入对应分区**
 
-   把修补后的镜像刷回原分区并重启。不能把修补后的 `init_boot` 刷进 `boot`，反过来也一样。
+   把修补后的镜像刷入原分区并重启。不能把修补后的 `init_boot` 刷进 `boot`，反过来也一样。
 
 7. **验证并清理**
 
@@ -148,7 +148,7 @@ LKM 不替换 Linux 内核，只把 FinaSU 的 `kernelsu.ko` 放入启动镜像�
 - 安装 FinaSU，修补原厂镜像
   time=替换
 
-- 刷回对应分区并重启
+- 刷入对应分区并重启
   time=生效
 
 - 验证 LKM、Root 和模块

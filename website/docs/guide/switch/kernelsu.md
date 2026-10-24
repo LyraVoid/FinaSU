@@ -75,7 +75,7 @@ Root 只在当前启动会话中存在，没有可恢复的启动镜像补丁。
 | **Built-In** | Linux 内核镜像内部 | `boot` | 原厂 `boot` |
 | **LKM**，设备有 `init_boot` 且 KMI 不是 `android12-*` | `init_boot` 的 ramdisk | `init_boot` | 原厂 `init_boot` |
 | **LKM**，设备没有 `init_boot`，或 KMI 是 `android12-*` | `boot` 的 ramdisk | `boot` | 原厂 `boot` |
-| **LKM**，管理器显示 `vendor_boot` | `vendor_boot` 的 ramdisk | `vendor_boot` | 原厂 `vendor_boot` |
+| **LKM**，手动选择 `vendor_boot` | `vendor_boot` 的 ramdisk | `vendor_boot` | 原厂 `vendor_boot` |
 
 :::
 
@@ -184,7 +184,7 @@ LKM 只替换 ramdisk 中的 `kernelsu.ko` 和启动包装，不替换 Linux 内
 | `boot` | `boot` |
 | `init_boot` | `init_boot` |
 | `vendor_boot` | `vendor_boot` |
-| 不确定 | 不要猜；先刷回原厂 `boot` 和 `init_boot`，再用原厂镜像做文件修补 |
+| 不确定 | 不要猜；先刷回原厂 `boot` 和 `init_boot`（存在时），再用原厂镜像做文件修补 |
 
 :::
 
@@ -243,7 +243,7 @@ LKM 只替换 ramdisk 中的 `kernelsu.ko` 和启动包装，不替换 Linux 内
 
 1. 准备与当前系统完全匹配的原厂 `boot`；如果设备有 `init_boot`，也准备原厂 `init_boot`。
 2. 在 FinaSU 安装页选择 **选择文件并修补**。
-3. 使用原厂镜像而不是已经由其他管理器修补过的镜像；修补 `boot` 或 `init_boot` 后，刷回对应分区。
+3. 使用原厂镜像而不是已经由其他管理器修补过的镜像；修补 `boot` 或 `init_boot` 后，刷入对应分区。
 4. 如果旧管理器改的是 `init_boot`，不要只刷 `boot`；反过来也一样。
 
 ### 切换后不要保留两套管理器
@@ -280,7 +280,7 @@ LKM 只替换 ramdisk 中的 `kernelsu.ko` 和启动包装，不替换 Linux 内
 
 6. **刷入并验证**
 
-   把修补后的镜像刷回对应的 `init_boot` 或 `boot` 并重启。首页应显示 **LKM**，随后重新授权应用、逐个启用模块。
+   把修补后的镜像刷入对应的 `init_boot` 或 `boot` 并重启。首页应显示 **LKM**，随后重新授权应用、逐个启用模块。
 
 :::
 

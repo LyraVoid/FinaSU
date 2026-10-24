@@ -1,5 +1,6 @@
 ---
 title: 安装与刷写
+description: FinaSU 的 LKM、Built-In 与越狱模式安装入口
 createTime: 2026/10/24 00:00:00
 permalink: /guide/install/
 copyright:
@@ -11,7 +12,9 @@ copyright:
 
 # 安装与刷写
 
-持久安装 FinaSU 不只是安装管理器 APK。为了让驱动在重启后仍然生效，安装过程必须修改设备的启动链：通常是 `boot` 或 `init_boot` 分区中的启动镜像。错误的分区、镜像、KMI 或 A/B 槽位都可能导致设备无法开机。
+<Badge text="先选方案" type="warning" /> <Badge text="不要混用 Root" type="danger" />
+
+安装 FinaSU 管理器 APK 不等于安装驱动。持久 Root 必须写入启动链：LKM 修改 ramdisk，Built-In 修改内核，越狱模式则在系统启动后加载驱动。先选对方案，再准备镜像和刷写工具。
 
 ::: danger 动手前先准备救砖
 
@@ -19,155 +22,95 @@ copyright:
 
 :::
 
-FinaSU 默认推荐 LKM。首次安装请先阅读[快速开始](/guide/get-started/)中的 LKM 支持范围；只有 LKM 不支持当前设备，或明确需要内置驱动、SUSFS 时，才进入[内核源码集成](/developer/builtin-integration/)。
+::: tip 已经有 Root？
 
-## 安装会修改什么
+如果设备当前已经由 Magisk、KernelSU 或其分支、APatch/KernelPatch 提供 Root，不要直接在旧启动镜像上叠加 FinaSU。先看对应的切换文章：
 
-Android 启动时，Bootloader 先加载启动镜像，然后启动 Linux 内核和第一个用户态程序 `init`。FinaSU 必须在这个很早的阶段介入，因此持久安装一定会写入启动链中的一个镜像。
-
-| 内容 | 主要职责 |
-| --- | --- |
-| `boot` | 包含 Linux 内核；在尚未拆分通用 ramdisk 的设备上，也包含通用 ramdisk |
-| `init_boot` | 部分新设备上单独存放通用 ramdisk，不包含 Linux 内核 |
-| `vendor_boot` | 存放厂商相关的启动资源；少数设备可能从这里的 ramdisk 启动 |
-
-LKM 模式不会替换 Linux 内核。管理器会解包启动镜像，把 `ksuinit` 和与设备 KMI 匹配的 `kernelsu.ko` 放进 ramdisk，再重新打包。设备启动时由 `ksuinit` 提前加载驱动。
-
-内核源码集成则直接替换启动镜像里的内核部分，因此通常操作 `boot`。这是进阶路线，不能与本文的普通 LKM 流程混为一谈。无论哪一种，实际改动的都是启动镜像；刷错位置就可能进入启动循环。
-
-## 为什么有的设备没有 init_boot
-
-`init_boot` 不是所有 Android 设备都必须存在的分区。按照[AOSP 通用启动分区说明](https://source.android.com/docs/core/architecture/partitions/generic-boot)，从 Android 13 开始，**出厂搭载 Android 13 的设备**可以把通用 ramdisk 从 `boot` 移到独立的 `init_boot`。较早发布或仍使用较旧内核布局的设备，通用 ramdisk 通常继续放在 `boot`。
-
-因此：
-
-- Android 13 设备不一定都有 `init_boot`。系统是从旧版本升级而来，或者设备本身没有采用拆分布局时，没有这个分区是正常情况。
-- Android 12 及更早的设备通常没有 `init_boot`，应修补 `boot`。
-- 有 `init_boot` 时，LKM 通常要修改其中的 ramdisk；但这不代表 `init_boot` 里有 Linux 内核。
-- 不应为了“补全分区”而凭空创建或刷入一个 `init_boot`。分区不存在时，错误名称和错误镜像只会破坏启动链。
-
-管理器会读取当前槽位实际存在的分区，并标记默认目标。`init_boot` 存在只是判断条件之一，最终仍以管理器为当前设备和 KMI 选出的结果为准。不要只凭 Android 版本、文件名或网上的教程手动猜测。
-
-::: warning
-
-`boot` 和 `init_boot` 不能互相替代。刷错分区后可能连 Android 都无法进入；此时安全模式通常也来不及运行，需要按[救砖](/guide/rescue-bootloop/)恢复原厂分区镜像。
+- [从 Magisk 切换](/guide/switch/magisk/)
+- [从 KernelSU 切换](/guide/switch/kernelsu/)
+- [从 APatch 切换](/guide/switch/apatch/)
 
 :::
+
+## 分类菜单
+
+::: table 选择你的安装方案
+
+| 分类 | 解决什么问题 | 是否修改启动分区 | 适合谁 |
+| --- | --- | --- | --- |
+| **方案概览** | 先判断分区、风险和安装路线 | 否 | 第一次安装 |
+| [LKM](/guide/install/lkm/) | 把 `kernelsu.ko` 放进 ramdisk | 是，通常是 `boot` 或 `init_boot` | 大多数用户 |
+| [Built-In](/guide/install/built-in/) | 把驱动直接编入 Linux 内核 | 是，通常是 `boot` | 自行编译内核的用户 |
+| [越狱模式](/guide/install/jailbreak/) | 启动后加载驱动，不修改启动分区 | 否 | 无法或不想修改启动分区的设备 |
+
+:::
+
+::: warning 三种方案只能选一种
+
+不要在同一个系统里同时保留 LKM、内置驱动和其他 Root 方案。切换方案前先移除旧驱动和启动链修改。
+
+:::
+
+::: tip 术语约定
+
+本文统一用“刷回”表示把**原厂镜像**恢复到分区，用“刷入”表示把**修补后或新构建的镜像**写入分区。看到“刷回原厂 boot”时是恢复；看到“刷入修补后的镜像”时是安装。
+
+:::
+
+## 先认清启动分区
+
+Android 启动时，Bootloader 先加载启动镜像，再启动 Linux 内核和第一个用户态程序 `init`。FinaSU 必须在很早的阶段介入，因此持久安装会写入启动链中的一个镜像。
+
+::: table 启动分区
+
+| 分区 | 主要内容 | 与 FinaSU 的关系 |
+| --- | --- | --- |
+| `boot` | Linux 内核；部分设备也包含通用 ramdisk | Built-In 修改内核；没有 `init_boot` 时 LKM 修改这里的 ramdisk |
+| `init_boot` | 部分新设备的独立通用 ramdisk | 有它且 KMI 不是 `android12-*` 时，LKM 通常修改这里 |
+| `vendor_boot` | 厂商启动资源和 ramdisk | 少数设备使用；以管理器显示为准 |
+
+:::
+
+一句话记法：==Built-In 换内核，LKM 改 ramdisk，越狱模式不写启动分区==。
+
+::: important `init_boot` 不是每台设备都有
+
+`init_boot` 常见于出厂搭载 Android 13 及以上的部分 GKI 设备。设备没有这个分区是正常的，不要为了“补全分区”凭空刷入一个 `init_boot`。最终以管理器识别到的分区为准。
+
+:::
+
+## 怎么选
+
+```mermaid
+flowchart TD
+    A["你需要重启后仍然保留 Root 吗？"] -->|"需要"| B{"愿意自行编译内核吗？"}
+    B -->|"不编译"| C["LKM<br/>推荐"]
+    B -->|"要内置驱动"| D["Built-In<br/>进阶"]
+    A -->|"只在当前会话使用"| E["越狱模式<br/>不修改启动分区"]
+```
+
+- **大多数用户选 LKM**：它不替换 Linux 内核，安装和恢复都更直接。
+- **需要内置驱动、SUSFS 或自行维护内核时选 Built-In**：必须重新编译完整内核。
+- **无法或不想修改启动分区时选越狱模式**：重启后会丢失 Root，不是持久安装。
 
 ## 安装前准备
 
 1. 确认设备型号、Android 构建、内核版本和 KMI。相邻的系统版本不能代替 KMI 匹配。
-2. 准备与当前系统完全匹配的完整 OTA 或 factory 固件，并提前找出其中的 `boot` 或 `init_boot` 镜像。
+2. 准备与当前系统完全匹配的完整 OTA 或 factory 固件，并提前找出其中的 `boot`、`init_boot` 或 `vendor_boot` 镜像。
 3. 解锁 Bootloader，安装可用的 Android USB 驱动，并确认电脑能执行 `fastboot devices`。
-4. 先移除 Magisk、KernelSU、APatch 等其他内核级 Root 实现，避免多个方案同时接管启动链。
+4. 先移除 Magisk、KernelSU 或其分支、APatch/KernelPatch 等旧 Root，避免多个方案同时接管启动链。
 5. 保持足够电量，安装和首次启动期间不要断电，也不要同时执行系统 OTA。
 6. 开始前再次阅读[救砖](/guide/rescue-bootloop/)，确认自己知道需要恢复哪个分区、哪个槽位。
 
-## 选择安装方式
+## 下一步
 
-| 方式 | 适合场景 | 是否需要已有 Root |
-| --- | --- | --- |
-| 选择文件并修补 | 首次安装；手动处理已下载的启动镜像 | 否 |
-| 下载文件并修补 | 有完整 OTA 包或 factory 镜像的下载地址 | 否 |
-| 直接安装 | 当前设备已能提供 Root，想直接修补并刷写当前槽位 | 是 |
-| 安装到未使用的槽位 | A/B 设备刚完成 OTA，但还没有重启 | 是 |
-| AnyKernel3 ZIP | 刷入开发者或内核作者提供的定制内核安装包 | 是 |
+- [LKM 安装](/guide/install/lkm/)：选择文件、下载镜像、直接安装、未使用槽位、本地 LKM 与 AnyKernel3。
+- [Built-In 安装](/guide/install/built-in/)：清理旧集成、编译内核、刷入完整内核。
+- [越狱模式安装](/guide/install/jailbreak/)：CVE 提权、动态提权工具与首页 Jailbreak 的边界。
+- 从其他方案切换：[Magisk](/guide/switch/magisk/)、[KernelSU](/guide/switch/kernelsu/)、[APatch](/guide/switch/apatch/)。
 
-普通用户优先使用方法一、方法二或设备已有 Root 时的“直接安装”。AnyKernel3 不是日常 LKM 安装的必需步骤。
-
-## 选择文件并修补
-
-用于首次安装，或手动处理从完整固件包中提取的启动镜像。
-
-1. 从与当前系统完全匹配的固件中提取 `boot.img`、`init_boot.img` 或管理器支持的启动镜像。不要使用其他机型或其他系统版本的文件。
-2. 在安装页选择“选择文件并修补”，再选择这个镜像。
-3. 保持管理器默认选中的分区。只有在明确知道本机分区布局时才手动切换。
-4. 优先使用管理器内置的 LKM。只有必须使用自定义驱动时才选择本地 `.ko`，并确保架构和 KMI 完全匹配。
-5. 如果所选文件确实是原厂镜像，可以启用“备份为原厂镜像”。如果文件已经被其他工具修补过，不要把它标记成原厂镜像。
-6. 修补完成后，把输出镜像复制到电脑。用 `fastboot` 或设备对应的刷写方式写入**同一个分区和当前槽位**。
-
-::: code-tabs
-
-@tab:active boot
-
-```sh
-fastboot flash boot boot_patched.img
-```
-
-@tab init_boot
-
-```sh
-fastboot flash init_boot init_boot_patched.img
-```
-
-:::
-
-上面的文件名只是示例。A/B 设备先确认当前槽位：
-
-```sh
-fastboot getvar current-slot
-```
-
-如果当前槽位是 `a`，通常应使用 `boot_a` 或 `init_boot_a`；如果 Fastboot 已替你处理槽位，就沿用管理器提示的分区名。不要使用 `--slot all` 同时写两个槽位，也不要把修补后的 `init_boot` 刷进 `boot`。
-
-::: danger
-
-刷写后无法开机时，立即停止反复重启，按[救砖](/guide/rescue-bootloop/)恢复安装前实际修改的分区。继续刷入猜测的镜像会扩大故障范围。
-
-:::
-
-## 下载文件并修补
-
-输入完整 OTA 包或 factory 镜像的下载地址。管理器会检查包内有哪些可用的启动分区，并尝试从内核部分识别 KMI，然后执行与“选择文件并修补”相同的流程。
-
-下载流程不会让镜像自动适配你的设备。仍要确认设备型号、系统版本、分区和 A/B 槽位一致；否则修补成功也可能无法启动。刷写和恢复方法同上，故障时参考[救砖](/guide/rescue-bootloop/)。
-
-## 直接安装
-
-设备已经通过其他方式拥有 Root 时，可以直接修补并刷写当前设备的当前槽位。这是升级 FinaSU 最方便的方式，但仍会实际覆盖启动分区。
-
-直接安装前建议启用“刷写前备份”，同时保留外部原厂镜像。管理器备份是便利措施，不是完整救砖方案。刷写成功后先重启并确认能正常进入系统；如果启动失败，按[救砖](/guide/rescue-bootloop/)处理。
-
-## 安装到未使用的槽位
-
-该方式只适用于 A/B 设备已经完成 OTA、但尚未重启的时刻。
-
-管理器会把修补结果写入另一个槽位，并在下次重启时尝试切换过去，让新系统与 FinaSU 一起生效。不要在普通重启、系统已经切换完成或无法确认两个槽位版本时使用。
-
-如果新槽位启动失败，可以按[救砖](/guide/rescue-bootloop/)检查当前槽位并切回仍可启动的旧槽位。旧槽位已经被改写、OTA 已合并，或者无法确认两个槽位的系统版本时，不要盲目切换。
-
-## 使用本地 LKM 文件
-
-修补流程可以使用自己的 `.ko`，但文件名相同不代表 ABI 兼容。驱动必须同时匹配设备架构、KMI 和内核配置；来源不明的内核模块拥有内核权限，不应加载。
-
-没有明确理由时，使用管理器随包提供的 LKM。更换本地 LKM 前先阅读[快速开始](/guide/get-started/)中的支持范围，并准备好对应的启动镜像恢复方案。
-
-## AnyKernel3 是什么
-
-AnyKernel3 是一套通用的刷机 ZIP 安装格式，不是内核，也不是 Root 方案本身。内核作者通常把编译好的内核、补丁或相关文件放进 ZIP，再由包内的 `anykernel.sh` 和 `update-binary` 在设备上完成解包、替换、重打包和刷写。
-
-可以把 AnyKernel3 理解成“在设备端操作的启动镜像安装器”：
-
-1. 安装器读取设备当前启动镜像。
-2. 根据 ZIP 内的文件替换内核、ramdisk 或其他启动内容。
-3. 重新生成启动镜像。
-4. 由包内脚本决定写入哪个分区和槽位。
-
-因此它同样是在修改启动链，通常最终修改 `boot`，也可能修改 `init_boot`、`vendor_boot` 或其他分区，具体取决于安装包。它不是由 FinaSU 定义的分区流程。
-
-FinaSU 管理器会以 Root 权限执行 AnyKernel3 的安装脚本。FinaSU 只做 ZIP 格式和结构检查，不会覆盖包内的槽位选择，也不会在刷入后自动修正分区或更新 `ksud`。脚本成功退出只能说明安装器没有报错，不能证明内核兼容或设备一定能启动。
-
-::: danger
-
-AnyKernel3 包里的脚本以 Root 权限运行，且可能在失败前已经写入分区。只使用明确支持当前设备、系统构建和内核版本的包。刷入前准备完整原厂镜像并阅读[救砖](/guide/rescue-bootloop/)；如果安装后无法启动，不要继续刷入第二个未知 ZIP。
-
-:::
-
-## 刷写选项
-
-- **刷写前备份**：刷写前尽力保存管理器支持的启动分区或相关状态，但备份失败不保证阻止刷写，也不会覆盖 AnyKernel3 可能修改的全部分区。
-- **备份为原厂镜像**：只应在所选文件确实来自官方原厂固件时启用。把已修补文件当原厂镜像备份，无法用于恢复。
-- **允许 Shell**：允许 Shell 用户获得 Root。它扩大了 Root 使用范围，普通用户通常不需要开启。
-- **启用 ADB Root**：为调试强制开启 ADB Root 并关闭 ADB 认证，风险明显高于普通安装。除非明确需要调试，否则保持关闭。
-
-刷写完成后重启设备，回到管理器确认驱动状态。如果设备停在启动画面、反复重启或无法进入 Android，不要继续安装模块，直接按[救砖](/guide/rescue-bootloop/)恢复安装时实际修改的启动分区。
+*[LKM]: Loadable Kernel Module，可加载内核模块
+*[KMI]: Kernel Module Interface，Android 内核模块接口版本
+*[GKI]: Generic Kernel Image，Android 通用内核镜像
+*[OTA]: Over-The-Air，系统在线更新
+*[AVB]: Android Verified Boot，Android 启动验证
