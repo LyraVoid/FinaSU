@@ -103,4 +103,71 @@ const builtin = defineCollection({
   ],
 })
 
-export const zhCollections = defineCollections([guide, manager, builtin])
+const setting = defineCollection({
+  type: 'doc',
+  dir: 'setting',
+  linkPrefix: '/setting',
+  title: '设置',
+  sidebar: [
+    {
+      text: '设置索引',
+      icon: 'ri:list-check',
+      collapsed: false,
+      items: [
+        { text: '设置总览', link: '/setting/overview/' },
+        { text: '更新与版本', link: '/setting/update/' },
+        { text: '语言', link: '/setting/language/' },
+        { text: 'App Profile 模板', link: '/setting/profile-template/' },
+      ],
+    },
+    {
+      text: '外观',
+      icon: 'ri:palette-line',
+      collapsed: true,
+      items: [
+        { text: '主题与颜色', link: '/setting/theme/' },
+        { text: '壁纸', link: '/setting/wallpaper/' },
+        { text: '字体', link: '/setting/font/' },
+        { text: '主题商店', link: '/setting/theme-store/' },
+        { text: '首页与布局', link: '/setting/home/' },
+      ],
+    },
+    {
+      text: '行为',
+      icon: 'ri:gesture-line',
+      collapsed: true,
+      items: [
+        { text: '导航', link: '/setting/navigation/' },
+        { text: '悬浮导航栏', link: '/setting/floating-bar/' },
+        { text: '交互与兼容', link: '/setting/interaction/' },
+        { text: '模块卡片与横幅', link: '/setting/module-cards/' },
+      ],
+    },
+    {
+      text: '功能与安全',
+      icon: 'ri:shield-keyhole-line',
+      collapsed: true,
+      items: [
+        { text: 'Root 与挂载策略', link: '/setting/root-policy/' },
+        { text: '隐藏与内核安全', link: '/setting/hiding/' },
+        { text: '访问控制', link: '/setting/access/' },
+        { text: '内置能力', link: '/setting/builtin/' },
+        { text: '身份验证', link: '/setting/authentication/' },
+      ],
+    },
+    {
+      text: '数据与维护',
+      icon: 'ri:database-2-line',
+      collapsed: true,
+      items: [
+        { text: '多媒体', link: '/setting/multimedia/' },
+        { text: '备份', link: '/setting/backup/' },
+        { text: '维护与危险操作', link: '/setting/maintenance/' },
+        { text: '诊断与反馈', link: '/setting/diagnostics/' },
+        { text: '关于', link: '/setting/about/' },
+      ],
+    },
+  ],
+})
+
+export const zhCollections = defineCollections([guide, manager, builtin, setting])
