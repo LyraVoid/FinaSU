@@ -11,7 +11,7 @@ copyright:
 
 # 快速开始
 
-本页只介绍两种持久化驱动方式：**LKM** 和**内核源码集成**。另有只对当前启动有效的越狱/延迟加载，不在本文范围。大多数用户应该先选 LKM：它不需要你编译 Linux 内核，由管理器把与设备 KMI 匹配的 `kernelsu.ko` 放进启动镜像。只有 LKM 不支持你的设备，或者你明确需要内置驱动、SUSFS 等内核侧改动时，才进入源码集成。
+本页只介绍两种持久化驱动方式：**LKM** 和**内核源码集成**。另有只对当前启动有效的越狱/延迟加载，不在本文范围。大多数用户应该先选 LKM：它不需要你编译 Linux 内核，由管理器把与设备 KMI 匹配的 `kernelsu.ko` 放进启动镜像。只有 LKM 不支持你的设备，或者你明确需要内置驱动、完整源码集成 SUSFS 等内核侧改动时，才进入源码集成。
 
 ::: tip 新手首选 LKM
 
@@ -23,7 +23,7 @@ copyright:
 | 方式 | 适用场景 |
 | --- | --- |
 | **LKM（推荐）** | 官方支持当前 KMI；不编译内核；后续驱动更新更方便 |
-| 内核源码集成（进阶） | LKM 不支持当前设备；需要内置驱动；需要集成 SUSFS |
+| 内核源码集成（进阶） | LKM 不支持当前设备；需要内置驱动；需要源码集成 SUSFS |
 
 ::: warning 这里的 LKM 不是第三方内核模块
 
@@ -146,7 +146,7 @@ LKM 模式下，当管理器自带的内置驱动与当前运行版本不一致�
 
 - 官方 LKM 不提供当前 KMI。
 - 需要把驱动固定在内核镜像中。
-- 需要集成 SUSFS，而当前集成要求 `CONFIG_KSU=y`。
+- 需要完整源码集成 SUSFS，而当前集成要求 `CONFIG_KSU=y`。
 
 使用设备当前系统对应的内核源码、分支、提交和配置。其他版本的内核源码即使版本号相同，也可能带有不同的厂商修改，不能直接套用。
 
@@ -237,7 +237,7 @@ printf 'size=%s\nhash=%s\n' "$cert_size" "$cert_hash"
 
 只有在内核目标版本匹配时，才应用 SUSFS 补丁并启用 `CONFIG_KSU_SUSFS`。当前集成还要求 `CONFIG_KSU=y` 和 `CONFIG_THREAD_INFO_IN_TASK=y`。FinaSU 仓库提供对接入口，但不包含 SUSFS 内核实现（`fs/susfs.c` 及各内核版本钩子）。
 
-完整的内核侧说明见 [内核集成](/developer/builtin-integration/#susfs) 和 [SUSFS 与内核级隐藏](/builtin/susfs/)。
+完整的内核侧说明见 [内核集成](/developer/builtin-integration/#susfs) 和 [SUSFS](/builtin/susfs/)。
 
 ### 自己构建 LKM
 

@@ -2,7 +2,7 @@
 title: Sui 服务
 description: FinaSU 内置 Shizuku API 后端的完整使用、权限、生命周期与排错指南
 createTime: 2026/10/24 00:00:00
-permalink: /guide/sui/
+permalink: /builtin/sui/
 copyright:
   creation: original
   license: CC-BY-4.0
@@ -398,7 +398,7 @@ Sui 会向获准应用提供 root 或 shell 身份。应用仍应按照最小权
 开发者文档：
 
 - [Shizuku API 使用指南](https://github.com/RikkaApps/Shizuku-API)
-- [FinaSU 内置能力设置](/setting/builtin/)
+- [FinaSU 内置能力总览](/builtin/)
 - [FinaSU 日志与反馈](/troubleshoot/logs/)
 
 ## 常见问题

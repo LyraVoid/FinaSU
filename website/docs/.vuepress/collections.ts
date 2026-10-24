@@ -75,12 +75,6 @@ const docsSidebar: ThemeSidebarItem[] = [
         badge: { text: '重要', type: 'danger' },
       },
       {
-        text: 'Sui 服务',
-        link: '/guide/sui/',
-        icon: 'ri:water-flash-line',
-        badge: { text: '重磅', type: 'danger' },
-      },
-      {
         text: '更新 FinaSU',
         link: '/guide/update/',
         icon: 'ri:refresh-line',
@@ -170,7 +164,6 @@ const docsSidebar: ThemeSidebarItem[] = [
             link: '/setting/root-policy/',
             icon: 'ri:shield-keyhole-line',
           },
-          { text: '内置能力深入说明', link: '/setting/builtin/', icon: 'ri:apps-2-line' },
         ],
       },
       {
@@ -285,6 +278,11 @@ const docsSidebar: ThemeSidebarItem[] = [
     collapsed: true,
     items: [
       {
+        text: '内置能力总览',
+        link: '/builtin/',
+        icon: 'ri:apps-2-line',
+      },
+      {
         text: 'Folk Mount',
         link: '/builtin/folk-mount/',
         icon: 'ri:hard-drive-3-line',
@@ -294,9 +292,24 @@ const docsSidebar: ThemeSidebarItem[] = [
         link: '/builtin/folkzygisk/',
         icon: 'ri:apps-2-line',
       },
+      {
+        text: 'Sui 服务',
+        link: '/builtin/sui/',
+        icon: 'ri:water-flash-line',
+      },
+      {
+        text: 'UTS View',
+        link: '/builtin/uts-view/',
+        icon: 'ri:text',
+      },
+      {
+        text: '网络隔离',
+        link: '/builtin/net-isolate/',
+        icon: 'ri:wifi-off-line',
+      },
       { text: 'NoMount', link: '/builtin/nomount/', icon: 'ri:folder-forbid-line' },
       {
-        text: 'SUSFS 与内核级隐藏',
+        text: 'SUSFS',
         link: '/builtin/susfs/',
         icon: 'ri:shield-keyhole-line',
         badge: { text: '进阶', type: 'info' },

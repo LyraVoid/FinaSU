@@ -168,7 +168,7 @@ FinaSU 与其他 Root 组件共享 `/data/adb`。这里的目录包含授权、�
 
 ::::
 
-不要手工删除 `finasu-sui` 目录来“关闭 Sui”；Sui 有独立启停、卸载和载荷管理流程，见 [Sui 使用指南](/guide/sui/)。
+不要手工删除 `finasu-sui` 目录来“关闭 Sui”；Sui 有独立启停、卸载和载荷管理流程，见 [Sui 使用指南](/builtin/sui/)。
 
 ## 日志
 

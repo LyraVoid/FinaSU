@@ -131,7 +131,7 @@ FinaSU 的 Root 驱动。LKM 把它放进 ramdisk，越狱模式在启动后加�
 | 是否修改启动分区 | 是 | 是 | 否 |
 | 重启后保留 Root | 是 | 是 | 否 |
 | 通常修改的分区 | `init_boot` 或 `boot` | `boot` | 不修改 |
-| 适合场景 | 大多数用户 | 自行编译内核、SUSFS | 无法或不想刷写的设备 |
+| 适合场景 | 大多数用户 | 自行编译内核、源码集成 SUSFS | 无法或不想刷写的设备 |
 
 :::
 
@@ -237,12 +237,12 @@ FinaSU 保留 `su` 兼容层：符合条件的应用执行 `/system/bin/su` 时�
 | [Folk Mount](/builtin/folk-mount/) | 选择挂载提供者并注入模块，可委托元模块 | FinaSU 驱动 |
 | [NoMount](/builtin/nomount/) | 通过内核 VFS 路径重定向注入文件，不建立传统挂载 | 匹配 KMI 的 NoMount 模块 |
 | [FolkZygisk](/builtin/folkzygisk/) | 内置 Zygisk 引擎，在 Zygote 启动阶段注入 | 启用并重启 |
-| [Sui](/guide/sui/) | Shizuku API 后端 | FinaSU 驱动与 Zygisk |
-| [SUSFS](/builtin/susfs/) | 隐藏与路径伪装能力接口 | 内核已集成 SUSFS |
+| [Sui](/builtin/sui/) | Shizuku API 后端 | FinaSU 驱动与 Zygisk |
+| [SUSFS](/builtin/susfs/) | 隐藏与路径伪装能力接口 | 内核源码集成或已加载 SUSFS-LKM |
 
 :::
 
-FolkZygisk 在检测到外部 Zygisk 提供者时会让位；Sui、LSPosed 等依赖 Zygisk 的功能需要至少一个可用提供者。SUSFS 不是 FinaSU 内置的内核实现，只能配置已有内核。
+FolkZygisk 在检测到外部 Zygisk 提供者时会让位；Sui、LSPosed 等依赖 Zygisk 的功能需要至少一个可用提供者。SUSFS 不是 FinaSU 内置的内核实现；它需要内核源码集成版或已加载的 SUSFS-LKM。
 
 ## SELinux 与隐藏
 
@@ -286,7 +286,7 @@ SELinux 是 Android 的强制访问控制机制。Root 不代表关闭 SELinux�
 
 - **FinaSU 自带 SUSFS**
 
-  不是。SUSFS 需要目标内核已经集成；FinaSU 只提供配置界面。
+  不是。SUSFS 需要内核源码集成版或单独加载 SUSFS-LKM；FinaSU 只提供配置界面。
 
 - **Magisk 模块在 FinaSU 下一定可用**
 

@@ -26,5 +26,5 @@ copyright:
 ## 相关设置
 
 - [隐藏与内核安全](/setting/hiding/)
-- [内置能力](/setting/builtin/)
+- [内置能力总览](/builtin/)
 - [App Profile](/manager/app-profile/)

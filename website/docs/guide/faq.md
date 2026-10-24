@@ -222,7 +222,7 @@ Sui 是内置的 Shizuku API 后端，兼容应用不需要另外安装 Shizuku�
 
 ### 为什么找不到 SUSFS 设置？
 
-SUSFS 是内核侧能力。FinaSU 只对接已经集成 SUSFS 的目标内核；当前内核未报告支持时，相关开关不可用，页面会说明未检测或不支持。FinaSU 自身不提供 SUSFS 内核实现。
+SUSFS 是内核侧能力。FinaSU 可以对接源码集成版或已加载的 SUSFS-LKM；当前内核未报告支持时，相关开关不可用。FinaSU 自身不提供 SUSFS 实现，也不会加载 LKM。
 
 ## 更新与卸载
 
@@ -282,7 +282,7 @@ LKM 模式下，设置首页的“卸载”提供永久卸载和恢复原厂镜�
 LKM 和 Built-In 哪个适合我？
 
 {.}
-大多数用户选 LKM；需要内置驱动、SUSFS 或自行维护内核时选 Built-In。
+大多数用户选 LKM；需要内置驱动、完整源码集成 SUSFS 或自行维护内核时选 Built-In。仅需要 SUSFS 时也可以评估功能较少的 SUSFS-LKM。
 
 {用户}
 越狱重启后还在吗？

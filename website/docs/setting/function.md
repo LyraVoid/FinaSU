@@ -143,7 +143,7 @@ Sui 是 FinaSU 内置的 Shizuku API 后端。Sui 本身不是 Zygisk 提供者�
 
 ::: info 完整生命周期
 
-Sui 的启用、载荷安装、双守护进程、管理器登记、权限和排错见 [Sui 使用指南](/guide/sui/)。
+Sui 的启用、载荷安装、双守护进程、管理器登记、权限和排错见 [Sui 使用指南](/builtin/sui/)。
 
 :::
 
@@ -352,6 +352,9 @@ NoMount 初始没有例外应用。需要隐藏时，在“NoMount → 例外应
 - [FolkZygisk](/builtin/folkzygisk/)
 - [Folk Mount](/builtin/folk-mount/)
 - [NoMount](/builtin/nomount/)
-- [Sui 使用指南](/guide/sui/)
+- [Sui 使用指南](/builtin/sui/)
+- [UTS View](/builtin/uts-view/)
+- [网络隔离](/builtin/net-isolate/)
+- [SUSFS](/builtin/susfs/)
 - [SU 日志](/manager/su-log/)
 - [动态管理器](/manager/dynamic-manager/)
