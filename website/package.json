@@ -1,19 +1,31 @@
 {
-  "name": "KernelSU_website",
+  "name": "finasu-docs",
+  "type": "module",
   "version": "1.0.0",
-  "description": "KernelSU official website: https://kernelsu.org",
-  "main": "index.js",
-  "repository": "https://kernelsu.org",
-  "author": "weishu",
+  "description": "FinaSU documentation",
+  "packageManager": "pnpm@12.15.0",
+  "author": "LyraVoid",
   "license": "MIT",
-  "devDependencies": {
-    "vitepress": "^1.6.4",
-    "vue": "^3.5.42"
-  },
   "scripts": {
-    "docs:dev": "vitepress dev docs",
-    "docs:build": "vitepress build docs",
-    "docs:preview": "vitepress preview docs"
+    "docs:build": "vuepress build docs --clean-cache --clean-temp",
+    "docs:dev": "vuepress dev docs",
+    "docs:dev-clean": "vuepress dev docs --clean-cache --clean-temp",
+    "docs:preview": "http-server docs/.vuepress/dist",
+    "vp-update": "pnpm dlx vp-update"
   },
-  "type": "module"
+  "devDependencies": {
+    "@vuepress/bundler-vite": "2.0.0-rc.30",
+    "http-server": "^14.1.1",
+    "markdown-it": "14.3.1",
+    "typescript": "6.0.3",
+    "vue": "3.5.34",
+    "vuepress": "2.0.0-rc.30",
+    "vuepress-theme-plume": "1.0.0-rc.205"
+  },
+  "engines": {
+    "node": "^20.19.0 || >=22.0.0"
+  },
+  "dependencies": {
+    "mermaid": "^11.17.2"
+  }
 }
