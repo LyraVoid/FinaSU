@@ -579,6 +579,7 @@ const docsSidebar: ThemeSidebarItem[] = [
     badge: { text: '必看', type: 'danger' },
     collapsed: true,
     items: [
+      { text: '排错总览', link: '/troubleshoot/', icon: 'ri:first-aid-kit-line' },
       { text: '无法开机', link: '/troubleshoot/bootloop/', icon: 'ri:error-warning-line' },
       {
         text: '设备兼容性',
