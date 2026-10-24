@@ -25,7 +25,11 @@ copyright:
 
 ## SELinux 模式
 
-可以查看并切换 Enforcing、Permissive 或 Disabled 状态，实际可选范围由系统与内核决定。Permissive 会降低系统安全边界，除越狱流程外不应长期保持。
+切换对话框只提供 Enforcing 与 Permissive 两个目标，底层分别执行 `setenforce 1` 和 `setenforce 0`。没有“切换到 Disabled”的选项。
+
+如果底层 `getenforce` 返回 `Disabled`，页面会把“被禁用”作为当前状态显示；这是只读状态，不是可选模式。`setenforce 0` 得到的是 Permissive，不是 Disabled。
+
+Permissive 会降低系统安全边界，除越狱流程或明确排错外不应长期保持。完整说明见 [安全](/setting/security/)。
 
 ::: warning
 不要同时启用互相冲突的隐藏方案。改动后重启，分别验证授权、模块加载和应用文件视图。

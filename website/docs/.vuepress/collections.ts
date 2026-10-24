@@ -112,10 +112,11 @@ const docsSidebar: ThemeSidebarItem[] = [
         icon: 'ri:dashboard-line',
       },
       {
-        text: '基础设置',
-        icon: 'ri:list-check',
+        text: '通用',
+        icon: 'ri:settings-4-line',
         collapsed: true,
         items: [
+          { text: '通用设置', link: '/setting/general/', icon: 'ri:settings-4-line' },
           { text: '更新与版本', link: '/setting/update/', icon: 'ri:refresh-line' },
           { text: '语言', link: '/setting/language/', icon: 'ri:translate-2' },
           {
@@ -130,6 +131,7 @@ const docsSidebar: ThemeSidebarItem[] = [
         icon: 'ri:palette-line',
         collapsed: true,
         items: [
+          { text: '外观设置', link: '/setting/appearance/', icon: 'ri:palette-line' },
           { text: '主题与颜色', link: '/setting/theme/', icon: 'ri:palette-line' },
           { text: '壁纸', link: '/setting/wallpaper/', icon: 'ri:image-line' },
           { text: '字体', link: '/setting/font/', icon: 'ri:font-size-2' },
@@ -142,6 +144,7 @@ const docsSidebar: ThemeSidebarItem[] = [
         icon: 'ri:hand-coin-line',
         collapsed: true,
         items: [
+          { text: '行为设置', link: '/setting/behavior/', icon: 'ri:hand-coin-line' },
           { text: '导航', link: '/setting/navigation/', icon: 'ri:compass-3-line' },
           {
             text: '悬浮导航栏',
@@ -157,38 +160,60 @@ const docsSidebar: ThemeSidebarItem[] = [
         ],
       },
       {
-        text: '功能与安全',
-        icon: 'ri:shield-keyhole-line',
+        text: '功能',
+        icon: 'ri:apps-2-line',
         collapsed: true,
         items: [
+          { text: '功能设置', link: '/setting/function/', icon: 'ri:apps-2-line' },
           {
             text: 'Root 与挂载策略',
             link: '/setting/root-policy/',
             icon: 'ri:shield-keyhole-line',
           },
-          { text: '隐藏与内核安全', link: '/setting/hiding/', icon: 'ri:eye-off-line' },
-          { text: '访问控制', link: '/setting/access/', icon: 'ri:lock-password-line' },
-          { text: '内置能力', link: '/setting/builtin/', icon: 'ri:apps-2-line' },
-          {
-            text: '身份验证',
-            link: '/setting/authentication/',
-            icon: 'ri:fingerprint-line',
-          },
+          { text: '内置能力深入说明', link: '/setting/builtin/', icon: 'ri:apps-2-line' },
         ],
       },
       {
-        text: '数据与维护',
-        icon: 'ri:database-2-line',
+        text: '安全',
+        icon: 'ri:shield-keyhole-line',
         collapsed: true,
         items: [
-          { text: '多媒体', link: '/setting/multimedia/', icon: 'ri:volume-up-line' },
-          { text: '备份', link: '/setting/backup/', icon: 'ri:archive-line' },
+          { text: '安全设置', link: '/setting/security/', icon: 'ri:shield-keyhole-line' },
+          { text: '隐藏与内核安全', link: '/setting/hiding/', icon: 'ri:eye-off-line' },
+          { text: '访问控制', link: '/setting/access/', icon: 'ri:lock-password-line' },
+        ],
+      },
+      {
+        text: '验证',
+        link: '/setting/authentication/',
+        icon: 'ri:fingerprint-line',
+      },
+      {
+        text: '多媒体',
+        link: '/setting/multimedia/',
+        icon: 'ri:volume-up-line',
+      },
+      {
+        text: '备份',
+        link: '/setting/backup/',
+        icon: 'ri:archive-line',
+      },
+      {
+        text: '设置首页入口',
+        icon: 'ri:image-line',
+        collapsed: true,
+        items: [
+          {
+            text: '壁纸图鉴',
+            link: '/setting/wallpaper-gallery/',
+            icon: 'ri:image-line',
+          },
+          { text: '诊断与反馈', link: '/setting/diagnostics/', icon: 'ri:bug-line' },
           {
             text: '维护与危险操作',
             link: '/setting/maintenance/',
             icon: 'ri:tools-line',
           },
-          { text: '诊断与反馈', link: '/setting/diagnostics/', icon: 'ri:bug-line' },
           { text: '关于', link: '/setting/about/', icon: 'ri:information-line' },
         ],
       },

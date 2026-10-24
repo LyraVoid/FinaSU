@@ -1,5 +1,6 @@
 ---
 title: 设置总览
+description: 按目的快速定位 FinaSU 管理器的八个设置入口
 createTime: 2026/10/24 00:00:00
 permalink: /setting/overview/
 copyright:
@@ -11,161 +12,147 @@ copyright:
 
 # 设置总览
 
-设置页按“通用、外观、行为、功能、安全、验证、多媒体、备份”分组。本页是 `SettingsSearchIndex.kt` 与文档页的对照表。
+<Badge text="8 个入口" type="tip" /> <Badge text="先找目的" type="warning" />
 
-::: info 索引基线
-当前源码可解析出 100 条静态分类行和 7 条运行时生成的身份验证目标，共 107 条；此前记录的 102 条口径已经随源码变化。设置首页另有 6 个非分类入口，列在本页末尾。
+设置首页不是一个长开关列表。顶部是设备与个人资料，中间按 4 列排成两行的八个入口，下面才是壁纸图鉴、反馈、免责声明、日志、关于和条件显示的卸载。
+
+::: tip 最快定位方法
+
+先问自己“我想做什么”，直接查下面的表。只想找某个开关名称时，也可以点设置页顶部的搜索按钮，按名称或描述搜索。
+
 :::
 
-## 通用
+## 我想……
 
-| 索引 ID | 文档 |
-| --- | --- |
-| `general.check_update` | [更新与版本](/setting/update/) |
-| `general.check_module_update` | [更新与版本](/setting/update/) |
-| `general.profile_template` | [App Profile 模板](/setting/profile-template/) |
-| `general.language` | [语言](/setting/language/) |
+::: table 按目的进入
 
-## 外观
+| 我想…… | 进入 | 最常见的位置 |
+| --- | --- | --- |
+| 查管理器更新、模块更新，换语言或改 App Profile 模板 | [通用](/setting/general/) | 设置 → 通用 |
+| 换颜色、壁纸、字体、图标或首页布局 | [外观](/setting/appearance/) | 设置 → 外观 |
+| 改导航栏、手势、模块卡片、SU 兼容或 WebView 调试 | [行为](/setting/behavior/) | 设置 → 行为 |
+| 开 Zygisk、Sui、Folk Mount、NoMount、网络隔离 | [功能](/setting/function/) | 设置 → 功能 |
+| 改 SELinux、ADB Root、Shell Root 限制 | [安全](/setting/security/) | 设置 → 安全 |
+| 给管理器或敏感操作加密码、图案、指纹 | [验证](/setting/authentication/) | 设置 → 验证 |
+| 改振动、背景音乐、触摸音效或启动音效 | [多媒体](/setting/multimedia/) | 设置 → 多媒体 |
+| 备份模块、授权列表、启动分区，或连接 WebDAV | [备份](/setting/backup/) | 设置 → 备份 |
 
-| 索引 ID | 文档 |
-| --- | --- |
-| `appearance.theme` | [主题与颜色](/setting/theme/) |
-| `appearance.wallpaper` | [壁纸](/setting/wallpaper/) |
-| `appearance.font` | [字体](/setting/font/) |
-| `appearance.theme_store` | [主题商店](/setting/theme-store/) |
-| `appearance.theme_store_mode` | [主题商店](/setting/theme-store/) |
-| `appearance.launcher_icon` | [首页与布局](/setting/home/) |
-| `appearance.home_layout` | [首页与布局](/setting/home/) |
-| `appearance.layout_variant` | [导航](/setting/navigation/) |
-| `appearance.support_links` | [首页与布局](/setting/home/) |
-| `appearance.support_links_title` | [首页与布局](/setting/home/) |
-| `appearance.support_links_subtitle` | [首页与布局](/setting/home/) |
-| `appearance.support_links_url` | [首页与布局](/setting/home/) |
-| `appearance.title_text` | [首页与布局](/setting/home/) |
-| `appearance.title_image` | [首页与布局](/setting/home/) |
-| `appearance.title_offset` | [首页与布局](/setting/home/) |
-| `appearance.hide_home_fingerprint` | [首页与布局](/setting/home/) |
-| `appearance.hide_home_zygisk` | [首页与布局](/setting/home/) |
-| `appearance.hide_home_susfs` | [首页与布局](/setting/home/) |
-| `appearance.hide_home_mount` | [首页与布局](/setting/home/) |
-| `appearance.page_scale` | [首页与布局](/setting/home/) |
-| `appearance.module_description_lines` | [模块卡片与横幅](/setting/module-cards/) |
+:::
 
-## 行为
+## 八个入口
 
-| 索引 ID | 文档 |
-| --- | --- |
-| `behavior.navigation_badge` | [导航](/setting/navigation/) |
-| `behavior.predictive_back` | [导航](/setting/navigation/) |
-| `behavior.nav_custom_icons` | [导航](/setting/navigation/) |
-| `behavior.nav_mode` | [导航](/setting/navigation/) |
-| `behavior.nav_show_plugin` | [导航](/setting/navigation/) |
-| `behavior.nav_show_superuser` | [导航](/setting/navigation/) |
-| `behavior.nav_show_module` | [导航](/setting/navigation/) |
-| `behavior.floating_bar_style` | [悬浮导航栏](/setting/floating-bar/) |
-| `behavior.floating_bar_glass` | [悬浮导航栏](/setting/floating-bar/) |
-| `behavior.glass_blur_strength` | [悬浮导航栏](/setting/floating-bar/) |
-| `behavior.glass_transparency` | [悬浮导航栏](/setting/floating-bar/) |
-| `behavior.glass_highlight` | [悬浮导航栏](/setting/floating-bar/) |
-| `behavior.glass_specular` | [悬浮导航栏](/setting/floating-bar/) |
-| `behavior.glass_inner_glow` | [悬浮导航栏](/setting/floating-bar/) |
-| `behavior.glass_border` | [悬浮导航栏](/setting/floating-bar/) |
-| `behavior.floating_bar_compact` | [悬浮导航栏](/setting/floating-bar/) |
-| `behavior.floating_auto_hide` | [悬浮导航栏](/setting/floating-bar/) |
-| `behavior.floating_swipe_hide` | [悬浮导航栏](/setting/floating-bar/) |
-| `behavior.sucompat` | [交互与兼容](/setting/interaction/) |
-| `behavior.soft_reboot` | [交互与兼容](/setting/interaction/) |
-| `behavior.web_debugging` | [交互与兼容](/setting/interaction/) |
-| `behavior.auto_jailbreak` | [交互与兼容](/setting/interaction/) |
-| `behavior.module_card_show_more` | [模块卡片与横幅](/setting/module-cards/) |
-| `behavior.module_card_fold_system` | [模块卡片与横幅](/setting/module-cards/) |
-| `behavior.module_card_spliced` | [模块卡片与横幅](/setting/module-cards/) |
-| `behavior.module_card_button_style` | [模块卡片与横幅](/setting/module-cards/) |
-| `behavior.module_banner_enabled` | [模块卡片与横幅](/setting/module-cards/) |
-| `behavior.module_banner_folk` | [模块卡片与横幅](/setting/module-cards/) |
-| `behavior.module_banner_api_mode` | [模块卡片与横幅](/setting/module-cards/) |
-| `behavior.module_banner_api_source` | [模块卡片与横幅](/setting/module-cards/) |
-| `behavior.module_banner_marketplace` | [模块卡片与横幅](/setting/module-cards/) |
-| `behavior.module_banner_clear_cache` | [模块卡片与横幅](/setting/module-cards/) |
-| `behavior.module_banner_opacity` | [模块卡片与横幅](/setting/module-cards/) |
-| `behavior.module_banner_custom_opacity` | [模块卡片与横幅](/setting/module-cards/) |
+::: table 设置分类
 
-## 功能与安全
+| 入口 | 一句话作用 | 不知道先看什么时 |
+| --- | --- | --- |
+| **通用** | 放置不属于外观、Root 能力或数据维护的全局选项。 | 更新、语言、App Profile 模板 |
+| **外观** | 决定界面看起来是什么样。 | 主题、壁纸、字体、首页与模块卡片外观 |
+| **行为** | 决定界面如何操作、如何导航，以及部分交互兼容。 | 导航、悬浮栏、手势、模块卡片行为 |
+| **功能** | 管理内核特性、内置引擎和文件系统隔离。 | Zygisk、Sui、Folk Mount、NoMount、网络隔离 |
+| **安全** | 管理内核安全边界与调试入口。 | SELinux、ADB Root、Shell Root 限制 |
+| **验证** | 用管理器自己的凭据保护启动和敏感操作。 | 应用锁、PIN、图案、操作保护 |
+| **多媒体** | 管理界面振动与声音。 | 振动、背景音乐、触摸音效、启动音效 |
+| **备份** | 保存和恢复模块、Root 授权及启动分区。 | 立即备份、WebDAV、恢复 |
 
-| 索引 ID | 文档 |
-| --- | --- |
-| `function.kernel_umount` | [Root 与挂载策略](/setting/root-policy/) |
-| `function.umount_modules_default` | [Root 与挂载策略](/setting/root-policy/) |
-| `function.avc_spoof` | [隐藏与内核安全](/setting/hiding/) |
-| `function.sulog` | [诊断与反馈](/setting/diagnostics/) |
-| `function.dynamic_manager` | [访问控制](/setting/access/) |
-| `function.folk_zygisk` | [内置能力](/setting/builtin/) |
-| `function.sui` | [内置能力](/setting/builtin/) |
-| `function.sui_manage` | [内置能力](/setting/builtin/) |
-| `function.folk_mount` | [内置能力](/setting/builtin/) |
-| `function.nomount` | [内置能力](/setting/builtin/) |
-| `function.uts_view` | [内置能力](/setting/builtin/) |
-| `function.netisolate` | [内置能力](/setting/builtin/) |
-| `security.selinux_hide` | [隐藏与内核安全](/setting/hiding/) |
-| `function.mount_view_filter` | [隐藏与内核安全](/setting/hiding/) |
-| `security.selinux_mode` | [隐藏与内核安全](/setting/hiding/) |
-| `security.adb_root` | [访问控制](/setting/access/) |
-| `security.shell_su_adb_only` | [访问控制](/setting/access/) |
+:::
 
-## 验证
+```mermaid
+flowchart TD
+    A["我要改什么？"] --> B{"只是界面外观？"}
+    B -->|"是"| C["外观"]
+    B -->|"否"| D{"是导航或交互方式？"}
+    D -->|"是"| E["行为"]
+    D -->|"否"| F{"涉及 Root 能力或引擎？"}
+    F -->|"是"| G["功能"]
+    F -->|"否"| H{"涉及安全边界或调试？"}
+    H -->|"是"| I["安全"]
+    H -->|"否"| J{"是密码、音乐或备份？"}
+    J -->|"验证"| K["验证"]
+    J -->|"多媒体"| L["多媒体"]
+    J -->|"备份"| M["备份"]
+```
 
-| 索引 ID | 文档 |
-| --- | --- |
-| `authentication.default_method` | [身份验证](/setting/authentication/) |
-| `authentication.pin` | [身份验证](/setting/authentication/) |
-| `authentication.pattern` | [身份验证](/setting/authentication/) |
-| `authentication.target.app_start` | [身份验证](/setting/authentication/) |
-| `authentication.target.module_install` | [身份验证](/setting/authentication/) |
-| `authentication.target.module_uninstall` | [身份验证](/setting/authentication/) |
-| `authentication.target.module_disable` | [身份验证](/setting/authentication/) |
-| `authentication.target.module_flash` | [身份验证](/setting/authentication/) |
-| `authentication.target.theme_import` | [身份验证](/setting/authentication/) |
-| `authentication.target.reboot` | [身份验证](/setting/authentication/) |
+## 两分钟定位
 
-## 多媒体
+:::: steps
 
-| 索引 ID | 文档 |
-| --- | --- |
-| `multimedia.vibration` | [多媒体](/setting/multimedia/) |
-| `multimedia.music` | [多媒体](/setting/multimedia/) |
-| `multimedia.autoplay` | [多媒体](/setting/multimedia/) |
-| `multimedia.loop` | [多媒体](/setting/multimedia/) |
-| `multimedia.startup_sound` | [多媒体](/setting/multimedia/) |
-| `multimedia.sound` | [多媒体](/setting/multimedia/) |
-| `multimedia.sound_source` | [多媒体](/setting/multimedia/) |
-| `multimedia.sound_preset` | [多媒体](/setting/multimedia/) |
-| `multimedia.sound_scope` | [多媒体](/setting/multimedia/) |
-| `multimedia.select_file` | [多媒体](/setting/multimedia/) |
-| `multimedia.clear_file` | [多媒体](/setting/multimedia/) |
+1. **先看首页八宫格**
 
-## 备份
+   图标下方只写入口名。点进分类页后，同一个标题下会按组列出全部相关选项。
 
-| 索引 ID | 文档 |
-| --- | --- |
-| `backup.local_enabled` | [备份](/setting/backup/) |
-| `backup.webdav_enabled` | [备份](/setting/backup/) |
-| `backup.open_folder` | [备份](/setting/backup/) |
-| `backup.before_flash` | [备份](/setting/backup/) |
-| `backup.modules` | [备份](/setting/backup/) |
-| `backup.allowlist` | [备份](/setting/backup/) |
-| `backup.now` | [备份](/setting/backup/) |
-| `backup.list` | [备份](/setting/backup/) |
-| `backup.webdav_test` | [备份](/setting/backup/) |
-| `backup.webdav_browse` | [备份](/setting/backup/) |
+2. **先判断影响范围**
 
-## 设置首页入口
+   替换壁纸、字体和布局通常只影响管理器；切换挂载、内核特性、SELinux 或分区恢复则会改变系统行为。后者先读对应分类页的警告。
 
-| 入口 | 文档 |
-| --- | --- |
-| 壁纸图库 | [壁纸](/setting/wallpaper/) |
-| 问题反馈 | [诊断与反馈](/setting/diagnostics/) |
-| 免责声明 | [维护与危险操作](/setting/maintenance/) |
-| 发送日志 | [诊断与反馈](/setting/diagnostics/) |
-| 关于 | [关于](/setting/about/) |
-| 卸载 | [维护与危险操作](/setting/maintenance/) |
+3. **同名功能看上下文**
+
+   “模块”可能指普通模块、内核模块或 Root 驱动。设置里的“模块”入口负责模块管理；“功能 → Folk Mount”负责模块文件怎样注入。
+
+4. **改完确认生效方式**
+
+   有的开关立即生效，有的重启后生效，有的只影响下一次启动。分类页会明确写出，不要把所有“已保存”都当成“已经生效”。
+
+::::
+
+## 设置首页其他入口
+
+这些入口不属于八个分类，但在设置首页可以直接使用。
+
+::: table 首页快捷入口
+
+| 入口 | 能做什么 | 注意 |
+| --- | --- | --- |
+| **个人资料头** | 点头像编辑昵称、签名、头像与头像不透明度。头像可用本地图片、QQ 头像或 Gravatar。 | 只修改管理器中的展示资料。 |
+| **壁纸图鉴** | 浏览、预览并下载壁纸；Android 10+ 保存到 `Pictures/FinaSU`。 | 下载不会自动应用；之后到“外观 → 壁纸”选择图片。详见[壁纸图鉴](/setting/wallpaper-gallery/)。 |
+| **Bug 反馈** | 打开项目的公开问题入口。 | 提交前先准备版本、运行方式、复现步骤和日志；不要公开凭据。 |
+| **免责声明** | 查看 Root、刷写、模块和安全策略变更的风险说明。 | 不能替代备份和救砖准备。 |
+| **发送日志** | 选择并导出管理器诊断日志。 | 日志可能包含包名、路径和设备信息，发送前检查。 |
+| **关于** | 查看管理器、内核、运行方式和项目信息。 | 反馈问题时记录这里的版本与运行方式。 |
+| **卸载** | 只在 LKM 模式显示，提供永久卸载与恢复原厂镜像。 | 越狱模式（延迟加载）下不可用；操作前先备份。 |
+
+:::
+
+::: warning 找不到某个选项
+
+先确认当前模式是否支持它。部分选项只在特定系统版本、Zygisk、SUSFS、Folk Mount 或越狱模式下出现；内核不支持时，开关也可能置灰。不要用修改配置文件的方式强行打开不支持的控件。
+
+:::
+
+## 状态为什么不可修改
+
+功能项可能出现四种状态：
+
+:::: field-group
+
+::: field `supported`
+@type `可修改`
+当前内核与运行状态支持该功能，可以直接切换。
+:::
+
+::: field `forced`
+@type `已强制`
+启动配置已经决定了值，管理器不允许在这里覆盖。
+:::
+
+::: field `managed`
+@type `模块管理`
+该能力当前由一个模块管理，设置页不应与它争夺控制权。
+:::
+
+::: field `unsupported`
+@type `不支持`
+当前内核缺少对应能力。升级到包含该特性的内核或安装包才可能解决。
+:::
+
+::::
+
+## 继续阅读
+
+- [通用](/setting/general/)：更新、语言、App Profile 模板。
+- [外观](/setting/appearance/)：主题、壁纸、字体、首页布局。
+- [行为](/setting/behavior/)：导航、悬浮栏、SU 兼容、模块展示。
+- [功能](/setting/function/)：挂载策略、FolkZygisk、Sui、NoMount 等。
+- [安全](/setting/security/)：SELinux、ADB Root 与 Shell 限制。
+- [验证](/setting/authentication/)：管理器应用锁与敏感操作保护。
+- [多媒体](/setting/multimedia/)：振动、背景音乐与音效。
+- [备份](/setting/backup/)：本地与 WebDAV 备份恢复。
