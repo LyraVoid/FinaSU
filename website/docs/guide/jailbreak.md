@@ -13,6 +13,12 @@ copyright:
 
 越狱模式（late load）在当前系统启动后加载 FinaSU 驱动。它适合无法直接修补启动镜像、但设备已经具备提权入口的场景。
 
+::: tip 首页 Jailbreak 是兼容方案
+
+FinaSU 首页的 **Jailbreak** 依赖 Permissive SELinux 或已有的 Magica 提权环境，属于较宽容的兼容路径。当前更常见的是先用 CVE 漏洞取得 uid 0，再执行 FinaSU 的 `ksud late-load`，例如 GhostLock（CVE-2026-43499）。优先使用可以选择管理器的动态提权工具：这类工具会从所选管理器的原生库目录读取 `libksud.so`，而不是只认固定包名；选中 FinaSU 后即可使用它自带的 `ksud`。CVE 工具需要与设备内核精确匹配的 profile，漏洞修复后也不能使用。固定工具的手工适配见[从 KernelSU 切换](/guide/switch/kernelsu/)。
+
+:::
+
 ## 前提
 
 - Bootloader 通常仍需解锁。在锁定设备上刷写分区会破坏 AVB，可能导致无法启动。
