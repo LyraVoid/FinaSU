@@ -8,5 +8,5 @@ export const zhNavbar = defineNavbarConfig([
   { text: '设置', link: '/setting/overview/', icon: 'ri:settings-3-line' },
   { text: '主题', link: '/theme/theme-use/', icon: 'ri:palette-line' },
   { text: '开发', link: '/developer/build/', icon: 'ri:code-s-slash-line' },
-  { text: '排错', link: '/troubleshoot/superuser/faq/', icon: 'ri:question-line' },
+  { text: '排错', link: '/troubleshoot/root-request/', icon: 'ri:question-line' },
 ])

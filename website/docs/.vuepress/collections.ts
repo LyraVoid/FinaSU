@@ -267,4 +267,58 @@ const theme = defineCollection({
   ],
 })
 
-export const zhCollections = defineCollections([guide, manager, builtin, setting, theme])
+const developer = defineCollection({
+  type: 'doc',
+  dir: 'developer',
+  linkPrefix: '/developer',
+  title: '开发',
+  sidebar: [
+    {
+      text: '开发文档',
+      icon: 'ri:code-s-slash-line',
+      collapsed: false,
+      items: [
+        { text: '构建 FinaSU', link: '/developer/build/' },
+        { text: '内核集成', link: '/developer/builtin-integration/' },
+        { text: 'SuperCall 与 UAPI', link: '/developer/supercall/' },
+        { text: '模块配置', link: '/developer/module-config/' },
+        { text: 'Lua 插件接口', link: '/developer/lua-plugin/' },
+        { text: '主题包结构', link: '/developer/theme-package/' },
+      ],
+    },
+  ],
+})
+
+const troubleshoot = defineCollection({
+  type: 'doc',
+  dir: 'troubleshoot',
+  linkPrefix: '/troubleshoot',
+  title: '排错',
+  sidebar: [
+    {
+      text: '问题排查',
+      icon: 'ri:first-aid-kit-line',
+      collapsed: false,
+      items: [
+        { text: '无法开机', link: '/troubleshoot/bootloop/' },
+        { text: '设备兼容性', link: '/troubleshoot/compatibility/' },
+        { text: '检测与隐藏', link: '/troubleshoot/detection/' },
+        { text: '管理器认证失败', link: '/troubleshoot/manager-auth/' },
+        { text: 'Root 授权请求不出现', link: '/troubleshoot/root-request/' },
+        { text: '驱动运行异常', link: '/troubleshoot/runtime/' },
+        { text: '日志与反馈', link: '/troubleshoot/logs/' },
+        { text: '提交问题报告', link: '/troubleshoot/report/' },
+      ],
+    },
+  ],
+})
+
+export const zhCollections = defineCollections([
+  guide,
+  manager,
+  builtin,
+  setting,
+  theme,
+  developer,
+  troubleshoot,
+])
