@@ -205,7 +205,7 @@ APatch 的 KernelPatch 和 FinaSU 内置驱动都会接管内核入口。两套�
 
 ## 路径三：APatch → 越狱（简述）
 
-APatch 用户通常已经有永久 Root，不需要走越狱。只有在无法或不想修改启动分区，并且设备具备现成的提权入口时，才考虑[越狱与延迟加载](/guide/jailbreak/)。
+APatch 用户通常已经有永久 Root，不需要走越狱。只有在无法或不想修改启动分区，并且设备具备现成的提权入口时，才考虑越狱模式。
 
 越狱只对当前启动会话有效，普通重启后会丢失 Root。CVE 提权、动态提权工具和固定工具的 `ksud` 替换方式见[从 KernelSU 切换](/guide/switch/kernelsu/)中的路径四。
 
@@ -336,7 +336,7 @@ APatch 的模块还能用吗？
 APatch 用户需要越狱吗？
 
 {.}
-通常不需要。越狱只在无法或不想永久修改启动分区时考虑，而且重启后会丢失 Root。详见[越狱与延迟加载](/guide/jailbreak/)。
+通常不需要。越狱只在无法或不想永久修改启动分区时考虑，而且重启后会丢失 Root。
 :::
 
 ## 相关页面
@@ -344,7 +344,6 @@ APatch 用户需要越狱吗？
 - [安装与刷写](/guide/install/)
 - [从 KernelSU 切换](/guide/switch/kernelsu/)
 - [从 Magisk 切换](/guide/switch/magisk/)
-- [越狱与延迟加载](/guide/jailbreak/)
 - [内核集成](/developer/builtin-integration/)
 - [救砖](/guide/rescue-bootloop/)
 

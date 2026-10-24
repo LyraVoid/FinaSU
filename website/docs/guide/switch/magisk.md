@@ -198,7 +198,7 @@ Magisk 的 ramdisk 修改、FinaSU 的内置驱动和其他 Root 方案同时存
 
 ## 路径三：Magisk → 越狱（简述）
 
-Magisk 用户通常已经有永久 Root，不需要走越狱。只有在无法或不想修改启动分区，并且设备具备现成的提权入口时，才考虑[越狱与延迟加载](/guide/jailbreak/)。
+Magisk 用户通常已经有永久 Root，不需要走越狱。只有在无法或不想修改启动分区，并且设备具备现成的提权入口时，才考虑越狱模式。
 
 越狱只对当前启动会话有效，普通重启后会丢失 Root。固定管理器越狱工具的切换方式见[从 KernelSU 切换](/guide/switch/kernelsu/)中的路径四；CVE 提权和手工替换 `ksud` 也在那里说明。
 
@@ -316,14 +316,13 @@ Zygisk 模块怎么办？
 Magisk 用户需要越狱吗？
 
 {.}
-通常不需要。越狱只在无法或不想永久修改启动分区时考虑，而且重启后会丢失 Root。详见[越狱与延迟加载](/guide/jailbreak/)。
+通常不需要。越狱只在无法或不想永久修改启动分区时考虑，而且重启后会丢失 Root。
 :::
 
 ## 相关页面
 
 - [安装与刷写](/guide/install/)
 - [从 KernelSU 切换](/guide/switch/kernelsu/)
-- [越狱与延迟加载](/guide/jailbreak/)
 - [内核集成](/developer/builtin-integration/)
 - [救砖](/guide/rescue-bootloop/)
 - [常见问题与解答](/guide/faq/)

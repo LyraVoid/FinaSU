@@ -59,12 +59,6 @@ const docsSidebar: ThemeSidebarItem[] = [
         badge: { text: '重磅', type: 'danger' },
       },
       {
-        text: '越狱模式',
-        link: '/guide/jailbreak/',
-        icon: 'ri:lock-unlock-line',
-        badge: { text: '尝鲜', type: 'warning' },
-      },
-      {
         text: '更新 FinaSU',
         link: '/guide/update/',
         icon: 'ri:refresh-line',

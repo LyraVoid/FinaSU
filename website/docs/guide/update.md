@@ -508,7 +508,6 @@ A/B 设备如果希望把 FinaSU 安装到新槽位，必须在 OTA 完成但尚
 ## 相关页面
 
 - [安装与刷写](/guide/install/)
-- [越狱与延迟加载](/guide/jailbreak/)
 - [内核集成](/developer/builtin-integration/)
 - [更新与版本设置](/setting/update/)
 - [救砖](/guide/rescue-bootloop/)

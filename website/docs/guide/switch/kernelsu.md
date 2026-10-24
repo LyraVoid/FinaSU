@@ -710,7 +710,6 @@ KernelSU 与 FinaSU 可能使用相同路径，所以数据看起来“还在”
 
 - [安装与刷写](/guide/install/)
 - [更新 FinaSU](/guide/update/)
-- [越狱与延迟加载](/guide/jailbreak/)
 - [内核集成](/developer/builtin-integration/)
 - [救砖](/guide/rescue-bootloop/)
 - [常见问题与解答](/guide/faq/)
