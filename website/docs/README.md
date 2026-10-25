@@ -8,7 +8,7 @@ config:
   - type: doc-hero
     full: true
     background: tint-plate
-    tintPlate: 255,217,220
+    tintPlate: 219,229,255
     hero:
       name: FinaSU
       tagline: Kernel-based Android Root
