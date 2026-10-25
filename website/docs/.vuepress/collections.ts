@@ -4,7 +4,7 @@ import {
   type ThemeSidebarItem,
 } from 'vuepress-theme-plume'
 
-const docsSidebar: ThemeSidebarItem[] = [
+export const docsSidebar: ThemeSidebarItem[] = [
   {
     text: '从这里开始',
     icon: 'ri:book-open-line',
@@ -624,7 +624,6 @@ const guide = defineCollection({
   dir: 'guide',
   linkPrefix: '/guide',
   title: '使用指南',
-  sidebar: docsSidebar,
 })
 
 const manager = defineCollection({
@@ -632,7 +631,6 @@ const manager = defineCollection({
   dir: 'manager',
   linkPrefix: '/manager',
   title: '管理器',
-  sidebar: docsSidebar,
 })
 
 const builtin = defineCollection({
@@ -640,7 +638,6 @@ const builtin = defineCollection({
   dir: 'builtin',
   linkPrefix: '/builtin',
   title: '内置能力',
-  sidebar: docsSidebar,
 })
 
 const setting = defineCollection({
@@ -648,7 +645,6 @@ const setting = defineCollection({
   dir: 'setting',
   linkPrefix: '/setting',
   title: '设置',
-  sidebar: docsSidebar,
 })
 
 const theme = defineCollection({
@@ -656,7 +652,6 @@ const theme = defineCollection({
   dir: 'theme',
   linkPrefix: '/theme',
   title: '主题',
-  sidebar: docsSidebar,
 })
 
 const developer = defineCollection({
@@ -664,7 +659,6 @@ const developer = defineCollection({
   dir: 'developer',
   linkPrefix: '/developer',
   title: '开发',
-  sidebar: docsSidebar,
 })
 
 const troubleshoot = defineCollection({
@@ -672,7 +666,6 @@ const troubleshoot = defineCollection({
   dir: 'troubleshoot',
   linkPrefix: '/troubleshoot',
   title: '排错',
-  sidebar: docsSidebar,
 })
 
 export const zhCollections = defineCollections([

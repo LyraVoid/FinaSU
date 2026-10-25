@@ -3,7 +3,7 @@
  */
 
 import { defineThemeConfig } from 'vuepress-theme-plume'
-import { zhCollections } from './collections'
+import { docsSidebar, zhCollections } from './collections'
 import { zhNavbar } from './navbar'
 
 /**
@@ -27,6 +27,7 @@ export default defineThemeConfig({
       },
 
       navbar: zhNavbar,
+      sidebar: { '/': docsSidebar },
       collections: zhCollections,
     },
     // 英文站预留：页面就绪后再挂载 '/en/' locale。
@@ -38,7 +39,7 @@ export default defineThemeConfig({
   },
 
   transition: {
-    page: true,
+    page: false,
     appearance: 'fade',
   },
 })
