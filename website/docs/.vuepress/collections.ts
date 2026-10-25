@@ -357,7 +357,7 @@ const docsSidebar: ThemeSidebarItem[] = [
         collapsed: true,
         items: [
           {
-            text: '夜间模式与颜色',
+            text: '夜间模式、颜色与标题',
             link: '/theme/global/theme-style/',
             icon: 'material-symbols:palette-outline',
           },
@@ -367,7 +367,7 @@ const docsSidebar: ThemeSidebarItem[] = [
             icon: 'material-symbols:blur-on',
           },
           {
-            text: '透明度',
+            text: '透明度与表面',
             link: '/theme/global/transparency/',
             icon: 'material-symbols:opacity',
           },
