@@ -16,16 +16,46 @@ copyright:
 
 FinaSU 不要求所有用户接受同一种界面。无论你喜欢简约布局、动态背景，还是需要 Zygisk、Sui、模块挂载和系统级管理，都可以在同一套管理器中完成配置。
 
+## 运行结构
+
+管理器负责操作，`ksud` 负责用户态执行，最终授权与策略由内核驱动裁决。
+
+```mermaid
+flowchart LR
+    A["FinaSU 管理器"] --> B["ksud"]
+    B --> C["内核驱动"]
+    B --> D["Folk Mount / FolkZygisk / Sui / NoMount"]
+    C --> E["Root 授权 / App Profile"]
+```
+
 ## 核心特性
 
-- **高度自定义主题**：5 套首页布局、15 组主题色、图片与视频背景、自定义字体、导航图标、背景音乐、触摸音效和振动反馈。
-- **内置能力**：Folk Mount、FolkZygisk 和 NoMount 随 FinaSU 发布，由 `ksud` 管理，不需要再安装同类上游模块。内置能力与 Built-In 安装方式不是一回事。
-- **内置 Sui**：为兼容 Shizuku API 的应用提供 Root 或 Shell 后端。Sui 依赖 Zygisk，内置 FolkZygisk 和外部兼容提供者都可使用；外部提供者下 FinaSU 无法验证注入结果。
-- **内核级 Root**：`su`、白名单和 App Profile 由内核驱动裁决，可为单个应用设置 UID/GID、能力、SELinux 域和模块卸载策略。
-- **模块与插件**：支持 systemless 模块、WebUI、Metamodule 和 Lua 插件，也可从内置、社区、KernelSU 或自定义仓库获取模块。
-- **内核功能**：支持 UTS View 与按 UID 的网络隔离；SUSFS 实现不在 FinaSU 仓库内，需要内核源码集成或加载匹配的 SUSFS-LKM。
-- **三种安装方式**：LKM 修改 ramdisk，Built-In 将驱动编入内核，越狱模式不修改启动分区但重启后不保留 Root。
-- **备份与恢复**：可备份超级用户列表、刷写前模块包和指定启动分区，并保存到本地目录或 WebDAV。
+<CardGrid :cols="{ sm: 1, md: 2, lg: 2 }">
+  <Card title="内核级 Root" icon="ri:shield-check-line">
+    <ul>
+      <li><strong>Root 由内核裁决</strong>：<code>su</code>、白名单和 App Profile 不依赖管理器伪造。</li>
+      <li><strong>三种安装方式</strong>：LKM 推荐，Built-In 进阶，越狱模式仅在当前启动会话有效。</li>
+    </ul>
+  </Card>
+  <Card title="内置能力" icon="ri:apps-2-line">
+    <ul>
+      <li>Folk Mount、FolkZygisk、Sui 和 NoMount 随 FinaSU 发布，由 <code>ksud</code> 管理。</li>
+      <li>Sui 依赖 Zygisk；外部兼容提供者也可使用，但 FinaSU 无法验证其注入结果。</li>
+    </ul>
+  </Card>
+  <Card title="高度自定义" icon="ri:palette-line">
+    <ul>
+      <li>5 套首页布局、15 组主题色，以及图片、视频、字体、图标、音乐、音效和振动。</li>
+      <li>支持 <code>.fpt</code> 主题导入导出与在线主题商店。</li>
+    </ul>
+  </Card>
+  <Card title="模块与维护" icon="ri:tools-line">
+    <ul>
+      <li>支持 systemless 模块、WebUI、Metamodule 和 Lua 插件，并可从多个模块源获取。</li>
+      <li>可备份授权、模块和启动分区；SUSFS 需要外部内核集成或匹配的 SUSFS-LKM。</li>
+    </ul>
+  </Card>
+</CardGrid>
 
 如果能给我一个 star，那将是对我莫大的鼓励。
 
