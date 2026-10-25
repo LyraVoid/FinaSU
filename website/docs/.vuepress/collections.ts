@@ -4,6 +4,10 @@ import {
   type ThemeSidebarItem,
 } from 'vuepress-theme-plume'
 
+/**
+ * tip: 推荐、常用或核心；warning: 前置条件或需谨慎；
+ * danger: 高风险或紧急；info: 进阶、按需或诊断。
+ */
 export const docsSidebar: ThemeSidebarItem[] = [
   {
     text: '从这里开始',
@@ -27,28 +31,32 @@ export const docsSidebar: ThemeSidebarItem[] = [
             text: '方案概览',
             link: '/guide/install/',
             icon: 'ri:list-check',
+            badge: { text: '先看', type: 'info' },
           },
           {
             text: 'LKM',
             link: '/guide/install/lkm/',
             icon: 'ri:download-line',
+            badge: { text: '推荐', type: 'tip' },
           },
           {
             text: 'Built-In',
             link: '/guide/install/built-in/',
             icon: 'ri:code-box-line',
+            badge: { text: '进阶', type: 'info' },
           },
           {
             text: '越狱模式',
             link: '/guide/install/jailbreak/',
             icon: 'ri:lock-unlock-line',
+            badge: { text: '尝鲜', type: 'warning' },
           },
         ],
       },
       {
         text: '切换到 FinaSU',
         icon: 'ri:swap-line',
-        badge: { text: '推荐', type: 'tip' },
+        badge: { text: '按需', type: 'info' },
         collapsed: false,
         items: [
           {
@@ -78,26 +86,25 @@ export const docsSidebar: ThemeSidebarItem[] = [
         text: '更新 FinaSU',
         link: '/guide/update/',
         icon: 'ri:refresh-line',
-        badge: { text: '重要', type: 'danger' },
+        badge: { text: '维护', type: 'info' },
       },
       {
         text: '常见问题与解答',
         link: '/guide/faq/',
         icon: 'material-symbols:help-outline',
-        badge: { text: '必看', type: 'warning' },
+        badge: { text: '常用', type: 'info' },
       },
       {
         text: '基础概念',
         link: '/guide/information/',
         icon: 'material-symbols:menu-book',
-        badge: { text: '必看', type: 'warning' },
+        badge: { text: '入门', type: 'tip' },
       },
     ],
   },
   {
     text: '设置',
     icon: 'ri:settings-3-line',
-    badge: { text: 'V3', type: 'danger' },
     collapsed: true,
     items: [
       {
@@ -117,6 +124,7 @@ export const docsSidebar: ThemeSidebarItem[] = [
             text: 'App Profile 模板',
             link: '/setting/profile-template/',
             icon: 'ri:file-user-line',
+            badge: { text: '进阶', type: 'info' },
           },
         ],
       },
@@ -129,7 +137,12 @@ export const docsSidebar: ThemeSidebarItem[] = [
           { text: '主题与颜色', link: '/setting/theme/', icon: 'ri:palette-line' },
           { text: '壁纸', link: '/setting/wallpaper/', icon: 'ri:image-line' },
           { text: '字体', link: '/setting/font/', icon: 'ri:font-size-2' },
-          { text: '主题商店', link: '/setting/theme-store/', icon: 'ri:store-3-line' },
+          {
+            text: '主题商店',
+            link: '/setting/theme-store/',
+            icon: 'ri:store-3-line',
+            badge: { text: '推荐', type: 'tip' },
+          },
           { text: '首页与布局', link: '/setting/home/', icon: 'ri:home-4-line' },
         ],
       },
@@ -163,6 +176,7 @@ export const docsSidebar: ThemeSidebarItem[] = [
             text: 'Root 与挂载策略',
             link: '/setting/root-policy/',
             icon: 'ri:shield-keyhole-line',
+            badge: { text: '进阶', type: 'info' },
           },
         ],
       },
@@ -173,13 +187,19 @@ export const docsSidebar: ThemeSidebarItem[] = [
         items: [
           { text: '安全设置', link: '/setting/security/', icon: 'ri:shield-keyhole-line' },
           { text: '隐藏与内核安全', link: '/setting/hiding/', icon: 'ri:eye-off-line' },
-          { text: '访问控制', link: '/setting/access/', icon: 'ri:lock-password-line' },
+          {
+            text: '访问控制',
+            link: '/setting/access/',
+            icon: 'ri:lock-password-line',
+            badge: { text: '谨慎', type: 'warning' },
+          },
         ],
       },
       {
         text: '验证',
         link: '/setting/authentication/',
         icon: 'ri:fingerprint-line',
+        badge: { text: '推荐', type: 'tip' },
       },
       {
         text: '多媒体',
@@ -190,6 +210,7 @@ export const docsSidebar: ThemeSidebarItem[] = [
         text: '备份',
         link: '/setting/backup/',
         icon: 'ri:archive-line',
+        badge: { text: '推荐', type: 'tip' },
       },
       {
         text: '设置首页入口',
@@ -201,11 +222,17 @@ export const docsSidebar: ThemeSidebarItem[] = [
             link: '/setting/wallpaper-gallery/',
             icon: 'ri:image-line',
           },
-          { text: '诊断与反馈', link: '/setting/diagnostics/', icon: 'ri:bug-line' },
+          {
+            text: '诊断与反馈',
+            link: '/setting/diagnostics/',
+            icon: 'ri:bug-line',
+            badge: { text: '反馈', type: 'info' },
+          },
           {
             text: '维护与危险操作',
             link: '/setting/maintenance/',
             icon: 'ri:tools-line',
+            badge: { text: '危险', type: 'danger' },
           },
           { text: '关于', link: '/setting/about/', icon: 'ri:information-line' },
         ],
@@ -232,11 +259,13 @@ export const docsSidebar: ThemeSidebarItem[] = [
             text: 'App Profile',
             link: '/manager/app-profile/',
             icon: 'ri:user-settings-line',
+            badge: { text: '进阶', type: 'info' },
           },
           {
             text: '动态管理器',
             link: '/manager/dynamic-manager/',
             icon: 'ri:shield-keyhole-line',
+            badge: { text: '进阶', type: 'info' },
           },
         ],
       },
@@ -245,10 +274,30 @@ export const docsSidebar: ThemeSidebarItem[] = [
         icon: 'ri:apps-2-line',
         collapsed: true,
         items: [
-          { text: '模块管理', link: '/manager/module/', icon: 'ri:puzzle-line' },
-          { text: '模块仓库', link: '/manager/module-store/', icon: 'ri:store-3-line' },
-          { text: 'Lua 插件', link: '/manager/plugin/', icon: 'ri:braces-line' },
-          { text: '内核模块', link: '/manager/kernel-module/', icon: 'ri:cpu-line' },
+          {
+            text: '模块管理',
+            link: '/manager/module/',
+            icon: 'ri:puzzle-line',
+            badge: { text: '常用', type: 'tip' },
+          },
+          {
+            text: '模块仓库',
+            link: '/manager/module-store/',
+            icon: 'ri:store-3-line',
+            badge: { text: '推荐', type: 'tip' },
+          },
+          {
+            text: 'Lua 插件',
+            link: '/manager/plugin/',
+            icon: 'ri:braces-line',
+            badge: { text: '进阶', type: 'info' },
+          },
+          {
+            text: '内核模块',
+            link: '/manager/kernel-module/',
+            icon: 'ri:cpu-line',
+            badge: { text: '危险', type: 'danger' },
+          },
         ],
       },
       {
@@ -256,16 +305,23 @@ export const docsSidebar: ThemeSidebarItem[] = [
         icon: 'ri:database-2-line',
         collapsed: true,
         items: [
-          { text: 'SU 日志', link: '/manager/su-log/', icon: 'ri:file-list-3-line' },
+          {
+            text: 'SU 日志',
+            link: '/manager/su-log/',
+            icon: 'ri:file-list-3-line',
+            badge: { text: '诊断', type: 'info' },
+          },
           {
             text: '备份与 WebDAV',
             link: '/manager/backup/',
             icon: 'ri:cloud-line',
+            badge: { text: '推荐', type: 'tip' },
           },
           {
             text: '/data/adb 存储结构',
             link: '/manager/storage/',
             icon: 'ri:folder-settings-line',
+            badge: { text: '勿改', type: 'danger' },
           },
         ],
       },
@@ -274,7 +330,7 @@ export const docsSidebar: ThemeSidebarItem[] = [
   {
     text: '内置能力',
     icon: 'ri:apps-2-line',
-    badge: { text: '重磅', type: 'danger' },
+    badge: { text: '核心', type: 'tip' },
     collapsed: true,
     items: [
       {
@@ -296,6 +352,7 @@ export const docsSidebar: ThemeSidebarItem[] = [
         text: 'Sui 服务',
         link: '/builtin/sui/',
         icon: 'ri:water-flash-line',
+        badge: { text: '需 Zygisk', type: 'warning' },
       },
       {
         text: 'UTS View',
@@ -306,20 +363,26 @@ export const docsSidebar: ThemeSidebarItem[] = [
         text: '网络隔离',
         link: '/builtin/net-isolate/',
         icon: 'ri:wifi-off-line',
+        badge: { text: '谨慎', type: 'warning' },
       },
-      { text: 'NoMount', link: '/builtin/nomount/', icon: 'ri:folder-forbid-line' },
+      {
+        text: 'NoMount',
+        link: '/builtin/nomount/',
+        icon: 'ri:folder-forbid-line',
+        badge: { text: '进阶', type: 'info' },
+      },
       {
         text: 'SUSFS',
         link: '/builtin/susfs/',
         icon: 'ri:shield-keyhole-line',
-        badge: { text: '进阶', type: 'info' },
+        badge: { text: '需内核', type: 'warning' },
       },
     ],
   },
   {
     text: '主题',
     icon: 'ri:brush-3-line',
-    badge: { text: '推荐', type: 'tip' },
+    badge: { text: '自定义', type: 'tip' },
     collapsed: true,
     items: [
       {
@@ -331,7 +394,6 @@ export const docsSidebar: ThemeSidebarItem[] = [
             text: '主题预览与使用',
             link: '/theme/theme-use/',
             icon: 'ri:eye-line',
-            badge: { text: '推荐', type: 'tip' },
           },
           {
             text: '成为主题开发者',
@@ -562,7 +624,7 @@ export const docsSidebar: ThemeSidebarItem[] = [
             text: 'Built-In 内核集成',
             link: '/developer/builtin-integration/',
             icon: 'ri:terminal-box-line',
-            badge: { text: '进阶', type: 'info' },
+            badge: { text: '高风险', type: 'danger' },
           },
           { text: 'SuperCall 与 UAPI', link: '/developer/supercall/', icon: 'ri:plug-line' },
         ],
@@ -591,17 +653,28 @@ export const docsSidebar: ThemeSidebarItem[] = [
   {
     text: '排错',
     icon: 'ri:first-aid-kit-line',
-    badge: { text: '必看', type: 'danger' },
+    badge: { text: '按需', type: 'info' },
     collapsed: true,
     items: [
       { text: '排错总览', link: '/troubleshoot/', icon: 'ri:first-aid-kit-line' },
-      { text: '无法开机', link: '/troubleshoot/bootloop/', icon: 'ri:error-warning-line' },
+      {
+        text: '无法开机',
+        link: '/troubleshoot/bootloop/',
+        icon: 'ri:error-warning-line',
+        badge: { text: '紧急', type: 'danger' },
+      },
       {
         text: '设备兼容性',
         link: '/troubleshoot/compatibility/',
         icon: 'ri:smartphone-line',
+        badge: { text: '先查', type: 'info' },
       },
-      { text: '检测与隐藏', link: '/troubleshoot/detection/', icon: 'ri:eye-off-line' },
+      {
+        text: '检测与隐藏',
+        link: '/troubleshoot/detection/',
+        icon: 'ri:eye-off-line',
+        badge: { text: '进阶', type: 'info' },
+      },
       {
         text: '过检测',
         link: '/troubleshoot/pass-detection/',
@@ -618,7 +691,12 @@ export const docsSidebar: ThemeSidebarItem[] = [
         icon: 'ri:admin-line',
       },
       { text: '驱动运行异常', link: '/troubleshoot/runtime/', icon: 'ri:cpu-line' },
-      { text: '日志与反馈', link: '/troubleshoot/logs/', icon: 'ri:file-list-3-line' },
+      {
+        text: '日志与反馈',
+        link: '/troubleshoot/logs/',
+        icon: 'ri:file-list-3-line',
+        badge: { text: '反馈', type: 'info' },
+      },
       { text: '提交问题报告', link: '/troubleshoot/report/', icon: 'ri:bug-line' },
     ],
   },
