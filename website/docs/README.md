@@ -16,11 +16,15 @@ config:
       image: /icon.png
       actions:
         - theme: brand
-          text: 快速开始 →
-          link: /guide/intro/
+          text: 快速上手
+          link: /guide/get-started/
+          suffixIcon: ri:arrow-right-line
         - theme: alt
-          text: 安装与刷写 →
-          link: /guide/install/
+          text: GitHub
+          link: https://github.com/LyraVoid/FinaSU
+          icon: ri:github-fill
+          target: _blank
+          rel: noopener noreferrer
   - type: features
     features:
       - title: 高度自定义
