@@ -56,6 +56,7 @@ flowchart TD
 | 应用请求 Root 后没有授权或仍提示无 Root | 请求是否到达、UID 是否命中、Shell 来源是否受限 | [Root 授权请求不出现](/troubleshoot/root-request/) |
 | 驱动“已连接”但 `ksud`、模块或内置能力异常 | 用户态服务、运行模式或依赖链 | [驱动运行异常](/troubleshoot/runtime/) |
 | 模块或 Zygisk 能从其他应用看到，但目标应用看不到 | App Profile、挂载过滤、NoMount 例外或 SELinux | [检测与隐藏](/troubleshoot/detection/) |
+| 日常应用正常，但检测工具仍有红项 | 是否真的需要继续处理，避免无效叠加隐藏 | [过检测](/troubleshoot/pass-detection/) |
 | 需要在反馈前导出日志、比较时间线或检查日志内容 | 日志是否完整、是否含敏感信息 | [日志与反馈](/troubleshoot/logs/) |
 | 已经能复现问题，准备向维护者报告 | 如何给出最小但可处理的报告 | [提交问题报告](/troubleshoot/report/) |
 
@@ -238,6 +239,7 @@ flowchart TD
 - [管理器认证失败](/troubleshoot/manager-auth/)：签名、动态管理器和 UAPI。
 - [Root 授权请求不出现](/troubleshoot/root-request/)：请求、UID、Shell 与 Profile。
 - [驱动运行异常](/troubleshoot/runtime/)：`ksud`、模块、内置能力和运行模式。
+- [过检测](/troubleshoot/pass-detection/)：先保证目标应用可用，不追求检测工具全绿。
 - [检测与隐藏](/troubleshoot/detection/)：各隐藏手段能处理什么，不能处理什么。
 - [日志与反馈](/troubleshoot/logs/)：诊断日志、命令与隐私。
 - [提交问题报告](/troubleshoot/report/)：可复制的报告模板。

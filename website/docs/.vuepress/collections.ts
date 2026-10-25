@@ -603,6 +603,11 @@ export const docsSidebar: ThemeSidebarItem[] = [
       },
       { text: '检测与隐藏', link: '/troubleshoot/detection/', icon: 'ri:eye-off-line' },
       {
+        text: '过检测',
+        link: '/troubleshoot/pass-detection/',
+        icon: 'ri:shield-check-line',
+      },
+      {
         text: '管理器认证失败',
         link: '/troubleshoot/manager-auth/',
         icon: 'ri:shield-keyhole-line',

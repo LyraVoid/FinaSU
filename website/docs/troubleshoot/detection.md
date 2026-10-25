@@ -197,3 +197,4 @@ FinaSU 无法验证其注入结果。到外部提供者自己的管理页面检�
 - [NoMount](/builtin/nomount/)：VFS 重定向、例外 UID 与检测边界。
 - [SUSFS](/builtin/susfs/)：可选内核集成与 LKM。
 - [UTS View](/builtin/uts-view/)：只改变 `uname` 字段。
+- [过检测](/troubleshoot/pass-detection/)：检测工具没有全绿时，先判断是否值得继续处理。
