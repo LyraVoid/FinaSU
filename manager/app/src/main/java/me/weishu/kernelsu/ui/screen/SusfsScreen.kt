@@ -91,7 +91,8 @@ internal fun susfsControllerHintResource(status: SusfsStatus): Int = when {
 }
 
 private val susfsPages = listOf(R.string.susfs_overview, R.string.susfs_settings,
-    R.string.susfs_tab_paths, R.string.susfs_tab_spoof, R.string.susfs_tab_redirect, R.string.susfs_tab_extensions)
+    R.string.susfs_tab_paths, R.string.susfs_tab_spoof, R.string.susfs_tab_redirect, R.string.susfs_tab_extensions,
+    R.string.susfs_brene)
 
 @Composable
 fun SusfsScreen() {
@@ -102,7 +103,7 @@ fun SusfsScreen() {
     val scope = rememberCoroutineScope()
     val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior(rememberTopAppBarState())
     val pager = rememberPagerState { susfsPages.size }
-    // Keep all six positions outside pager composition: distant pages may be disposed.
+    // Keep every page's scroll state outside pager composition: distant pages may be disposed.
     val scrolls = susfsPages.map { rememberScrollState() }
     var draft by rememberSaveable { mutableStateOf<String?>(null) }
     var draftPreview by rememberSaveable { mutableStateOf<String?>(null) }
@@ -207,6 +208,7 @@ fun SusfsScreen() {
                         }
                         4 -> SusfsRuleSection("redirect", config, state.status, writable, vm)
                         5 -> SusfsExtensionsPage(config, state.status, writable, vm)
+                        6 -> SusfsBrenePage(config, writable, vm)
                     }
                 }
             }
