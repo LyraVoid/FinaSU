@@ -362,6 +362,73 @@ private fun SusfsChoiceDialog(title: String, choices: List<Int>, selected: Int, 
 }
 
 @Composable
+internal fun SusfsBrenePage(config: JSONObject?, writable: Boolean, vm: SusfsViewModel) {
+    val brene = config?.optJSONObject("brene")
+    SegmentedColumn(title = stringResource(R.string.susfs_brene)) {
+        item("hint") { SegmentedListItem(headlineContent = { Text(stringResource(R.string.susfs_brene_hint)) }) }
+        item("enabled") {
+            SegmentedSwitchItem(
+                title = stringResource(R.string.susfs_brene_enabled),
+                checked = brene?.optBoolean("enabled") ?: true,
+                enabled = writable,
+                onCheckedChange = { value -> vm.change { it.getJSONObject("brene").put("enabled", value) } },
+            )
+        }
+    }
+    BreneSection(R.string.susfs_brene_hiding, listOf(
+        "hide_local_tmp" to R.string.susfs_brene_local_tmp,
+        "hide_android_dirs" to R.string.susfs_brene_android_dirs,
+        "hide_ksu_dirs" to R.string.susfs_brene_ksu_dirs,
+        "hide_custom_recovery" to R.string.susfs_brene_recovery,
+        "hide_sus_mounts" to R.string.susfs_brene_sus_mounts,
+        "hide_custom_rom_paths" to R.string.susfs_brene_rom_paths,
+        "hide_framework_res" to R.string.susfs_brene_framework,
+        "hide_lineage_strings" to R.string.susfs_brene_lineage,
+        "hide_third_party_apps" to R.string.susfs_brene_third_party,
+    ), brene, writable, vm)
+    BreneSection(R.string.susfs_brene_spoofing, listOf(
+        "avc_log_spoofing" to R.string.susfs_brene_avc,
+        "spoof_uname" to R.string.susfs_brene_uname,
+        "spoof_cmdline" to R.string.susfs_brene_cmdline,
+        "spoof_hosts" to R.string.susfs_brene_hosts,
+        "spoof_system_properties" to R.string.susfs_brene_props,
+        "spoof_fingerprint" to R.string.susfs_brene_fingerprint,
+        "spoof_build_dates" to R.string.susfs_brene_dates,
+        "spoof_security_patch" to R.string.susfs_brene_patch,
+        "spoof_libstagefright" to R.string.susfs_brene_libstagefright,
+    ), brene, writable, vm)
+    BreneSection(R.string.susfs_brene_system, listOf(
+        "fix_local_tmp" to R.string.susfs_brene_local_tmp_fix,
+        "shrink_log_buffers" to R.string.susfs_brene_logs,
+        "selinux_enforcing" to R.string.susfs_brene_selinux,
+        "su_compat" to R.string.susfs_brene_su_compat,
+        "kernel_umount" to R.string.susfs_brene_kernel_umount,
+        "selinux_hide" to R.string.susfs_brene_selinux_hide,
+        "remove_rom_props" to R.string.susfs_brene_rom_props,
+        "remove_pif_props" to R.string.susfs_brene_pif_props,
+        "disable_child_process_restrictions" to R.string.susfs_brene_child,
+        "max_saturation" to R.string.susfs_brene_saturation,
+        "show_refresh_rate" to R.string.susfs_brene_refresh,
+    ), brene, writable, vm)
+}
+
+@Composable
+private fun BreneSection(title: Int, entries: List<Pair<String, Int>>, brene: JSONObject?, writable: Boolean, vm: SusfsViewModel) {
+    SegmentedColumn(title = stringResource(title)) {
+        entries.forEach { (key, label) ->
+            item(key) {
+                SegmentedSwitchItem(
+                    title = stringResource(label),
+                    checked = brene?.optBoolean(key) ?: false,
+                    enabled = writable && (brene?.optBoolean("enabled") ?: true),
+                    onCheckedChange = { value -> vm.change { it.getJSONObject("brene").put(key, value) } },
+                )
+            }
+        }
+    }
+}
+
+@Composable
 private fun SusfsDeleteDialog(value: String, enabled: Boolean, dismiss: () -> Unit, delete: () -> Unit) {
     AlertDialog(onDismissRequest = dismiss, title = { Text(stringResource(R.string.susfs_remove)) },
         text = { Text("$value\n\n${stringResource(R.string.susfs_removal_hint)}") },

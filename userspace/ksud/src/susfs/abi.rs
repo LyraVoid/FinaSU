@@ -4,6 +4,16 @@
 // not copied. Keep native C alignment, including the trailing err sentinel.
 use anyhow::{Result, bail};
 
+// Commands used by the built-in BRENE profile in addition to super::apply's.
+pub const CMD_HIDE_SUS_MNTS_FOR_NON_SU_PROCS: u32 = 0x0005_5561;
+pub const CMD_ADD_SUS_KSTAT_STATICALLY: u32 = 0x0005_5572;
+pub const CMD_SET_PRIORITY_UID_FILTER: u32 = 0x0006_0030;
+
+pub const KSTAT_SPOOF_INO: i32 = 1 << 0;
+pub const KSTAT_SPOOF_SIZE: i32 = 1 << 3;
+pub const KSTAT_SPOOF_BLOCKS: i32 = 1 << 10;
+pub const KSTAT_SPOOF_BLKSIZE: i32 = 1 << 11;
+
 #[repr(C)]
 pub struct Text<const N: usize> {
     pub text: [u8; N],

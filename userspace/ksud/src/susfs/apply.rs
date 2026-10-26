@@ -253,8 +253,11 @@ fn rule(rule: &Rule, detection: &Detection) -> Result<()> {
             uid_scheme,
         } => {
             require(detection, "CONFIG_KSU_SUSFS_OPEN_REDIRECT")?;
-            if detection.implementation == "lkm" && *uid_scheme > 2 {
-                bail!("LKM UID schemes 3/4 are not equivalent to built-in SUSFS");
+            // UID_SCHEME has five values upstream (0..=4); the shipped LKM
+            // (susfs4ksu-lkm v2.3.0-r18.4) implements the same switch. Reject
+            // only values the ABI cannot express.
+            if *uid_scheme > 4 {
+                bail!("UID scheme is outside the SUSFS ABI");
             }
             let mut payload = abi::Redirect {
                 target: abi::bytes(path)?,

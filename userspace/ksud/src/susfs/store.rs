@@ -12,7 +12,7 @@ use std::{
     path::Path,
 };
 
-const DIR: &str = "/data/adb/ksu/folksu-susfs";
+pub(crate) const DIR: &str = "/data/adb/ksu/folksu-susfs";
 const CONFIG: &str = "/data/adb/ksu/folksu-susfs/config.json";
 const STATE: &str = "/data/adb/ksu/folksu-susfs/state.json";
 

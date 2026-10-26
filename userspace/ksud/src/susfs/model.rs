@@ -11,6 +11,11 @@ pub struct Config {
     pub settings: Settings,
     pub rules: Vec<Rule>,
     pub lkm: Lkm,
+    /// Built-in port of BRENE's SuSFS hardening profile. Missing section in a
+    /// pre-existing file means "defaults", which keeps the profile active for
+    /// users who never opened the SUSFS screen.
+    #[serde(default)]
+    pub brene: Brene,
 }
 
 impl Default for Config {
@@ -21,8 +26,123 @@ impl Default for Config {
             settings: Settings::default(),
             rules: Vec::new(),
             lkm: Lkm::default(),
+            brene: Brene::default(),
         }
     }
+}
+
+/// BRENE-compatible on-device hardening. Defaults mirror BRENE v0.0.72's
+/// config.sh; the three `Option<bool>` entries are deliberately left alone
+/// unless set, because silently disabling ADB is not recoverable for everyone
+/// (BRENE's own defaults switch developer options, USB and wireless ADB off).
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(default, deny_unknown_fields)]
+pub struct Brene {
+    pub enabled: bool,
+    pub hide_local_tmp: bool,
+    pub hide_android_dirs: bool,
+    pub hide_non_standard_storage: bool,
+    pub hide_ksu_dirs: bool,
+    pub hide_custom_recovery: bool,
+    pub hide_custom_rom_paths: bool,
+    pub hide_custom_rom_paths_deep: bool,
+    pub hide_addon_d: bool,
+    pub hide_suspicious_pty: bool,
+    pub hide_framework_res: bool,
+    pub hide_lineage_strings: bool,
+    pub hide_third_party_apps: bool,
+    pub hide_sus_mounts: bool,
+    pub avc_log_spoofing: bool,
+    pub spoof_uname: bool,
+    pub spoof_cmdline: bool,
+    pub spoof_hosts: bool,
+    pub spoof_system_properties: bool,
+    pub spoof_fingerprint: bool,
+    pub spoof_build_dates: bool,
+    pub spoof_security_patch: bool,
+    pub spoof_libstagefright: bool,
+    pub fix_local_tmp: bool,
+    pub shrink_log_buffers: bool,
+    pub selinux_enforcing: bool,
+    pub su_compat: bool,
+    pub kernel_umount: bool,
+    pub selinux_hide: bool,
+    pub remove_rom_props: bool,
+    pub remove_pif_props: bool,
+    pub disable_child_process_restrictions: bool,
+    pub max_saturation: bool,
+    pub show_refresh_rate: bool,
+    pub verified_boot_hash: String,
+    pub custom_uname_release: String,
+    pub custom_uname_version: String,
+    pub developer_options: Option<bool>,
+    pub usb_debugging: Option<bool>,
+    pub wireless_debugging: Option<bool>,
+    pub sus_paths: Vec<String>,
+    pub sus_path_loops: Vec<String>,
+    pub sus_maps: Vec<String>,
+    pub kernel_umounts: Vec<String>,
+    pub redirects: Vec<BreneRedirect>,
+}
+
+impl Default for Brene {
+    fn default() -> Self {
+        Self {
+            enabled: true,
+            hide_local_tmp: true,
+            hide_android_dirs: true,
+            hide_non_standard_storage: false,
+            hide_ksu_dirs: true,
+            hide_custom_recovery: true,
+            hide_custom_rom_paths: false,
+            hide_custom_rom_paths_deep: false,
+            hide_addon_d: false,
+            hide_suspicious_pty: false,
+            hide_framework_res: false,
+            hide_lineage_strings: false,
+            hide_third_party_apps: true,
+            hide_sus_mounts: true,
+            avc_log_spoofing: true,
+            spoof_uname: true,
+            spoof_cmdline: false,
+            spoof_hosts: false,
+            spoof_system_properties: true,
+            spoof_fingerprint: true,
+            spoof_build_dates: true,
+            spoof_security_patch: true,
+            spoof_libstagefright: false,
+            fix_local_tmp: true,
+            shrink_log_buffers: true,
+            selinux_enforcing: true,
+            su_compat: true,
+            kernel_umount: true,
+            selinux_hide: true,
+            remove_rom_props: false,
+            remove_pif_props: false,
+            disable_child_process_restrictions: true,
+            max_saturation: false,
+            show_refresh_rate: false,
+            verified_boot_hash: String::new(),
+            custom_uname_release: String::new(),
+            custom_uname_version: String::new(),
+            developer_options: None,
+            usb_debugging: None,
+            wireless_debugging: None,
+            sus_paths: Vec::new(),
+            sus_path_loops: Vec::new(),
+            sus_maps: Vec::new(),
+            kernel_umounts: Vec::new(),
+            redirects: Vec::new(),
+        }
+    }
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct BreneRedirect {
+    pub path: String,
+    pub destination: String,
+    pub uid_scheme: u32,
 }
 
 #[derive(Debug, Default, Clone, Serialize, Deserialize)]
@@ -115,6 +235,7 @@ impl Config {
         {
             bail!("Unsupported schema or too many rules");
         }
+        self.brene.validate()?;
         if let Some(uname) = &self.settings.uname {
             text(&uname.release, 65)?;
             text(&uname.version, 65)?;
@@ -166,6 +287,45 @@ impl Config {
     }
 }
 
+impl Brene {
+    fn validate(&self) -> Result<()> {
+        for list in [
+            &self.sus_paths,
+            &self.sus_path_loops,
+            &self.sus_maps,
+            &self.kernel_umounts,
+        ] {
+            if list.len() > 256 {
+                bail!("Too many BRENE paths");
+            }
+            for value in list {
+                path(value)?;
+            }
+        }
+        if self.redirects.len() > 32 {
+            bail!("Too many BRENE redirects");
+        }
+        for redirect in &self.redirects {
+            path(&redirect.path)?;
+            path(&redirect.destination)?;
+            if redirect.uid_scheme > 4 || redirect.path == redirect.destination {
+                bail!("Invalid BRENE redirect");
+            }
+        }
+        text(&self.custom_uname_release, 65)?;
+        text(&self.custom_uname_version, 65)?;
+        if self.verified_boot_hash.len() > 128
+            || self
+                .verified_boot_hash
+                .chars()
+                .any(|c| !c.is_ascii_hexdigit())
+        {
+            bail!("Invalid verified boot hash");
+        }
+        Ok(())
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -175,6 +335,24 @@ mod tests {
         assert!(!config.automatic);
         assert!(Config::parse(&serde_json::to_string(&config).unwrap()).is_ok());
     }
+    #[test]
+    fn brene_defaults_are_active_and_old_files_gain_them() {
+        let mut old = serde_json::to_value(Config::default()).unwrap();
+        old.as_object_mut().unwrap().remove("brene");
+        let parsed = Config::parse(&old.to_string()).unwrap();
+        assert!(parsed.brene.enabled);
+        assert!(parsed.brene.hide_local_tmp);
+        assert!(parsed.brene.hide_sus_mounts);
+        assert_eq!(parsed.brene.usb_debugging, None);
+
+        let mut off = serde_json::to_value(Config::default()).unwrap();
+        off["brene"]["enabled"] = false.into();
+        off["brene"]["sus_paths"] = serde_json::json!(["/data/test"]);
+        let parsed = Config::parse(&off.to_string()).unwrap();
+        assert!(!parsed.brene.enabled);
+        assert_eq!(parsed.brene.sus_paths, ["/data/test"]);
+    }
+
     #[test]
     fn strict_import() {
         let original = serde_json::to_value(Config::default()).unwrap();

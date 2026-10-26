@@ -2,6 +2,7 @@
 #![cfg_attr(not(target_os = "android"), allow(dead_code))]
 mod abi;
 mod apply;
+mod brene;
 mod model;
 mod store;
 
@@ -49,6 +50,9 @@ pub enum Command {
     Import,
     /// Apply supported live operations; never fabricates pre-mount kstat
     Apply,
+    /// Internal: watch /storage for KSU and SuSFS leftovers
+    #[command(hide = true)]
+    BreneWatch,
 }
 
 #[derive(Debug, Clone, Serialize)]
@@ -350,6 +354,8 @@ pub fn run(command: Command) -> Result<()> {
                     "uname_applied": uname_provider.applied,
                     "uname_scheduled": uname_provider.scheduled,
                     "uname_uncertain": uname_provider.uncertain,
+                    "brene_enabled": config.brene.enabled,
+                    "brene": brene::report(),
                 }),
                 Err(error) => serde_json::json!({
                     "detection": detection, "automatic": false, "management": "failed",
@@ -384,13 +390,18 @@ pub fn run(command: Command) -> Result<()> {
             let uts_active = uts_arbitration_active(&config, uts_provider_active)?;
             let result =
                 apply_with_uts_arbitration(&config, &detect(), apply::Stage::Live, uts_active)?;
+            // Saved switches in the built-in BRENE profile take effect on an
+            // explicit Apply, without waiting for the next boot.
+            brene::boot("live", &config);
             println!("{}", serde_json::to_string(&result)?);
         }
+        Command::BreneWatch => brene::watch_daemon()?,
     }
     Ok(())
 }
 
 pub fn boot(stage: &str) {
+    let stage_name = stage;
     let stage = match stage {
         "pre-mount" => apply::Stage::PreMount,
         "post-mount" => apply::Stage::PostMount,
@@ -403,6 +414,9 @@ pub fn boot(stage: &str) {
         // duplicate serialization and couple SUSFS to UTS file permissions.
         let _lock = store::lock()?;
         let config = store::read_config()?;
+        // The built-in BRENE profile is independent of `automatic`: it mirrors
+        // having the module installed, not the user's own rule list.
+        brene::boot(stage_name, &config);
         if !config.automatic || safe_mode() {
             return Ok(());
         }
