@@ -142,6 +142,7 @@ pub fn boot(stage: &str, config: &Config) {
         run.finish(stage);
     }
 }
+
 pub fn report() -> Option<Report> {
     fs::read_to_string(REPORT)
         .ok()
@@ -910,6 +911,7 @@ fn hide_lineage_strings(detection: &Detection) -> Result<usize> {
                     .any(|window| window.eq_ignore_ascii_case(b"lineage"))
                 {
                     let fake = fake_file(&path, b"")?;
+                    clone_permissions(&path, Path::new(&fake))?;
                     abi_redirect(&path_to_abi(&path)?, &fake, 3)?;
                     redirected += 1;
                 }
@@ -1504,8 +1506,9 @@ pub fn watch_daemon() -> Result<()> {
         | libc::IN_DELETE;
     // /storage may not be mounted yet when the boot stage fires: retry for a
     // minute before blocking on a watch set that would never deliver events.
+    let mut watched = false;
     for _ in 0..60 {
-        let mut watched = 0;
+        let mut count = 0;
         for dir in [
             "/storage/emulated/0",
             "/storage/emulated/0/Android/data",
@@ -1516,13 +1519,17 @@ pub fn watch_daemon() -> Result<()> {
                 continue;
             };
             if unsafe { libc::inotify_add_watch(listen, path.as_ptr(), mask) } >= 0 {
-                watched += 1;
+                count += 1;
             }
         }
-        if watched > 0 {
+        if count > 0 {
+            watched = true;
             break;
         }
         unsafe { libc::sleep(1) };
+    }
+    if !watched {
+        bail!("/storage is not available for the BRENE watcher");
     }
     let _lock = lock;
     let mut buffer = [0u8; 4096];

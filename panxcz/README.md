@@ -1,8 +1,9 @@
 # PanxCZ fork of FinaSU
 
 Every change here is about installing root as a loadable module on a GKI device
-with SUSFS in the same ramdisk. The tree is rebased on `LyraVoid/FinaSU@b37e2031`
-(the upstream state this fork tracks), and the diff is deliberately small:
+with SUSFS in the same ramdisk, and about making BRENE's hardening work without
+installing BRENE. The tree is rebased on `LyraVoid/FinaSU@be19eb90` (the upstream
+state this fork tracks), and the diff is deliberately small:
 
 1. **`boot_patch` writes the SUSFS guard into the ramdisk.** The stock
    `boot-patch` already adds `init` (ksuinit) and the `<kmi>_kernelsu.ko` that
@@ -13,7 +14,19 @@ with SUSFS in the same ramdisk. The tree is rebased on `LyraVoid/FinaSU@b37e2031
    `kernelsu.ko`, so the `/proc/susfs_*` control surface exists before Android's
    init starts. The patch is applied in CI, not committed, so the diff against
    upstream stays readable.
-3. **The workflow builds every KMI.** `.github/workflows/panxcz-lkm.yml` compiles
+3. **BRENE's profile lives in `ksud`.** `userspace/ksud/src/susfs/brene.rs` ports
+   BRENE v0.0.72's `post-fs-data.sh` and `boot-completed.sh` to native ABI calls
+   and runs them from the existing SUSFS boot stages. It hides
+   `/data/local/tmp`, non-standard `/sdcard/Android` folders, KSU app folders and
+   recovery traces; spoofs properties, uname, cmdline/bootconfig and hosts;
+   sets the KSU feature toggles; shrinks logd; and watches `/storage` for the
+   `..5.u.S` leftovers. The profile is enabled by default and is independent of
+   the user's `automatic` rule replay, just like having the module installed.
+   No module, no shell scripts, and no second `susfs` binary are installed. The
+   only BRENE step the shipped guard cannot do is
+   `set_priority_uid_filter` (the LKM has no command `0x60030`), so that step is
+   reported as skipped instead of pretending it worked.
+4. **The workflow builds every KMI.** `.github/workflows/panxcz-lkm.yml` compiles
    `kernelsu.ko` for `android12-5.10`, `android13-5.10`, `android13-5.15`,
    `android14-5.15`, `android14-6.1`, `android15-6.6`, `android16-6.12` and
    `android17-6.18`, fetches the matching guard from
@@ -22,8 +35,8 @@ with SUSFS in the same ramdisk. The tree is rebased on `LyraVoid/FinaSU@b37e2031
    matches the KMI it detected.
 
 The result is that a manager built from this fork patches a boot image with
-root **and** SUSFS 2.3.0 in one step: no separate ReSuSFS module, no AnyKernel3
-zip, no kernel rebuild.
+root **and** SUSFS 2.3.0 in one step: no separate ReSuSFS module, no BRENE
+module, no AnyKernel3 zip, no kernel rebuild.
 
 ## Checking that the APK really carries the modules
 
