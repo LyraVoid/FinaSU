@@ -22,6 +22,7 @@ use crate::feature_id::{FeatureId, parse_feature_id};
 #[cfg(target_os = "android")]
 mod android {
     use super::Result;
+    use super::is_vivo_family_value;
     pub(super) use crate::defs::{BACKUP_FILENAME, KSU_BACKUP_DIR, KSU_BACKUP_FILE_PREFIX};
     use crate::defs::{DEFAULT_PACKAGE_NAME, KSU_TEMP_BACKUP_DIR_NAME};
     use android_bootimg::cpio::{Cpio, CpioEntry};
@@ -102,6 +103,23 @@ mod android {
 
     pub fn get_current_kmi() -> Result<String> {
         parse_kmi_from_uname().or_else(|_| parse_kmi_from_modules())
+    }
+
+    pub(super) fn detect_vivo_family() -> Option<bool> {
+        let values = [
+            utils::getprop("ro.product.manufacturer"),
+            utils::getprop("ro.product.brand"),
+            utils::getprop("ro.product.vendor.manufacturer"),
+        ];
+        if values.iter().all(Option::is_none) {
+            return None;
+        }
+        Some(
+            values
+                .into_iter()
+                .flatten()
+                .any(|value| is_vivo_family_value(&value)),
+        )
     }
 
     fn calculate_sha1(file_path: impl AsRef<Path>) -> Result<String> {
@@ -531,6 +549,9 @@ pub struct KsuConfigArgs {
     /// it does not change the running kernel's blacklist or external cmdline settings.
     #[arg(long = "block-module", value_name = "NAME", value_delimiter = ',', value_parser = parse_block_module)]
     block_module: Vec<String>,
+    /// [Testing only] Force the vivo module filter: auto, 0, or comma-separated names.
+    #[arg(long, hide = true, value_name = "MODE", value_parser = parse_vivo_module_filter)]
+    vivo_module_filter: Option<String>,
 }
 
 impl KsuConfigArgs {
@@ -539,6 +560,12 @@ impl KsuConfigArgs {
             self.block_module.join(",").len() <= 255,
             "block-module list exceeds 255 bytes"
         );
+        if let Some(value) = &self.vivo_module_filter {
+            ensure!(
+                value.len() < 128,
+                "vivo module filter list must be shorter than 128 bytes"
+            );
+        }
         Ok(())
     }
 
@@ -559,6 +586,11 @@ impl KsuConfigArgs {
         if !self.block_module.is_empty() {
             config.push(format!("block_modules={}", self.block_module.join(",")));
         }
+        apply_vivo_filter(
+            config,
+            self.vivo_module_filter.as_deref(),
+            detected_vivo_family(),
+        );
     }
 }
 
@@ -572,6 +604,51 @@ fn parse_block_module(s: &str) -> Result<String> {
         "module name must contain only letters, digits and underscores"
     );
     Ok(s.to_owned())
+}
+
+fn parse_vivo_module_filter(s: &str) -> Result<String> {
+    if matches!(s, "auto" | "0") {
+        return Ok(s.to_owned());
+    }
+    ensure!(!s.is_empty(), "vivo module filter cannot be empty");
+    for name in s.split(',') {
+        parse_block_module(name)?;
+    }
+    Ok(s.to_owned())
+}
+
+#[cfg(any(target_os = "android", test))]
+fn is_vivo_family_value(value: &str) -> bool {
+    matches!(value.trim().to_ascii_lowercase().as_str(), "vivo" | "iqoo")
+}
+
+fn detected_vivo_family() -> Option<bool> {
+    #[cfg(target_os = "android")]
+    {
+        android::detect_vivo_family()
+    }
+    #[cfg(not(target_os = "android"))]
+    {
+        None
+    }
+}
+
+fn apply_vivo_filter(config: &mut Vec<String>, forced: Option<&str>, detected: Option<bool>) {
+    let value = match forced {
+        Some("0") => None,
+        Some(value) => Some(value),
+        None => match detected {
+            Some(true) => Some("auto"),
+            Some(false) => None,
+            None => return,
+        },
+    };
+
+    config.retain(|entry| !entry.starts_with("vivo_module_filter="));
+    if let Some(value) = value {
+        println!("- Adding vivo module filter config");
+        config.push(format!("vivo_module_filter={value}"));
+    }
 }
 
 fn set_config_flag(config: &mut Vec<String>, name: &str, value: &str, add: bool) {
@@ -741,6 +818,40 @@ mod config_tests {
         args.block_module[0].push('a');
         assert!(args.validate().is_err());
         assert!(ConfigCli::try_parse_from(["test", "--block-module", "vr;reboot"]).is_err());
+    }
+
+    #[test]
+    fn vivo_filter_is_explicit_and_only_auto_enabled_for_vivo_family() {
+        assert!(is_vivo_family_value(" vivo "));
+        assert!(is_vivo_family_value("iQOO"));
+        assert!(!is_vivo_family_value("OnePlus"));
+        assert!(!is_vivo_family_value("not-vivo"));
+
+        let mut config = vec!["vivo_module_filter=old".to_owned()];
+        apply_vivo_filter(&mut config, None, Some(false));
+        assert!(config.is_empty());
+
+        apply_vivo_filter(&mut config, None, Some(true));
+        assert_eq!(config, ["vivo_module_filter=auto"]);
+
+        apply_vivo_filter(&mut config, None, None);
+        assert_eq!(config, ["vivo_module_filter=auto"]);
+
+        apply_vivo_filter(&mut config, Some("vr,vklp"), Some(false));
+        assert_eq!(config, ["vivo_module_filter=vr,vklp"]);
+
+        apply_vivo_filter(&mut config, Some("0"), Some(true));
+        assert!(config.is_empty());
+    }
+
+    #[test]
+    fn vivo_filter_parser_rejects_unsafe_names() {
+        for valid in ["auto", "0", "vr,vklp"] {
+            assert!(parse_vivo_module_filter(valid).is_ok(), "{valid}");
+        }
+        for invalid in ["", "vr,", "vr;reboot", "a-b"] {
+            assert!(parse_vivo_module_filter(invalid).is_err(), "{invalid}");
+        }
     }
 }
 
