@@ -46,7 +46,7 @@ static bool filter_enabled(void)
 
 static const char *module_list(void)
 {
-    return strcmp(vivo_module_filter, "auto") == 0 ? "vr,vklp" : vivo_module_filter;
+    return strcmp(vivo_module_filter, "auto") == 0 ? "vr" : vivo_module_filter;
 }
 
 static bool name_in_filter(const char *name, size_t name_len)
