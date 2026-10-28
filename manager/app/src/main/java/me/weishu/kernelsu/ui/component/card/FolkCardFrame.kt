@@ -150,6 +150,7 @@ fun FolkCardFrame(
             role = WallpaperSurfaceRole.Group,
             modifier = modifier.clip(cardShape).then(clickModifier),
             shape = cardShape,
+            minimumAlpha = opacity,
             fallbackColor = MaterialTheme.colorScheme.surfaceBright,
         ) {
             framed()

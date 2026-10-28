@@ -56,6 +56,7 @@ fun FolkWallpaperSurface(
     role: WallpaperSurfaceRole,
     shape: Shape,
     modifier: Modifier = Modifier,
+    minimumAlpha: Float = 0f,
     fallbackColor: Color = Color.Unspecified,
     fallbackContentColor: Color = Color.Unspecified,
     content: @Composable () -> Unit,
@@ -82,7 +83,7 @@ fun FolkWallpaperSurface(
         }
         return
     }
-    val material = tokens.material(role)
+    val material = tokens.material(role, minimumAlpha)
     Surface(
         modifier = modifier,
         shape = shape,

@@ -84,9 +84,9 @@ object HomeWorkCardControl {
     }
 
     /**
-     * GridUI. The card keeps its semantic accent pair by default. When the user enabled a work-card
-     * photo, the surface drops to a transparent container with white content so the bitmap painted
-     * by the card is what shows through.
+     * GridUI. Outside wallpaper mode the card keeps its semantic accent pair. In wallpaper mode it
+     * joins the shared neutral material. When the user enabled a work-card photo, the surface drops
+     * to a transparent container with white content so the bitmap painted by the card shows through.
      */
     @Composable
     private fun gridStyle(working: Boolean, surface: SurfaceConfig?, photo: SurfacePhoto): HomeWorkCardStyle {
@@ -103,10 +103,18 @@ object HomeWorkCardControl {
         } else {
             MaterialTheme.colorScheme.errorContainer
         }
-        return HomeWorkCardStyle(
-            containerColor = containerColor,
-            contentColor = null,
-            wallpaperRole = null,
-        )
+        return if (LocalFolkWallpaperTokens.current != null) {
+            HomeWorkCardStyle(
+                containerColor = containerColor,
+                contentColor = MaterialTheme.colorScheme.onSurface,
+                wallpaperRole = WallpaperSurfaceRole.Group,
+            )
+        } else {
+            HomeWorkCardStyle(
+                containerColor = containerColor,
+                contentColor = null,
+                wallpaperRole = null,
+            )
+        }
     }
 }

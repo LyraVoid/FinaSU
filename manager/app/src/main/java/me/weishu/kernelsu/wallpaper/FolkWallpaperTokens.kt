@@ -42,10 +42,15 @@ data class FolkWallpaperTokens(
     val chrome: WallpaperMaterial,
     val selection: WallpaperMaterial,
 ) {
-    fun material(role: WallpaperSurfaceRole): WallpaperMaterial = when (role) {
-        WallpaperSurfaceRole.Group -> group
-        WallpaperSurfaceRole.Raised -> raised
-        WallpaperSurfaceRole.Overlay -> overlay
+    fun material(role: WallpaperSurfaceRole, minimumAlpha: Float = 0f): WallpaperMaterial {
+        val material = when (role) {
+            WallpaperSurfaceRole.Group -> group
+            WallpaperSurfaceRole.Raised -> raised
+            WallpaperSurfaceRole.Overlay -> overlay
+        }
+        return if (material.alpha >= minimumAlpha) material else {
+            material.copy(alpha = minimumAlpha.coerceIn(0f, 1f))
+        }
     }
 
     /**
