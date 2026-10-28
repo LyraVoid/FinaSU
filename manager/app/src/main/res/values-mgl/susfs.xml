@@ -14,6 +14,8 @@
     <string name="susfs_apply_hint">仅施展受支持的即时魔法；动态 kstat 需要下次正常觉醒。</string>
     <string name="susfs_saved">已保存，未施展</string>
     <string name="susfs_applied">本次觉醒已施展</string>
+    <string name="susfs_partial">部分法则已施展</string>
+    <string name="susfs_skipped">已略过 · 心之契约未承此法</string>
     <string name="susfs_failed">施展变身失败</string>
     <string name="susfs_pending">待重新觉醒</string>
     <string name="susfs_probe">正在探测 SUSFS…</string>
@@ -61,6 +63,8 @@
     <string name="susfs_save_success_hint">未施展任何心之契约魔法。请手动施展，或点亮觉醒时施展。</string>
     <string name="susfs_error_hint">请检查配置与 root 授权。超时后先刷新再重试；已经开始的魔法仍可能完成。</string>
     <string name="susfs_ack_hint">表示本次觉醒中心之契约已确认的魔法，不代表隐遁效果已验证。LKM 重载后，请重新觉醒再依赖重放状态。</string>
+    <string name="susfs_partial_hint">部分魔法已获心之契约确认，尚有魔法未能施展；再次施展可查看逐项缘由。</string>
+    <string name="susfs_skipped_hint">此项请求无需施展，因为心之契约并未开启这项控制。</string>
     <string name="susfs_saved_counts">已保存 %1$d 条法则</string>
     <string name="susfs_safe_mode">安全变身模式 · 已禁止施展</string>
     <string name="susfs_last_report">上次施展回执</string>

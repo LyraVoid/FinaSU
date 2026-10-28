@@ -14,6 +14,8 @@
     <string name="susfs_apply_hint">Hanya operasi langsung yang didukung. kstat dinamis memerlukan boot normal berikutnya.</string>
     <string name="susfs_saved">Tersimpan, belum diterapkan</string>
     <string name="susfs_applied">Diterapkan pada boot ini</string>
+    <string name="susfs_partial">Diterapkan sebagian</string>
+    <string name="susfs_skipped">Dilewati · tidak didukung kernel</string>
     <string name="susfs_failed">Penerapan gagal</string>
     <string name="susfs_pending">Menunggu mulai ulang</string>
     <string name="susfs_probe">Memeriksa SUSFS…</string>
@@ -61,6 +63,8 @@
     <string name="susfs_save_success_hint">Tidak ada operasi kernel yang dilakukan. Terapkan secara eksplisit atau aktifkan penerapan saat boot.</string>
     <string name="susfs_error_hint">Periksa konfigurasi dan otorisasi Root. Setelah waktu habis, segarkan sebelum mencoba lagi; operasi yang sedang berjalan mungkin masih selesai.</string>
     <string name="susfs_ack_hint">Operasi yang dikonfirmasi pada boot ini, bukan bukti keefektifan penyembunyian. Setelah memuat ulang LKM, mulai ulang sebelum mengandalkan status replay.</string>
+    <string name="susfs_partial_hint">Sebagian operasi dikonfirmasi kernel dan sebagian lainnya tidak diterapkan; terapkan lagi untuk melihat alasan per item.</string>
+    <string name="susfs_skipped_hint">Permintaan ini tidak perlu dijalankan karena kernel tidak menyediakan kontrol ini.</string>
     <string name="susfs_saved_counts">Aturan tersimpan: %1$d</string>
     <string name="susfs_safe_mode">Mode aman · penerapan dinonaktifkan</string>
     <string name="susfs_last_report">Tanda terima penerapan terakhir</string>

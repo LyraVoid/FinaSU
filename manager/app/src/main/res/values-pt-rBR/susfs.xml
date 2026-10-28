@@ -14,6 +14,8 @@
     <string name="susfs_apply_hint">Apenas operações dinâmicas suportadas. O kstat dinâmico exige a próxima inicialização normal.</string>
     <string name="susfs_saved">Salvo, não aplicado</string>
     <string name="susfs_applied">Aplicado nesta inicialização</string>
+    <string name="susfs_partial">Aplicado parcialmente</string>
+    <string name="susfs_skipped">Ignorado · não suportado pelo kernel</string>
     <string name="susfs_failed">Falha na aplicação</string>
     <string name="susfs_pending">Reinicialização pendente</string>
     <string name="susfs_probe">Verificando o SUSFS…</string>
@@ -61,6 +63,8 @@
     <string name="susfs_save_success_hint">Nenhuma operação no kernel foi realizada. Aplique explicitamente ou ative a aplicação na inicialização.</string>
     <string name="susfs_error_hint">Verifique a configuração e a autorização de root. Após um tempo limite, atualize antes de tentar novamente; uma operação em andamento ainda pode ser concluída.</string>
     <string name="susfs_ack_hint">Operações confirmadas nesta inicialização; não é prova da eficácia da ocultação. Após recarregar o LKM, reinicie antes de confiar no estado de reprodução.</string>
+    <string name="susfs_partial_hint">O kernel confirmou algumas operações e outras não foram aplicadas; aplique novamente para ver os motivos.</string>
+    <string name="susfs_skipped_hint">Nenhuma operação foi necessária porque o kernel não expõe este controle.</string>
     <string name="susfs_saved_counts">Regras salvas: %1$d</string>
     <string name="susfs_safe_mode">Modo de segurança · a aplicação está desativada</string>
     <string name="susfs_last_report">Último recibo de aplicação</string>

@@ -14,6 +14,8 @@
     <string name="susfs_apply_hint">仅应用支持的实时操作；动态 kstat 需要下次正常启动。</string>
     <string name="susfs_saved">已保存，未应用</string>
     <string name="susfs_applied">本次启动已应用</string>
+    <string name="susfs_partial">部分已应用</string>
+    <string name="susfs_skipped">已跳过 · 基岩核心不支持</string>
     <string name="susfs_failed">应用失败</string>
     <string name="susfs_pending">待重生</string>
     <string name="susfs_probe">正在检测 SUSFS…</string>
@@ -61,6 +63,8 @@
     <string name="susfs_save_success_hint">未执行基岩核心操作。请手动应用，或开启开机应用。</string>
     <string name="susfs_error_hint">请检查配置和 OP 授权。超时后先刷新再重试；已开始的操作仍可能完成。</string>
     <string name="susfs_ack_hint">表示本次启动中基岩核心已确认的操作，不代表藏起效果已验证。LKM 重载后，请重生再依赖重放状态。</string>
+    <string name="susfs_partial_hint">基岩核心确认了部分操作，但还有操作没应用；再次应用就能查看每项原因。</string>
+    <string name="susfs_skipped_hint">当前请求无需执行，因为基岩核心没有提供这项控制。</string>
     <string name="susfs_saved_counts">已保存 %1$d 条规则</string>
     <string name="susfs_safe_mode">和平难度 · 已禁止应用</string>
     <string name="susfs_last_report">上次应用回执</string>

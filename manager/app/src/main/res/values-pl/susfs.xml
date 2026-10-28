@@ -14,6 +14,8 @@
     <string name="susfs_apply_hint">Tylko obsługiwane operacje na żywo. Dynamiczny kstat wymaga następnego normalnego rozruchu.</string>
     <string name="susfs_saved">Zapisano, nie zastosowano</string>
     <string name="susfs_applied">Zastosowano w tym uruchomieniu</string>
+    <string name="susfs_partial">Częściowo zastosowano</string>
+    <string name="susfs_skipped">Pominięto · nieobsługiwane przez jądro</string>
     <string name="susfs_failed">Zastosowanie nie powiodło się</string>
     <string name="susfs_pending">Oczekuje na ponowne uruchomienie</string>
     <string name="susfs_probe">Sprawdzanie SUSFS…</string>
@@ -61,6 +63,8 @@
     <string name="susfs_save_success_hint">Nie wykonano żadnej operacji jądra. Zastosuj jawnie lub włącz stosowanie przy rozruchu.</string>
     <string name="susfs_error_hint">Sprawdź konfigurację i autoryzację root. Po przekroczeniu limitu czasu odśwież przed ponowną próbą; operacja w toku może nadal się zakończyć.</string>
     <string name="susfs_ack_hint">Operacje potwierdzone w tym uruchomieniu, co nie dowodzi skuteczności ukrywania. Po ponownym wczytaniu LKM uruchom ponownie system, zanim zaufasz stanowi odtwarzania.</string>
+    <string name="susfs_partial_hint">Jądro potwierdziło część operacji, ale inne nie zostały zastosowane. Zastosuj ponownie, aby sprawdzić przyczyny.</string>
+    <string name="susfs_skipped_hint">To żądanie nie wymagało operacji, ponieważ jądro nie udostępnia tego ustawienia.</string>
     <string name="susfs_saved_counts">Zapisane reguły: %1$d</string>
     <string name="susfs_safe_mode">Tryb bezpieczny · stosowanie jest wyłączone</string>
     <string name="susfs_last_report">Ostatnie potwierdzenie zastosowania</string>

@@ -6,12 +6,17 @@ import org.junit.Test
 
 class SusfsPresentationTest {
     @Test fun `receipt separates acknowledgements errors and reboot requests`() {
-        val report = SusfsApplyReport.parse("""{"status":"failed","applied":["path:/a"],"failures":{"uname":"SUSFS returned error -22"},"deferred":["cmdline"],"pending_reboot":["kstat:/b"]}""")
+        val report = SusfsApplyReport.parse("""{"status":"partial","applied":["path:/a"],"failures":{"uname":"SUSFS returned error -22"},"skipped":{"avc_spoof":"Capability unavailable"},"deferred":["cmdline"],"pending_reboot":["kstat:/b"]}""")
         assertEquals(listOf("path:/a"), report.applied)
         assertEquals("SUSFS returned error -22", report.failures["uname"])
+        assertEquals("Capability unavailable", report.skipped["avc_spoof"])
         assertEquals(listOf("cmdline"), report.deferred)
         assertEquals(listOf("kstat:/b"), report.pendingReboot)
-        assertEquals("failed", report.status)
+        assertEquals("partial", report.status)
+    }
+    @Test fun `legacy receipt without skipped remains readable`() {
+        val report = SusfsApplyReport.parse("""{"status":"applied","applied":[],"failures":{},"pending_reboot":[]}""")
+        assertTrue(report.skipped.isEmpty())
     }
     @Test fun `paths and uname count UTF8 bytes not displayed characters`() {
         assertTrue(SusfsInputs.validPath("/data/local/tmp/test"))

@@ -14,6 +14,8 @@
     <string name="susfs_apply_hint">対応しているライブ操作のみ適用します。動的 kstat には次回の通常起動が必要です。</string>
     <string name="susfs_saved">保存済み、未適用</string>
     <string name="susfs_applied">今回の起動で適用済み</string>
+    <string name="susfs_partial">一部適用</string>
+    <string name="susfs_skipped">スキップ · カーネル未対応</string>
     <string name="susfs_failed">適用に失敗</string>
     <string name="susfs_pending">再起動待ち</string>
     <string name="susfs_probe">SUSFS を確認中…</string>
@@ -61,6 +63,8 @@
     <string name="susfs_save_success_hint">カーネル操作は実行されていません。明示的に適用するか、起動時の適用を有効にしてください。</string>
     <string name="susfs_error_hint">設定と root 権限を確認してください。タイムアウト後は再試行する前に更新してください。進行中の操作はまだ完了する可能性があります。</string>
     <string name="susfs_ack_hint">今回の起動で確認された操作であり、隠蔽効果の証明ではありません。LKM の再読み込み後は、リプレイ状態に依存する前に再起動してください。</string>
+    <string name="susfs_partial_hint">一部の操作はカーネルに確認されましたが、未適用の操作があります。再度適用して項目ごとの理由を確認してください。</string>
+    <string name="susfs_skipped_hint">カーネルがこの制御項目を提供していないため、この要求では操作を実行する必要がありません。</string>
     <string name="susfs_saved_counts">保存済みのルール: %1$d</string>
     <string name="susfs_safe_mode">セーフモード · 適用は無効です</string>
     <string name="susfs_last_report">前回の適用レシート</string>

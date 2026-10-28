@@ -14,6 +14,8 @@
     <string name="susfs_apply_hint">唯施展所蒙之即时效验。动态 kstat 需待下次寻常圣启。</string>
     <string name="susfs_saved">已封存，未施展</string>
     <string name="susfs_applied">此番圣启已施展</string>
+    <string name="susfs_partial">部分圣术已施</string>
+    <string name="susfs_skipped">略过 · 圣核未施此术</string>
     <string name="susfs_failed">施展未至</string>
     <string name="susfs_pending">待神翼再生</string>
     <string name="susfs_probe">正在探查 SUSFS…</string>
@@ -61,6 +63,8 @@
     <string name="susfs_save_success_hint">未施任何灵魂之力之术。请明令施展或唤醒圣启时施展。</string>
     <string name="susfs_error_hint">请检视配置与 Root 圣授。逾时后，更新神谕再祈；尚在途之术或仍可功成。</string>
     <string name="susfs_ack_hint">此番圣启已应允之术，非隐匿有效之凭证。LKM 重载后，须神翼再生方可倚赖重演之态。</string>
+    <string name="susfs_partial_hint">此番圣启确有圣术蒙应允，然亦有未得施行者；再度施展可察逐项缘故。</string>
+    <string name="susfs_skipped_hint">此祈无需施行，盖圣核未启此掌理之术。</string>
     <string name="susfs_saved_counts">已封存圣律：%1$d</string>
     <string name="susfs_safe_mode">圣域守护模式 · 施展已封印</string>
     <string name="susfs_last_report">最近施展圣谕</string>

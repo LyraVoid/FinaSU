@@ -14,6 +14,8 @@
     <string name="susfs_apply_hint">Yalnızca desteklenen canlı işlemler. Dinamik kstat bir sonraki normal önyüklemeyi gerektirir.</string>
     <string name="susfs_saved">Kaydedildi, uygulanmadı</string>
     <string name="susfs_applied">Bu önyüklemede uygulandı</string>
+    <string name="susfs_partial">Kısmen uygulandı</string>
+    <string name="susfs_skipped">Atlandı · çekirdek tarafından desteklenmiyor</string>
     <string name="susfs_failed">Uygulama başarısız oldu</string>
     <string name="susfs_pending">Yeniden başlatma bekliyor</string>
     <string name="susfs_probe">SUSFS denetleniyor…</string>
@@ -61,6 +63,8 @@
     <string name="susfs_save_success_hint">Hiçbir çekirdek işlemi gerçekleştirilmedi. Açıkça uygulayın veya önyükleme uygulamasını etkinleştirin.</string>
     <string name="susfs_error_hint">Yapılandırmayı ve root yetkilendirmesini kontrol edin. Zaman aşımından sonra, yeniden denemeden önce yenileyin; devam eden bir işlem hâlâ tamamlanıyor olabilir.</string>
     <string name="susfs_ack_hint">Bu önyüklemedeki işlemleri onayladı; gizleme etkinliğinin kanıtı değildir. LKM yeniden yüklendikten sonra, yeniden oynatma durumuna güvenmeden önce yeniden başlatın.</string>
+    <string name="susfs_partial_hint">Bazı işlemler çekirdek tarafından doğrulandı, bazıları uygulanmadı; öğe bazında nedenleri görmek için yeniden uygulayın.</string>
+    <string name="susfs_skipped_hint">Çekirdek bu denetimi sunmadığı için istek herhangi bir işlem gerektirmedi.</string>
     <string name="susfs_saved_counts">Kayıtlı kurallar: %1$d</string>
     <string name="susfs_safe_mode">Güvenli mod · uygulama devre dışı</string>
     <string name="susfs_last_report">Son uygulama makbuzu</string>

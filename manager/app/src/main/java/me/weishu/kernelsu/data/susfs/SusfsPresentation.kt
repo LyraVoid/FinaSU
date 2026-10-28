@@ -7,6 +7,7 @@ data class SusfsApplyReport(
     val status: String,
     val applied: List<String>,
     val failures: Map<String, String>,
+    val skipped: Map<String, String>,
     val deferred: List<String>,
     val pendingReboot: List<String>,
 ) {
@@ -17,8 +18,12 @@ data class SusfsApplyReport(
                 List(array.length()) { array.getString(it) }
             }
             val failures = json.getJSONObject("failures")
+            val skipped = json.optJSONObject("skipped")
             return SusfsApplyReport(json.getString("status"), strings("applied"),
                 failures.keys().asSequence().associateWith { failures.getString(it) },
+                skipped?.let { values ->
+                    values.keys().asSequence().associateWith { values.getString(it) }
+                }.orEmpty(),
                 json.optJSONArray("deferred")?.let { array ->
                     List(array.length()) { array.getString(it) }
                 }.orEmpty(),

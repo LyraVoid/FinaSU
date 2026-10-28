@@ -14,6 +14,8 @@
     <string name="susfs_apply_hint">Только поддерживаемые операции на лету. Динамический kstat требует следующей обычной загрузки.</string>
     <string name="susfs_saved">Сохранено, не применено</string>
     <string name="susfs_applied">Применено при этой загрузке</string>
+    <string name="susfs_partial">Применено частично</string>
+    <string name="susfs_skipped">Пропущено · не поддерживается ядром</string>
     <string name="susfs_failed">Ошибка применения</string>
     <string name="susfs_pending">Ожидает перезагрузки</string>
     <string name="susfs_probe">Проверка SUSFS…</string>
@@ -61,6 +63,8 @@
     <string name="susfs_save_success_hint">Операции с ядром не выполнялись. Примените вручную или включите применение при загрузке.</string>
     <string name="susfs_error_hint">Проверьте конфигурацию и root-авторизацию. После тайм-аута обновите перед повторной попыткой; выполняющаяся операция может всё ещё завершиться.</string>
     <string name="susfs_ack_hint">Подтверждённые операции этой загрузки не доказывают эффективность сокрытия. После перезагрузки LKM перезагрузите систему, прежде чем полагаться на состояние воспроизведения.</string>
+    <string name="susfs_partial_hint">Часть операций подтверждена ядром, но другие не применены; повторите применение, чтобы увидеть причины.</string>
+    <string name="susfs_skipped_hint">Операция не требовалась, поскольку ядро не предоставляет этот элемент управления.</string>
     <string name="susfs_saved_counts">Сохранённых правил: %1$d</string>
     <string name="susfs_safe_mode">Безопасный режим · применение отключено</string>
     <string name="susfs_last_report">Последняя квитанция применения</string>

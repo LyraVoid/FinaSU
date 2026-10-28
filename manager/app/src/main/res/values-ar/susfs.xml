@@ -14,6 +14,8 @@
     <string name="susfs_apply_hint">العمليات المباشرة المدعومة فقط. يتطلب kstat الديناميكي الإقلاع العادي التالي.</string>
     <string name="susfs_saved">محفوظ، غير مطبَّق</string>
     <string name="susfs_applied">طُبِّق في هذا الإقلاع</string>
+    <string name="susfs_partial">طُبِّق جزئيًا</string>
+    <string name="susfs_skipped">تم التخطي · غير مدعوم من النواة</string>
     <string name="susfs_failed">فشل التطبيق</string>
     <string name="susfs_pending">بانتظار إعادة التشغيل</string>
     <string name="susfs_probe">جارٍ فحص SUSFS…</string>
@@ -61,6 +63,8 @@
     <string name="susfs_save_success_hint">لم تُنفَّذ أي عملية على النواة. طبّق يدويًا أو فعّل التطبيق عند الإقلاع.</string>
     <string name="susfs_error_hint">تحقق من الإعداد وتفويض الجذر. بعد انتهاء المهلة، حدّث قبل إعادة المحاولة؛ قد تكتمل العملية الجارية بالفعل.</string>
     <string name="susfs_ack_hint">عمليات أكّدتها النواة في هذا الإقلاع، وليست دليلًا على فعالية الإخفاء. بعد إعادة تحميل LKM، أعد التشغيل قبل الاعتماد على حالة الإعادة.</string>
+    <string name="susfs_partial_hint">أكّدت النواة بعض العمليات ولم تُطبَّق أخرى؛ أعد التطبيق لعرض الأسباب التفصيلية.</string>
+    <string name="susfs_skipped_hint">لا يلزم تنفيذ هذا الطلب لأن النواة لا توفر عنصر التحكم هذا.</string>
     <string name="susfs_saved_counts">القواعد المحفوظة: %1$d</string>
     <string name="susfs_safe_mode">الوضع الآمن · تطبيق العمليات معطّل</string>
     <string name="susfs_last_report">آخر إشعار لتطبيق العمليات</string>

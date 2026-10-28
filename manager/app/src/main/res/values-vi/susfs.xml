@@ -14,6 +14,8 @@
     <string name="susfs_apply_hint">Chỉ các thao tác trực tiếp được hỗ trợ. kstat động yêu cầu lần khởi động thông thường tiếp theo.</string>
     <string name="susfs_saved">Đã lưu, chưa áp dụng</string>
     <string name="susfs_applied">Đã áp dụng trong lần khởi động này</string>
+    <string name="susfs_partial">Đã áp dụng một phần</string>
+    <string name="susfs_skipped">Đã bỏ qua · kernel không hỗ trợ</string>
     <string name="susfs_failed">Áp dụng thất bại</string>
     <string name="susfs_pending">Chờ khởi động lại</string>
     <string name="susfs_probe">Đang kiểm tra SUSFS…</string>
@@ -61,6 +63,8 @@
     <string name="susfs_save_success_hint">Không có thao tác kernel nào được thực hiện. Hãy áp dụng thủ công hoặc bật áp dụng khi khởi động.</string>
     <string name="susfs_error_hint">Kiểm tra cấu hình và quyền Root. Sau khi hết thời gian chờ, hãy làm mới trước khi thử lại; một thao tác đang chạy vẫn có thể hoàn tất.</string>
     <string name="susfs_ack_hint">Các thao tác đã được xác nhận trong lần khởi động này, không phải bằng chứng về hiệu quả ẩn. Sau khi tải lại LKM, hãy khởi động lại trước khi dựa vào trạng thái phát lại.</string>
+    <string name="susfs_partial_hint">Kernel đã xác nhận một số thao tác nhưng các thao tác khác chưa được áp dụng; hãy áp dụng lại để xem lý do từng mục.</string>
+    <string name="susfs_skipped_hint">Không cần thực hiện thao tác này vì kernel không cung cấp mục điều khiển này.</string>
     <string name="susfs_saved_counts">Quy tắc đã lưu: %1$d</string>
     <string name="susfs_safe_mode">Chế độ an toàn · đã vô hiệu hoá áp dụng</string>
     <string name="susfs_last_report">Biên nhận áp dụng gần nhất</string>

@@ -14,6 +14,8 @@
     <string name="susfs_apply_hint">唯行所承之实时之术；动态 kstat 需下次常道启道。</string>
     <string name="susfs_saved">已存，未施行</string>
     <string name="susfs_applied">此番启道已施行</string>
+    <string name="susfs_partial">部分道术已成</string>
+    <string name="susfs_skipped">已略过 · 道核未承此术</string>
     <string name="susfs_failed">施行败陨</string>
     <string name="susfs_pending">待重铸</string>
     <string name="susfs_probe">正探 SUSFS…</string>
@@ -61,6 +63,8 @@
     <string name="susfs_save_success_hint">未行道核之术。请手动施行，或启启道施行。</string>
     <string name="susfs_error_hint">请察设符与 root 之授权。过时后先刷新再试；已起之术仍可能成。</string>
     <string name="susfs_ack_hint">乃此番启道中道核已确认之术，非隐遁成效已验之证。LKM 重载后，请重铸再依重演之态。</string>
+    <string name="susfs_partial_hint">此番启道中，部分道术已获道核确认，仍有术未行；再施一次可察逐项缘由。</string>
+    <string name="susfs_skipped_hint">此请无需施行，因道核未启此控术。</string>
     <string name="susfs_saved_counts">已存 %1$d 条规则</string>
     <string name="susfs_safe_mode">避劫之境 · 已禁施行</string>
     <string name="susfs_last_report">上次施行之回执</string>

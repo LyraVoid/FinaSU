@@ -14,6 +14,8 @@
     <string name="susfs_apply_hint">지원되는 실시간 작업만 적용됩니다. 동적 kstat은 다음 정상 부팅이 필요합니다.</string>
     <string name="susfs_saved">저장됨, 적용되지 않음</string>
     <string name="susfs_applied">이번 부팅에서 적용됨</string>
+    <string name="susfs_partial">일부 적용됨</string>
+    <string name="susfs_skipped">건너뜀 · 커널 미지원</string>
     <string name="susfs_failed">적용 실패</string>
     <string name="susfs_pending">재부팅 대기 중</string>
     <string name="susfs_probe">SUSFS 확인 중…</string>
@@ -61,6 +63,8 @@
     <string name="susfs_save_success_hint">커널 작업은 수행되지 않았습니다. 명시적으로 적용하거나 부팅 시 적용을 활성화하세요.</string>
     <string name="susfs_error_hint">구성과 루트 권한을 확인하세요. 타임아웃 후에는 재시도하기 전에 새로 고치세요. 진행 중인 작업이 아직 완료될 수 있습니다.</string>
     <string name="susfs_ack_hint">이번 부팅에서 확인된 작업이며, 숨기기 효과의 증거가 아닙니다. LKM을 다시 로드한 후에는 재생 상태에 의존하기 전에 재부팅하세요.</string>
+    <string name="susfs_partial_hint">일부 작업은 커널에서 확인되었지만 적용되지 않은 작업도 있습니다. 다시 적용하여 항목별 이유를 확인하세요.</string>
+    <string name="susfs_skipped_hint">커널이 이 제어 항목을 제공하지 않으므로 이 요청에서는 작업을 실행할 필요가 없습니다.</string>
     <string name="susfs_saved_counts">저장된 규칙: %1$d</string>
     <string name="susfs_safe_mode">안전 모드 · 적용이 비활성화됨</string>
     <string name="susfs_last_report">마지막 적용 영수증</string>

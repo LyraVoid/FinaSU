@@ -14,6 +14,8 @@
     <string name="susfs_apply_hint">只套眼下能实时干的；动态 kstat 得下回正经开火。</string>
     <string name="susfs_saved">存好了，还没套上</string>
     <string name="susfs_applied">这回开火已套上</string>
+    <string name="susfs_partial">部分上桌</string>
+    <string name="susfs_skipped">跳过了 · 秘酱料不接这手</string>
     <string name="susfs_failed">套用翻车了</string>
     <string name="susfs_pending">等着重新开火</string>
     <string name="susfs_probe">正探 SUSFS…</string>
@@ -61,6 +63,8 @@
     <string name="susfs_save_success_hint">没动秘酱料。自个儿套上，或者开上开火自动套。</string>
     <string name="susfs_error_hint">瞧瞧配置和大厨授权。等超了先刷新再试；已经开干的活儿没准儿还能干完。</string>
     <string name="susfs_ack_hint">说的是这回开火秘酱料认下的活儿，可不保准藏得住。LKM 重装后，得重新开火才能信重放那套状态。</string>
+    <string name="susfs_partial_hint">有些活儿秘酱料认了，有些没套上；再开火一回，就能挨个儿瞅瞅啥原因。</string>
+    <string name="susfs_skipped_hint">这手儿不用做，秘酱料压根儿没这号开关。</string>
     <string name="susfs_saved_counts">存了 %1$d 条规矩</string>
     <string name="susfs_safe_mode">安全开火模式 · 套用给锁了</string>
     <string name="susfs_last_report">上回套用的回执</string>

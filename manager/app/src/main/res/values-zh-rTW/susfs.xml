@@ -14,6 +14,8 @@
     <string name="susfs_apply_hint">僅支援即時操作。動態 kstat 需要下次正常開機後才能生效。</string>
     <string name="susfs_saved">已儲存，尚未套用</string>
     <string name="susfs_applied">本次開機已套用</string>
+    <string name="susfs_partial">部分生效</string>
+    <string name="susfs_skipped">已略過 · 核心不支援</string>
     <string name="susfs_failed">套用失敗</string>
     <string name="susfs_pending">等待重新啟動</string>
     <string name="susfs_probe">正在檢查 SUSFS…</string>
@@ -61,6 +63,8 @@
     <string name="susfs_save_success_hint">未執行任何核心操作。請手動套用或啟用開機時套用。</string>
     <string name="susfs_error_hint">請檢查設定與 Root 授權。逾時後請先重新整理再重試；進行中的操作可能仍會完成。</string>
     <string name="susfs_ack_hint">僅表示本次開機的操作已獲確認，並不代表隱藏確實有效。重新載入 LKM 後，請先重新啟動再依賴重播狀態。</string>
+    <string name="susfs_partial_hint">部分操作已獲核心確認，另有操作尚未套用；可再次套用查看逐項原因。</string>
+    <string name="susfs_skipped_hint">目前請求無須執行，因為核心未提供此控制項。</string>
     <string name="susfs_saved_counts">已儲存的規則：%1$d</string>
     <string name="susfs_safe_mode">安全模式 · 已停用套用</string>
     <string name="susfs_last_report">上次套用回執</string>

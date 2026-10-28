@@ -14,6 +14,8 @@
     <string name="susfs_apply_hint">Only supported live operations. Dynamic kstat requires the next normal boot.</string>
     <string name="susfs_saved">Saved, not applied</string>
     <string name="susfs_applied">Applied this boot</string>
+    <string name="susfs_partial">Partially applied</string>
+    <string name="susfs_skipped">Skipped, not supported</string>
     <string name="susfs_failed">Application failed</string>
     <string name="susfs_pending">Pending reboot</string>
     <string name="susfs_deferred">Deferred while UTS View is active</string>
@@ -70,6 +72,8 @@
     <string name="susfs_save_success_hint">No kernel operation was performed. Apply explicitly or enable boot application.</string>
     <string name="susfs_error_hint">Check the configuration and root authorization. After a timeout, refresh before retrying; an in-flight operation may still finish.</string>
     <string name="susfs_ack_hint">Acknowledged operations this boot, not proof of hiding effectiveness. After LKM reload, reboot before relying on replay state.</string>
+    <string name="susfs_partial_hint">Some operations were acknowledged and others were not. Apply again to inspect itemized reasons.</string>
+    <string name="susfs_skipped_hint">The requested operation was unnecessary because the kernel does not expose this control.</string>
     <string name="susfs_saved_counts">Saved rules: %1$d</string>
     <string name="susfs_safe_mode">Safe mode · application is disabled</string>
     <string name="susfs_last_report">Last application receipt</string>

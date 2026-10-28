@@ -25,12 +25,13 @@ internal fun SusfsBasicPage(config: JSONObject?, status: SusfsStatus, writable: 
     val options = listOf(Triple("hide_mounts", R.string.susfs_hide_mounts, status.supports("SUS_MOUNT")),
         Triple("logging", R.string.susfs_logging, status.supports("ENABLE_LOG")),
         Triple("avc_spoof", R.string.susfs_avc, status.proc("susfs_avc_spoof") ||
-            (status.implementation != "lkm" && status.supports("AVC_LOG_SPOOFING"))))
+            (status.implementation != "lkm" && status.writable)))
     SegmentedColumn(title = stringResource(R.string.susfs_settings)) {
         options.forEach { (key, title, supported) -> item(key = key) {
             val settings = config?.optJSONObject("settings")
             val mode = if (settings == null || settings.isNull(key)) 0 else if (settings.optBoolean(key)) 1 else 2
-            SegmentedListItem(enabled = writable && supported, onClick = { selected = key },
+            val managed = mode != 0
+            SegmentedListItem(enabled = writable && (supported || managed), onClick = { selected = key },
                 headlineContent = { Text(stringResource(title)) },
                 supportingContent = { Text(susfsDisabledReason(status, supported) ?: stringResource(R.string.susfs_three_state_hint)) },
                 trailingContent = { Text(stringResource(listOf(R.string.susfs_unmanaged, R.string.susfs_on, R.string.susfs_off)[mode]),
@@ -42,7 +43,7 @@ internal fun SusfsBasicPage(config: JSONObject?, status: SusfsStatus, writable: 
         val settings = config?.optJSONObject("settings")
         val current = if (settings == null || settings.isNull(key)) 0 else if (settings.optBoolean(key)) 1 else 2
         SusfsChoiceDialog(stringResource(option.second), listOf(R.string.susfs_unmanaged, R.string.susfs_on, R.string.susfs_off),
-            current, writable && option.third, { selected = null }) { index ->
+            current, writable && (option.third || current != 0), { selected = null }) { index ->
             vm.change { it.getJSONObject("settings").put(key, when (index) { 1 -> true; 2 -> false; else -> JSONObject.NULL }) }
             selected = null
         }

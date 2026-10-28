@@ -14,6 +14,8 @@
     <string name="susfs_apply_hint">只应用支持的实时操作喵；动态 kstat 得等下次正常启动才行哦</string>
     <string name="susfs_saved">保存好啦，还没应用喵</string>
     <string name="susfs_applied">本次启动已经应用啦喵</string>
+    <string name="susfs_partial">部分生效喵</string>
+    <string name="susfs_skipped">跳过啦 · 内核不支持喵</string>
     <string name="susfs_failed">应用失败啦…呜喵</string>
     <string name="susfs_pending">等重启喵</string>
     <string name="susfs_probe">正在检测 SUSFS 喵…</string>
@@ -61,6 +63,8 @@
     <string name="susfs_save_success_hint">没动内核哦。手动应用一下，或者把开机应用打开嘛喵</string>
     <string name="susfs_error_hint">检查下配置和 root 授权喵。超时了就先刷新再重试；已经开跑的操作还是可能完成的哦</string>
     <string name="susfs_ack_hint">这只表示本次启动里内核已经确认了操作喵，不代表隐藏效果验证过了。LKM 重载之后，得重启才能信重放状态哦</string>
+    <string name="susfs_partial_hint">有些操作已经被内核确认啦喵，不过还有操作没应用；再点一次应用就能看每项原因喵</string>
+    <string name="susfs_skipped_hint">这个请求不用执行啦喵，因为内核根本没提供这个控制项哦</string>
     <string name="susfs_saved_counts">已经保存 %1$d 条规则啦喵</string>
     <string name="susfs_safe_mode">安全模式喵 · 已经禁止应用啦</string>
     <string name="susfs_last_report">上次应用的收据喵</string>

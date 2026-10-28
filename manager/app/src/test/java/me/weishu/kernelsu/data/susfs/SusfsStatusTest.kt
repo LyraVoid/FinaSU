@@ -35,5 +35,7 @@ class SusfsStatusTest {
         val base = """{"detection":{"status":"compatible","version":"v2.3.0","variant":"GKI","implementation":"builtin","features":[],"proc_nodes":[]},"automatic":false,"config_error":null,"management":"%s"}"""
         assertEquals("idle", SusfsStatus.parse(base.format("idle")).management)
         assertEquals("deferred", SusfsStatus.parse(base.format("deferred")).management)
+        assertEquals("partial", SusfsStatus.parse(base.format("partial")).management)
+        assertEquals("skipped", SusfsStatus.parse(base.format("skipped")).management)
     }
 }

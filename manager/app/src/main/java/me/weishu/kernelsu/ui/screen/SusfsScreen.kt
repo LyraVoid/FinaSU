@@ -55,6 +55,8 @@ import me.weishu.kernelsu.wallpaper.LocalFolkWallpaperTokens
 @Composable
 fun susfsManagementLabel(status: String): String = stringResource(when (status) {
     "applied" -> R.string.susfs_applied
+    "partial" -> R.string.susfs_partial
+    "skipped" -> R.string.susfs_skipped
     "failed" -> R.string.susfs_failed
     "pending_reboot" -> R.string.susfs_pending
     "deferred" -> R.string.susfs_deferred
@@ -310,6 +312,10 @@ private fun SusfsOverview(state: SusfsUiState, config: JSONObject?, writable: Bo
             report.failures.forEach { (key, error) -> item(key = "error:$key") { SegmentedListItem(
                 headlineContent = { Text(susfsOperationName(key)) }, supportingContent = { Text(error, color = MaterialTheme.colorScheme.error) },
                 leadingContent = { Icon(Icons.Rounded.ErrorOutline, null) }) } }
+            report.skipped.forEach { (key, reason) -> item(key = "skipped:$key") { SegmentedListItem(
+                headlineContent = { Text(susfsOperationName(key)) },
+                supportingContent = { Text(reason.ifBlank { stringResource(R.string.susfs_skipped) }) },
+                leadingContent = { Icon(Icons.Rounded.Block, null) }) } }
             report.deferred.forEach { key -> item(key = "deferred:$key") { SegmentedListItem(
                 headlineContent = { Text(susfsOperationName(key)) }, supportingContent = { Text(stringResource(R.string.susfs_deferred)) },
                 leadingContent = { Icon(Icons.Rounded.Schedule, null) }) } }
@@ -331,6 +337,8 @@ private fun SusfsOverview(state: SusfsUiState, config: JSONObject?, writable: Bo
 }
 
 private fun susfsManagementHint(status: SusfsStatus): Int = when {
+    status.management == "partial" -> R.string.susfs_partial_hint
+    status.management == "skipped" -> R.string.susfs_skipped_hint
     status.management == "idle" -> R.string.susfs_idle_hint
     status.management == "deferred" -> R.string.susfs_deferred_hint
     status.management == "saved" && !status.automatic -> R.string.susfs_saved_reboot

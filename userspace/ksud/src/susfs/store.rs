@@ -29,6 +29,14 @@ pub struct State {
     #[serde(default)]
     pub pending_reboot: Vec<String>,
     pub failures: BTreeMap<String, String>,
+    #[serde(default)]
+    pub skipped: BTreeMap<String, SkippedControl>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct SkippedControl {
+    pub value: String,
+    pub reason: String,
 }
 
 pub fn read_config() -> Result<Config> {
@@ -168,10 +176,18 @@ pub fn summarize(
     desired: &BTreeMap<String, String>,
     deferred: bool,
 ) -> &'static str {
-    if state.uncertain.keys().any(|key| desired.contains_key(key))
-        || state.failures.keys().any(|key| desired.contains_key(key))
-    {
-        "failed"
+    let failed = state.uncertain.keys().any(|key| desired.contains_key(key))
+        || state.failures.keys().any(|key| desired.contains_key(key));
+    let applied = desired
+        .iter()
+        .filter(|(key, value)| {
+            !state.failures.contains_key(*key)
+                && !state.uncertain.contains_key(*key)
+                && state.applied.get(*key) == Some(*value)
+        })
+        .count();
+    if failed {
+        if applied > 0 { "partial" } else { "failed" }
     } else if !state.kstat_pending.is_empty()
         || state.pending_reboot.iter().any(|k| desired.contains_key(k))
         || state.applied.iter().any(|(k, v)| {
@@ -181,8 +197,16 @@ pub fn summarize(
         "pending_reboot"
     } else if deferred && desired.contains_key("uname") {
         "deferred"
-    } else if !desired.is_empty() && *desired == state.applied {
-        "applied"
+    } else if !desired.is_empty()
+        && desired.iter().all(|(key, value)| {
+            state.applied.get(key) == Some(value)
+                || state
+                    .skipped
+                    .get(key)
+                    .is_some_and(|skipped| skipped.value == *value)
+        })
+    {
+        if applied == 0 { "skipped" } else { "applied" }
     } else if desired.is_empty() {
         "idle"
     } else {
@@ -207,6 +231,25 @@ mod tests {
             .failures
             .insert("path:/x".to_owned(), "126".to_owned());
         assert_eq!(summarize(&state, &desired, false), "failed");
+        state.failures.clear();
+        state.applied.clear();
+        state.skipped.insert(
+            "option".to_owned(),
+            SkippedControl {
+                value: "false".to_owned(),
+                reason: "unsupported".to_owned(),
+            },
+        );
+        let option = BTreeMap::from([("option".to_owned(), "false".to_owned())]);
+        assert_eq!(summarize(&state, &option, false), "skipped");
+        state.skipped.clear();
+        state.applied = desired.clone();
+        state.failures.insert("option".to_owned(), "126".to_owned());
+        let mixed = BTreeMap::from([
+            ("path:/x".to_owned(), "hash".to_owned()),
+            ("option".to_owned(), "true".to_owned()),
+        ]);
+        assert_eq!(summarize(&state, &mixed, false), "partial");
         state.failures.clear();
         state
             .uncertain
@@ -239,6 +282,13 @@ mod tests {
         state
             .uncertain
             .insert("uname".to_owned(), "runtime".to_owned());
+        state.skipped.insert(
+            "avc_spoof".to_owned(),
+            SkippedControl {
+                value: "false".to_owned(),
+                reason: "unsupported".to_owned(),
+            },
+        );
 
         let encoded = serde_json::to_string(&state).unwrap();
         let decoded: State = serde_json::from_str(&encoded).unwrap();
@@ -246,6 +296,13 @@ mod tests {
         assert_eq!(
             decoded.uncertain.get("uname").map(String::as_str),
             Some("runtime")
+        );
+        assert_eq!(
+            decoded
+                .skipped
+                .get("avc_spoof")
+                .map(|skipped| skipped.reason.as_str()),
+            Some("unsupported")
         );
     }
 }

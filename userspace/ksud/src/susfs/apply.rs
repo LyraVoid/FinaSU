@@ -20,8 +20,16 @@ pub struct Report {
     pub status: &'static str,
     pub applied: Vec<String>,
     pub failures: BTreeMap<String, String>,
+    pub skipped: BTreeMap<String, String>,
     pub deferred: Vec<String>,
     pub pending_reboot: Vec<String>,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+enum Outcome {
+    Applied,
+    Deferred,
+    Skipped(String),
 }
 
 pub fn operations(config: &Config) -> Result<BTreeMap<String, String>> {
@@ -81,14 +89,35 @@ fn proc_write(detection: &Detection, node: &str, command: &str) -> Result<()> {
     Ok(())
 }
 
-fn toggle(detection: &Detection, capability: &str, command: u32, enabled: bool) -> Result<()> {
-    require(detection, capability)?;
-    let mut payload = abi::Toggle { enabled, err: 126 };
-    abi::call(command, &mut payload);
-    abi::checked(payload.err)
+fn unavailable(enabled: bool, detail: String) -> Result<Outcome> {
+    if enabled {
+        bail!("{detail}");
+    }
+    Ok(Outcome::Skipped(detail))
 }
 
-fn setting(config: &Config, detection: &Detection, key: &str) -> Result<()> {
+fn toggle_command(command: u32, enabled: bool, unavailable_detail: &str) -> Result<Outcome> {
+    let mut payload = abi::Toggle { enabled, err: 126 };
+    abi::call(command, &mut payload);
+    match payload.err {
+        0 => Ok(Outcome::Applied),
+        126 => unavailable(enabled, unavailable_detail.to_owned()),
+        err => bail!("SUSFS returned error {err}"),
+    }
+}
+
+fn toggle(detection: &Detection, capability: &str, command: u32, enabled: bool) -> Result<Outcome> {
+    if !detection.supports(capability) {
+        return unavailable(enabled, format!("Capability unavailable: {capability}"));
+    }
+    toggle_command(
+        command,
+        enabled,
+        &format!("Capability unavailable: {capability}"),
+    )
+}
+
+fn setting(config: &Config, detection: &Detection, key: &str) -> Result<Outcome> {
     match key {
         "hide_mounts" => toggle(
             detection,
@@ -105,21 +134,25 @@ fn setting(config: &Config, detection: &Detection, key: &str) -> Result<()> {
         "avc_spoof" => {
             // LKM dispatches AVC but does not advertise an upstream feature for it.
             if detection.implementation == "lkm" {
+                let enabled = config.settings.avc_spoof == Some(true);
+                if !detection.proc("susfs_avc_spoof") {
+                    return unavailable(
+                        enabled,
+                        "LKM proc extension unavailable: susfs_avc_spoof".to_owned(),
+                    );
+                }
                 proc_write(
                     detection,
                     "susfs_avc_spoof",
-                    if config.settings.avc_spoof == Some(true) {
-                        "1"
-                    } else {
-                        "0"
-                    },
+                    if enabled { "1" } else { "0" },
                 )
+                .map(|()| Outcome::Applied)
             } else {
-                toggle(
-                    detection,
-                    "CONFIG_KSU_SUSFS_AVC_LOG_SPOOFING",
+                // This command has no stable upstream CONFIG_* advertisement.
+                toggle_command(
                     0x0006_0010,
                     config.settings.avc_spoof.unwrap_or(false),
+                    "SUSFS AVC log spoofing is unavailable",
                 )
             }
         }
@@ -136,7 +169,7 @@ fn setting(config: &Config, detection: &Detection, key: &str) -> Result<()> {
                 err: 126,
             };
             abi::call(0x0005_5590, &mut payload);
-            abi::checked(payload.err)
+            abi::checked(payload.err).map(|()| Outcome::Applied)
         }
         "cmdline" => {
             require(detection, "CONFIG_KSU_SUSFS_SPOOF_CMDLINE_OR_BOOTCONFIG")?;
@@ -145,18 +178,20 @@ fn setting(config: &Config, detection: &Detection, key: &str) -> Result<()> {
                 err: 126,
             };
             abi::call(0x0005_55b0, &mut payload);
-            abi::checked(payload.err)
+            abi::checked(payload.err).map(|()| Outcome::Applied)
         }
         _ if key.starts_with("module:") => proc_write(
             detection,
             "susfs_hide_modules",
             &format!("add {}", &key[7..]),
-        ),
+        )
+        .map(|()| Outcome::Applied),
         _ if key.starts_with("prefix:") => proc_write(
             detection,
             "susfs_hide_mounts",
             &format!("add {}", &key[7..]),
-        ),
+        )
+        .map(|()| Outcome::Applied),
         _ => bail!("Unknown SUSFS operation"),
     }
 }
@@ -250,10 +285,14 @@ pub fn apply(config: &Config, detection: &Detection, phase: Stage) -> Result<Rep
         status: "saved",
         applied: Vec::new(),
         failures: BTreeMap::new(),
+        skipped: BTreeMap::new(),
         deferred: Vec::new(),
         pending_reboot: Vec::new(),
     };
     state.failures.retain(|key, _| desired.contains_key(key));
+    state
+        .skipped
+        .retain(|key, skipped| desired.get(key) == Some(&skipped.value));
     for key in state
         .applied
         .keys()
@@ -277,6 +316,13 @@ pub fn apply(config: &Config, detection: &Detection, phase: Stage) -> Result<Rep
             report.pending_reboot.push(key.clone());
             continue;
         }
+        if state
+            .skipped
+            .get(key)
+            .is_some_and(|skipped| skipped.value == *value)
+        {
+            continue;
+        }
         state.uncertain.insert(key.clone(), value.clone());
         if let Err(error) = store::write_state(&state) {
             state.uncertain.remove(key);
@@ -296,28 +342,48 @@ pub fn apply(config: &Config, detection: &Detection, phase: Stage) -> Result<Rep
                 &mut state,
                 &mut report,
             )
+            .map(|applied| {
+                if applied {
+                    Outcome::Applied
+                } else {
+                    Outcome::Deferred
+                }
+            })
         } else if phase == Stage::PreMount || phase == Stage::PostMount {
             continue;
         } else if key.starts_with("path:")
             || key.starts_with("map:")
             || key.starts_with("redirect:")
         {
-            rule(&serde_json::from_str(value)?, detection).map(|()| true)
+            rule(&serde_json::from_str(value)?, detection).map(|()| Outcome::Applied)
         } else {
-            setting(config, detection, key).map(|()| true)
+            setting(config, detection, key)
         };
         match result {
-            Ok(true) => {
+            Ok(Outcome::Applied) => {
                 state.uncertain.remove(key);
                 state.applied.insert(key.clone(), value.clone());
                 state.failures.remove(key);
+                state.skipped.remove(key);
                 report.applied.push(key.clone());
             }
-            Ok(false) => {
+            Ok(Outcome::Deferred) => {
                 state.uncertain.remove(key);
+            }
+            Ok(Outcome::Skipped(reason)) => {
+                state.uncertain.remove(key);
+                state.failures.remove(key);
+                state.skipped.insert(
+                    key.clone(),
+                    store::SkippedControl {
+                        value: value.clone(),
+                        reason,
+                    },
+                );
             }
             Err(error) => {
                 state.uncertain.remove(key);
+                state.skipped.remove(key);
                 state.failures.insert(key.clone(), error.to_string());
             }
         }
@@ -325,9 +391,22 @@ pub fn apply(config: &Config, detection: &Detection, phase: Stage) -> Result<Rep
         store::write_state(&state)?;
     }
     report.failures.clone_from(&state.failures);
+    report.skipped = state
+        .skipped
+        .iter()
+        .map(|(key, skipped)| (key.clone(), skipped.reason.clone()))
+        .collect();
     state.pending_reboot.clone_from(&report.pending_reboot);
     report.status = if !report.failures.is_empty() {
-        "failed"
+        if desired.iter().any(|(key, value)| {
+            !state.failures.contains_key(key)
+                && !state.uncertain.contains_key(key)
+                && state.applied.get(key) == Some(value)
+        }) {
+            "partial"
+        } else {
+            "failed"
+        }
     } else if !report.pending_reboot.is_empty() {
         "pending_reboot"
     } else {
@@ -423,5 +502,14 @@ mod tests {
         assert!(!detection.proc("susfs_kstat"));
         detection.status = "unknown_protocol";
         assert!(!detection.supports("CONFIG_KSU_SUSFS_SUS_KSTAT"));
+    }
+
+    #[test]
+    fn disabling_an_unavailable_control_is_skipped_not_failed() {
+        assert_eq!(
+            unavailable(false, "Capability unavailable".to_owned()).unwrap(),
+            Outcome::Skipped("Capability unavailable".to_owned())
+        );
+        assert!(unavailable(true, "Capability unavailable".to_owned()).is_err());
     }
 }
