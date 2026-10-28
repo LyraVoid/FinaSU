@@ -146,7 +146,7 @@ pub fn run(package_name: &String, kmi: Option<String>, allow_shell: bool) -> Res
     // The jailbreak path reaches the end of its own boot sequence here, so the
     // step recorded for it is done: a record that survives has to mean the
     // injection stopped this device instead.
-    mount_guard::clear_if_ours(std::path::Path::new(defs::MOUNT_INFLIGHT));
+    mount_guard::clear_if_ours(std::path::Path::new(defs::MOUNT_INFLIGHT))?;
 
     // 14. Restart Manager so it gets a fresh ksu fd from the newly loaded kernel module
     info!("Restarting KernelSU Manager {package_name}...");

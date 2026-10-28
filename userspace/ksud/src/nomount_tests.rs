@@ -425,6 +425,150 @@ fn explicit_retry_cannot_clear_an_active_load_guard() {
 }
 
 #[test]
+fn explicit_retry_clears_the_nomount_guards_and_allows_the_next_load() {
+    let dir = tempfile::tempdir().unwrap();
+    let attempt = dir.path().join("nomount_load_inflight");
+    let legacy = dir.path().join("mount_inflight");
+    let lock_path = dir.path().join("nomount_load.lock");
+    mount_guard::begin(
+        &attempt,
+        mount_guard::Stage::Load,
+        "nomount",
+        "android12-5.10",
+        "old-boot",
+        3,
+    )
+    .unwrap();
+    mount_guard::begin(
+        &legacy,
+        mount_guard::Stage::Inject,
+        "nomount",
+        "mode=nomount configured=nomount",
+        "old-boot",
+        3,
+    )
+    .unwrap();
+
+    assert!(reject_unfinished_load(&attempt).is_err());
+    forget_inflight_at(&attempt, &legacy, &lock_path).unwrap();
+    reject_unfinished_load(&attempt).unwrap();
+    assert!(!attempt.exists());
+    assert!(!legacy.exists());
+}
+
+#[test]
+fn explicit_retry_does_not_clear_another_providers_guard() {
+    let dir = tempfile::tempdir().unwrap();
+    let attempt = dir.path().join("nomount_load_inflight");
+    let legacy = dir.path().join("mount_inflight");
+    let lock_path = dir.path().join("nomount_load.lock");
+    mount_guard::begin(
+        &attempt,
+        mount_guard::Stage::Load,
+        "nomount",
+        "android12-5.10",
+        "old-boot",
+        3,
+    )
+    .unwrap();
+    mount_guard::begin(
+        &legacy,
+        mount_guard::Stage::Inject,
+        "builtin",
+        "mode=builtin",
+        "old-boot",
+        3,
+    )
+    .unwrap();
+
+    forget_inflight_at(&attempt, &legacy, &lock_path).unwrap();
+    assert!(!attempt.exists());
+    assert_eq!(
+        mount_guard::read(&legacy).map(|record| record.provider),
+        Some("builtin".to_string())
+    );
+}
+
+#[test]
+fn explicit_retry_reports_a_guard_clear_failure() {
+    let dir = tempfile::tempdir().unwrap();
+    let attempt = dir.path().join("nomount_load_inflight");
+    let legacy = dir.path().join("mount_inflight");
+    let lock_path = dir.path().join("nomount_load.lock");
+    std::fs::create_dir(&attempt).unwrap();
+    std::fs::write(attempt.join("cannot-remove"), "").unwrap();
+    mount_guard::begin(
+        &legacy,
+        mount_guard::Stage::Inject,
+        "nomount",
+        "mode=nomount configured=nomount",
+        "old-boot",
+        3,
+    )
+    .unwrap();
+
+    let error = forget_inflight_at(&attempt, &legacy, &lock_path).unwrap_err();
+    assert!(error.to_string().contains("cannot clear the load guard"));
+    assert!(attempt.exists());
+    assert!(legacy.exists());
+}
+
+#[test]
+fn accepted_rules_are_not_success_without_a_matching_vfs_path() {
+    let dir = tempfile::tempdir().unwrap();
+    let virtual_path = dir.path().join("visible");
+    let real_path = dir.path().join("module-file");
+    std::fs::write(&virtual_path, "same").unwrap();
+    std::fs::write(&real_path, "same").unwrap();
+    let mut rule = Rule::redirect(virtual_path.to_string_lossy(), real_path.to_string_lossy());
+
+    let verified = verify_data_path(std::slice::from_ref(&rule)).unwrap();
+    assert!(
+        verified
+            .as_deref()
+            .is_some_and(|value| value.contains("visible") && value.contains("module-file"))
+    );
+
+    std::fs::write(&virtual_path, "different").unwrap();
+    let error = verify_data_path(&[rule.clone()]).unwrap_err().to_string();
+    assert!(error.contains("no data-plane path could be verified"));
+
+    rule.real_path = Some(dir.path().join("missing").to_string_lossy().into_owned());
+    assert!(verify_data_path(&[rule]).is_err());
+}
+
+#[test]
+fn failed_data_verification_clears_the_rule_set_before_fallback() {
+    let dir = tempfile::tempdir().unwrap();
+    let virtual_path = dir.path().join("visible");
+    let real_path = dir.path().join("module-file");
+    std::fs::write(&virtual_path, "stock").unwrap();
+    std::fs::write(&real_path, "module").unwrap();
+    let rule = Rule::redirect(virtual_path.to_string_lossy(), real_path.to_string_lossy());
+    let (driver, kernel) = driver(Mode::Ready);
+
+    let error = reconcile_and_verify(&driver, &[rule]).unwrap_err();
+    assert!(error.to_string().contains("rules were cleared"));
+    assert!(kernel.written_rules().is_empty());
+    assert!(kernel.commands().contains(&Command::ClearRules));
+}
+
+#[test]
+fn an_installed_nomount_provider_owns_injection() {
+    let dir = tempfile::tempdir().unwrap();
+    let metamodule = dir.path().join("vendor-nomount");
+    std::fs::create_dir_all(metamodule.join("bin")).unwrap();
+    std::fs::write(metamodule.join("bin/nm"), "").unwrap();
+    assert_eq!(
+        installed_driver_module_at(&metamodule),
+        Some("vendor-nomount".to_string())
+    );
+
+    std::fs::write(metamodule.join(crate::mount_plan::DISABLE_FILE_NAME), "").unwrap();
+    assert_eq!(installed_driver_module_at(&metamodule), None);
+}
+
+#[test]
 fn redirect_and_whiteout_records_follow_the_wire_layout() {
     let redirect = Rule::redirect("/system/etc/hosts", "/data/adb/modules/m/system/etc/hosts");
     let batches = encode_batches(std::slice::from_ref(&redirect)).unwrap();
@@ -833,6 +977,9 @@ fn runtime_record_is_key_value_text() {
             driver_version: "22".to_string(),
             rules_applied: 42,
             rules_removed: 3,
+            verified_path: Some(
+                "/system/etc/hosts -> /data/adb/modules/m/system/etc/hosts".to_string(),
+            ),
             uid_count: 2,
             isolated_blocked: true,
             error: None,
@@ -846,6 +993,7 @@ fn runtime_record_is_key_value_text() {
         "driver_version=22",
         "rules_applied=42",
         "rules_removed=3",
+        "verified_path=/system/etc/hosts -> /data/adb/modules/m/system/etc/hosts",
         "uid_count=2",
         "isolated_blocked=true",
         "error=",

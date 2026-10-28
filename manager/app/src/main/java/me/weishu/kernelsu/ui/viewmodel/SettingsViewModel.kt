@@ -594,12 +594,12 @@ class SettingsViewModel(
         val status = state.folkMountStatus
             ?: return
         if (state.folkMountReadError || state.isFolkMountLoading || state.isFolkMountWriting) return
-        // No-op when the selection did not change.
-        if (status.configuredMode == mode) return
+        if (!status.shouldWrite(mode)) return
 
         _uiState.update { it.copy(isFolkMountWriting = true) }
         viewModelScope.launch(Dispatchers.IO) {
-            if (repo.setFolkMountMode(mode).isSuccess) {
+            val result = repo.setFolkMountMode(mode)
+            if (result.isSuccess) {
                 // Re-read on success; on a failed re-read keep the old status.
                 val refreshed = repo.getFolkMountStatus()
                 _uiState.update {
@@ -615,7 +615,8 @@ class SettingsViewModel(
                 withContext(Dispatchers.Main) {
                     Toast.makeText(
                         ksuApp,
-                        R.string.settings_folk_mount_write_failed,
+                        result.exceptionOrNull()?.message
+                            ?: ksuApp.getString(R.string.settings_folk_mount_write_failed),
                         Toast.LENGTH_LONG
                     ).show()
                 }

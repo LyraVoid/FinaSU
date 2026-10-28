@@ -1155,8 +1155,9 @@ pub fn set_mode(mode: &str) -> Result<()> {
     // Asking for NoMount by hand is also the retry that the guards are waiting
     // for, so a record of a step that stopped an earlier boot must not outlive
     // the request.
+    write_mount_mode(parsed)?;
     if parsed == MountMode::Nomount {
-        crate::nomount::forget_inflight();
+        crate::nomount::forget_inflight()?;
     }
-    write_mount_mode(parsed)
+    Ok(())
 }

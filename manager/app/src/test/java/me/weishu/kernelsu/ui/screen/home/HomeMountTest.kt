@@ -45,12 +45,40 @@ class HomeMountTest {
         assertNull(resolveHomeMountProvider(null))
     }
 
+    @Test
+    fun `reselecting NoMount retries a fallback but not a healthy boot`() {
+        val fallback = status(
+            configuredMode = FolkMountMode.NOMOUNT,
+            nextProvider = FolkMountProvider.NOMOUNT,
+            bootProvider = FolkMountProvider.BUILTIN,
+        )
+        assert(fallback.shouldWrite(FolkMountMode.NOMOUNT))
+
+        val healthy = status(
+            configuredMode = FolkMountMode.NOMOUNT,
+            nextProvider = FolkMountProvider.NOMOUNT,
+            bootProvider = FolkMountProvider.NOMOUNT,
+        )
+        assert(!healthy.shouldWrite(FolkMountMode.NOMOUNT))
+    }
+
+    @Test
+    fun `changing the configured mode still writes`() {
+        val status = status(
+            configuredMode = FolkMountMode.BUILTIN,
+            nextProvider = FolkMountProvider.BUILTIN,
+            bootProvider = FolkMountProvider.BUILTIN,
+        )
+        assert(status.shouldWrite(FolkMountMode.NOMOUNT))
+    }
+
     private fun status(
+        configuredMode: FolkMountMode = FolkMountMode.AUTO,
         nextProvider: FolkMountProvider?,
         bootProvider: FolkMountProvider?,
         bootResult: String = "success",
     ) = FolkMountStatus(
-        configuredMode = FolkMountMode.AUTO,
+        configuredMode = configuredMode,
         nextProvider = nextProvider,
         metamoduleId = null,
         metamoduleEnabled = false,

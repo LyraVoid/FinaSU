@@ -12,7 +12,9 @@
 //! is deliberately not vendored.
 
 use std::fmt::Write as _;
-use std::io::Write;
+use std::io::{Read, Write};
+#[cfg(any(target_os = "android", test))]
+use std::os::unix::fs::MetadataExt;
 
 use anyhow::{Context, Result, bail, ensure};
 
@@ -603,6 +605,111 @@ impl<T: Transport> Driver<T> {
     }
 }
 
+/// A rule readback alone does not prove that lookup changed.
+#[cfg(any(target_os = "android", test))]
+pub fn verify_data_path(rules: &[Rule]) -> Result<Option<String>> {
+    let mut failures = Vec::new();
+    for rule in rules.iter().filter(|rule| !rule.virtual_dir) {
+        let result = if rule.whiteout {
+            verify_whiteout(rule)
+        } else if let Some(real) = rule.real_path.as_deref() {
+            verify_redirect(rule, real)
+        } else {
+            bail!("nomount: redirect rule {} has no target", rule.virtual_path);
+        };
+        match result {
+            Ok(description) => return Ok(Some(description)),
+            Err(error) => failures.push(format!("{}: {error:#}", rule.virtual_path)),
+        }
+    }
+    if failures.is_empty() {
+        return Ok(None);
+    }
+    bail!(
+        "nomount: rules were accepted but no data-plane path could be verified: {}",
+        failures[0]
+    )
+}
+
+fn verify_whiteout(rule: &Rule) -> Result<String> {
+    match std::fs::symlink_metadata(&rule.virtual_path) {
+        Err(error) if error.kind() == std::io::ErrorKind::NotFound => {
+            Ok(format!("{} hidden (path absent)", rule.virtual_path))
+        }
+        Err(error) => Err(error).with_context(|| format!("read whiteout {}", rule.virtual_path)),
+        Ok(_) => bail!("whiteout is visible"),
+    }
+}
+
+fn verify_redirect(rule: &Rule, real: &str) -> Result<String> {
+    let virtual_metadata = std::fs::symlink_metadata(&rule.virtual_path)
+        .with_context(|| format!("stat {}", rule.virtual_path))?;
+    let real_metadata = std::fs::symlink_metadata(real).with_context(|| format!("stat {real}"))?;
+    let virtual_type = virtual_metadata.file_type();
+    let real_type = real_metadata.file_type();
+    ensure!(
+        virtual_type.is_file() == real_type.is_file()
+            && virtual_type.is_dir() == real_type.is_dir()
+            && virtual_type.is_symlink() == real_type.is_symlink(),
+        "virtual path type does not match {real}"
+    );
+    if real_type.is_file() {
+        ensure!(
+            virtual_metadata.len() == real_metadata.len()
+                && virtual_metadata.mode() == real_metadata.mode()
+                && virtual_metadata.uid() == real_metadata.uid()
+                && virtual_metadata.gid() == real_metadata.gid(),
+            "virtual file metadata does not match {real}"
+        );
+        ensure!(
+            files_equal(Path::new(&rule.virtual_path), Path::new(real))?,
+            "virtual file contents do not match {real}"
+        );
+    } else if real_type.is_symlink() {
+        ensure!(
+            std::fs::read_link(&rule.virtual_path).context("read virtual symlink")?
+                == std::fs::read_link(real).context("read target symlink")?,
+            "virtual symlink target does not match {real}"
+        );
+    } else if real_type.is_dir() {
+        ensure!(
+            directory_names(Path::new(&rule.virtual_path))? == directory_names(Path::new(real))?,
+            "virtual directory contents do not match {real}"
+        );
+    }
+    Ok(format!("{} -> {real}", rule.virtual_path))
+}
+
+fn files_equal(left: &Path, right: &Path) -> Result<bool> {
+    let mut left = std::fs::File::open(left).context("open virtual file")?;
+    let mut right = std::fs::File::open(right).context("open target file")?;
+    let mut left_buffer = vec![0_u8; 64 * 1024];
+    let mut right_buffer = vec![0_u8; 64 * 1024];
+    loop {
+        let left_len = left.read(&mut left_buffer).context("read virtual file")?;
+        let right_len = right.read(&mut right_buffer).context("read target file")?;
+        if left_len != right_len {
+            return Ok(false);
+        }
+        if left_buffer[..left_len] != right_buffer[..right_len] {
+            return Ok(false);
+        }
+        if left_len == 0 {
+            return Ok(true);
+        }
+    }
+}
+
+fn directory_names(path: &Path) -> Result<Vec<std::ffi::OsString>> {
+    let mut names = std::fs::read_dir(path)
+        .with_context(|| format!("read directory {}", path.display()))?
+        .map(|entry| entry.map(|entry| entry.file_name()))
+        .collect::<std::io::Result<Vec<_>>>()
+        .with_context(|| format!("read directory entry in {}", path.display()))?;
+    names.sort();
+    Ok(names)
+}
+
 /// Parse the leading integer of a version string (`"22"`, `"22 (605)"`).
 #[must_use]
 pub fn parse_api_version(version: &str) -> Option<u32> {
@@ -1031,6 +1138,7 @@ pub struct RuntimeRecord {
     pub driver_version: String,
     pub rules_applied: usize,
     pub rules_removed: usize,
+    pub verified_path: Option<String>,
     pub uid_count: usize,
     pub isolated_blocked: bool,
     pub error: Option<String>,
@@ -1047,6 +1155,11 @@ pub fn write_runtime_record(path: &std::path::Path, record: &RuntimeRecord) -> R
     let _ = writeln!(body, "driver_version={}", record.driver_version);
     let _ = writeln!(body, "rules_applied={}", record.rules_applied);
     let _ = writeln!(body, "rules_removed={}", record.rules_removed);
+    let _ = writeln!(
+        body,
+        "verified_path={}",
+        record.verified_path.as_deref().unwrap_or("")
+    );
     let _ = writeln!(body, "uid_count={}", record.uid_count);
     let _ = writeln!(body, "isolated_blocked={}", record.isolated_blocked);
     let _ = writeln!(
@@ -1074,6 +1187,7 @@ pub struct InjectionResult {
     pub driver_version: String,
     pub applied: usize,
     pub removed: usize,
+    pub verified_path: Option<String>,
     pub skipped: usize,
     pub uid_count: usize,
     pub isolated_blocked: bool,
@@ -1097,7 +1211,7 @@ pub fn apply_current_plan() -> Result<InjectionResult> {
     let driver = Driver::kernel();
     let probe = ensure_driver()?;
     let plan = collect_plan()?;
-    let (applied, removed) = driver.reconcile_rules(&plan.rules)?;
+    let (applied, removed, verified_path) = reconcile_and_verify(&driver, &plan.rules)?;
 
     let mut warnings = Vec::new();
     let mut uid_count = 0_usize;
@@ -1121,6 +1235,7 @@ pub fn apply_current_plan() -> Result<InjectionResult> {
         driver_version: probe.version.clone().unwrap_or_default(),
         rules_applied: applied,
         rules_removed: removed,
+        verified_path: verified_path.clone(),
         uid_count,
         isolated_blocked,
         error: warnings.first().cloned(),
@@ -1138,11 +1253,34 @@ pub fn apply_current_plan() -> Result<InjectionResult> {
         driver_version: probe.version.unwrap_or_default(),
         applied,
         removed,
+        verified_path,
         skipped: plan.skipped.len(),
         uid_count,
         isolated_blocked,
         warnings,
     })
+}
+
+fn reconcile_and_verify<T: Transport>(
+    driver: &Driver<T>,
+    rules: &[Rule],
+) -> Result<(usize, usize, Option<String>)> {
+    let (applied, removed) = driver.reconcile_rules(rules)?;
+    let verified_path = match verify_data_path(rules) {
+        Ok(path) => path,
+        Err(error) => {
+            if let Err(clear_error) = driver.clear_rules() {
+                return Err(error.context(format!(
+                    "NoMount data-plane verification failed and its rules could not be cleared: \
+                     {clear_error:#}"
+                )));
+            }
+            return Err(error.context(
+                "NoMount data-plane verification failed; the accepted rules were cleared",
+            ));
+        }
+    };
+    Ok((applied, removed, verified_path))
 }
 
 /// Probe the runtime driver and load the embedded KMI module when needed.
@@ -1186,6 +1324,9 @@ fn log_injection(plan: &crate::nomount_plan::Plan, record: &RuntimeRecord, warni
         record.uid_count,
         record.isolated_blocked
     );
+    if let Some(path) = &record.verified_path {
+        let _ = writeln!(body, "data_path={path}");
+    }
     for (path, count) in summarize_targets(&plan.rules) {
         let _ = writeln!(body, "target={path} rules={count}");
     }
@@ -1273,6 +1414,8 @@ pub struct Status {
     pub deferred_to: Option<String>,
     /// True when this backend is the one injecting right now.
     pub owns_injection: bool,
+    pub data_verified: Option<String>,
+    pub data_error: Option<String>,
     /// Built-in support or a loadable module; `None` while the API is silent.
     pub driver_kind: Option<DriverKind>,
     /// Last action that changed kernel state, e.g. `clear` or `hot-unload <id>`.
@@ -1306,6 +1449,8 @@ impl Status {
             uids_active: Vec::new(),
             deferred_to: installed_driver_module(),
             owns_injection: false,
+            data_verified: None,
+            data_error: None,
             driver_kind: None,
             last_action: read_last_action(std::path::Path::new(crate::defs::NOMOUNT_LAST_ACTION)),
             unavailable_code: None,
@@ -1340,6 +1485,10 @@ impl Status {
             // kernel made up for them, so the two never contradict each other.
             status.applied_rules = rules.iter().filter(|rule| !rule.virtual_dir).count();
             status.kernel_rules = rules.len();
+            match verify_data_path(&rules) {
+                Ok(path) => status.data_verified = path,
+                Err(error) => status.data_error = Some(format!("{error:#}")),
+            }
         }
         if let Ok(uids) = driver.list_uids() {
             status.uid_count = uids.len();
@@ -1372,6 +1521,8 @@ impl Status {
                 "uids_active": self.uids_active,
                 "deferred_to": self.deferred_to,
                 "owns_injection": self.owns_injection,
+                "data_verified": self.data_verified,
+                "data_error": self.data_error,
                 "driver_kind": self.driver_kind.map(DriverKind::as_str),
                 "last_action": self.last_action,
                 "unavailable_code": self.unavailable_code,
@@ -1415,6 +1566,18 @@ impl Status {
             .context("failed to write nomount status")?;
             writeln!(out, "owns_injection={}", self.owns_injection)
                 .context("failed to write nomount status")?;
+            writeln!(
+                out,
+                "data_verified={}",
+                self.data_verified.as_deref().unwrap_or("")
+            )
+            .context("failed to write nomount status")?;
+            writeln!(
+                out,
+                "data_error={}",
+                self.data_error.as_deref().unwrap_or("")
+            )
+            .context("failed to write nomount status")?;
             writeln!(
                 out,
                 "driver_kind={}",
@@ -1511,6 +1674,7 @@ pub fn inject(dry_run: bool, json: bool, verbose: bool) -> Result<()> {
             "driver_version": result.driver_version,
             "rules_applied": result.applied,
             "rules_removed": result.removed,
+            "verified_path": result.verified_path,
             "skipped": result.skipped,
             "uid_count": result.uid_count,
             "isolated_blocked": result.isolated_blocked,
@@ -1670,7 +1834,12 @@ fn unavailable_reason(probe: &DriverProbe) -> (&'static str, Option<String>) {
 #[must_use]
 pub fn installed_driver_module() -> Option<String> {
     let path = crate::metamodule::get_metamodule_path()?;
-    if path.join(crate::defs::DISABLE_FILE_NAME).exists() {
+    installed_driver_module_at(&path)
+}
+
+#[cfg(any(target_os = "android", test))]
+fn installed_driver_module_at(path: &Path) -> Option<String> {
+    if path.join(crate::mount_plan::DISABLE_FILE_NAME).exists() {
         return None;
     }
     let id = path
@@ -1732,8 +1901,9 @@ pub fn load_embedded_driver() -> Result<String> {
     let _lock = load_lock()?;
     if module_loaded(&std::fs::read_to_string("/proc/modules").unwrap_or_default()) {
         // Something already loaded it, so no load is in flight any more.
-        mount_guard::clear(attempt);
-        clear_legacy_load_record();
+        mount_guard::try_clear(attempt)
+            .context("nomount: cannot clear the completed load record")?;
+        clear_legacy_load_record()?;
         return Ok("already loaded".to_string());
     }
     preserve_legacy_load_record(attempt, Path::new(crate::defs::MOUNT_INFLIGHT))?;
@@ -1757,8 +1927,11 @@ pub fn load_embedded_driver() -> Result<String> {
     let loaded = ksuinit::load_module(&data, &params);
     // The call returned, so the kernel survived it and the record has done its
     // job: only a load that hangs leaves it behind for the next boot.
-    mount_guard::clear(attempt);
+    let cleared = mount_guard::try_clear(attempt)
+        .context("nomount: module load returned but its guard could not be cleared");
     loaded.with_context(|| format!("nomount: loading {name} failed"))?;
+    cleared?;
+    clear_legacy_load_record()?;
     log::info!("nomount: loaded {name}");
     Ok(name)
 }
@@ -1804,11 +1977,15 @@ fn reject_unfinished_load(attempt: &Path) -> Result<()> {
 }
 
 #[cfg(target_os = "android")]
-fn clear_legacy_load_record() {
+fn clear_legacy_load_record() -> Result<()> {
     let path = Path::new(crate::defs::MOUNT_INFLIGHT);
-    if mount_guard::read(path).is_some_and(|record| record.stage == mount_guard::Stage::Load) {
-        mount_guard::clear(path);
+    if mount_guard::read(path).is_some_and(|record| {
+        record.stage == mount_guard::Stage::Load && record.provider == "nomount"
+    }) {
+        mount_guard::try_clear(path)
+            .context("nomount: cannot clear the completed legacy load record")?;
     }
+    Ok(())
 }
 
 #[cfg(target_os = "android")]
@@ -1860,24 +2037,21 @@ fn load_lock() -> Result<std::fs::File> {
 /// Selecting NoMount again is the retry both guards are waiting for, so the
 /// record has to go before the next load or injection can run.
 #[cfg(target_os = "android")]
-pub fn forget_inflight() {
-    match forget_inflight_at(
+pub fn forget_inflight() -> Result<()> {
+    forget_inflight_at(
         load_attempt_path(),
         Path::new(crate::defs::MOUNT_INFLIGHT),
         Path::new(crate::defs::NOMOUNT_LOAD_LOCK),
-    ) {
-        Ok(()) => {}
-        Err(error) => {
-            log::warn!("nomount: refusing to clear an active load guard: {error:#}");
-        }
-    }
+    )
 }
 
 #[cfg(any(target_os = "android", test))]
 fn forget_inflight_at(attempt: &Path, legacy: &Path, lock_path: &Path) -> Result<()> {
     let _lock = load_lock_at(lock_path)?;
-    mount_guard::clear(attempt);
-    mount_guard::clear(legacy);
+    mount_guard::try_clear(attempt).context("nomount: cannot clear the load guard")?;
+    if mount_guard::read(legacy).is_some_and(|record| record.provider == "nomount") {
+        mount_guard::try_clear(legacy).context("nomount: cannot clear the injection guard")?;
+    }
     Ok(())
 }
 

@@ -197,7 +197,13 @@ fn died_at(path: &Path, epoch: &crate::startup_epoch::StartupEpoch) -> bool {
 
 /// Drop the record; failures only warn.
 pub fn clear(path: &Path) {
-    remove(path, "");
+    if let Err(error) = try_clear(path) {
+        log::warn!("mount guard: {error:#}");
+    }
+}
+
+pub fn try_clear(path: &Path) -> Result<()> {
+    remove(path, "")
 }
 
 /// Drop the record only when it was written in this boot, i.e. when the step it
@@ -206,31 +212,29 @@ pub fn clear(path: &Path) {
 /// A stale record has to survive: it is what tells the next boot not to repeat
 /// a step that stopped an earlier one (booting into safe mode, for instance,
 /// skips mounting and must not swallow the evidence).
-pub fn clear_if_ours(path: &Path) {
-    let Ok(epoch) = crate::startup_epoch::current_or_create() else {
-        return;
-    };
-    clear_if_ours_at(path, &epoch);
+pub fn clear_if_ours(path: &Path) -> Result<()> {
+    let epoch = crate::startup_epoch::current_or_create()?;
+    clear_if_ours_at(path, &epoch)
 }
 
-pub fn clear_if_ours_at(path: &Path, epoch: &crate::startup_epoch::StartupEpoch) {
+pub fn clear_if_ours_at(path: &Path, epoch: &crate::startup_epoch::StartupEpoch) -> Result<()> {
     let ours = read(path).is_none_or(|record| {
         record.boot_id == epoch.boot_id
             && (record.generation == 0 || record.generation == epoch.generation)
     });
     if ours {
-        clear(path);
+        try_clear(path)?;
     }
+    Ok(())
 }
 
-fn remove(path: &Path, note: &str) {
+fn remove(path: &Path, note: &str) -> Result<()> {
     match std::fs::remove_file(path) {
-        Ok(()) => {}
-        Err(error) if error.kind() == std::io::ErrorKind::NotFound => {}
-        Err(error) => log::warn!(
-            "mount guard: could not clear {}{note}: {error:#}",
-            path.display()
-        ),
+        Ok(()) => Ok(()),
+        Err(error) if error.kind() == std::io::ErrorKind::NotFound => Ok(()),
+        Err(error) => {
+            Err(error).with_context(|| format!("could not clear {}{note}", path.display()))
+        }
     }
 }
 

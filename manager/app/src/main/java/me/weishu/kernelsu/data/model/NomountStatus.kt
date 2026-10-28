@@ -47,6 +47,8 @@ data class NomountStatus(
     val deferredTo: String?,
     /** True when the built-in backend is the one injecting right now. */
     val ownsInjection: Boolean,
+    val dataVerified: String?,
+    val dataError: String?,
     /** `builtin` when the kernel carries the driver, `module` for an LKM. */
     val driverKind: String?,
     /** Machine-readable reason the driver is unusable; see the manager strings. */
@@ -59,7 +61,11 @@ data class NomountStatus(
 ) {
     /** True when the driver answers and the requested rules are all in place. */
     val injected: Boolean
-        get() = apiOk && rulesApplied >= rulesExpected && rulesExpected > 0
+        get() = apiOk &&
+            rulesApplied >= rulesExpected &&
+            rulesExpected > 0 &&
+            dataVerified != null &&
+            dataError == null
 
     companion object {
         /** Newest schema this app understands; older schemas stay readable. */
@@ -99,6 +105,8 @@ data class NomountStatus(
                 uidsActive = json.optIntList("uids_active"),
                 deferredTo = json.optStringOrNull("deferred_to"),
                 ownsInjection = json.optBoolean("owns_injection", false),
+                dataVerified = json.optStringOrNull("data_verified"),
+                dataError = json.optStringOrNull("data_error"),
                 driverKind = json.optStringOrNull("driver_kind"),
                 unavailableCode = json.optStringOrNull("unavailable_code"),
                 unavailableDetail = json.optStringOrNull("unavailable_detail"),

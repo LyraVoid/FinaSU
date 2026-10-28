@@ -538,9 +538,10 @@ class SettingsRepositoryImpl : SettingsRepository {
     override suspend fun setFolkMountMode(mode: FolkMountMode): Result<Unit> = withContext(Dispatchers.IO) {
         runCatching {
             // `mode.token` is a fixed enum value; never interpolate arbitrary input.
-            check(execKsud("mount set-mode ${mode.token}", true)) {
-                "ksud mount set-mode ${mode.token} failed"
-            }
+            requireKsud(
+                execKsudResult("mount set-mode ${mode.token}"),
+                "ksud mount set-mode ${mode.token} failed",
+            )
         }
     }
 

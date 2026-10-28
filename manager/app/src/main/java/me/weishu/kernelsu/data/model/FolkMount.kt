@@ -61,6 +61,13 @@ data class FolkMountStatus(
     val bootWarning: String?,
     val error: String?,
 ) {
+    // Re-selecting NoMount is the explicit guard retry after a fallback.
+    fun shouldWrite(mode: FolkMountMode): Boolean =
+        configuredMode != mode ||
+            (mode == FolkMountMode.NOMOUNT &&
+                bootProvider != null &&
+                bootProvider != FolkMountProvider.NOMOUNT)
+
     companion object {
         /** Newest schema this app understands; older schemas stay readable. */
         const val SCHEMA_VERSION = 2

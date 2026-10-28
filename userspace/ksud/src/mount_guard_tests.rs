@@ -96,7 +96,7 @@ fn a_stale_record_survives_boot_completed_and_our_own_does_not() {
          detail=\ntime=7\n",
     )
     .unwrap();
-    clear_if_ours_at(&path, &epoch);
+    clear_if_ours_at(&path, &epoch).unwrap();
     assert!(died_at(&path, &epoch), "a stale record must survive");
 
     // This boot's own record is dropped: the step it describes just finished.
@@ -110,7 +110,7 @@ fn a_stale_record_survives_boot_completed_and_our_own_does_not() {
         epoch.generation,
     )
     .unwrap();
-    clear_if_ours_at(&path, &epoch);
+    clear_if_ours_at(&path, &epoch).unwrap();
     assert!(read(&path).is_none());
 }
 

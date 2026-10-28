@@ -192,7 +192,7 @@ mod tests {
             )
             .unwrap();
         }
-        crate::mount_guard::clear_if_ours_at(&inflight, &epoch);
+        crate::mount_guard::clear_if_ours_at(&inflight, &epoch).unwrap();
         assert!(!inflight.exists());
         // This boot's own marker is not a verdict about an earlier boot.
         assert_eq!(previous_at(&pending, &boot_id, 1), Previous::None);
