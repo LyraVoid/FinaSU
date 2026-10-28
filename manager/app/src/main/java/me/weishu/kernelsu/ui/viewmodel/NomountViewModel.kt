@@ -9,6 +9,8 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import me.weishu.kernelsu.data.model.FolkMountMode
+import me.weishu.kernelsu.data.model.FolkMountStatus
 import me.weishu.kernelsu.data.model.NomountStatus
 import me.weishu.kernelsu.data.repository.SettingsRepository
 import me.weishu.kernelsu.data.repository.SettingsRepositoryImpl
@@ -37,6 +39,7 @@ data class NomountUiState(
     val isLoading: Boolean = true,
     val isWriting: Boolean = false,
     val status: NomountStatus? = null,
+    val folkMountStatus: FolkMountStatus? = null,
     val readError: Boolean = false,
     val actionError: Boolean = false,
     val apps: List<ExclusionApp> = emptyList(),
@@ -59,14 +62,31 @@ class NomountViewModel(
         if (_uiState.value.isWriting) return
         _uiState.update { it.copy(isLoading = true, actionError = false) }
         viewModelScope.launch {
-            val result = repo.getNomountStatus()
-            _uiState.update {
-                it.copy(
-                    isLoading = false,
-                    status = result.getOrNull() ?: it.status,
-                    readError = result.isFailure,
-                )
-            }
+            refreshStatuses()
+        }
+    }
+
+    fun enableNomount() {
+        if (_uiState.value.isWriting) return
+        _uiState.update { it.copy(isWriting = true, actionError = false) }
+        viewModelScope.launch {
+            val result = repo.setFolkMountMode(FolkMountMode.NOMOUNT)
+            refreshStatuses(actionError = result.isFailure)
+        }
+    }
+
+    private suspend fun refreshStatuses(actionError: Boolean? = null) {
+        val statusResult = repo.getNomountStatus()
+        val mountResult = repo.getFolkMountStatus()
+        _uiState.update {
+            it.copy(
+                isLoading = false,
+                isWriting = false,
+                status = statusResult.getOrNull() ?: it.status,
+                folkMountStatus = mountResult.getOrNull() ?: it.folkMountStatus,
+                readError = statusResult.isFailure,
+                actionError = actionError ?: it.actionError,
+            )
         }
     }
 
@@ -149,6 +169,14 @@ class NomountViewModel(
         }
     }
 }
+
+internal fun shouldShowNomountSetup(
+    status: NomountStatus?,
+    mount: FolkMountStatus?,
+): Boolean = mount != null &&
+    status != null &&
+    status.deferredTo == null &&
+    (mount.configuredMode != FolkMountMode.NOMOUNT || mount.shouldWrite(FolkMountMode.NOMOUNT))
 
 /**
  * Installed apps for the picker, loaded through the manager's own app list.

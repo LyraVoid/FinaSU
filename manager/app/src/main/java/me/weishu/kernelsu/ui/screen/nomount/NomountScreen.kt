@@ -23,6 +23,7 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.stringResource
@@ -30,9 +31,13 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.LifecycleResumeEffect
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
+import kotlinx.coroutines.launch
 import me.weishu.kernelsu.R
+import me.weishu.kernelsu.data.model.FolkMountMode
 import me.weishu.kernelsu.data.model.NomountDriverState
 import me.weishu.kernelsu.data.model.NomountStatus
+import me.weishu.kernelsu.ui.component.dialog.ConfirmResult
+import me.weishu.kernelsu.ui.component.dialog.rememberConfirmDialog
 import me.weishu.kernelsu.ui.component.material.ExpressiveScaffold
 import me.weishu.kernelsu.ui.component.material.SegmentedColumn
 import me.weishu.kernelsu.ui.component.material.SegmentedListItem
@@ -43,6 +48,7 @@ import me.weishu.kernelsu.ui.navigation3.LocalNavigator
 import me.weishu.kernelsu.ui.navigation3.Route
 import me.weishu.kernelsu.ui.viewmodel.NomountUiState
 import me.weishu.kernelsu.ui.viewmodel.NomountViewModel
+import me.weishu.kernelsu.ui.viewmodel.shouldShowNomountSetup
 
 /**
  * NoMount driver, injection and visibility state.
@@ -89,10 +95,54 @@ fun NomountScreen() {
                 .padding(PaddingValues(16.dp)),
             verticalArrangement = Arrangement.spacedBy(16.dp),
         ) {
+            SetupSection(state, viewModel)
             DriverSection(state, viewModel)
             InjectionSection(state, viewModel)
             ModulesSection(state, viewModel)
             VisibilitySection(state, viewModel)
+        }
+    }
+}
+
+@Composable
+private fun SetupSection(state: NomountUiState, viewModel: NomountViewModel) {
+    if (!shouldShowNomountSetup(state.status, state.folkMountStatus)) return
+    val mount = state.folkMountStatus ?: return
+    val confirm = rememberConfirmDialog()
+    val scope = rememberCoroutineScope()
+    val title = stringResource(R.string.settings_folk_mount_mode_nomount)
+    val confirmContent = stringResource(R.string.settings_folk_mount_nomount_confirm)
+    val confirmAction = stringResource(R.string.settings_folk_mount_nomount_confirm_ok)
+    val warning = mount.bootWarning.takeIf { mount.configuredMode == FolkMountMode.NOMOUNT }
+    val summary = listOfNotNull(
+        warning ?: stringResource(R.string.settings_folk_mount_mode_nomount_summary),
+        stringResource(R.string.settings_folk_mount_reboot_hint),
+        stringResource(R.string.nomount_action_failed_summary).takeIf { state.actionError },
+    ).joinToString("\n")
+
+    SegmentedColumn(title = stringResource(R.string.settings_folk_mount)) {
+        item {
+            SegmentedListItem(
+                headlineContent = {
+                    Text(title)
+                },
+                supportingContent = { Text(summary) },
+                leadingContent = { Icon(Icons.Filled.Layers, null) },
+                enabled = !state.isWriting,
+                onClick = {
+                    scope.launch {
+                        val result = confirm.awaitConfirm(
+                            title = title,
+                            content = confirmContent,
+                            confirm = confirmAction,
+                        )
+                        if (result is ConfirmResult.Confirmed) viewModel.enableNomount()
+                    }
+                },
+                trailingContent = {
+                    Icon(Icons.AutoMirrored.Filled.KeyboardArrowRight, null)
+                },
+            )
         }
     }
 }
@@ -147,7 +197,14 @@ private fun driverSummary(state: NomountUiState): String {
         "module" -> stringResource(R.string.nomount_driver_kind_module)
         else -> null
     }
-    val reason = nomountUnavailableReason(status)
+    val reason = if (
+        status.unavailableCode == "not_loaded" &&
+        state.folkMountStatus?.configuredMode != FolkMountMode.NOMOUNT
+    ) {
+        stringResource(R.string.settings_folk_mount_mode_nomount_summary)
+    } else {
+        nomountUnavailableReason(status)
+    }
     return listOfNotNull(
         label,
         version?.takeIf { it.isNotEmpty() }?.let { "($it)" },
