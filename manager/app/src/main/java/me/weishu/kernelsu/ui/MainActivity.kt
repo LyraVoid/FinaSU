@@ -381,6 +381,9 @@ open class MainActivity : FragmentActivity() {
                                 entry<Route.Nomount> {
                                     me.weishu.kernelsu.ui.screen.nomount.NomountScreen()
                                 }
+                                entry<Route.UmountPaths> {
+                                    me.weishu.kernelsu.ui.screen.umount.UmountPathsScreen()
+                                }
                                 entry<Route.SuiPermissions> {
                                     me.weishu.kernelsu.ui.screen.sui.SuiPermissionsScreen()
                                 }

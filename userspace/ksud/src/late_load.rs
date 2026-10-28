@@ -125,6 +125,15 @@ pub fn run(package_name: &String, kmi: Option<String>, allow_shell: bool) -> Res
         warn!("module mount failed: {e:#}");
     }
 
+    match crate::umount_config::apply() {
+        Ok(report) if report.failed > 0 => warn!(
+            "umount config: {} applied, {} present, {} failed",
+            report.applied, report.existing, report.failed
+        ),
+        Ok(_) => {}
+        Err(e) => warn!("umount config could not be read or applied: {e:#}"),
+    }
+
     // 11. Execute post-mount stage scripts using the same deadline
     init_event::run_stage("post-mount", wait);
 

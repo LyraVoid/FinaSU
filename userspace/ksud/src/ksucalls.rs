@@ -477,6 +477,85 @@ pub fn umount_list_del(path: &str) -> anyhow::Result<()> {
     Ok(())
 }
 
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct UmountEntry {
+    pub path: String,
+    pub flags: u32,
+}
+
+pub fn is_errno(error: &anyhow::Error, errno: i32) -> bool {
+    error.chain().any(|source| {
+        source
+            .downcast_ref::<io::Error>()
+            .is_some_and(|error| error.raw_os_error() == Some(errno))
+    })
+}
+
+/// Read a consistent snapshot of the kernel umount list.
+pub fn umount_list() -> Result<Vec<UmountEntry>> {
+    let entry_size = std::mem::size_of::<ksu_uapi::ksu_try_umount_entry>();
+    let mut capacity = 16usize;
+
+    loop {
+        let mut entries: Vec<ksu_uapi::ksu_try_umount_entry> =
+            vec![unsafe { std::mem::zeroed() }; capacity];
+        let mut cmd = ksu_uapi::ksu_get_try_umount_cmd {
+            size: (capacity * entry_size) as u32,
+            count: 0,
+            entries: entries.as_mut_ptr() as u64,
+        };
+
+        match ksuctl(ksu_uapi::KSU_IOCTL_GET_TRY_UMOUNT, &raw mut cmd) {
+            Ok(_) => {
+                let count = cmd.count as usize;
+                if count > entries.len() {
+                    bail!(
+                        "kernel returned {count} umount entries into {}",
+                        entries.len()
+                    );
+                }
+                let mut result = Vec::with_capacity(count);
+                for entry in entries.into_iter().take(count) {
+                    let bytes = entry
+                        .path
+                        .iter()
+                        .map(|&byte| byte.to_ne_bytes()[0])
+                        .collect::<Vec<_>>();
+                    let len = bytes
+                        .iter()
+                        .position(|&byte| byte == 0)
+                        .unwrap_or(bytes.len());
+                    if len == bytes.len() {
+                        bail!("kernel returned an unterminated umount path");
+                    }
+                    result.push(UmountEntry {
+                        path: String::from_utf8(bytes[..len].to_vec()).map_err(|_| {
+                            anyhow::anyhow!("kernel returned a non-UTF-8 umount path")
+                        })?,
+                        flags: entry.flags,
+                    });
+                }
+                return Ok(result);
+            }
+            Err(error) if is_errno(&error, libc::ENOSPC) => {
+                let required = cmd.size as usize;
+                let next = required
+                    .div_ceil(entry_size)
+                    .max(capacity.saturating_mul(2))
+                    .min(ksu_uapi::KSU_TRY_UMOUNT_MAX_ENTRIES as usize);
+                if next <= capacity {
+                    return Err(error.context("kernel umount list keeps changing while reading"));
+                }
+                capacity = next;
+            }
+            Err(error) if is_errno(&error, libc::ENOTTY) => {
+                return Err(error.context("this kernel does not support listing the umount list"));
+            }
+            Err(error) => return Err(error),
+        }
+    }
+}
+
 /// Set current process's process group to init_group (pgid = 0)
 pub fn set_init_pgrp() -> Result<()> {
     ksuctl(

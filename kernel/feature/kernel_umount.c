@@ -43,11 +43,11 @@ static const struct ksu_feature_handler kernel_umount_handler = {
 
 extern int path_umount(struct path *path, int flags);
 
-static void ksu_umount_mnt(const char *mnt, struct path *path, int flags)
+static void ksu_umount_mnt(struct path *path, int flags)
 {
     int err = path_umount(path, flags);
     if (err) {
-        pr_info("umount %s failed: %d\n", mnt, err);
+        pr_info_ratelimited("umount list entry failed: %d\n", err);
     }
 }
 
@@ -65,7 +65,7 @@ static void try_umount(const char *mnt, int flags)
         return;
     }
 
-    ksu_umount_mnt(mnt, &path, flags);
+    ksu_umount_mnt(&path, flags);
 }
 
 struct umount_tw {
@@ -74,11 +74,6 @@ struct umount_tw {
 
 int ksu_handle_umount(uid_t old_uid, uid_t new_uid)
 {
-    // if there isn't any module mounted, just ignore it!
-    if (!ksu_module_mounted) {
-        return 0;
-    }
-
     if (!ksu_kernel_umount_enabled) {
         return 0;
     }
@@ -110,17 +105,22 @@ int ksu_handle_umount(uid_t old_uid, uid_t new_uid)
     // umount the target mnt
     pr_info("handle umount for uid: %d, pid: %d\n", new_uid, current->pid);
 
-    const struct cred *saved = override_creds(ksu_cred);
-
     struct mount_entry *entry;
     down_read(&mount_list_lock);
+    // A user-script bind mount need not pass through a provider that reports
+    // ksu_module_mounted. The list itself is the source of work, while the
+    // previous global gate remains valid for avoiding an empty override_creds.
+    if (!ksu_module_mounted && list_empty(&mount_list)) {
+        up_read(&mount_list_lock);
+        return 0;
+    }
+
+    const struct cred *saved = override_creds(ksu_cred);
     list_for_each_entry (entry, &mount_list, list) {
-        pr_info("%s: unmounting: %s flags: 0x%x\n", __func__, entry->umountable, entry->flags);
         try_umount(entry->umountable, entry->flags);
     }
-    up_read(&mount_list_lock);
-
     revert_creds(saved);
+    up_read(&mount_list_lock);
 
     return 0;
 }

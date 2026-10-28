@@ -1,4 +1,4 @@
-use anyhow::{Context, Ok, Result};
+use anyhow::{Context, Ok, Result, bail};
 use clap::Parser;
 use std::path::PathBuf;
 
@@ -10,7 +10,7 @@ use crate::lkm_image::BootPatchV2Args;
 use crate::module::regenerate_preinit;
 use crate::{
     apk_sign, assets, debug, defs, init_event, ksu_uapi, ksucalls, module, module_config, sulog,
-    utils,
+    umount_config, utils,
 };
 
 /// KernelSU userspace cli
@@ -188,6 +188,12 @@ enum Commands {
     Kernel {
         #[command(subcommand)]
         command: Kernel,
+    },
+
+    /// Manage persisted custom umount mount points
+    UmountConfig {
+        #[command(subcommand)]
+        command: UmountConfig,
     },
 
     /// Resetprop - Magisk-compatible system property tool
@@ -554,6 +560,12 @@ enum Kernel {
 
 #[derive(clap::Subcommand, Debug)]
 enum UmountOp {
+    /// List mount points currently registered in the kernel
+    List {
+        /// Emit JSON instead of a table
+        #[arg(long)]
+        json: bool,
+    },
     /// Add mount point to umount list
     Add {
         /// mount point path
@@ -569,6 +581,25 @@ enum UmountOp {
     },
     /// Wipe all entries from umount list
     Wipe,
+}
+
+#[derive(clap::Subcommand, Debug)]
+enum UmountConfig {
+    /// List persisted custom mount points
+    List,
+    /// Persist a custom mount point and apply it to the running kernel
+    Add {
+        path: String,
+        /// umount flags (default: 2, MNT_DETACH)
+        #[arg(long, default_value_t = umount_config::MNT_DETACH)]
+        flags: u32,
+    },
+    /// Remove a custom mount point without touching module registrations
+    Del { path: String },
+    /// Remove every custom mount point
+    Clear,
+    /// Apply persisted custom mount points to the running kernel
+    Apply,
 }
 
 #[derive(clap::Subcommand, Debug)]
@@ -1092,12 +1123,81 @@ pub fn run() -> Result<()> {
         Commands::Kernel { command } => match command {
             Kernel::NukeExt4Sysfs { mnt } => ksucalls::nuke_ext4_sysfs(&mnt),
             Kernel::Umount { command } => match command {
+                UmountOp::List { json } => {
+                    let entries = ksucalls::umount_list()?;
+                    if json {
+                        println!(
+                            "{}",
+                            serde_json::to_string(
+                                &entries
+                                    .iter()
+                                    .map(|entry| serde_json::json!({
+                                        "path": entry.path,
+                                        "flags": entry.flags,
+                                    }))
+                                    .collect::<Vec<_>>()
+                            )?
+                        );
+                    } else if entries.is_empty() {
+                        println!("No umount mount points registered");
+                    } else {
+                        println!("MOUNT POINT\tFLAGS");
+                        for entry in entries {
+                            println!("{}\t{}", entry.path, entry.flags);
+                        }
+                    }
+                    Ok(())
+                }
                 UmountOp::Add { mnt, flags } => ksucalls::umount_list_add(&mnt, flags),
                 UmountOp::Del { mnt } => ksucalls::umount_list_del(&mnt),
                 UmountOp::Wipe => ksucalls::umount_list_wipe(),
             },
             Kernel::NotifyModuleMounted => {
                 ksucalls::report_module_mounted();
+                Ok(())
+            }
+        },
+        Commands::UmountConfig { command } => match command {
+            UmountConfig::List => {
+                println!("{}", serde_json::to_string_pretty(&umount_config::list()?)?);
+                Ok(())
+            }
+            UmountConfig::Add { path, flags } => {
+                let outcome = umount_config::add(&path, flags)?;
+                if outcome.configured {
+                    println!("Saved custom mount point");
+                } else {
+                    println!("Custom mount point was already saved");
+                }
+                if outcome.kernel_applied {
+                    println!("Applied to future app processes");
+                } else {
+                    println!("Kernel entry already existed; existing flags were kept");
+                }
+                Ok(())
+            }
+            UmountConfig::Del { path } => {
+                if umount_config::remove(&path)? {
+                    println!("Removed from custom configuration; this boot may still unmount it");
+                } else {
+                    println!("Custom mount point was not configured");
+                }
+                Ok(())
+            }
+            UmountConfig::Clear => {
+                umount_config::clear()?;
+                println!("Cleared custom mount point configuration");
+                Ok(())
+            }
+            UmountConfig::Apply => {
+                let report = umount_config::apply()?;
+                println!(
+                    "Applied {} custom mount points ({} already present, {} failed)",
+                    report.applied, report.existing, report.failed
+                );
+                if report.failed > 0 {
+                    bail!("{} custom mount points could not be applied", report.failed);
+                }
                 Ok(())
             }
         },

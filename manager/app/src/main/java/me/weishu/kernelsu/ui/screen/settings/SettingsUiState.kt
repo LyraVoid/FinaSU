@@ -129,6 +129,7 @@ data class SettingsScreenActions(
     val onOpenProfileTemplate: () -> Unit,
     val onSetSuCompatMode: (Int) -> Unit,
     val onSetKernelUmountEnabled: (Boolean) -> Unit,
+    val onOpenUmountPaths: () -> Unit,
     val onSetSelinuxHideEnabled: (Boolean) -> Unit,
     val onSetMountViewFilterEnabled: (Boolean) -> Unit,
     val onSetSELinuxMode: (Boolean) -> Unit,

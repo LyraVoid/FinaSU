@@ -616,6 +616,18 @@ fun FunctionCategoryContent(uiState: SettingsUiState, actions: SettingsScreenAct
                     )
                 },
                 {
+                    SegmentedListItem(
+                        headlineContent = {
+                            Text(stringResource(R.string.umount_paths_title))
+                        },
+                        supportingContent = {
+                            Text(stringResource(R.string.umount_paths_summary))
+                        },
+                        leadingContent = { Icon(Icons.Filled.LayersClear, null) },
+                        onClick = actions.onOpenUmountPaths,
+                    )
+                },
+                {
                     SegmentedSwitchItem(
                         icon = Icons.Filled.PhonelinkLock,
                         title = stringResource(id = R.string.settings_finasu_hide),

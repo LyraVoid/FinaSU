@@ -217,6 +217,25 @@ static const __u8 KSU_UMOUNT_WIPE = 0; /* ignore everything and wipe list */
 static const __u8 KSU_UMOUNT_ADD = 1; /* add entry (path + flags) */
 static const __u8 KSU_UMOUNT_DEL = 2; /* delete entry, strcmp */
 
+#define KSU_TRY_UMOUNT_PATH_MAX 256
+/*
+ * Every zygote setuid walks this list. Keep the hard cap small enough that a
+ * corrupt or runaway writer cannot hide an unbounded cost behind app launches.
+ */
+#define KSU_TRY_UMOUNT_MAX_ENTRIES 256
+
+struct ksu_try_umount_entry {
+    char path[KSU_TRY_UMOUNT_PATH_MAX];
+    __u32 flags;
+    __u32 reserved; /* Input/output: must be 0 */
+};
+
+struct ksu_get_try_umount_cmd {
+    __u32 size; /* Input: bytes available; Output: bytes required */
+    __u32 count; /* Output: number of entries */
+    __aligned_u64 entries; /* Input: array of struct ksu_try_umount_entry */
+};
+
 /* IOCTL command definitions */
 static const __u32 KSU_IOCTL_GRANT_ROOT = _IOC(_IOC_NONE, 'K', 1, 0);
 static const __u32 KSU_IOCTL_GET_INFO = _IOR('K', 2, struct ksu_get_info_cmd);
@@ -261,6 +280,8 @@ static const __u32 KSU_IOCTL_GET_NETISOLATE_EVENTS =
     _IOWR('K', 31, struct ksu_netisolate_events);
 static const __u32 KSU_IOCTL_CLEAR_NETISOLATE_EVENTS =
     _IOW('K', 32, struct ksu_netisolate_events);
+static const __u32 KSU_IOCTL_GET_TRY_UMOUNT =
+    _IOWR('K', 33, struct ksu_get_try_umount_cmd);
 static const __u32 KSU_IOCTL_GET_FULL_VERSION = _IOR('K', 29, struct ksu_get_full_version_cmd);
 
 #endif

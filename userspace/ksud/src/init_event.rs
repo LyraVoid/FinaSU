@@ -165,6 +165,15 @@ pub fn on_post_fs_data() -> Result<()> {
         warn!("module mount failed: {e:#}");
     }
 
+    match crate::umount_config::apply() {
+        Ok(report) if report.failed > 0 => warn!(
+            "umount config: {} applied, {} present, {} failed",
+            report.applied, report.existing, report.failed
+        ),
+        Ok(_) => {}
+        Err(e) => warn!("umount config could not be read or applied: {e:#}"),
+    }
+
     crate::susfs::boot("post-mount");
     run_stage("post-mount", wait);
 

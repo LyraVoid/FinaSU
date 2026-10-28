@@ -713,11 +713,15 @@ static int do_nuke_ext4_sysfs(void __user *arg)
 struct list_head mount_list = LIST_HEAD_INIT(mount_list);
 DECLARE_RWSEM(mount_list_lock);
 
+_Static_assert(sizeof(struct ksu_try_umount_entry) == 264, "unexpected umount entry ABI");
+_Static_assert(offsetof(struct ksu_try_umount_entry, flags) == 256, "unexpected umount flags offset");
+
 static int add_try_umount(void __user *arg)
 {
     struct mount_entry *new_entry, *entry, *tmp;
     struct ksu_add_try_umount_cmd cmd;
     char buf[256] = { 0 };
+    unsigned int count = 0;
 
     if (copy_from_user(&cmd, arg, sizeof cmd))
         return -EFAULT;
@@ -725,14 +729,16 @@ static int add_try_umount(void __user *arg)
     switch (cmd.mode) {
     case KSU_UMOUNT_WIPE: {
         struct mount_entry *entry, *tmp;
+        unsigned int removed = 0;
         down_write(&mount_list_lock);
         list_for_each_entry_safe (entry, tmp, &mount_list, list) {
-            pr_info("wipe_umount_list: removing entry: %s\n", entry->umountable);
             list_del(&entry->list);
             kfree(entry->umountable);
             kfree(entry);
+            removed++;
         }
         up_write(&mount_list_lock);
+        pr_info("wipe_umount_list: removed %u entries\n", removed);
 
         return 0;
     }
@@ -757,15 +763,23 @@ static int add_try_umount(void __user *arg)
         down_write(&mount_list_lock);
 
         // disallow dupes
-        // if this gets too many, we can consider moving this whole task to a kthread
         list_for_each_entry (entry, &mount_list, list) {
             if (!strcmp(entry->umountable, buf)) {
-                pr_info("cmd_add_try_umount: %s is already here!\n", buf);
+                pr_info("cmd_add_try_umount: entry already present\n");
                 up_write(&mount_list_lock);
                 kfree(new_entry->umountable);
                 kfree(new_entry);
                 return -EEXIST;
             }
+            count++;
+        }
+
+        if (count >= KSU_TRY_UMOUNT_MAX_ENTRIES) {
+            up_write(&mount_list_lock);
+            kfree(new_entry->umountable);
+            kfree(new_entry);
+            pr_warn("cmd_add_try_umount: entry limit reached (%u)\n", KSU_TRY_UMOUNT_MAX_ENTRIES);
+            return -ENOSPC;
         }
 
         // now check flags and add
@@ -778,7 +792,7 @@ static int add_try_umount(void __user *arg)
         // debug
         list_add(&new_entry->list, &mount_list);
         up_write(&mount_list_lock);
-        pr_info("cmd_add_try_umount: %s added!\n", buf);
+        pr_info("cmd_add_try_umount: entry added\n");
 
         return 0;
     }
@@ -794,10 +808,10 @@ static int add_try_umount(void __user *arg)
         down_write(&mount_list_lock);
         list_for_each_entry_safe (entry, tmp, &mount_list, list) {
             if (!strcmp(entry->umountable, buf)) {
-                pr_info("cmd_add_try_umount: entry removed: %s\n", entry->umountable);
                 list_del(&entry->list);
                 kfree(entry->umountable);
                 kfree(entry);
+                pr_info("cmd_add_try_umount: entry removed\n");
             }
         }
         up_write(&mount_list_lock);
@@ -813,6 +827,60 @@ static int add_try_umount(void __user *arg)
     } // switch(cmd.mode)
 
     return 0;
+}
+
+static int get_try_umount(void __user *arg)
+{
+    struct ksu_get_try_umount_cmd cmd;
+    struct ksu_try_umount_entry *entries;
+    struct mount_entry *entry;
+    unsigned int count = 0;
+    __u32 input_size;
+    size_t required;
+    int ret = 0;
+
+    if (copy_from_user(&cmd, arg, sizeof(cmd)))
+        return -EFAULT;
+
+    input_size = cmd.size;
+
+    entries = kvzalloc((size_t)KSU_TRY_UMOUNT_MAX_ENTRIES * sizeof(*entries), GFP_KERNEL);
+    if (!entries)
+        return -ENOMEM;
+
+    down_read(&mount_list_lock);
+    list_for_each_entry (entry, &mount_list, list) {
+        size_t len;
+
+        if (count >= KSU_TRY_UMOUNT_MAX_ENTRIES)
+            break;
+        if (!entry->umountable)
+            continue;
+        len = strlen(entry->umountable);
+        if (len >= KSU_TRY_UMOUNT_PATH_MAX)
+            continue;
+
+        memcpy(entries[count].path, entry->umountable, len + 1);
+        entries[count].flags = entry->flags;
+        count++;
+    }
+    up_read(&mount_list_lock);
+
+    required = (size_t)count * sizeof(*entries);
+    cmd.size = (__u32)required;
+    cmd.count = count;
+    if (input_size < required) {
+        ret = -ENOSPC;
+    } else if (required && !cmd.entries) {
+        ret = -EFAULT;
+    } else if (required && copy_to_user((void __user *)cmd.entries, entries, required)) {
+        ret = -EFAULT;
+    } else if (copy_to_user(arg, &cmd, sizeof(cmd))) {
+        ret = -EFAULT;
+    }
+
+    kvfree(entries);
+    return ret;
 }
 
 static int do_set_init_pgrp(void __user *arg)
@@ -1175,6 +1243,12 @@ static const struct ksu_ioctl_cmd_map ksu_ioctl_handlers[] = {
         .cmd = KSU_IOCTL_ADD_TRY_UMOUNT,
         .name = "ADD_TRY_UMOUNT",
         .handler = add_try_umount,
+        .perm_check = manager_or_root
+    },
+    {
+        .cmd = KSU_IOCTL_GET_TRY_UMOUNT,
+        .name = "GET_TRY_UMOUNT",
+        .handler = get_try_umount,
         .perm_check = manager_or_root
     },
     {

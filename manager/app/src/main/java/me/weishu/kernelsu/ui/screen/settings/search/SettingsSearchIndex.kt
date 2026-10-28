@@ -792,7 +792,7 @@ val settingsSearchIndex: List<SettingsSearchEntry> = buildList {
             titleRes = R.string.settings_kernel_umount,
             summaryRes = R.string.settings_kernel_umount_summary,
             icon = Icons.Filled.LayersClear,
-            aliases = listOf("umount", "unmount", "module", "hide"),
+            aliases = listOf("umount", "unmount", "module", "hide", "master switch", "总开关"),
         )
     )
     add(
@@ -801,7 +801,27 @@ val settingsSearchIndex: List<SettingsSearchEntry> = buildList {
             titleRes = R.string.settings_umount_modules_default,
             summaryRes = R.string.settings_umount_modules_default_summary,
             icon = Icons.AutoMirrored.Filled.Rule,
-            aliases = listOf("umount", "unmount", "default", "app"),
+            aliases = listOf("umount", "unmount", "default", "app", "默认", "模块"),
+        )
+    )
+    add(
+        SettingsCategory.FUNCTION.page(
+            id = "function.umount_paths",
+            titleRes = R.string.umount_paths_title,
+            summaryRes = R.string.umount_paths_summary,
+            icon = Icons.Filled.LayersClear,
+            route = Route.UmountPaths,
+            aliases = listOf(
+                "umount",
+                "unmount",
+                "mountpoint",
+                "bind mount",
+                "卸载",
+                "挂载点",
+                "自定义",
+                "真实挂载",
+                "文件",
+            ),
         )
     )
     add(
