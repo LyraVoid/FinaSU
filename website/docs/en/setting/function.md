@@ -45,9 +45,9 @@ Many features map the state returned by the kernel to `supported`, `forced`, `ma
 
 ## Root and Module Visibility
 
-### Unmount Modules (Kernel Level)
+### Module Unmounting (Master Switch)
 
-This switch lets the kernel hide module-injected content from target apps according to the "Unmount modules" policy in App Profile.
+This is the master switch for the module-unmount policy in App Profile. When enabled, the kernel can hide module-injected content from target apps according to that policy.
 
 - When on, apps that match the policy see a file system view closer to stock.
 - When off, the kernel does not perform this per-app unmount layer.
@@ -62,6 +62,18 @@ Sets the global default for "Unmount modules" in App Profile.
 - On: apps without their own configuration hide module injection by default.
 - Off: apps without their own configuration keep module files by default.
 - A single app's App Profile can override the default.
+
+### Custom Unmount Mountpoints
+
+In addition to the per-UID module policy, you can target exact mountpoints and hide them from an app the next time it starts.
+
+- Rules apply only to UIDs whose App Profile allows module unmounting.
+- The path must be a mountpoint root in the target namespace; directory recursion, wildcards and regular expressions are not supported.
+- Running apps do not change immediately. Restart the target app after saving.
+- Entries added automatically by modules are read-only and are not deleted by the Manager.
+- This changes real mounts and file content, unlike the `/proc` display filtering provided by "Hide mount records".
+
+See [Custom Unmount Mountpoints](/en/setting/umount-paths/) for the full workflow and troubleshooting.
 
 ::: tip When an app cannot find module files
 
@@ -349,6 +361,7 @@ Not guaranteed. It mainly blocks new connections; existing connections may keep 
 ## Related Pages
 
 - [Root & Mount Policy](/en/setting/root-policy/)
+- [Custom Unmount Mountpoints](/en/setting/umount-paths/)
 - [FolkZygisk](/en/builtin/folkzygisk/)
 - [Folk Mount](/en/builtin/folk-mount/)
 - [NoMount](/en/builtin/nomount/)
