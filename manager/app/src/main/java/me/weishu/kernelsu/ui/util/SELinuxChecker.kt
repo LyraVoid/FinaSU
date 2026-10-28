@@ -7,7 +7,8 @@ import com.topjohnwu.superuser.Shell
  * Safe to call from any thread (IO recommended).
  */
 fun getSELinuxStatusRaw(): String {
-    val shell = Shell.Builder.create().build("sh")
+    val shell = runCatching { Shell.Builder.create().build("/system/bin/sh") }.getOrNull()
+        ?: return "Unknown"
 
     val stdoutList = ArrayList<String>()
     val stderrList = ArrayList<String>()

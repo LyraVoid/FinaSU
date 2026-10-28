@@ -251,8 +251,9 @@ object RootShell {
     }
 
     /**
-     * Tries the embedded ksud daemon first, then a PATH `su`. The final `sh` fallback is returned
-     * only so the caller can observe a non-root shell; [publish] treats it as a failure.
+     * Tries the embedded ksud daemon first, then a PATH `su`. The final `sh` fallback stays
+     * absolute and is returned only so the caller can observe a non-root shell; [publish]
+     * treats it as a failure.
      */
     private fun buildShell(globalMnt: Boolean): Shell {
         Shell.enableVerboseLogging = BuildConfig.DEBUG
@@ -269,7 +270,7 @@ object RootShell {
                 if (globalMnt) builder.build("su", "-mm") else builder.build("su")
             } catch (t2: Throwable) {
                 Log.e(ROOT_SHELL_TAG, "su failed, falling back to sh", t2)
-                builder.build("sh")
+                builder.build("/system/bin/sh")
             }
         }
     }

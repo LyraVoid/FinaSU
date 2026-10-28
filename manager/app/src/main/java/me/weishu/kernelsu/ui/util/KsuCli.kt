@@ -239,7 +239,7 @@ fun createRootShell(globalMnt: Boolean = false): Shell {
             }
         } catch (e: Throwable) {
             Log.e(TAG, "su failed: ", e)
-            builder.build("sh")
+            builder.build("/system/bin/sh")
         }
     }
 }
@@ -288,7 +288,12 @@ private suspend fun readFeatureValue(args: String): Long? = withContext(Dispatch
 fun install() {
     val start = SystemClock.elapsedRealtime()
     val libadbroot = File(ksuApp.applicationInfo.nativeLibraryDir, "libadbroot.so").absolutePath
-    val result = execKsud("install --libadbroot $libadbroot --data-path ${ksuApp.applicationInfo.deviceProtectedDataDir}", true)
+    val result = runCatching {
+        execKsud("install --libadbroot $libadbroot --data-path ${ksuApp.applicationInfo.deviceProtectedDataDir}", true)
+    }.getOrElse {
+        Log.w(TAG, "install failed: ", it)
+        false
+    }
     Log.w(TAG, "install result: $result, cost: ${SystemClock.elapsedRealtime() - start}ms")
 }
 

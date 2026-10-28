@@ -23,7 +23,17 @@ use rustix::{
 pub fn grant_root(global_mnt: bool) -> Result<()> {
     crate::ksucalls::grant_root()?;
 
-    let mut command = Command::new("sh");
+    // add /data/adb/ksu/bin to PATH
+    add_path_to_env(defs::BINARY_DIR)?;
+
+    // Absolute on purpose: a PATH lookup aborts on an unexpected errno.
+    let err = exec_shell("/system/bin/sh", global_mnt);
+    error!("/system/bin/sh exec failed: {err}, retrying through PATH");
+    Err(exec_shell("sh", global_mnt).into())
+}
+
+fn exec_shell(shell: &str, global_mnt: bool) -> io::Error {
+    let mut command = Command::new(shell);
     let command = unsafe {
         command.pre_exec(move || {
             if global_mnt {
@@ -32,9 +42,7 @@ pub fn grant_root(global_mnt: bool) -> Result<()> {
             Result::Ok(())
         })
     };
-    // add /data/adb/ksu/bin to PATH
-    add_path_to_env(defs::BINARY_DIR)?;
-    Err(command.exec().into())
+    command.exec()
 }
 
 fn print_usage(program: &str, opts: &Options) {
