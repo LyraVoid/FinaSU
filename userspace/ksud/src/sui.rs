@@ -596,8 +596,11 @@ fn collect() -> Result<Status> {
     let manager_identity: Option<ManagerIdentity> = fs::read(MANAGER_IDENTITY)
         .ok()
         .and_then(|raw| serde_json::from_slice(&raw).ok());
-    let manager_diagnostics =
-        manager_diagnostics(manager_identity.as_ref().map(|identity| identity.uid));
+    let manager_diagnostics = if installed {
+        manager_diagnostics(manager_identity.as_ref().map(|identity| identity.uid))
+    } else {
+        serde_json::json!({"state": "skipped", "reason": "payload_not_installed"})
+    };
 
     let (name, reason): (&'static str, &'static str) = if !conflicts.is_empty() {
         ("error", "conflict_existing_sui")
