@@ -73,6 +73,10 @@ import me.weishu.kernelsu.ui.component.material.TonalCard
 
 private val SectionModifier = Modifier.padding(start = 16.dp, end = 16.dp, bottom = 13.dp)
 
+internal const val PAGE_SCALE_MIN = 0.8f
+internal const val PAGE_SCALE_MAX = 1.1f
+internal const val PAGE_SCALE_DISCRETE_STEPS = 14
+
 /**
  * Navigation and chrome settings lifted out of the former "theme" screen: the navigation badge,
  * predictive back, custom bottom-bar icons and the bottom-bar / floating-bar configuration.
@@ -426,8 +430,8 @@ fun DisplayDensitySection(uiState: SettingsUiState, actions: SettingsScreenActio
     TonalCard(modifier = SectionModifier) {
         val sliderState = rememberSliderState(
             value = uiState.pageScale,
-            steps = if (SliderTrackConfig.isDiscrete) 19 else 0,
-            trackRange = 0.8f..1.1f
+            steps = if (SliderTrackConfig.isDiscrete) PAGE_SCALE_DISCRETE_STEPS else 0,
+            trackRange = PAGE_SCALE_MIN..PAGE_SCALE_MAX
         )
 
         Column(
