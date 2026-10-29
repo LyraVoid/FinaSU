@@ -63,6 +63,7 @@ import me.weishu.kernelsu.ui.navigation3.Route
 import me.weishu.kernelsu.ui.viewmodel.UmountPathsNotice
 import me.weishu.kernelsu.ui.viewmodel.UmountPathsUiState
 import me.weishu.kernelsu.ui.viewmodel.UmountPathsViewModel
+import me.weishu.kernelsu.wallpaper.WallpaperSurfaceRole
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -187,7 +188,10 @@ fun UmountPathsScreen() {
 
 @Composable
 private fun IntroCard() {
-    TonalCard(containerColor = MaterialTheme.colorScheme.secondaryContainer) {
+    TonalCard(
+        containerColor = MaterialTheme.colorScheme.secondaryContainer,
+        wallpaperRole = WallpaperSurfaceRole.Group,
+    ) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
