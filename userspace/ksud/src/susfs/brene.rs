@@ -444,7 +444,7 @@ impl Run<'_> {
             // then commits with the equivalent of resetprop -c --force.
             let result = spoof_properties(&brene);
             self.op_count("spoof_properties_late", result);
-            if let Some(current) = sys_prop::get("ro.crypto.state") {
+            if let Some(current) = prop_get("ro.crypto.state") {
                 if current != "encrypted" {
                     let result = set_property("ro.crypto.state", "encrypted");
                     self.op("crypto_state", result);
@@ -779,7 +779,7 @@ fn non_standard_storage_dirs() -> Vec<PathBuf> {
         "Ringtones",
     ];
     #[cfg(target_os = "android")]
-    if sys_prop::get("ro.miui.ui.version.name").is_some_and(|value| !value.is_empty()) {
+    if prop_get("ro.miui.ui.version.name").is_some_and(|value| !value.is_empty()) {
         standard.push("MIUI");
     }
     children("/storage/emulated/0")
@@ -926,6 +926,14 @@ fn hide_lineage_strings(detection: &Detection) -> Result<usize> {
 // ---------------------------------------------------------------------------
 
 #[cfg(target_os = "android")]
+fn prop_get(key: &str) -> Option<String> {
+    if sys_prop::init().is_err() {
+        return None;
+    }
+    sys_prop::get(key)
+}
+
+#[cfg(target_os = "android")]
 fn resetprop() -> Result<ResetProp> {
     sys_prop::init().context("initialize property API")?;
     Ok(ResetProp {
@@ -988,7 +996,7 @@ fn spoof_properties(brene: &Brene) -> Result<usize> {
             ("ro.boot.realme.lockstate", "1"),
             ("ro.boot.realmebootstate", "green"),
         ] {
-            if let Some(current) = sys_prop::get(key) {
+            if let Some(current) = prop_get(key) {
                 if current != value {
                     if rp.set(key, value).is_ok() {
                         writes += 1;
@@ -997,7 +1005,7 @@ fn spoof_properties(brene: &Brene) -> Result<usize> {
             }
         }
 
-        if let Some(suffix) = sys_prop::get("ro.boot.slot_suffix") {
+        if let Some(suffix) = prop_get("ro.boot.slot_suffix") {
             if let Ok(size) = Command::new("/system/bin/blockdev")
                 .args(["--getsize64", &format!("/dev/block/by-name/vbmeta{suffix}")])
                 .output()
@@ -1034,12 +1042,12 @@ fn spoof_properties(brene: &Brene) -> Result<usize> {
                 writes += 1;
             }
         }
-        let sdk = sys_prop::get("ro.build.version.sdk")
+        let sdk = prop_get("ro.build.version.sdk")
             .and_then(|value| value.parse::<u32>().ok())
             .unwrap_or(0);
         if sdk >= 36 {
             let _ = rp.delete("sys.oem_unlock_allowed");
-        } else if sys_prop::get("sys.oem_unlock_allowed").is_some() {
+        } else if prop_get("sys.oem_unlock_allowed").is_some() {
             if rp.set("sys.oem_unlock_allowed", "0").is_ok() {
                 writes += 1;
             }
@@ -1047,7 +1055,7 @@ fn spoof_properties(brene: &Brene) -> Result<usize> {
     }
 
     if brene.spoof_fingerprint {
-        let mut fingerprint = sys_prop::get("ro.build.fingerprint").unwrap_or_default();
+        let mut fingerprint = prop_get("ro.build.fingerprint").unwrap_or_default();
         if !fingerprint.is_empty() {
             fingerprint = fingerprint.replace("userdebug", "user");
             for rom in ["evolution", "crdroid", "lineage"] {
@@ -1065,7 +1073,7 @@ fn spoof_properties(brene: &Brene) -> Result<usize> {
                 "ro.vendor.build.fingerprint",
                 "ro.vendor_dlkm.build.fingerprint",
             ] {
-                if let Some(current) = sys_prop::get(key) {
+                if let Some(current) = prop_get(key) {
                     if current != fingerprint && rp.set(key, &fingerprint).is_ok() {
                         writes += 1;
                     }
@@ -1075,7 +1083,7 @@ fn spoof_properties(brene: &Brene) -> Result<usize> {
     }
 
     if brene.spoof_build_dates {
-        if let Some(date) = sys_prop::get("ro.build.date") {
+        if let Some(date) = prop_get("ro.build.date") {
             for key in [
                 "ro.bootimage.build.date",
                 "ro.build.date",
@@ -1088,14 +1096,14 @@ fn spoof_properties(brene: &Brene) -> Result<usize> {
                 "ro.vendor.build.date",
                 "ro.vendor_dlkm.build.date",
             ] {
-                if let Some(current) = sys_prop::get(key) {
+                if let Some(current) = prop_get(key) {
                     if current != date && rp.set(key, &date).is_ok() {
                         writes += 1;
                     }
                 }
             }
         }
-        if let Some(utc) = sys_prop::get("ro.build.date.utc") {
+        if let Some(utc) = prop_get("ro.build.date.utc") {
             for key in [
                 "ro.bootimage.build.date.utc",
                 "ro.build.date.utc",
@@ -1109,7 +1117,7 @@ fn spoof_properties(brene: &Brene) -> Result<usize> {
                 "ro.vendor_dlkm.build.date.utc",
                 "persist.vendor.build.date.utc",
             ] {
-                if let Some(current) = sys_prop::get(key) {
+                if let Some(current) = prop_get(key) {
                     if current != utc && rp.set(key, &utc).is_ok() {
                         writes += 1;
                     }
@@ -1124,7 +1132,7 @@ fn spoof_properties(brene: &Brene) -> Result<usize> {
             ("ro.build.version.security_patch", os_patch),
             ("ro.vendor.build.security_patch", vendor_patch),
         ] {
-            if let Some(current) = sys_prop::get(key) {
+            if let Some(current) = prop_get(key) {
                 if current != value && rp.set(key, &value).is_ok() {
                     writes += 1;
                 }
@@ -1226,7 +1234,7 @@ fn uname_values(brene: &Brene) -> Result<(String, String)> {
     let build_date = {
         #[cfg(target_os = "android")]
         {
-            sys_prop::get("ro.build.date").unwrap_or_default()
+            prop_get("ro.build.date").unwrap_or_default()
         }
         #[cfg(not(target_os = "android"))]
         {
