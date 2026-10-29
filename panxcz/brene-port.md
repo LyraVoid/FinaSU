@@ -63,6 +63,9 @@ the manager.
 
 * Every ABI path is checked for absolute form, length, NUL/control bytes and
   `.`/`..` components; generated names are allowed to contain spaces.
+* Property reads go through `prop_get`, which initializes bionic's property API
+  and returns `None` instead of aborting if it is unavailable (for example in a
+  boot-patch or recovery context where `/dev/__properties__` is not mounted).
 * The profile obeys safe mode, requires root, and never runs when SUSFS is not
   `compatible`.
 * UTS View wins: if it is active, auto-uname is skipped. An explicit
