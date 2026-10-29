@@ -2,7 +2,7 @@
 
 Every change here is about installing root as a loadable module on a GKI device
 with SUSFS in the same ramdisk, and about making BRENE's hardening work without
-installing BRENE. The tree is rebased on `LyraVoid/FinaSU@be19eb90` (the upstream
+installing BRENE. The tree is rebased on `LyraVoid/FinaSU@2a559ff4` (the upstream
 state this fork tracks), and the diff is deliberately small:
 
 1. **`boot_patch` writes the SUSFS guard into the ramdisk.** The stock
