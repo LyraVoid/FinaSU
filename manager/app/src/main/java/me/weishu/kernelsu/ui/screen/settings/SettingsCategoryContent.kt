@@ -10,6 +10,7 @@ import androidx.compose.material.icons.automirrored.filled.Rule
 import androidx.compose.material.icons.filled.Adb
 import androidx.compose.material.icons.filled.AdminPanelSettings
 import androidx.compose.material.icons.filled.Apps
+import androidx.compose.material.icons.filled.DeveloperBoard
 import androidx.compose.material.icons.filled.DeveloperMode
 import androidx.compose.material.icons.filled.Description
 import androidx.compose.material.icons.filled.Fingerprint
@@ -454,7 +455,7 @@ fun AppearanceCategoryContent(uiState: SettingsUiState, actions: SettingsScreenA
 
     AdvancedTitleSettings(modifier = GroupModifier)
 
-    // The identifying rows only, mirroring FP: the base facts of the card stay visible everywhere.
+    // Optional rows only, mirroring FP: shortcuts to existing facts stay visible everywhere.
     val zygiskRowPresent = uiState.folkZygiskStatus?.providesImplementation() == true
     SegmentedColumn(
         modifier = GroupModifier,
@@ -494,6 +495,15 @@ fun AppearanceCategoryContent(uiState: SettingsUiState, actions: SettingsScreenA
                 summary = stringResource(R.string.settings_hide_home_mount_summary),
                 checked = uiState.hideHomeMount,
                 onCheckedChange = actions.onSetHideHomeMount,
+            )
+        }
+        item(visible = uiState.kernelFullVersionAvailable) {
+            SegmentedSwitchItem(
+                icon = Icons.Filled.DeveloperBoard,
+                title = stringResource(R.string.settings_hide_home_kernel_full_version),
+                summary = stringResource(R.string.settings_hide_home_kernel_full_version_summary),
+                checked = uiState.hideHomeKernelFullVersion,
+                onCheckedChange = actions.onSetHideHomeKernelFullVersion,
             )
         }
     }

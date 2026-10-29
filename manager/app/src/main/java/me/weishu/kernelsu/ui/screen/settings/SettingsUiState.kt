@@ -39,6 +39,8 @@ data class SettingsUiState(
     val hideHomeZygisk: Boolean = false,
     val hideHomeSusfs: Boolean = false,
     val hideHomeMount: Boolean = false,
+    val hideHomeKernelFullVersion: Boolean = false,
+    val kernelFullVersionAvailable: Boolean = false,
 
     // Su Compat
     val suCompatStatus: String = "",
@@ -162,6 +164,7 @@ data class SettingsScreenActions(
     val onSetHideHomeZygisk: (Boolean) -> Unit,
     val onSetHideHomeSusfs: (Boolean) -> Unit,
     val onSetHideHomeMount: (Boolean) -> Unit,
+    val onSetHideHomeKernelFullVersion: (Boolean) -> Unit,
     val onSetEnableNavigationBadge: (Boolean) -> Unit,
     val onSetEnablePredictiveBack: (Boolean) -> Unit,
     val onSetPageScale: (Float) -> Unit,

@@ -72,11 +72,13 @@ internal fun HomeFactsTile(
             label = stringResource(R.string.home_kernel),
             value = state.systemInfo.kernelVersion,
         )
-        state.systemInfo.kernelFullVersion?.takeIf { it.isNotBlank() }?.let { value ->
-            HomeFactRow(
-                label = stringResource(R.string.home_kernel_full_version),
-                value = value,
-            )
+        if (!display.hideKernelFullVersion) {
+            state.systemInfo.kernelFullVersion?.takeIf { it.isNotBlank() }?.let { value ->
+                HomeFactRow(
+                    label = stringResource(R.string.home_kernel_full_version),
+                    value = value,
+                )
+            }
         }
         HomeFactRow(
             label = stringResource(R.string.home_device_model),
@@ -170,12 +172,14 @@ internal fun InfoCard(
                 label = stringResource(R.string.home_kernel),
                 value = systemInfo.kernelVersion,
             )
-            systemInfo.kernelFullVersion?.takeIf { it.isNotBlank() }?.let { value ->
-                InfoRow(
-                    icon = Icons.Filled.DeveloperBoard,
-                    label = stringResource(R.string.home_kernel_full_version),
-                    value = value,
-                )
+            if (!display.hideKernelFullVersion) {
+                systemInfo.kernelFullVersion?.takeIf { it.isNotBlank() }?.let { value ->
+                    InfoRow(
+                        icon = Icons.Filled.DeveloperBoard,
+                        label = stringResource(R.string.home_kernel_full_version),
+                        value = value,
+                    )
+                }
             }
             InfoRow(
                 icon = Icons.Filled.Smartphone,

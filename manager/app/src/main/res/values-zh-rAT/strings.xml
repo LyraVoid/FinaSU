@@ -496,6 +496,8 @@
     <string name="settings_hide_home_susfs_summary">隐去首页圣示中 SUSFS 之一行。</string>
     <string name="settings_hide_home_mount">隐去模块挂载</string>
     <string name="settings_hide_home_mount_summary">隐去首页圣示中模块挂载之一行。</string>
+    <string name="settings_hide_home_kernel_full_version">隐去灵魂之力全卷</string>
+    <string name="settings_hide_home_kernel_full_version_summary">隐去首页圣示中灵魂之力全卷之一行。</string>
     <string name="settings_category_general">圣域基础</string>
     <string name="settings_category_appearance">圣光外观</string>
     <string name="settings_category_behavior">神谕指令</string>

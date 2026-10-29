@@ -489,6 +489,8 @@
     <string name="settings_hide_home_susfs_summary">SUSFS satırını ana sayfa bilgi kartından kaldırır.</string>
     <string name="settings_hide_home_mount">Modül bağlamayı gizle</string>
     <string name="settings_hide_home_mount_summary">Modül bağlama satırını ana sayfa bilgi kartından kaldırır.</string>
+    <string name="settings_hide_home_kernel_full_version">Çekirdek derlemesini gizle</string>
+    <string name="settings_hide_home_kernel_full_version_summary">Çekirdek derlemesi satırını ana sayfa bilgi kartından kaldırır.</string>
     <string name="settings_category_general">Genel</string>
     <string name="settings_category_appearance">Görünüm</string>
     <string name="settings_category_behavior">Davranış</string>

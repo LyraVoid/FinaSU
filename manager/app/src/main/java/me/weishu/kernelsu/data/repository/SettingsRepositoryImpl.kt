@@ -143,6 +143,10 @@ class SettingsRepositoryImpl : SettingsRepository {
         get() = prefs.getBoolean("hide_home_mount", false)
         set(value) = prefs.edit { putBoolean("hide_home_mount", value) }
 
+    override var hideHomeKernelFullVersion: Boolean
+        get() = prefs.getBoolean("hide_home_kernel_full_version", false)
+        set(value) = prefs.edit { putBoolean("hide_home_kernel_full_version", value) }
+
     override var enablePredictiveBack: Boolean
         get() = prefs.getBoolean("enable_predictive_back", false)
         set(value) = prefs.edit { putBoolean("enable_predictive_back", value) }

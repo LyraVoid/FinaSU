@@ -3,7 +3,9 @@ package me.weishu.kernelsu.ui.screen.settings.search
 import me.weishu.kernelsu.R
 import me.weishu.kernelsu.ui.component.settings.SettingsCategory
 import me.weishu.kernelsu.ui.navigation3.Route
+import me.weishu.kernelsu.ui.screen.settings.SettingsUiState
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNotEquals
 import org.junit.Assert.assertTrue
 import org.junit.Test
@@ -65,5 +67,12 @@ class SettingsSearchIndexTest {
             it.target == SettingsSearchTarget.Page(Route.NetIsolate)
         }
         assertEquals(SettingsCategory.FUNCTION, entry.category)
+    }
+
+    @Test
+    fun `kernel build hide row is searchable only when the kernel reports it`() {
+        val entry = settingsSearchIndex.single { it.id == "appearance.hide_home_kernel_full_version" }
+        assertFalse(entry.available(SettingsUiState(kernelFullVersionAvailable = false)))
+        assertTrue(entry.available(SettingsUiState(kernelFullVersionAvailable = true)))
     }
 }

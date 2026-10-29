@@ -496,6 +496,8 @@
     <string name="settings_hide_home_susfs_summary">把 SUSFS 那行藏起来喵～</string>
     <string name="settings_hide_home_mount">藏起模块挂载喵</string>
     <string name="settings_hide_home_mount_summary">把模块挂载那行藏起来喵～</string>
+    <string name="settings_hide_home_kernel_full_version">藏起内核全貌喵</string>
+    <string name="settings_hide_home_kernel_full_version_summary">把内核完整版本那行藏起来喵～</string>
     <string name="settings_category_general">通用</string>
     <string name="settings_category_appearance">外观</string>
     <string name="settings_category_behavior">行为</string>

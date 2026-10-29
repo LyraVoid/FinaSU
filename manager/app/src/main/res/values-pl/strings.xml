@@ -491,6 +491,8 @@ Przed kontynuowaniem upewnij się, że bootloader jest odblokowany!</string>
     <string name="settings_hide_home_susfs_summary">Usuwa wiersz SUSFS z karty informacji na stronie głównej.</string>
     <string name="settings_hide_home_mount">Ukryj montowanie modułów</string>
     <string name="settings_hide_home_mount_summary">Usuwa wiersz montowania modułów z karty informacji na stronie głównej.</string>
+    <string name="settings_hide_home_kernel_full_version">Ukryj kompilację jądra</string>
+    <string name="settings_hide_home_kernel_full_version_summary">Usuwa wiersz kompilacji jądra z karty informacji na stronie głównej.</string>
     <string name="settings_category_general">Ogólne</string>
     <string name="settings_category_appearance">Wygląd</string>
     <string name="settings_category_behavior">Zachowanie</string>

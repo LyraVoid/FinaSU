@@ -497,6 +497,8 @@
     <string name="settings_hide_home_susfs_summary">從首頁資訊卡片移除 SUSFS 列。</string>
     <string name="settings_hide_home_mount">隱藏模組掛載</string>
     <string name="settings_hide_home_mount_summary">從首頁資訊卡片移除模組掛載列。</string>
+    <string name="settings_hide_home_kernel_full_version">隱藏核心完整版本</string>
+    <string name="settings_hide_home_kernel_full_version_summary">從首頁資訊卡片移除核心完整版本列。</string>
     <string name="settings_category_general">一般</string>
     <string name="settings_category_appearance">外觀</string>
     <string name="settings_category_behavior">行為</string>

@@ -496,6 +496,8 @@
     <string name="settings_hide_home_susfs_summary">隐去首页玄录中 SUSFS 之一行。</string>
     <string name="settings_hide_home_mount">隐去模块挂载</string>
     <string name="settings_hide_home_mount_summary">隐去首页玄录中模块挂载之一行。</string>
+    <string name="settings_hide_home_kernel_full_version">隐去道核全篇</string>
+    <string name="settings_hide_home_kernel_full_version_summary">隐去首页玄录中道核全篇之一行。</string>
     <string name="settings_category_general">凡尘设置</string>
     <string name="settings_category_appearance">道韵外观</string>
     <string name="settings_category_behavior">功法运转</string>

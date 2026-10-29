@@ -487,6 +487,8 @@
     <string name="settings_hide_home_susfs_summary">Xóa dòng SUSFS khỏi thẻ thông tin trang chủ.</string>
     <string name="settings_hide_home_mount">Ẩn gắn kết mô-đun</string>
     <string name="settings_hide_home_mount_summary">Xóa dòng gắn kết mô-đun khỏi thẻ thông tin trang chủ.</string>
+    <string name="settings_hide_home_kernel_full_version">Ẩn bản dựng kernel</string>
+    <string name="settings_hide_home_kernel_full_version_summary">Xóa dòng bản dựng kernel khỏi thẻ thông tin trang chủ.</string>
     <string name="settings_category_general">Chung</string>
     <string name="settings_category_appearance">Giao diện</string>
     <string name="settings_category_behavior">Hành vi</string>

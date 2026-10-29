@@ -123,6 +123,7 @@ fun rememberSettingsActions(
         onSetHideHomeZygisk = viewModel::setHideHomeZygisk,
         onSetHideHomeSusfs = viewModel::setHideHomeSusfs,
         onSetHideHomeMount = viewModel::setHideHomeMount,
+        onSetHideHomeKernelFullVersion = viewModel::setHideHomeKernelFullVersion,
         onSetEnableNavigationBadge = viewModel::setEnableNavigationBadge,
         onSetEnablePredictiveBack = { enabled ->
             viewModel.setEnablePredictiveBack(enabled)

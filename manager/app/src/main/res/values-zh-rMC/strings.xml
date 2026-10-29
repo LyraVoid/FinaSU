@@ -496,6 +496,8 @@
     <string name="settings_hide_home_susfs_summary">从首页信息板移除 SUSFS。</string>
     <string name="settings_hide_home_mount">隐藏模块挂载</string>
     <string name="settings_hide_home_mount_summary">从首页信息板移除模块挂载。</string>
+    <string name="settings_hide_home_kernel_full_version">隐藏基岩核心全貌</string>
+    <string name="settings_hide_home_kernel_full_version_summary">从首页信息板移除基岩核心全貌。</string>
     <string name="settings_category_general">通用</string>
     <string name="settings_category_appearance">外观</string>
     <string name="settings_category_behavior">行为</string>

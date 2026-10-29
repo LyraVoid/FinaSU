@@ -507,6 +507,8 @@
     <string name="settings_hide_home_susfs_summary">Remove the SUSFS row from the home info card.</string>
     <string name="settings_hide_home_mount">Hide module mounting</string>
     <string name="settings_hide_home_mount_summary">Remove the module mounting row from the home info card.</string>
+    <string name="settings_hide_home_kernel_full_version">Hide kernel build</string>
+    <string name="settings_hide_home_kernel_full_version_summary">Remove the kernel build row from the home info card.</string>
     <string name="settings_category_general">General</string>
     <string name="settings_category_appearance">Appearance</string>
     <string name="settings_category_behavior">Behavior</string>

@@ -496,6 +496,8 @@
     <string name="settings_hide_home_susfs_summary">把 SUSFS 这行从首页信息牌上撤掉。</string>
     <string name="settings_hide_home_mount">收起模块挂载</string>
     <string name="settings_hide_home_mount_summary">把模块挂载这行从首页信息牌上撤掉。</string>
+    <string name="settings_hide_home_kernel_full_version">收起内核全谱</string>
+    <string name="settings_hide_home_kernel_full_version_summary">把内核全谱这行从首页信息牌上撤掉。</string>
     <string name="settings_category_general">家常</string>
     <string name="settings_category_appearance">门面</string>
     <string name="settings_category_behavior">脾性</string>

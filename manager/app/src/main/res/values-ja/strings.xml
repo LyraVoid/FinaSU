@@ -487,6 +487,8 @@
     <string name="settings_hide_home_susfs_summary">ホームの情報カードから SUSFS の行を削除します。</string>
     <string name="settings_hide_home_mount">モジュールのマウントを隠す</string>
     <string name="settings_hide_home_mount_summary">ホームの情報カードからモジュールのマウント行を削除します。</string>
+    <string name="settings_hide_home_kernel_full_version">カーネルビルドを隠す</string>
+    <string name="settings_hide_home_kernel_full_version_summary">ホームの情報カードからカーネルビルドの行を削除します。</string>
     <string name="settings_category_general">一般</string>
     <string name="settings_category_appearance">外観</string>
     <string name="settings_category_behavior">動作</string>

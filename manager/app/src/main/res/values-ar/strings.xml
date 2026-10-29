@@ -489,6 +489,8 @@
     <string name="settings_hide_home_susfs_summary">إزالة سطر SUSFS من بطاقة معلومات الرئيسية.</string>
     <string name="settings_hide_home_mount">إخفاء تركيب الوحدات</string>
     <string name="settings_hide_home_mount_summary">إزالة سطر تركيب الوحدات من بطاقة معلومات الرئيسية.</string>
+    <string name="settings_hide_home_kernel_full_version">إخفاء بناء النواة الكامل</string>
+    <string name="settings_hide_home_kernel_full_version_summary">إزالة سطر بناء النواة الكامل من بطاقة معلومات الرئيسية.</string>
     <string name="settings_category_general">عام</string>
     <string name="settings_category_appearance">المظهر</string>
     <string name="settings_category_behavior">السلوك</string>

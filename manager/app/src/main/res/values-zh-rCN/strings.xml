@@ -388,6 +388,8 @@
     <string name="settings_hide_home_susfs_summary">从首页信息卡片中移除 SUSFS 行。</string>
     <string name="settings_hide_home_mount">隐藏模块挂载</string>
     <string name="settings_hide_home_mount_summary">从首页信息卡片中移除模块挂载行。</string>
+    <string name="settings_hide_home_kernel_full_version">隐藏内核完整版本</string>
+    <string name="settings_hide_home_kernel_full_version_summary">从首页信息卡片中移除内核完整版本行。</string>
     <string name="settings_category_general">通用</string>
     <string name="settings_category_appearance">外观</string>
     <string name="settings_category_behavior">行为</string>
