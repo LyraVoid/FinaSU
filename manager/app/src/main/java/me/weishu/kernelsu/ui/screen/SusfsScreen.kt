@@ -142,8 +142,24 @@ fun SusfsScreen() {
                             SusfsRuleSection("map", config, state.status, writable, vm)
                         }
                         3 -> {
-                            SusfsUnameSection(config, state.status, writable, vm)
-                            SusfsCmdlineSection(config, state.status, writable, vm)
+                            SusfsUnameSection(
+                                config,
+                                state.status,
+                                writable,
+                                state.kernelFacts,
+                                state.kernelFactsLoading,
+                                state.kernelFactsError,
+                                vm,
+                            )
+                            SusfsCmdlineSection(
+                                config,
+                                state.status,
+                                writable,
+                                state.kernelFacts,
+                                state.kernelFactsLoading,
+                                state.kernelFactsError,
+                                vm,
+                            )
                             SusfsRuleSection("kstat", config, state.status, writable, vm)
                         }
                         4 -> SusfsRuleSection("redirect", config, state.status, writable, vm)

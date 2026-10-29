@@ -81,7 +81,7 @@
     <string name="susfs_uname_hint">デフォルトを使用すると、各フィールドは実際のカーネル値のままになります。両方のフィールドが必須です。これらは保存されたターゲットであり、カーネルのライブ値ではありません。</string>
     <string name="susfs_uname_invalid">各フィールドは空でなく、65 UTF-8 バイト未満で、制御文字を含まない必要があります。</string>
     <string name="susfs_cmdline_hint">保存された置換値のみです。ここでライブ値は読み取りません。設定を削除しても、有効な偽装は復元されません。</string>
-    <string name="susfs_text_invalid">8192 UTF-8 バイト未満の空でないテキストを、制御文字を含めずに入力してください。</string>
+    <string name="susfs_text_invalid">8192 UTF-8 バイト未満の空でないテキストを入力してください。改行とタブは使用できますが、その他の制御文字は使用できません。</string>
     <string name="susfs_path_rules">隠すパス</string>
     <string name="susfs_map_rules">隠すメモリマッピング</string>
     <string name="susfs_kstat_rules">ファイルメタデータの偽装</string>

@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="boot_slot_source">Giá trị kernel trong ảnh khởi động</string>
+    <string name="boot_slot_source_hint">Được đọc từ ảnh boot, init_boot hoặc vendor_boot. Đây là giá trị gốc của ảnh, không phải giá trị uname hoặc proc hiện tại.</string>
+    <string name="boot_slot_original">Giá trị kernel gốc</string>
+    <string name="boot_slot_loading">Đang đọc ảnh khởi động…</string>
+    <string name="boot_slot_conflict">Thông tin phân vùng không khớp</string>
+    <string name="boot_slot_unavailable">Không thể lấy giá trị ảnh khởi động</string>
+    <string name="boot_slot_current">Phân vùng %1$s · hiện tại</string>
+    <string name="boot_slot_name">Phân vùng %1$s</string>
+    <string name="boot_slot_missing">Không tồn tại</string>
+    <string name="boot_slot_unreadable">Không thể đọc</string>
+    <string name="boot_slot_readable">Có thể đọc</string>
+    <string name="boot_slot_values_differ">Hai phân vùng có giá trị kernel khác nhau</string>
+    <string name="boot_slot_values_same">Các phân vùng khả dụng có cùng giá trị kernel</string>
+    <string name="boot_slot_release">Bản phát hành kernel</string>
+    <string name="boot_slot_version">Phiên bản kernel</string>
+    <string name="boot_slot_cmdline">cmdline</string>
+    <string name="boot_slot_bootconfig">bootconfig</string>
+    <string name="boot_slot_use_kernel">Dùng các giá trị này trong bản nháp</string>
+    <string name="boot_slot_draft_only">Chỉ bản nháp chưa lưu thay đổi. Hãy lưu và áp dụng riêng.</string>
+    <string name="boot_slot_evidence">Bằng chứng về phân vùng và phân vùng hiện tại</string>
+    <string name="boot_slot_details">Chi tiết ảnh và bằng chứng phân vùng</string>
+    <string name="boot_slot_image_source">Nguồn ảnh và SHA-256</string>
+    <string name="boot_slot_avb">Chân AVB %1$s · kích thước ảnh gốc %2$d</string>
+    <string name="boot_slot_signature_unchecked">Chữ ký AVB chưa được xác minh</string>
+    <string name="boot_slot_source_changed">Ảnh đã chọn thay đổi sau khi thêm giá trị này vào bản nháp. Hãy đọc lại ảnh trước khi lưu.</string>
+    <string name="boot_slot_refresh">Đọc lại ảnh khởi động</string>
+</resources>

@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="boot_slot_source">قيم نواة صور الإقلاع</string>
+    <string name="boot_slot_source_hint">تُقرأ من صور boot أو init_boot أو vendor_boot. هذه قيم الصورة الأصلية، وليست قيم uname أو proc الحالية.</string>
+    <string name="boot_slot_original">قيم النواة الأصلية</string>
+    <string name="boot_slot_loading">جارٍ قراءة صور الإقلاع…</string>
+    <string name="boot_slot_conflict">تعارض في معلومات الفتحة</string>
+    <string name="boot_slot_unavailable">قيم صورة الإقلاع غير متاحة</string>
+    <string name="boot_slot_current">الفتحة %1$s · الحالية</string>
+    <string name="boot_slot_name">الفتحة %1$s</string>
+    <string name="boot_slot_missing">غير موجودة</string>
+    <string name="boot_slot_unreadable">غير قابلة للقراءة</string>
+    <string name="boot_slot_readable">قابلة للقراءة</string>
+    <string name="boot_slot_values_differ">تحتوي الفتحتان على قيم نواة مختلفة</string>
+    <string name="boot_slot_values_same">تحتوي الفتحات المتاحة على قيم النواة نفسها</string>
+    <string name="boot_slot_release">إصدار النواة</string>
+    <string name="boot_slot_version">نسخة النواة</string>
+    <string name="boot_slot_cmdline">cmdline</string>
+    <string name="boot_slot_bootconfig">bootconfig</string>
+    <string name="boot_slot_use_kernel">استخدام هذه القيم في المسودة</string>
+    <string name="boot_slot_draft_only">يتغيّر المستند غير المحفوظ فقط. احفظ ثم طبّق بشكل منفصل.</string>
+    <string name="boot_slot_evidence">أدلة الفتحة والفتحة الحالية</string>
+    <string name="boot_slot_details">تفاصيل الصورة وأدلة الفتحة</string>
+    <string name="boot_slot_image_source">مصدر الصورة وSHA-256</string>
+    <string name="boot_slot_avb">تذييل AVB %1$s · حجم الصورة الأصلية %2$d</string>
+    <string name="boot_slot_signature_unchecked">لم يتم التحقق من توقيع AVB</string>
+    <string name="boot_slot_source_changed">تغيّرت الصورة المحددة بعد إضافة هذه القيمة إلى المسودة. أعد قراءة الصورة قبل الحفظ.</string>
+    <string name="boot_slot_refresh">إعادة قراءة صور الإقلاع</string>
+</resources>

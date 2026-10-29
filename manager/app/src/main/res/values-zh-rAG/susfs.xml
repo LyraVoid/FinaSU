@@ -81,7 +81,7 @@
     <string name="susfs_uname_hint">用 default 就能保留对应的真实内核字段喵。两个字段都不能空着。这里显示的是保存目标，不是实时内核值哦</string>
     <string name="susfs_uname_invalid">每个字段都不能空，还要少于 65 个 UTF-8 字节，更不许有控制字符喵</string>
     <string name="susfs_cmdline_hint">这里只显示保存下来的替换内容喵，不会去读当前内核值；删掉配置也恢复不了已经生效的伪装哦</string>
-    <string name="susfs_text_invalid">请输入非空的内容喵，少于 8192 个 UTF-8 字节，也不许有控制字符哦</string>
+    <string name="susfs_text_invalid">请输入非空内容喵，少于 8192 个 UTF-8 字节；换行和制表符可以留，其他控制字符要赶走喵</string>
     <string name="susfs_path_rules">隐藏路径喵</string>
     <string name="susfs_map_rules">隐藏内存映射喵</string>
     <string name="susfs_kstat_rules">文件元数据伪装喵</string>

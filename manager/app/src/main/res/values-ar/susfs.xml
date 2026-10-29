@@ -81,7 +81,7 @@
     <string name="susfs_uname_hint">استخدم الافتراضي للإبقاء على كل حقل من حقول النواة الحقيقية. كلا الحقلين مطلوبان. هذه أهداف محفوظة وليست قراءات مباشرة من النواة.</string>
     <string name="susfs_uname_invalid">يجب أن يكون كل حقل غير فارغ وأقل من 65 بايت UTF-8 وألّا يحتوي على محارف تحكّم.</string>
     <string name="susfs_cmdline_hint">قيمة بديلة محفوظة فقط. لا تُقرأ أي قيمة مباشرة هنا؛ حذف الإعداد لا يستعيد تزييفًا نشطًا.</string>
-    <string name="susfs_text_invalid">أدخل نصًا غير فارغ أقل من 8192 بايت UTF-8 دون محارف تحكّم.</string>
+    <string name="susfs_text_invalid">أدخل نصًا غير فارغ أقل من 8192 بايت UTF-8. يُسمح بفواصل الأسطر وعلامات الجدولة، ولا يُسمح بمحارف تحكّم أخرى.</string>
     <string name="susfs_path_rules">المسارات المخفية</string>
     <string name="susfs_map_rules">تعيينات الذاكرة المخفية</string>
     <string name="susfs_kstat_rules">تزييف بيانات الملف الوصفية</string>

@@ -50,6 +50,7 @@ import me.weishu.kernelsu.R
 import me.weishu.kernelsu.data.uts.UtsViewPhase
 import me.weishu.kernelsu.data.uts.UtsViewMode
 import me.weishu.kernelsu.data.uts.UtsViewStatus
+import me.weishu.kernelsu.ui.component.kernel.BootSlotSource
 import me.weishu.kernelsu.ui.component.material.ExpressiveScaffold
 import me.weishu.kernelsu.ui.component.material.SegmentedColumn
 import me.weishu.kernelsu.ui.component.material.SegmentedListItem
@@ -372,6 +373,17 @@ fun UtsViewScreen() {
                     }
                 }
             }
+
+            Spacer(Modifier.height(16.dp))
+            BootSlotSource(
+                facts = state.kernelFacts,
+                loading = state.kernelFactsLoading,
+                error = state.kernelFactsError,
+                onRefresh = viewModel::refresh,
+                onUseKernel = { viewModel.useBootSlot(it.id) },
+                draftSourceSlot = state.draftSourceSlot,
+                draftSourceIdentity = state.draftSourceIdentity,
+            )
 
             Spacer(Modifier.height(16.dp))
             SegmentedColumn(title = stringResource(R.string.uts_view_template)) {

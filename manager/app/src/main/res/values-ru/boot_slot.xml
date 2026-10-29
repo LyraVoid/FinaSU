@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="boot_slot_source">Значения ядра из загрузочных образов</string>
+    <string name="boot_slot_source_hint">Читаются из образов boot, init_boot или vendor_boot. Это исходные значения образа, а не текущие значения uname или proc.</string>
+    <string name="boot_slot_original">Исходные значения ядра</string>
+    <string name="boot_slot_loading">Чтение загрузочных образов…</string>
+    <string name="boot_slot_conflict">Сведения о слотах противоречат друг другу</string>
+    <string name="boot_slot_unavailable">Значения загрузочного образа недоступны</string>
+    <string name="boot_slot_current">Слот %1$s · текущий</string>
+    <string name="boot_slot_name">Слот %1$s</string>
+    <string name="boot_slot_missing">Отсутствует</string>
+    <string name="boot_slot_unreadable">Недоступен для чтения</string>
+    <string name="boot_slot_readable">Доступен для чтения</string>
+    <string name="boot_slot_values_differ">Слоты содержат разные значения ядра</string>
+    <string name="boot_slot_values_same">Доступные слоты содержат одинаковые значения ядра</string>
+    <string name="boot_slot_release">Выпуск ядра</string>
+    <string name="boot_slot_version">Версия ядра</string>
+    <string name="boot_slot_cmdline">cmdline</string>
+    <string name="boot_slot_bootconfig">bootconfig</string>
+    <string name="boot_slot_use_kernel">Использовать в черновике</string>
+    <string name="boot_slot_draft_only">Изменяется только несохранённый черновик. Сохраните и примените отдельно.</string>
+    <string name="boot_slot_evidence">Данные о слоте и текущем слоте</string>
+    <string name="boot_slot_details">Сведения об образе и слотах</string>
+    <string name="boot_slot_image_source">Источник образа и SHA-256</string>
+    <string name="boot_slot_avb">AVB-футер %1$s · размер исходного образа %2$d</string>
+    <string name="boot_slot_signature_unchecked">Подпись AVB не проверена</string>
+    <string name="boot_slot_source_changed">Выбранный образ изменился после добавления значения в черновик. Прочитайте его снова перед сохранением.</string>
+    <string name="boot_slot_refresh">Прочитать загрузочные образы снова</string>
+</resources>

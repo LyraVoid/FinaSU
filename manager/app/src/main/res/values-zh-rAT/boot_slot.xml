@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="boot_slot_source">启动圣像中的内核本真值</string>
+    <string name="boot_slot_source_hint">自 boot、init_boot 或 vendor_boot 圣像读取。此为本真之值，非此刻 uname 或 proc 所现之表象。</string>
+    <string name="boot_slot_original">内核本真值</string>
+    <string name="boot_slot_loading">正在参悟启动圣像…</string>
+    <string name="boot_slot_conflict">槽位圣证彼此相悖</string>
+    <string name="boot_slot_unavailable">启动圣像之值不可得</string>
+    <string name="boot_slot_current">%1$s 槽 · 此世所用</string>
+    <string name="boot_slot_name">%1$s 槽</string>
+    <string name="boot_slot_missing">并未显化</string>
+    <string name="boot_slot_unreadable">无法窥读</string>
+    <string name="boot_slot_readable">可窥读</string>
+    <string name="boot_slot_values_differ">两槽所藏内核圣识不同</string>
+    <string name="boot_slot_values_same">可用之槽内核圣识相同</string>
+    <string name="boot_slot_release">内核 release</string>
+    <string name="boot_slot_version">内核 version</string>
+    <string name="boot_slot_cmdline">cmdline</string>
+    <string name="boot_slot_bootconfig">bootconfig</string>
+    <string name="boot_slot_use_kernel">将此圣识注入草稿</string>
+    <string name="boot_slot_draft_only">仅改写未封存之草稿，封存与施法仍须分别进行。</string>
+    <string name="boot_slot_evidence">槽位与本世运行之圣证</string>
+    <string name="boot_slot_details">圣像详情与槽位圣证</string>
+    <string name="boot_slot_image_source">圣像根源与 SHA-256</string>
+    <string name="boot_slot_avb">AVB 印记 %1$s · 本真圣像大小 %2$d</string>
+    <string name="boot_slot_signature_unchecked">AVB 签印尚未校验</string>
+    <string name="boot_slot_source_changed">圣识注入草稿后，所选圣像已然更替。封存前须重新窥读。</string>
+    <string name="boot_slot_refresh">重新窥读启动圣像</string>
+</resources>

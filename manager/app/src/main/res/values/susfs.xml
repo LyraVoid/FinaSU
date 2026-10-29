@@ -93,7 +93,7 @@
     <string name="susfs_uts_apply_confirm_message">UTS View will be turned off while SUSFS uname is applied. Its settings are kept. UTS View stays off only after SUSFS confirms uname took effect; otherwise it is restored.</string>
     <string name="susfs_uts_apply_confirm_action">Apply SUSFS</string>
     <string name="susfs_cmdline_hint">Saved replacement only. No live value is read here; removing the configuration does not restore an active spoof.</string>
-    <string name="susfs_text_invalid">Enter nonempty text under 8192 UTF-8 bytes, without control characters.</string>
+    <string name="susfs_text_invalid">Enter nonempty text under 8192 UTF-8 bytes. Line breaks and tabs are allowed; other control characters are not.</string>
     <string name="susfs_path_rules">Hidden paths</string>
     <string name="susfs_map_rules">Hidden memory mappings</string>
     <string name="susfs_kstat_rules">File metadata spoofing</string>

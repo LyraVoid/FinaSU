@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="boot_slot_source">开机镜像里的内核原味</string>
+    <string name="boot_slot_source_hint">从 boot、init_boot 或 vendor_boot 镜像取料。这里是镜像原味，不是现在 uname 或 proc 端上桌的表面味道。</string>
+    <string name="boot_slot_original">内核原味</string>
+    <string name="boot_slot_loading">正在翻开机镜像…</string>
+    <string name="boot_slot_conflict">槽位情报对不上单</string>
+    <string name="boot_slot_unavailable">开机镜像这锅暂时没料</string>
+    <string name="boot_slot_current">%1$s 槽 · 今天掌勺</string>
+    <string name="boot_slot_name">%1$s 槽</string>
+    <string name="boot_slot_missing">这格没货</string>
+    <string name="boot_slot_unreadable">这锅读不出料</string>
+    <string name="boot_slot_readable">可以尝</string>
+    <string name="boot_slot_values_differ">两槽内核下的料不一样</string>
+    <string name="boot_slot_values_same">能用的槽位内核味道相同</string>
+    <string name="boot_slot_release">内核 release</string>
+    <string name="boot_slot_version">内核 version</string>
+    <string name="boot_slot_cmdline">cmdline</string>
+    <string name="boot_slot_bootconfig">bootconfig</string>
+    <string name="boot_slot_use_kernel">把这盘倒进草稿</string>
+    <string name="boot_slot_draft_only">只动还没存盘的草稿，保存和上菜仍旧分开。</string>
+    <string name="boot_slot_evidence">当前掌勺槽位与凭据</string>
+    <string name="boot_slot_details">镜像底料和槽位凭据</string>
+    <string name="boot_slot_image_source">镜像来源和 SHA-256</string>
+    <string name="boot_slot_avb">AVB 页脚 %1$s · 原镜像大小 %2$d</string>
+    <string name="boot_slot_signature_unchecked">AVB 签名还没验</string>
+    <string name="boot_slot_source_changed">这盘倒进草稿后，选的镜像换货了。存盘前重新取一次料。</string>
+    <string name="boot_slot_refresh">重新翻开机镜像</string>
+</resources>

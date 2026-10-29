@@ -81,7 +81,7 @@
     <string name="susfs_uname_hint">Her gerçek çekirdek alanını korumak için varsayılanı kullanın. Her iki alan da gereklidir. Bunlar kayıtlı hedeflerdir, canlı çekirdek okumaları değildir.</string>
     <string name="susfs_uname_invalid">Her alan boş olmamalı, 65 UTF-8 baytın altında olmalı ve kontrol karakteri içermemelidir.</string>
     <string name="susfs_cmdline_hint">Yalnızca kayıtlı değiştirme. Burada canlı değer okunmaz; yapılandırmayı kaldırmak etkin bir taklidi geri yüklemez.</string>
-    <string name="susfs_text_invalid">8192 UTF-8 baytın altında, kontrol karakteri içermeyen boş olmayan metin girin.</string>
+    <string name="susfs_text_invalid">8192 UTF-8 bayttan kısa, boş olmayan metin girin. Satır sonları ve sekmeler kullanılabilir; diğer kontrol karakterleri kullanılamaz.</string>
     <string name="susfs_path_rules">Gizli yollar</string>
     <string name="susfs_map_rules">Gizli bellek eşlemeleri</string>
     <string name="susfs_kstat_rules">Dosya meta verisi taklidi</string>

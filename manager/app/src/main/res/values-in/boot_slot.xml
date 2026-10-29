@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="boot_slot_source">Nilai kernel pada image boot</string>
+    <string name="boot_slot_source_hint">Dibaca dari image boot, init_boot, atau vendor_boot. Ini nilai asli image, bukan nilai uname atau proc saat ini.</string>
+    <string name="boot_slot_original">Nilai kernel asli</string>
+    <string name="boot_slot_loading">Membaca image boot…</string>
+    <string name="boot_slot_conflict">Informasi slot bertentangan</string>
+    <string name="boot_slot_unavailable">Nilai image boot tidak tersedia</string>
+    <string name="boot_slot_current">Slot %1$s · saat ini</string>
+    <string name="boot_slot_name">Slot %1$s</string>
+    <string name="boot_slot_missing">Tidak ada</string>
+    <string name="boot_slot_unreadable">Tidak dapat dibaca</string>
+    <string name="boot_slot_readable">Dapat dibaca</string>
+    <string name="boot_slot_values_differ">Kedua slot memiliki nilai kernel yang berbeda</string>
+    <string name="boot_slot_values_same">Slot yang tersedia memiliki nilai kernel yang sama</string>
+    <string name="boot_slot_release">Rilis kernel</string>
+    <string name="boot_slot_version">Versi kernel</string>
+    <string name="boot_slot_cmdline">cmdline</string>
+    <string name="boot_slot_bootconfig">bootconfig</string>
+    <string name="boot_slot_use_kernel">Gunakan nilai ini di draf</string>
+    <string name="boot_slot_draft_only">Hanya draf yang belum disimpan yang berubah. Simpan dan terapkan secara terpisah.</string>
+    <string name="boot_slot_evidence">Bukti slot dan slot saat ini</string>
+    <string name="boot_slot_details">Detail image dan bukti slot</string>
+    <string name="boot_slot_image_source">Sumber image dan SHA-256</string>
+    <string name="boot_slot_avb">Footer AVB %1$s · ukuran image asli %2$d</string>
+    <string name="boot_slot_signature_unchecked">Tanda tangan AVB tidak diverifikasi</string>
+    <string name="boot_slot_source_changed">Image yang dipilih berubah setelah nilai ini dimasukkan ke draf. Baca ulang image sebelum menyimpan.</string>
+    <string name="boot_slot_refresh">Baca ulang image boot</string>
+</resources>

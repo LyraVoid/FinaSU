@@ -11,6 +11,9 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import me.weishu.kernelsu.R
+import me.weishu.kernelsu.data.boot.KernelFacts
+import me.weishu.kernelsu.data.boot.KernelFactsRepository
+import me.weishu.kernelsu.data.boot.KernelFactsSource
 import me.weishu.kernelsu.data.uts.UtsFields
 import me.weishu.kernelsu.data.uts.UtsDataSource
 import me.weishu.kernelsu.data.uts.UtsRepository
@@ -33,10 +36,16 @@ data class UtsViewUiState(
     val apps: List<UtsTargetApp> = emptyList(),
     val appsLoading: Boolean = false,
     val appsLoaded: Boolean = false,
+    val kernelFacts: KernelFacts? = null,
+    val kernelFactsLoading: Boolean = false,
+    val kernelFactsError: String? = null,
+    val draftSourceSlot: String? = null,
+    val draftSourceIdentity: String? = null,
 )
 
 class UtsViewViewModel(
     private val repository: UtsDataSource = UtsRepository(),
+    private val kernelFactsSource: KernelFactsSource = KernelFactsRepository(),
     private val readUname: () -> UtsFields = { currentUnameSnapshot() },
     private val shellGeneration: () -> Long = { RootShell.generation.value },
     private val getString: (Int) -> String = { ksuApp.getString(it) },
@@ -54,38 +63,76 @@ class UtsViewViewModel(
         val request = ++requestToken
         val generation = shellGeneration()
         viewModelScope.launch {
-            _uiState.update { it.copy(loading = true) }
+            _uiState.update {
+                it.copy(loading = true, kernelFactsLoading = true, kernelFactsError = null)
+            }
             try {
-                val status = repository.status()
-                if (request != requestToken || generation != shellGeneration()) return@launch
-                val current = if (status.provider == "susfs") null else readUname()
-                _uiState.update {
-                    it.copy(
-                        status = status,
-                        draft = if (it.hasLoaded) it.draft else status.fields,
-                        hasLoaded = true,
-                        currentUname = current,
-                    )
-                }
-            } catch (e: CancellationException) {
-                throw e
-            } catch (e: Exception) {
-                if (request == requestToken && generation == shellGeneration()) {
+                try {
+                    val status = repository.status()
+                    if (request != requestToken || generation != shellGeneration()) return@launch
+                    val current = if (status.provider == "susfs") null else readUname()
                     _uiState.update {
                         it.copy(
-                            message = e.message ?: getString(R.string.uts_view_status_failed),
-                            currentUname = null,
+                            status = status,
+                            draft = if (it.hasLoaded) it.draft else status.fields,
+                            hasLoaded = true,
+                            currentUname = current,
                         )
+                    }
+                } catch (e: CancellationException) {
+                    throw e
+                } catch (e: Exception) {
+                    if (request == requestToken && generation == shellGeneration()) {
+                        _uiState.update {
+                            it.copy(
+                                message = e.message ?: getString(R.string.uts_view_status_failed),
+                                currentUname = null,
+                            )
+                        }
+                    }
+                }
+                if (request == requestToken && generation == shellGeneration()) {
+                    try {
+                        val facts = kernelFactsSource.load()
+                        if (request == requestToken && generation == shellGeneration()) {
+                            _uiState.update {
+                                it.copy(
+                                    kernelFacts = facts,
+                                    kernelFactsLoading = false,
+                                    kernelFactsError = null,
+                                )
+                            }
+                        }
+                    } catch (e: CancellationException) {
+                        throw e
+                    } catch (e: Exception) {
+                        if (request == requestToken && generation == shellGeneration()) {
+                            _uiState.update {
+                                it.copy(
+                                    kernelFactsLoading = false,
+                                    kernelFactsError =
+                                        e.message ?: getString(R.string.uts_view_operation_failed),
+                                )
+                            }
+                        }
                     }
                 }
             } finally {
-                if (request == requestToken) _uiState.update { it.copy(loading = false) }
+                if (request == requestToken) {
+                    _uiState.update { it.copy(loading = false, kernelFactsLoading = false) }
+                }
             }
         }
     }
 
     fun setField(index: Int, value: String) {
-        _uiState.update { it.copy(draft = it.draft.withField(index, value)) }
+        _uiState.update {
+            it.copy(
+                draft = it.draft.withField(index, value),
+                draftSourceSlot = null,
+                draftSourceIdentity = null,
+            )
+        }
     }
 
     fun fillCurrentValues() {
@@ -110,6 +157,26 @@ class UtsViewViewModel(
                     mask = (it.draft.mask and (1 shl 5)) or 0x1f,
                 ),
                 currentUname = uname,
+                draftSourceSlot = null,
+                draftSourceIdentity = null,
+            )
+        }
+    }
+
+    /** Selecting a slot only changes the unsaved template. */
+    fun useBootSlot(slotId: String) {
+        val slot = _uiState.value.kernelFacts?.slot(slotId) ?: return
+        val release = slot.release?.value?.takeIf(String::isNotBlank) ?: return
+        val version = slot.version?.value?.takeIf(String::isNotBlank) ?: return
+        _uiState.update {
+            it.copy(
+                draft = it.draft.copy(
+                    release = release,
+                    version = version,
+                    mask = it.draft.mask or (1 shl 2) or (1 shl 3),
+                ),
+                draftSourceSlot = slot.id,
+                draftSourceIdentity = slot.sourceIdentity,
             )
         }
     }
@@ -260,6 +327,8 @@ class UtsViewViewModel(
                         draft = if (replaceDraft || !it.hasLoaded) status.fields else it.draft,
                         hasLoaded = true,
                         currentUname = current,
+                        draftSourceSlot = if (replaceDraft) null else it.draftSourceSlot,
+                        draftSourceIdentity = if (replaceDraft) null else it.draftSourceIdentity,
                     )
                 }
             } catch (e: CancellationException) {

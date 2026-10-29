@@ -12,9 +12,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import me.weishu.kernelsu.R
+import me.weishu.kernelsu.data.boot.KernelFacts
 import me.weishu.kernelsu.data.susfs.SusfsInputs
 import me.weishu.kernelsu.data.susfs.SusfsStatus
 import me.weishu.kernelsu.ui.component.material.*
+import me.weishu.kernelsu.ui.component.kernel.BootSlotSource
 import me.weishu.kernelsu.ui.viewmodel.SusfsViewModel
 import org.json.JSONArray
 import org.json.JSONObject
@@ -51,7 +53,15 @@ internal fun SusfsBasicPage(config: JSONObject?, status: SusfsStatus, writable: 
 }
 
 @Composable
-internal fun SusfsUnameSection(config: JSONObject?, status: SusfsStatus, writable: Boolean, vm: SusfsViewModel) {
+internal fun SusfsUnameSection(
+    config: JSONObject?,
+    status: SusfsStatus,
+    writable: Boolean,
+    kernelFacts: KernelFacts?,
+    kernelFactsLoading: Boolean,
+    kernelFactsError: String?,
+    vm: SusfsViewModel,
+) {
     var editing by remember { mutableStateOf(false) }
     val uname = config?.optJSONObject("settings")?.optJSONObject("uname")
     val supported = status.supports("SPOOF_UNAME")
@@ -70,25 +80,65 @@ internal fun SusfsUnameSection(config: JSONObject?, status: SusfsStatus, writabl
     if (editing) {
         var release by remember { mutableStateOf(uname?.optString("release") ?: "default") }
         var version by remember { mutableStateOf(uname?.optString("version") ?: "default") }
+        var draftSourceSlot by remember { mutableStateOf<String?>(null) }
+        var draftSourceIdentity by remember { mutableStateOf<String?>(null) }
         val valid = SusfsInputs.validText(release, 65) && SusfsInputs.validText(version, 65)
         SusfsForm(stringResource(R.string.susfs_uname), { editing = false }, writable && valid, {
             vm.change { it.getJSONObject("settings").put("uname", JSONObject().put("release", release).put("version", version)) }
             editing = false
         }) {
             Text(stringResource(R.string.susfs_uname_hint))
-            OutlinedTextField(release, { release = it }, label = { Text(stringResource(R.string.susfs_release)) },
+            BootSlotSource(
+                facts = kernelFacts,
+                loading = kernelFactsLoading,
+                error = kernelFactsError,
+                onRefresh = vm::refresh,
+                onUseKernel = { slot ->
+                    release = slot.release!!.value
+                    version = slot.version!!.value
+                    draftSourceSlot = slot.id
+                    draftSourceIdentity = slot.sourceIdentity
+                },
+                draftSourceSlot = draftSourceSlot,
+                draftSourceIdentity = draftSourceIdentity,
+            )
+            OutlinedTextField(release, {
+                release = it
+                draftSourceSlot = null
+                draftSourceIdentity = null
+            }, label = { Text(stringResource(R.string.susfs_release)) },
                 modifier = Modifier.fillMaxWidth(), singleLine = true, isError = !SusfsInputs.validText(release, 65))
-            TextButton(onClick = { release = "default" }) { Text(stringResource(R.string.susfs_use_real_field)) }
-            OutlinedTextField(version, { version = it }, label = { Text(stringResource(R.string.susfs_version)) },
+            TextButton(onClick = {
+                release = "default"
+                draftSourceSlot = null
+                draftSourceIdentity = null
+            }) { Text(stringResource(R.string.susfs_use_real_field)) }
+            OutlinedTextField(version, {
+                version = it
+                draftSourceSlot = null
+                draftSourceIdentity = null
+            }, label = { Text(stringResource(R.string.susfs_version)) },
                 modifier = Modifier.fillMaxWidth(), singleLine = true, isError = !SusfsInputs.validText(version, 65))
-            TextButton(onClick = { version = "default" }) { Text(stringResource(R.string.susfs_use_real_field)) }
+            TextButton(onClick = {
+                version = "default"
+                draftSourceSlot = null
+                draftSourceIdentity = null
+            }) { Text(stringResource(R.string.susfs_use_real_field)) }
             if (!valid) Text(stringResource(R.string.susfs_uname_invalid), color = MaterialTheme.colorScheme.error)
         }
     }
 }
 
 @Composable
-internal fun SusfsCmdlineSection(config: JSONObject?, status: SusfsStatus, writable: Boolean, vm: SusfsViewModel) {
+internal fun SusfsCmdlineSection(
+    config: JSONObject?,
+    status: SusfsStatus,
+    writable: Boolean,
+    kernelFacts: KernelFacts?,
+    kernelFactsLoading: Boolean,
+    kernelFactsError: String?,
+    vm: SusfsViewModel,
+) {
     var editing by remember { mutableStateOf(false) }
     val settings = config?.optJSONObject("settings")
     val value = if (settings == null || settings.isNull("cmdline")) "" else settings.optString("cmdline")
@@ -100,12 +150,36 @@ internal fun SusfsCmdlineSection(config: JSONObject?, status: SusfsStatus, writa
     }
     if (editing) {
         var text by remember { mutableStateOf(value) }
-        val valid = SusfsInputs.validText(text, 8192)
+        var draftSourceSlot by remember { mutableStateOf<String?>(null) }
+        var draftSourceIdentity by remember { mutableStateOf<String?>(null) }
+        val valid = SusfsInputs.validCmdline(text)
         SusfsForm(stringResource(R.string.susfs_cmdline), { editing = false }, writable && valid, {
             vm.change { it.getJSONObject("settings").put("cmdline", text) }; editing = false
         }) {
             Text(stringResource(R.string.susfs_cmdline_hint))
-            OutlinedTextField(text, { text = it }, modifier = Modifier.fillMaxWidth(), minLines = 3,
+            BootSlotSource(
+                facts = kernelFacts,
+                loading = kernelFactsLoading,
+                error = kernelFactsError,
+                onRefresh = vm::refresh,
+                onUseCmdline = { slotId, source ->
+                    text = source.value
+                    draftSourceSlot = slotId
+                    draftSourceIdentity = kernelFacts?.slot(slotId)?.sourceIdentity
+                },
+                onUseBootconfig = { slotId, source ->
+                    text = source.value
+                    draftSourceSlot = slotId
+                    draftSourceIdentity = kernelFacts?.slot(slotId)?.sourceIdentity
+                },
+                draftSourceSlot = draftSourceSlot,
+                draftSourceIdentity = draftSourceIdentity,
+            )
+            OutlinedTextField(text, {
+                text = it
+                draftSourceSlot = null
+                draftSourceIdentity = null
+            }, modifier = Modifier.fillMaxWidth(), minLines = 3,
                 label = { Text(stringResource(R.string.susfs_cmdline)) }, isError = !valid)
             if (!valid) Text(stringResource(R.string.susfs_text_invalid), color = MaterialTheme.colorScheme.error)
         }

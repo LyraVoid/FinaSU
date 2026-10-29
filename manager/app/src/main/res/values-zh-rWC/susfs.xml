@@ -81,7 +81,7 @@
     <string name="susfs_uname_hint">用 default 以保各真实道核字段。二字段皆不可缺。此乃所存之标，非道核实时之值。</string>
     <string name="susfs_uname_invalid">各字段皆须非空、少于 65 个 UTF-8 字节，且不含控制字符。</string>
     <string name="susfs_cmdline_hint">唯存替换之文。此处不读实时之值；除设符不复已行之伪装。</string>
-    <string name="susfs_text_invalid">请输入非空之文，少于 8192 个 UTF-8 字节，且不含控制字符。</string>
+    <string name="susfs_text_invalid">请输入非空之文，少于 8192 个 UTF-8 字节；换行与制表符可存，其余控制字符须除。</string>
     <string name="susfs_path_rules">隐遁之径路</string>
     <string name="susfs_map_rules">隐遁之内存映射</string>
     <string name="susfs_kstat_rules">文卷元数据伪装</string>

@@ -81,7 +81,7 @@
     <string name="susfs_uname_hint">施展天意默认以留各真实灵魂之力字段。两字段皆必需。此乃已封存之圣标，非灵魂之力之实时读数。</string>
     <string name="susfs_uname_invalid">各字段须非空，不逾 65 UTF-8 字节，且不含控制字符。</string>
     <string name="susfs_cmdline_hint">唯为已封存之替换。此处不读取现行之值；移除配置不会归元已施展之幻化。</string>
-    <string name="susfs_text_invalid">请输入非空文字，不逾 8192 UTF-8 字节，且不含控制字符。</string>
+    <string name="susfs_text_invalid">请输入非空文字，不逾 8192 UTF-8 字节；换行与制表符可留，其余控制字符当除。</string>
     <string name="susfs_path_rules">隐匿之圣径</string>
     <string name="susfs_map_rules">隐匿之记忆投影</string>
     <string name="susfs_kstat_rules">圣典元圣录幻化</string>

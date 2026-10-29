@@ -26,6 +26,11 @@ class SusfsPresentationTest {
         assertFalse(SusfsInputs.validText("", 65))
         assertFalse(SusfsInputs.validText("界".repeat(22), 65))
     }
+    @Test fun `cmdline accepts bootconfig lines but rejects other controls`() {
+        assertTrue(SusfsInputs.validCmdline("androidboot.hardware=qcom\nandroidboot.memcg=1"))
+        assertFalse(SusfsInputs.validCmdline("androidboot.memcg=1\u0000"))
+        assertFalse(SusfsInputs.validCmdline("a".repeat(8192)))
+    }
     @Test fun `editing fresh config preserves unrelated rules despite reordering`() {
         val original = """{"kind":"path","path":"/a","looping":false}"""
         val config = JSONObject("""{"rules":[{"kind":"map","path":"/b"},$original]}""")

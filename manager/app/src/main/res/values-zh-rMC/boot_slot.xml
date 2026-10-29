@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="boot_slot_source">启动镜像中的核心原始属性</string>
+    <string name="boot_slot_source_hint">从 boot、init_boot 或 vendor_boot 镜像读取。这里是镜像原始属性，不是当前 uname 或 proc 可能已被修改的显示值。</string>
+    <string name="boot_slot_original">核心原始属性</string>
+    <string name="boot_slot_loading">正在加载启动镜像区块…</string>
+    <string name="boot_slot_conflict">槽位数据发生冲突</string>
+    <string name="boot_slot_unavailable">启动镜像属性不可用</string>
+    <string name="boot_slot_current">%1$s 槽 · 当前世界</string>
+    <string name="boot_slot_name">%1$s 槽</string>
+    <string name="boot_slot_missing">区块不存在</string>
+    <string name="boot_slot_unreadable">无法读取</string>
+    <string name="boot_slot_readable">可读取</string>
+    <string name="boot_slot_values_differ">两个槽位的核心属性不同</string>
+    <string name="boot_slot_values_same">可用槽位的核心属性相同</string>
+    <string name="boot_slot_release">核心 release</string>
+    <string name="boot_slot_version">核心 version</string>
+    <string name="boot_slot_cmdline">cmdline</string>
+    <string name="boot_slot_bootconfig">bootconfig</string>
+    <string name="boot_slot_use_kernel">将这些属性写入草稿</string>
+    <string name="boot_slot_draft_only">只会修改未保存的草稿。保存和应用仍需分别操作。</string>
+    <string name="boot_slot_evidence">槽位与当前世界槽位证据</string>
+    <string name="boot_slot_details">镜像区块详情与槽位证据</string>
+    <string name="boot_slot_image_source">镜像来源与 SHA-256</string>
+    <string name="boot_slot_avb">AVB 页脚 %1$s · 原始镜像大小 %2$d</string>
+    <string name="boot_slot_signature_unchecked">尚未验证 AVB 签名</string>
+    <string name="boot_slot_source_changed">写入草稿后，所选镜像区块已更新。保存前请重新读取镜像。</string>
+    <string name="boot_slot_refresh">重新读取启动镜像</string>
+</resources>

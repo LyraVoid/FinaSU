@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="boot_slot_source">ᡠᡥᡝ ᡥᡡᠸᠠᡵ ᡩᡝ ᡴᡝᡵᠨᡝᠯ ᠪᠣᠰᠣ</string>
+    <string name="boot_slot_source_hint">boot, init_boot, vendor_boot ᡩᡝ ᡥᡡᠸᠠᡵ ᠴᡳ ᠠᡩᠠᠯᡳ ᠪᠠᡥᠠᠨᠠᠮᠪᡳ. ᡝᠰᡝ ᡥᡡᠸᠠᡵ ᡳ ᡩᠠ ᠪᠣᠰᠣ, ᠨᡝ ᠠᠮᠪᠠᡵᡳ uname ᡥᡝᡵᡤᡝᠨ ᠸᠠᡴᠠ ᠣᡴᡳᠨᡳ.</string>
+    <string name="boot_slot_original">ᡩᠠ ᡴᡝᡵᠨᡝᠯ ᠪᠣᠰᠣ</string>
+    <string name="boot_slot_loading">ᡥᡡᠸᠠᡵ ᠪᡝ ᠠᡩᠠᠯᠠᠮᡝ…</string>
+    <string name="boot_slot_conflict">ᠰᠯᠣᡨ ᡳ ᠮᡝᡩᡝᡤᡝ ᠠᠴᠠᠪᡠᡥᠠᡴᡡ</string>
+    <string name="boot_slot_unavailable">ᡥᡡᠸᠠᡵ ᡳ ᠪᠣᠰᠣ ᠪᠠᡥᠠᠨᠠᡵᠠᡴᡡ</string>
+    <string name="boot_slot_current">ᠰᠯᠣᡨ %1$s · ᡝᠨᡝ</string>
+    <string name="boot_slot_name">ᠰᠯᠣᡨ %1$s</string>
+    <string name="boot_slot_missing">ᠠᡴᡡ</string>
+    <string name="boot_slot_unreadable">ᠠᡩᠠᠯᠠᠮᡝ ᠣᡠᡵᠠᡴᡡ</string>
+    <string name="boot_slot_readable">ᠠᡩᠠᠯᠠᠮᠪᡳ</string>
+    <string name="boot_slot_values_differ">ᠰᠯᠣᡨ ᡳ ᡴᡝᡵᠨᡝᠯ ᠪᠣᠰᠣ ᡝᠮᡠ ᠠᡴᡡ</string>
+    <string name="boot_slot_values_same">ᠪᠠᡥᠠᠨᠠᡵᠠ ᠰᠯᠣᡨ ᡳ ᡴᡝᡵᠨᡝᠯ ᠪᠣᠰᠣ ᡝᠮᡠ</string>
+    <string name="boot_slot_release">ᡴᡝᡵᠨᡝᠯ ᡳ ᡶᠣᠨᡩᡝ</string>
+    <string name="boot_slot_version">ᡴᡝᡵᠨᡝᠯ ᡳ ᠪᠠᠨᠵᡳᠪᡠᡥᠠ</string>
+    <string name="boot_slot_cmdline">cmdline</string>
+    <string name="boot_slot_bootconfig">bootconfig</string>
+    <string name="boot_slot_use_kernel">ᡝᡵᡝ ᠪᠣᠰᠣ ᠪᡝ ᠴᠠᠣᡤᠠᠨ ᡩᡝ ᠪᠠᡳᡨᠠᠯᠠᠮᠪᡳ</string>
+    <string name="boot_slot_draft_only">ᠰᠠᠪᡠᡥᠠᡴᡡ ᠴᠠᠣᡤᠠᠨ ᠪᡝᠮᠪᡳ ᠪᡳᠶᠠᠨᠵᡳᠮᠪᡳ. ᠰᠠᠪᡠᡶᡳ ᡩᠣᠯᠣᡵᡳᠯᠠ.</string>
+    <string name="boot_slot_evidence">ᠰᠯᠣᡨ ᡥᡝᡵᡤᡝᠨ</string>
+    <string name="boot_slot_details">ᡥᡡᠸᠠᡵ ᡳ ᡧᡠᠮᡝ ᠰᠯᠣᡨ ᡥᡝᡵᡤᡝᠨ</string>
+    <string name="boot_slot_image_source">ᡥᡡᠸᠠᡵ ᡳ ᡩᠠ ᠪᡝ ᠰᡥᠠ-256</string>
+    <string name="boot_slot_avb">AVB footer %1$s · ᡩᠠ ᡥᡡᠸᠠᡵ ᡧᡠᠮᡝ %2$d</string>
+    <string name="boot_slot_signature_unchecked">AVB ᡳ ᠰᡳᡤᠨᠠᡨᡠᡵ ᠪᡝ ᠶᠠᡵᡤᡳᠶᠠᡥᠠᡴᡡ</string>
+    <string name="boot_slot_source_changed">ᡝᡵᡝ ᠪᠣᠰᠣ ᠴᠠᠣᡤᠠᠨ ᡩᡝ ᡩᠣᠰᡳᡶᡳ ᠪᠠᡩᠠᡵᠠᡥᠠ ᡥᡡᠸᠠᡵ ᠪᡳᠶᠠᠨᠵᡳᡥᠠ. ᠰᠠᠪᡠᠨᠠ ᡤᡝᠰᡝ ᠠᡩᠠᠯᠠᠮᡝ.</string>
+    <string name="boot_slot_refresh">ᡥᡡᠸᠠᡵ ᠪᡝ ᡩᠠᡥᡠᠮᡝ ᠠᡩᠠᠯᠠᠮᠪᡳ</string>
+</resources>

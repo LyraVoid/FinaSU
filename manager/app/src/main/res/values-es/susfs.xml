@@ -81,7 +81,7 @@
     <string name="susfs_uname_hint">Usa «predeterminado» para conservar cada campo real del kernel. Ambos campos son obligatorios. Son valores objetivo guardados, no lecturas en vivo del kernel.</string>
     <string name="susfs_uname_invalid">Cada campo debe ser no vacío, tener menos de 65 bytes UTF-8 y no contener caracteres de control.</string>
     <string name="susfs_cmdline_hint">Solo un reemplazo guardado. Aquí no se lee ningún valor en vivo; eliminar la configuración no restaura una suplantación activa.</string>
-    <string name="susfs_text_invalid">Introduce un texto no vacío de menos de 8192 bytes UTF-8, sin caracteres de control.</string>
+    <string name="susfs_text_invalid">Introduce un texto no vacío de menos de 8192 bytes UTF-8. Se permiten saltos de línea y tabulaciones; otros caracteres de control no.</string>
     <string name="susfs_path_rules">Rutas ocultas</string>
     <string name="susfs_map_rules">Asignaciones de memoria ocultas</string>
     <string name="susfs_kstat_rules">Suplantación de metadatos de archivos</string>

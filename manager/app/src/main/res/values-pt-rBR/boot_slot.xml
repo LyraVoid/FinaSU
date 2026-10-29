@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="boot_slot_source">Valores do kernel nas imagens de boot</string>
+    <string name="boot_slot_source_hint">Lidos das imagens boot, init_boot ou vendor_boot. São valores originais da imagem, não os valores atuais de uname ou proc.</string>
+    <string name="boot_slot_original">Valores originais do kernel</string>
+    <string name="boot_slot_loading">Lendo imagens de boot…</string>
+    <string name="boot_slot_conflict">As informações dos slots divergem</string>
+    <string name="boot_slot_unavailable">Os valores da imagem de boot não estão disponíveis</string>
+    <string name="boot_slot_current">Slot %1$s · atual</string>
+    <string name="boot_slot_name">Slot %1$s</string>
+    <string name="boot_slot_missing">Ausente</string>
+    <string name="boot_slot_unreadable">Não legível</string>
+    <string name="boot_slot_readable">Legível</string>
+    <string name="boot_slot_values_differ">Os slots contêm valores de kernel diferentes</string>
+    <string name="boot_slot_values_same">Os slots disponíveis contêm os mesmos valores de kernel</string>
+    <string name="boot_slot_release">Versão do kernel</string>
+    <string name="boot_slot_version">Compilação do kernel</string>
+    <string name="boot_slot_cmdline">cmdline</string>
+    <string name="boot_slot_bootconfig">bootconfig</string>
+    <string name="boot_slot_use_kernel">Usar estes valores no rascunho</string>
+    <string name="boot_slot_draft_only">Apenas o rascunho não salvo muda. Salve e aplique separadamente.</string>
+    <string name="boot_slot_evidence">Evidências do slot e do slot atual</string>
+    <string name="boot_slot_details">Detalhes da imagem e evidências dos slots</string>
+    <string name="boot_slot_image_source">Origem da imagem e SHA-256</string>
+    <string name="boot_slot_avb">Rodapé AVB %1$s · tamanho da imagem original %2$d</string>
+    <string name="boot_slot_signature_unchecked">A assinatura AVB não foi verificada</string>
+    <string name="boot_slot_source_changed">A imagem selecionada mudou após este valor ser adicionado ao rascunho. Leia novamente antes de salvar.</string>
+    <string name="boot_slot_refresh">Ler novamente as imagens de boot</string>
+</resources>

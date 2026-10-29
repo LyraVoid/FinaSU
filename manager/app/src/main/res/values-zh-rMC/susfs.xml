@@ -81,7 +81,7 @@
     <string name="susfs_uname_hint">使用 default 保留对应的真实基岩核心字段。两个字段均不能为空。这里显示保存目标，而非实时基岩核心值。</string>
     <string name="susfs_uname_invalid">每个字段均须非空、少于 65 个 UTF-8 字节，且不能包含控制字符。</string>
     <string name="susfs_cmdline_hint">仅显示保存的替换内容，不读取当前基岩核心值；删除配置不会恢复已生效的伪装。</string>
-    <string name="susfs_text_invalid">请输入非空内容，少于 8192 个 UTF-8 字节，且不含控制字符。</string>
+    <string name="susfs_text_invalid">请输入非空内容，少于 8192 个 UTF-8 字节；允许换行和制表符，其他控制字符不可用。</string>
     <string name="susfs_path_rules">藏起路径</string>
     <string name="susfs_map_rules">藏起内存映射</string>
     <string name="susfs_kstat_rules">文件元数据伪装</string>

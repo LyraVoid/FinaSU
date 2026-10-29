@@ -10,6 +10,9 @@ import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runCurrent
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
+import me.weishu.kernelsu.data.boot.FakeKernelFactsSource
+import me.weishu.kernelsu.data.boot.testKernelFacts
+import me.weishu.kernelsu.data.boot.testKernelSlot
 import me.weishu.kernelsu.data.susfs.SusfsDataSource
 import me.weishu.kernelsu.data.susfs.SusfsStatus
 import me.weishu.kernelsu.data.uts.UtsDataSource
@@ -30,6 +33,7 @@ class SusfsViewModelTest {
     private val dispatcher = StandardTestDispatcher()
     private val repository = FakeSusfs()
     private val uts = FakeUts()
+    private val kernelFacts = FakeKernelFactsSource()
     private var generation = 1L
 
     @Before
@@ -41,6 +45,7 @@ class SusfsViewModelTest {
     private fun model() = SusfsViewModel(
         repository = repository,
         utsRepository = uts,
+        kernelFactsSource = kernelFacts,
         rootStatus = flowOf(RootShellStatus.Ready),
         rootGeneration = flowOf(1L),
         shellGeneration = { generation },
@@ -76,6 +81,20 @@ class SusfsViewModelTest {
 
         assertEquals("applied", model.state.value.status.management)
         assertFalse(model.state.value.busy)
+    }
+
+    @Test
+    fun `boot image facts remain available when the SUSFS config is invalid`() = runTest(dispatcher) {
+        repository.statusValue = SusfsStatus(protocol = "compatible", error = "invalid config")
+        kernelFacts.value = testKernelFacts(
+            testKernelSlot("a", "6.6.30-a", "#1 A", "hash-a", current = true),
+        )
+
+        val model = model()
+        advanceUntilIdle()
+
+        assertEquals("6.6.30-a", model.state.value.kernelFacts!!.slot("a")!!.release!!.value)
+        assertEquals(null, model.state.value.kernelFactsError)
     }
 
     private class FakeSusfs : SusfsDataSource {

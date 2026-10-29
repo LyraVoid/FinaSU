@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="boot_slot_source">ブートイメージ内のカーネル値</string>
+    <string name="boot_slot_source_hint">boot、init_boot、vendor_boot イメージから読み取ります。現在の uname や proc の値ではなく、イメージ本来の値です。</string>
+    <string name="boot_slot_original">元のカーネル値</string>
+    <string name="boot_slot_loading">ブートイメージを読み取り中…</string>
+    <string name="boot_slot_conflict">スロット情報が一致しません</string>
+    <string name="boot_slot_unavailable">ブートイメージの値を利用できません</string>
+    <string name="boot_slot_current">スロット %1$s · 現在</string>
+    <string name="boot_slot_name">スロット %1$s</string>
+    <string name="boot_slot_missing">存在しません</string>
+    <string name="boot_slot_unreadable">読み取れません</string>
+    <string name="boot_slot_readable">読み取り可能</string>
+    <string name="boot_slot_values_differ">スロットごとにカーネル値が異なります</string>
+    <string name="boot_slot_values_same">利用可能なスロットのカーネル値は同じです</string>
+    <string name="boot_slot_release">カーネルリリース</string>
+    <string name="boot_slot_version">カーネルバージョン</string>
+    <string name="boot_slot_cmdline">cmdline</string>
+    <string name="boot_slot_bootconfig">bootconfig</string>
+    <string name="boot_slot_use_kernel">この値を下書きに使用</string>
+    <string name="boot_slot_draft_only">未保存の下書きだけを変更します。保存と適用は別に行ってください。</string>
+    <string name="boot_slot_evidence">スロットと現在スロットの根拠</string>
+    <string name="boot_slot_details">イメージ詳細とスロット根拠</string>
+    <string name="boot_slot_image_source">イメージの出所と SHA-256</string>
+    <string name="boot_slot_avb">AVB フッター %1$s · 元イメージサイズ %2$d</string>
+    <string name="boot_slot_signature_unchecked">AVB 署名は検証されていません</string>
+    <string name="boot_slot_source_changed">この値を下書きへ追加した後、選択中のイメージが変わりました。保存前に再読み取りしてください。</string>
+    <string name="boot_slot_refresh">ブートイメージを再読み取り</string>
+</resources>

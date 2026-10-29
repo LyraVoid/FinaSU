@@ -81,7 +81,7 @@
     <string name="susfs_uname_hint">使 default 就留着对应的真秘酱料字段。俩字段都得填。这儿显示的是存的目标，不是秘酱料眼下实打实的值。</string>
     <string name="susfs_uname_invalid">每个字段都得填，少于 65 个 UTF-8 字节，还不能带控制字符。</string>
     <string name="susfs_cmdline_hint">只显示存下的替换内容，不读秘酱料眼下的值；删配置可不会把已经生效的伪装还原。</string>
-    <string name="susfs_text_invalid">填点实在内容，少于 8192 个 UTF-8 字节，别带控制字符。</string>
+    <string name="susfs_text_invalid">填点实在内容，少于 8192 个 UTF-8 字节；换行和制表符可以留，其他控制字符别进锅。</string>
     <string name="susfs_path_rules">藏起来的路子</string>
     <string name="susfs_map_rules">藏起内存映射</string>
     <string name="susfs_kstat_rules">文件元数据伪装</string>

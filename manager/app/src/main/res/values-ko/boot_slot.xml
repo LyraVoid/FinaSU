@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="boot_slot_source">부팅 이미지의 커널 값</string>
+    <string name="boot_slot_source_hint">boot, init_boot 또는 vendor_boot 이미지에서 읽습니다. 현재 uname 또는 proc 값이 아닌 이미지 원본 값입니다.</string>
+    <string name="boot_slot_original">원본 커널 값</string>
+    <string name="boot_slot_loading">부팅 이미지 읽는 중…</string>
+    <string name="boot_slot_conflict">슬롯 정보가 서로 다릅니다</string>
+    <string name="boot_slot_unavailable">부팅 이미지 값을 사용할 수 없습니다</string>
+    <string name="boot_slot_current">슬롯 %1$s · 현재</string>
+    <string name="boot_slot_name">슬롯 %1$s</string>
+    <string name="boot_slot_missing">없음</string>
+    <string name="boot_slot_unreadable">읽을 수 없음</string>
+    <string name="boot_slot_readable">읽기 가능</string>
+    <string name="boot_slot_values_differ">슬롯의 커널 값이 서로 다릅니다</string>
+    <string name="boot_slot_values_same">사용 가능한 슬롯의 커널 값이 같습니다</string>
+    <string name="boot_slot_release">커널 릴리스</string>
+    <string name="boot_slot_version">커널 버전</string>
+    <string name="boot_slot_cmdline">cmdline</string>
+    <string name="boot_slot_bootconfig">bootconfig</string>
+    <string name="boot_slot_use_kernel">이 값을 초안에 사용</string>
+    <string name="boot_slot_draft_only">저장되지 않은 초안만 변경합니다. 저장과 적용은 따로 하세요.</string>
+    <string name="boot_slot_evidence">슬롯 및 현재 슬롯 근거</string>
+    <string name="boot_slot_details">이미지 세부정보 및 슬롯 근거</string>
+    <string name="boot_slot_image_source">이미지 출처 및 SHA-256</string>
+    <string name="boot_slot_avb">AVB 푸터 %1$s · 원본 이미지 크기 %2$d</string>
+    <string name="boot_slot_signature_unchecked">AVB 서명을 확인하지 않았습니다</string>
+    <string name="boot_slot_source_changed">이 값을 초안에 넣은 뒤 선택한 이미지가 바뀌었습니다. 저장 전에 다시 읽으세요.</string>
+    <string name="boot_slot_refresh">부팅 이미지 다시 읽기</string>
+</resources>

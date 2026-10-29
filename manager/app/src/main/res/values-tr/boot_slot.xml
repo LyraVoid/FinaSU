@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="boot_slot_source">Önyükleme imajlarındaki çekirdek değerleri</string>
+    <string name="boot_slot_source_hint">boot, init_boot veya vendor_boot imajlarından okunur. Geçerli uname ya da proc değerleri değil, imajın özgün değerleridir.</string>
+    <string name="boot_slot_original">Özgün çekirdek değerleri</string>
+    <string name="boot_slot_loading">Önyükleme imajları okunuyor…</string>
+    <string name="boot_slot_conflict">Slot bilgileri çelişiyor</string>
+    <string name="boot_slot_unavailable">Önyükleme imajı değerleri kullanılamıyor</string>
+    <string name="boot_slot_current">Slot %1$s · geçerli</string>
+    <string name="boot_slot_name">Slot %1$s</string>
+    <string name="boot_slot_missing">Yok</string>
+    <string name="boot_slot_unreadable">Okunamıyor</string>
+    <string name="boot_slot_readable">Okunabilir</string>
+    <string name="boot_slot_values_differ">Slotlardaki çekirdek değerleri farklı</string>
+    <string name="boot_slot_values_same">Kullanılabilir slotlardaki çekirdek değerleri aynı</string>
+    <string name="boot_slot_release">Çekirdek sürümü</string>
+    <string name="boot_slot_version">Çekirdek derlemesi</string>
+    <string name="boot_slot_cmdline">cmdline</string>
+    <string name="boot_slot_bootconfig">bootconfig</string>
+    <string name="boot_slot_use_kernel">Bu değerleri taslakta kullan</string>
+    <string name="boot_slot_draft_only">Yalnızca kaydedilmemiş taslak değişir. Kaydetme ve uygulama ayrıdır.</string>
+    <string name="boot_slot_evidence">Slot ve geçerli slot kanıtları</string>
+    <string name="boot_slot_details">İmaj ayrıntıları ve slot kanıtları</string>
+    <string name="boot_slot_image_source">İmaj kaynağı ve SHA-256</string>
+    <string name="boot_slot_avb">AVB altbilgisi %1$s · özgün imaj boyutu %2$d</string>
+    <string name="boot_slot_signature_unchecked">AVB imzası doğrulanmadı</string>
+    <string name="boot_slot_source_changed">Bu değer taslağa eklendikten sonra seçili imaj değişti. Kaydetmeden önce yeniden okuyun.</string>
+    <string name="boot_slot_refresh">Önyükleme imajlarını yeniden oku</string>
+</resources>

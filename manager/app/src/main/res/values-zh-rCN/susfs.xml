@@ -93,7 +93,7 @@
     <string name="susfs_uts_apply_confirm_message">应用期间会暂时关闭 UTS 视图，但保留其设置。只有 SUSFS 确认 uname 已实际生效后，UTS 视图才会保持关闭；否则会自动恢复。</string>
     <string name="susfs_uts_apply_confirm_action">应用 SUSFS</string>
     <string name="susfs_cmdline_hint">仅显示保存的替换内容，不读取当前内核值；删除配置不会恢复已生效的伪装。</string>
-    <string name="susfs_text_invalid">请输入非空内容，少于 8192 个 UTF-8 字节，且不含控制字符。</string>
+    <string name="susfs_text_invalid">请输入非空内容，少于 8192 个 UTF-8 字节；允许换行和制表符，不可包含其他控制字符。</string>
     <string name="susfs_path_rules">隐藏路径</string>
     <string name="susfs_map_rules">隐藏内存映射</string>
     <string name="susfs_kstat_rules">文件元数据伪装</string>

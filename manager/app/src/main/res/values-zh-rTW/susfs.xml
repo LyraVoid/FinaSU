@@ -81,7 +81,7 @@
     <string name="susfs_uname_hint">使用預設值以保留各真實核心欄位。兩個欄位皆為必填。這些是已儲存的目標值，並非核心的即時讀數。</string>
     <string name="susfs_uname_invalid">每個欄位皆不得為空、須少於 65 個 UTF-8 位元組，且不得包含控制字元。</string>
     <string name="susfs_cmdline_hint">僅儲存取代值。此處不會讀取即時值；移除設定並不會還原已生效的偽裝。</string>
-    <string name="susfs_text_invalid">請輸入非空文字，少於 8192 個 UTF-8 位元組，且不含控制字元。</string>
+    <string name="susfs_text_invalid">請輸入非空文字，少於 8192 個 UTF-8 位元組；允許換行與定位字元，不可包含其他控制字元。</string>
     <string name="susfs_path_rules">隱藏的路徑</string>
     <string name="susfs_map_rules">隱藏的記憶體對應</string>
     <string name="susfs_kstat_rules">檔案中繼資料偽裝</string>

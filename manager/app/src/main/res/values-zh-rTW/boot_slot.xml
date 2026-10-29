@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="boot_slot_source">啟動映像中的核心原始值</string>
+    <string name="boot_slot_source_hint">從 boot、init_boot 或 vendor_boot 映像讀取。這是映像原始值，不是目前的 uname 或 proc 值。</string>
+    <string name="boot_slot_original">核心原始值</string>
+    <string name="boot_slot_loading">正在讀取啟動映像…</string>
+    <string name="boot_slot_conflict">槽位資訊互相衝突</string>
+    <string name="boot_slot_unavailable">啟動映像值無法使用</string>
+    <string name="boot_slot_current">槽位 %1$s · 目前</string>
+    <string name="boot_slot_name">槽位 %1$s</string>
+    <string name="boot_slot_missing">不存在</string>
+    <string name="boot_slot_unreadable">無法讀取</string>
+    <string name="boot_slot_readable">可讀取</string>
+    <string name="boot_slot_values_differ">兩個槽位的核心值不同</string>
+    <string name="boot_slot_values_same">可用槽位的核心值相同</string>
+    <string name="boot_slot_release">核心 release</string>
+    <string name="boot_slot_version">核心 version</string>
+    <string name="boot_slot_cmdline">cmdline</string>
+    <string name="boot_slot_bootconfig">bootconfig</string>
+    <string name="boot_slot_use_kernel">將這些值填入草稿</string>
+    <string name="boot_slot_draft_only">只修改尚未儲存的草稿。儲存與套用仍分開進行。</string>
+    <string name="boot_slot_evidence">槽位與目前槽位證據</string>
+    <string name="boot_slot_details">映像詳情與槽位證據</string>
+    <string name="boot_slot_image_source">映像來源與 SHA-256</string>
+    <string name="boot_slot_avb">AVB 頁尾 %1$s · 原始映像大小 %2$d</string>
+    <string name="boot_slot_signature_unchecked">未驗證 AVB 簽章</string>
+    <string name="boot_slot_source_changed">將此值填入草稿後，所選映像已變更。儲存前請重新讀取映像。</string>
+    <string name="boot_slot_refresh">重新讀取啟動映像</string>
+</resources>

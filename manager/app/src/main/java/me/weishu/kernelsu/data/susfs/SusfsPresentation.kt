@@ -41,6 +41,10 @@ object SusfsInputs {
     fun validText(value: String, capacity: Int): Boolean = value.isNotBlank() &&
         value.toByteArray(Charsets.UTF_8).size < capacity && value.none(Char::isISOControl)
 
+    fun validCmdline(value: String): Boolean = value.isNotBlank() &&
+        value.toByteArray(Charsets.UTF_8).size < 8192 &&
+        value.none { it.isISOControl() && it != '\n' && it != '\t' }
+
     /** Match the entry shown to the user, never an index from an obsolete screen snapshot. */
     fun replaceRule(config: JSONObject, original: String?, replacement: JSONObject?) {
         val rules = config.getJSONArray("rules")

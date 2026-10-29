@@ -9,6 +9,9 @@ import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runCurrent
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
+import me.weishu.kernelsu.data.boot.FakeKernelFactsSource
+import me.weishu.kernelsu.data.boot.testKernelFacts
+import me.weishu.kernelsu.data.boot.testKernelSlot
 import me.weishu.kernelsu.data.uts.UtsDataSource
 import me.weishu.kernelsu.data.uts.UtsFields
 import me.weishu.kernelsu.data.uts.UtsTarget
@@ -27,6 +30,7 @@ import org.junit.Test
 class UtsViewViewModelTest {
     private val dispatcher = StandardTestDispatcher()
     private val repository = FakeUtsDataSource()
+    private val kernelFacts = FakeKernelFactsSource()
     private var shellGenerationValue = 1L
     private val current = UtsFields(
         sysname = "Linux",
@@ -45,6 +49,7 @@ class UtsViewViewModelTest {
 
     private fun model() = UtsViewViewModel(
         repository = repository,
+        kernelFactsSource = kernelFacts,
         readUname = { current },
         shellGeneration = { shellGenerationValue },
         getString = { "message" },
@@ -53,9 +58,13 @@ class UtsViewViewModelTest {
     @Test
     fun `first failure does not suppress the recovered draft`() = runTest(dispatcher) {
         repository.statusError = IllegalStateException("root unavailable")
+        kernelFacts.value = testKernelFacts(
+            testKernelSlot("a", "6.6.30-a", "#1 A", "hash-a", current = true),
+        )
         val model = model()
         advanceUntilIdle()
         assertFalse(model.uiState.value.hasLoaded)
+        assertEquals("6.6.30-a", model.uiState.value.kernelFacts!!.slot("a")!!.release!!.value)
 
         repository.statusError = null
         repository.current = status(mask = 4, release = "6.1.75-android14")
@@ -236,6 +245,93 @@ class UtsViewViewModelTest {
         advanceUntilIdle()
 
         assertEquals(0, repository.enableCalls)
+    }
+
+    @Test
+    fun `using a boot slot changes only the draft`() = runTest(dispatcher) {
+        repository.current = status(mask = 0)
+        kernelFacts.value = testKernelFacts(
+            testKernelSlot("a", "6.6.30-slot-a", "#1 A", "hash-a", current = true),
+            testKernelSlot("b", "6.6.30-slot-b", "#1 B", "hash-b"),
+        )
+        val model = model()
+        advanceUntilIdle()
+
+        model.useBootSlot("b")
+
+        assertEquals("6.6.30-slot-b", model.uiState.value.draft.release)
+        assertEquals("#1 B", model.uiState.value.draft.version)
+        assertEquals("b", model.uiState.value.draftSourceSlot)
+        assertTrue(model.uiState.value.draftSourceIdentity!!.contains("hash-b"))
+        assertTrue(repository.saves.isEmpty())
+        assertEquals(0, repository.enableCalls)
+        assertEquals("", model.uiState.value.status.fields.release)
+    }
+
+    @Test
+    fun `manual edit clears the boot image draft provenance`() = runTest(dispatcher) {
+        repository.current = status(mask = 0)
+        kernelFacts.value = testKernelFacts(
+            testKernelSlot("a", "6.6.30-slot-a", "#1 A", "hash-a", current = true),
+        )
+        val model = model()
+        advanceUntilIdle()
+
+        model.useBootSlot("a")
+        model.setField(2, "manual")
+
+        assertEquals("manual", model.uiState.value.draft.release)
+        assertNull(model.uiState.value.draftSourceSlot)
+        assertNull(model.uiState.value.draftSourceIdentity)
+    }
+
+    @Test
+    fun `refreshing an updated image keeps the draft and exposes its old provenance`() = runTest(dispatcher) {
+        repository.current = status(mask = 0)
+        kernelFacts.value = testKernelFacts(
+            testKernelSlot("a", "6.6.30-old", "#1 old", "hash-old", current = true),
+        )
+        val model = model()
+        advanceUntilIdle()
+        model.useBootSlot("a")
+        val draftIdentity = model.uiState.value.draftSourceIdentity
+
+        kernelFacts.value = testKernelFacts(
+            testKernelSlot("a", "6.6.30-new", "#1 new", "hash-new", current = true),
+        )
+        model.refresh()
+        advanceUntilIdle()
+
+        assertEquals("6.6.30-old", model.uiState.value.draft.release)
+        assertEquals(draftIdentity, model.uiState.value.draftSourceIdentity)
+        assertTrue(model.uiState.value.kernelFacts!!.slot("a")!!.sourceIdentity != draftIdentity)
+    }
+
+    @Test
+    fun `changing runtime uname never rewrites boot image original values`() = runTest(dispatcher) {
+        var live = current.copy(release = "6.6.30-original")
+        repository.current = status(mask = 0)
+        kernelFacts.value = testKernelFacts(
+            testKernelSlot("a", "6.6.30-image", "#1 image", "hash-a", current = true),
+        )
+        val model = UtsViewViewModel(
+            repository = repository,
+            kernelFactsSource = kernelFacts,
+            readUname = { live },
+            shellGeneration = { shellGenerationValue },
+            getString = { "message" },
+        )
+        advanceUntilIdle()
+
+        live = live.copy(release = "6.6.30-spoofed")
+        model.refresh()
+        advanceUntilIdle()
+
+        assertEquals("6.6.30-spoofed", model.uiState.value.currentUname!!.release)
+        assertEquals(
+            "6.6.30-image",
+            model.uiState.value.kernelFacts!!.slot("a")!!.release!!.value,
+        )
     }
 
     @Test

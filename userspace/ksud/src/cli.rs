@@ -246,6 +246,9 @@ enum BootInfo {
     /// list available partitions for current or OTA toggled slot
     AvailablePartitions,
 
+    /// Read-only kernel values from the running and inactive boot slots
+    KernelFacts,
+
     /// show slot suffix for current or OTA toggled slot
     SlotSuffix {
         /// toggle to another slot
@@ -1109,6 +1112,10 @@ pub fn run() -> Result<()> {
                 for p in &parts {
                     println!("{p}");
                 }
+                return Ok(());
+            }
+            BootInfo::KernelFacts => {
+                println!("{}", serde_json::to_string(&crate::boot_facts::collect())?);
                 return Ok(());
             }
         },

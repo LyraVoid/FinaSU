@@ -13,6 +13,9 @@ import me.weishu.kernelsu.data.susfs.SusfsDataSource
 import me.weishu.kernelsu.data.susfs.SusfsRepository
 import me.weishu.kernelsu.data.susfs.SusfsStatus
 import me.weishu.kernelsu.data.susfs.SusfsApplyReport
+import me.weishu.kernelsu.data.boot.KernelFacts
+import me.weishu.kernelsu.data.boot.KernelFactsRepository
+import me.weishu.kernelsu.data.boot.KernelFactsSource
 import me.weishu.kernelsu.data.uts.UtsDataSource
 import me.weishu.kernelsu.data.uts.UtsRepository
 import me.weishu.kernelsu.ui.util.RootShell
@@ -27,11 +30,15 @@ data class SusfsUiState(
     val report: SusfsApplyReport? = null,
     val savedNotice: Boolean = false,
     val pendingUnameApply: Boolean = false,
+    val kernelFacts: KernelFacts? = null,
+    val kernelFactsLoading: Boolean = false,
+    val kernelFactsError: String? = null,
 )
 
 class SusfsViewModel(
     private val repository: SusfsDataSource = SusfsRepository(),
     private val utsRepository: UtsDataSource = UtsRepository(),
+    private val kernelFactsSource: KernelFactsSource = KernelFactsRepository(),
     rootStatus: Flow<RootShellStatus> = RootShell.status,
     rootGeneration: Flow<Long> = RootShell.generation,
     private val shellGeneration: () -> Long = { RootShell.generation.value },
@@ -55,6 +62,9 @@ class SusfsViewModel(
                                 report = null,
                                 savedNotice = false,
                                 pendingUnameApply = false,
+                                kernelFacts = null,
+                                kernelFactsLoading = false,
+                                kernelFactsError = null,
                             )
                         }
                     }
@@ -71,12 +81,48 @@ class SusfsViewModel(
                 val status = repository.status()
                 val config = if (status.error == null) repository.export() else null
                 if (request == token && generation == shellGeneration()) {
-                    mutable.update { it.copy(status = status, config = config) }
+                    mutable.update {
+                        it.copy(
+                            status = status,
+                            config = config,
+                            kernelFactsLoading = true,
+                            kernelFactsError = null,
+                        )
+                    }
+                } else {
+                    return@launch
+                }
+                try {
+                    val facts = kernelFactsSource.load()
+                    if (request == token && generation == shellGeneration()) {
+                        mutable.update {
+                            it.copy(
+                                kernelFacts = facts,
+                                kernelFactsLoading = false,
+                                kernelFactsError = null,
+                            )
+                        }
+                    }
+                } catch (e: CancellationException) {
+                    throw e
+                } catch (e: Exception) {
+                    if (request == token && generation == shellGeneration()) {
+                        mutable.update {
+                            it.copy(
+                                kernelFactsLoading = false,
+                                kernelFactsError = e.message ?: "Boot facts unavailable",
+                            )
+                        }
+                    }
                 }
             } catch (e: CancellationException) { throw e }
             catch (e: Exception) {
                 if (request == token && generation == shellGeneration()) mutable.update {
-                    it.copy(status = SusfsStatus(protocol = "root_unavailable", error = e.message), config = null)
+                    it.copy(
+                        status = SusfsStatus(protocol = "root_unavailable", error = e.message),
+                        config = null,
+                        kernelFactsLoading = false,
+                    )
                 }
             }
         }

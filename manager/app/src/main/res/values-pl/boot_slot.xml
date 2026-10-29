@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="boot_slot_source">Wartości jądra z obrazów rozruchowych</string>
+    <string name="boot_slot_source_hint">Odczyt z obrazów boot, init_boot lub vendor_boot. To wartości z obrazu, a nie bieżące wartości uname lub proc.</string>
+    <string name="boot_slot_original">Oryginalne wartości jądra</string>
+    <string name="boot_slot_loading">Odczytywanie obrazów rozruchowych…</string>
+    <string name="boot_slot_conflict">Informacje o slotach są sprzeczne</string>
+    <string name="boot_slot_unavailable">Wartości obrazu rozruchowego są niedostępne</string>
+    <string name="boot_slot_current">Slot %1$s · bieżący</string>
+    <string name="boot_slot_name">Slot %1$s</string>
+    <string name="boot_slot_missing">Brak</string>
+    <string name="boot_slot_unreadable">Nie można odczytać</string>
+    <string name="boot_slot_readable">Można odczytać</string>
+    <string name="boot_slot_values_differ">Sloty zawierają różne wartości jądra</string>
+    <string name="boot_slot_values_same">Dostępne sloty zawierają takie same wartości jądra</string>
+    <string name="boot_slot_release">Wydanie jądra</string>
+    <string name="boot_slot_version">Wersja jądra</string>
+    <string name="boot_slot_cmdline">cmdline</string>
+    <string name="boot_slot_bootconfig">bootconfig</string>
+    <string name="boot_slot_use_kernel">Użyj w wersji roboczej</string>
+    <string name="boot_slot_draft_only">Zmienia się tylko niezapisana wersja robocza. Zapisz i zastosuj osobno.</string>
+    <string name="boot_slot_evidence">Dowody slotu i bieżącego slotu</string>
+    <string name="boot_slot_details">Szczegóły obrazu i dowody slotów</string>
+    <string name="boot_slot_image_source">Źródło obrazu i SHA-256</string>
+    <string name="boot_slot_avb">Stopka AVB %1$s · rozmiar obrazu oryginalnego %2$d</string>
+    <string name="boot_slot_signature_unchecked">Podpis AVB nie został zweryfikowany</string>
+    <string name="boot_slot_source_changed">Wybrany obraz zmienił się po dodaniu tej wartości do wersji roboczej. Odczytaj go ponownie przed zapisaniem.</string>
+    <string name="boot_slot_refresh">Odczytaj obrazy rozruchowe ponownie</string>
+</resources>

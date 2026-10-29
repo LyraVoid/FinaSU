@@ -81,7 +81,7 @@
     <string name="susfs_uname_hint">Użyj wartości domyślnej, aby zachować każde prawdziwe pole jądra. Oba pola są wymagane. Są to zapisane wartości docelowe, a nie bieżące odczyty jądra.</string>
     <string name="susfs_uname_invalid">Każde pole musi być niepuste, mieć mniej niż 65 bajtów UTF-8 i nie zawierać znaków sterujących.</string>
     <string name="susfs_cmdline_hint">Tylko zapisane zastąpienie. Nie odczytuje się tutaj bieżącej wartości; usunięcie konfiguracji nie przywraca aktywnego fałszowania.</string>
-    <string name="susfs_text_invalid">Wprowadź niepusty tekst o długości poniżej 8192 bajtów UTF-8, bez znaków sterujących.</string>
+    <string name="susfs_text_invalid">Wprowadź niepusty tekst poniżej 8192 bajtów UTF-8. Dozwolone są podziały wierszy i tabulatory, a inne znaki sterujące nie.</string>
     <string name="susfs_path_rules">Ukryte ścieżki</string>
     <string name="susfs_map_rules">Ukryte mapowania pamięci</string>
     <string name="susfs_kstat_rules">Fałszowanie metadanych plików</string>

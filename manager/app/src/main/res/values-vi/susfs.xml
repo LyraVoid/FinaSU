@@ -81,7 +81,7 @@
     <string name="susfs_uname_hint">Dùng mặc định để giữ từng trường kernel thật. Cả hai trường đều bắt buộc. Đây là các giá trị đích đã lưu, không phải giá trị đọc trực tiếp từ kernel.</string>
     <string name="susfs_uname_invalid">Mỗi trường phải không trống, dưới 65 byte UTF-8 và không chứa ký tự điều khiển.</string>
     <string name="susfs_cmdline_hint">Chỉ lưu giá trị thay thế. Không có giá trị trực tiếp nào được đọc ở đây; xoá cấu hình sẽ không khôi phục một giả mạo đang hoạt động.</string>
-    <string name="susfs_text_invalid">Nhập văn bản không trống dưới 8192 byte UTF-8, không có ký tự điều khiển.</string>
+    <string name="susfs_text_invalid">Nhập văn bản không trống dưới 8192 byte UTF-8. Được phép dùng xuống dòng và tab; không dùng ký tự điều khiển khác.</string>
     <string name="susfs_path_rules">Đường dẫn bị ẩn</string>
     <string name="susfs_map_rules">Ánh xạ bộ nhớ bị ẩn</string>
     <string name="susfs_kstat_rules">Giả mạo metadata file</string>

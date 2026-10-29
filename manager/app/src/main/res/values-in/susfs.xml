@@ -81,7 +81,7 @@
     <string name="susfs_uname_hint">Gunakan nilai bawaan untuk mempertahankan setiap kolom kernel asli. Kedua kolom wajib diisi. Ini adalah target tersimpan, bukan pembacaan kernel langsung.</string>
     <string name="susfs_uname_invalid">Setiap kolom harus tidak kosong, kurang dari 65 byte UTF-8, dan tidak mengandung karakter kontrol.</string>
     <string name="susfs_cmdline_hint">Hanya penggantian tersimpan. Tidak ada nilai langsung yang dibaca di sini; menghapus konfigurasi tidak memulihkan pemalsuan yang aktif.</string>
-    <string name="susfs_text_invalid">Masukkan teks yang tidak kosong kurang dari 8192 byte UTF-8, tanpa karakter kontrol.</string>
+    <string name="susfs_text_invalid">Masukkan teks tidak kosong kurang dari 8192 byte UTF-8. Baris baru dan tab diizinkan; karakter kontrol lain tidak.</string>
     <string name="susfs_path_rules">Jalur tersembunyi</string>
     <string name="susfs_map_rules">Pemetaan memori tersembunyi</string>
     <string name="susfs_kstat_rules">Pemalsuan metadata berkas</string>

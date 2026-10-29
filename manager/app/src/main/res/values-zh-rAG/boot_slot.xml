@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="boot_slot_source">启动镜像里的内核原味值喵</string>
+    <string name="boot_slot_source_hint">这是从 boot、init_boot 或 vendor_boot 镜像里翻出来的原味值喵，不是现在 uname 或 proc 那层可能已经换过皮的表面值哦。</string>
+    <string name="boot_slot_original">内核原味值</string>
+    <string name="boot_slot_loading">正在翻启动镜像喵…</string>
+    <string name="boot_slot_conflict">槽位线索打架啦喵</string>
+    <string name="boot_slot_unavailable">翻不到启动镜像值喵</string>
+    <string name="boot_slot_current">%1$s 槽 · 当前运行喵</string>
+    <string name="boot_slot_name">%1$s 槽</string>
+    <string name="boot_slot_missing">这块没有喵</string>
+    <string name="boot_slot_unreadable">读不动喵</string>
+    <string name="boot_slot_readable">能读喵</string>
+    <string name="boot_slot_values_differ">两个槽位的内核值不一样喵</string>
+    <string name="boot_slot_values_same">能读的槽位内核值一样喵</string>
+    <string name="boot_slot_release">内核 release 喵</string>
+    <string name="boot_slot_version">内核 version 喵</string>
+    <string name="boot_slot_cmdline">cmdline 喵</string>
+    <string name="boot_slot_bootconfig">bootconfig 喵</string>
+    <string name="boot_slot_use_kernel">把这些值叼进草稿喵</string>
+    <string name="boot_slot_draft_only">只会改还没保存的草稿喵，保存和应用还得你亲手按哦。</string>
+    <string name="boot_slot_evidence">槽位与当前运行槽位的线索喵</string>
+    <string name="boot_slot_details">镜像底细和槽位线索喵</string>
+    <string name="boot_slot_image_source">镜像出处和 SHA-256 喵</string>
+    <string name="boot_slot_avb">AVB 小尾巴 %1$s · 原始镜像大小 %2$d 喵</string>
+    <string name="boot_slot_signature_unchecked">AVB 签名还没验喵</string>
+    <string name="boot_slot_source_changed">把值叼进草稿后，所选镜像换掉了喵。保存前记得重新读一下。</string>
+    <string name="boot_slot_refresh">再翻一遍启动镜像喵</string>
+</resources>

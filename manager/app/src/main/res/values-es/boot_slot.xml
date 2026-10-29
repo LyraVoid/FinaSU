@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="boot_slot_source">Valores del núcleo en las imágenes de arranque</string>
+    <string name="boot_slot_source_hint">Se leen de las imágenes boot, init_boot o vendor_boot. Son valores originales de la imagen, no los valores actuales de uname o proc.</string>
+    <string name="boot_slot_original">Valores originales del núcleo</string>
+    <string name="boot_slot_loading">Leyendo imágenes de arranque…</string>
+    <string name="boot_slot_conflict">La información de las ranuras no coincide</string>
+    <string name="boot_slot_unavailable">Los valores de la imagen de arranque no están disponibles</string>
+    <string name="boot_slot_current">Ranura %1$s · actual</string>
+    <string name="boot_slot_name">Ranura %1$s</string>
+    <string name="boot_slot_missing">No existe</string>
+    <string name="boot_slot_unreadable">No se puede leer</string>
+    <string name="boot_slot_readable">Legible</string>
+    <string name="boot_slot_values_differ">Las ranuras contienen valores de núcleo distintos</string>
+    <string name="boot_slot_values_same">Las ranuras disponibles contienen los mismos valores de núcleo</string>
+    <string name="boot_slot_release">Versión del núcleo</string>
+    <string name="boot_slot_version">Compilación del núcleo</string>
+    <string name="boot_slot_cmdline">cmdline</string>
+    <string name="boot_slot_bootconfig">bootconfig</string>
+    <string name="boot_slot_use_kernel">Usar estos valores en el borrador</string>
+    <string name="boot_slot_draft_only">Solo cambia el borrador sin guardar. Guarda y aplica por separado.</string>
+    <string name="boot_slot_evidence">Pruebas de la ranura y de la ranura actual</string>
+    <string name="boot_slot_details">Detalles de la imagen y pruebas de ranuras</string>
+    <string name="boot_slot_image_source">Origen de la imagen y SHA-256</string>
+    <string name="boot_slot_avb">Pie AVB %1$s · tamaño de imagen original %2$d</string>
+    <string name="boot_slot_signature_unchecked">La firma AVB no se verificó</string>
+    <string name="boot_slot_source_changed">La imagen seleccionada cambió después de añadir este valor al borrador. Vuelve a leerla antes de guardar.</string>
+    <string name="boot_slot_refresh">Volver a leer las imágenes de arranque</string>
+</resources>

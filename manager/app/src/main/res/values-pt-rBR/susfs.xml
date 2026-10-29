@@ -81,7 +81,7 @@
     <string name="susfs_uname_hint">Use o padrão para manter cada campo real do kernel. Ambos os campos são obrigatórios. Estes são valores de destino salvos, não leituras dinâmicas do kernel.</string>
     <string name="susfs_uname_invalid">Cada campo deve ser não vazio, ter menos de 65 bytes UTF-8 e não conter caracteres de controle.</string>
     <string name="susfs_cmdline_hint">Apenas substituição salva. Nenhum valor dinâmico é lido aqui; remover a configuração não restaura uma falsificação ativa.</string>
-    <string name="susfs_text_invalid">Insira um texto não vazio com menos de 8192 bytes UTF-8, sem caracteres de controle.</string>
+    <string name="susfs_text_invalid">Insira um texto não vazio com menos de 8192 bytes UTF-8. Quebras de linha e tabulações são permitidas; outros caracteres de controle não.</string>
     <string name="susfs_path_rules">Caminhos ocultos</string>
     <string name="susfs_map_rules">Mapeamentos de memória ocultos</string>
     <string name="susfs_kstat_rules">Falsificação de metadados de arquivos</string>

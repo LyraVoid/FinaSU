@@ -81,7 +81,7 @@
     <string name="susfs_uname_hint">기본값을 사용하면 각 실제 커널 필드가 유지됩니다. 두 필드 모두 필요합니다. 이는 저장된 대상이며 실시간 커널 값이 아닙니다.</string>
     <string name="susfs_uname_invalid">각 필드는 비어 있지 않아야 하고, 65 UTF-8 바이트 미만이어야 하며, 제어 문자를 포함하지 않아야 합니다.</string>
     <string name="susfs_cmdline_hint">저장된 대체 값일 뿐입니다. 여기서 실시간 값은 읽지 않습니다. 구성을 제거해도 활성 위조가 복원되지 않습니다.</string>
-    <string name="susfs_text_invalid">8192 UTF-8 바이트 미만의 비어 있지 않은 텍스트를 제어 문자 없이 입력하세요.</string>
+    <string name="susfs_text_invalid">8192 UTF-8바이트 미만의 비어 있지 않은 텍스트를 입력하세요. 줄바꿈과 탭은 허용되지만 다른 제어 문자는 허용되지 않습니다.</string>
     <string name="susfs_path_rules">숨길 경로</string>
     <string name="susfs_map_rules">숨길 메모리 매핑</string>
     <string name="susfs_kstat_rules">파일 메타데이터 위조</string>
