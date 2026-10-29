@@ -129,6 +129,7 @@ Run the integration script at the root of the target kernel source, then build t
 ./kernel/setup.sh --dir /path/to/FinaSU
 scripts/config --enable KSU
 scripts/config --enable KPROBES
+scripts/config --enable KALLSYMS_ALL
 scripts/config --enable EXT4_FS
 scripts/config --enable HEADERS_INSTALL
 ```

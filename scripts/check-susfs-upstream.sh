@@ -176,6 +176,7 @@ awk '
 }
 ' "$tmp/ten.log" | LC_ALL=C sort >"$tmp/ten.observed"
 
+# runtime hunk 11 removes local init-rc, exec and input owners; this tree keeps them.
 cat >"$tmp/ten.expected" <<'EOF'
 core/init.c:3
 core/init.c:5
@@ -201,6 +202,7 @@ feature/sucompat.h:1
 hook/setuid_hook.c:1
 hook/setuid_hook.c:2
 hook/setuid_hook.h:reversed
+runtime/ksud_integration.c:11
 runtime/ksud_integration.c:5
 selinux/rules.c:1
 selinux/selinux.c:1

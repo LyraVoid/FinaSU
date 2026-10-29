@@ -167,6 +167,7 @@ Use the kernel source, branch, commit and configuration that correspond to the d
    ```sh
    scripts/config --enable KSU
    scripts/config --enable KPROBES
+   scripts/config --enable KALLSYMS_ALL
    scripts/config --enable EXT4_FS
    scripts/config --enable HEADERS_INSTALL
    ```
@@ -175,6 +176,7 @@ Use the kernel source, branch, commit and configuration that correspond to the d
    | --- | --- |
    | `CONFIG_KSU=y` | Build the driver into the kernel image |
    | `CONFIG_KPROBES=y` | Install the kprobe/tracepoint hooks the driver uses |
+   | `CONFIG_KALLSYMS_ALL=y` | Resolve data symbols such as `sys_call_table` at runtime |
    | `CONFIG_EXT4_FS=y` | Build dependency of the driver |
    | `CONFIG_HEADERS_INSTALL=y` | UAPI headers needed to build the preinit runner |
 

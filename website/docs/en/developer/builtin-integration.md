@@ -90,6 +90,7 @@ Start from the device's existing configuration instead of overwriting the vendor
 ```sh
 scripts/config --enable KSU
 scripts/config --enable KPROBES
+scripts/config --enable KALLSYMS_ALL
 scripts/config --enable EXT4_FS
 scripts/config --enable HEADERS_INSTALL
 ```

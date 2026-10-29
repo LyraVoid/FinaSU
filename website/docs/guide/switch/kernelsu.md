@@ -318,6 +318,7 @@ LKM 只替换 ramdisk 中的 `kernelsu.ko` 和启动包装，不替换 Linux 内
 ./kernel/setup.sh --dir /path/to/FinaSU
 scripts/config --enable KSU
 scripts/config --enable KPROBES
+scripts/config --enable KALLSYMS_ALL
 scripts/config --enable EXT4_FS
 scripts/config --enable HEADERS_INSTALL
 ```

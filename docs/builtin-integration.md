@@ -13,6 +13,7 @@ kprobe/tracepoint based and work in both build modes, so the same tree is used.
 | --- | --- |
 | `CONFIG_KSU=y` | Builds the driver into `vmlinux` instead of a module |
 | `CONFIG_KPROBES=y` | `Kconfig` depends on it; the hook manager needs it |
+| `CONFIG_KALLSYMS_ALL=y` | Required for runtime lookup of data symbols such as `sys_call_table` |
 | `CONFIG_EXT4_FS=y` | `Kconfig` depends on it |
 | `CONFIG_HEADERS_INSTALL=y` | Required to compile the preinit runner; without it preinit is disabled |
 | `CONFIG_THREAD_INFO_IN_TASK=y` | Only for `CONFIG_KSU_SUSFS` |
@@ -41,6 +42,7 @@ Then enable the options and build:
 ```sh
 scripts/config --enable KSU
 scripts/config --enable KPROBES
+scripts/config --enable KALLSYMS_ALL
 scripts/config --enable EXT4_FS
 scripts/config --enable HEADERS_INSTALL
 make ... KSU_REQUIRE_PREINIT=1

@@ -1,5 +1,11 @@
 kernelsu-objs := core/init.o
 
+ifeq ($(CONFIG_KSU),y)
+ifneq ($(CONFIG_KALLSYMS_ALL),y)
+$(error Built-in KernelSU requires CONFIG_KALLSYMS_ALL=y for runtime data symbols such as sys_call_table)
+endif
+endif
+
 kernelsu-objs += feature/kernel_umount.o
 kernelsu-objs += feature/module_blacklist.o
 kernelsu-objs += feature/netisolate.o

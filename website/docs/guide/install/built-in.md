@@ -129,6 +129,7 @@ SUSFS 的内核实现不在 FinaSU 仓库中。只应用与目标内核版本匹
 ./kernel/setup.sh --dir /path/to/FinaSU
 scripts/config --enable KSU
 scripts/config --enable KPROBES
+scripts/config --enable KALLSYMS_ALL
 scripts/config --enable EXT4_FS
 scripts/config --enable HEADERS_INSTALL
 ```

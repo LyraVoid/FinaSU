@@ -242,6 +242,7 @@ LKM 模式下，驱动以 `kernelsu.ko` 的形式放在启动镜像的 ramdisk �
 ./kernel/setup.sh --dir /path/to/FinaSU
 scripts/config --enable KSU
 scripts/config --enable KPROBES
+scripts/config --enable KALLSYMS_ALL
 scripts/config --enable EXT4_FS
 scripts/config --enable HEADERS_INSTALL
 ```

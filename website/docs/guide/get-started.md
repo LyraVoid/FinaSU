@@ -167,6 +167,7 @@ LKM 模式下，当管理器自带的内置驱动与当前运行版本不一致�
    ```sh
    scripts/config --enable KSU
    scripts/config --enable KPROBES
+   scripts/config --enable KALLSYMS_ALL
    scripts/config --enable EXT4_FS
    scripts/config --enable HEADERS_INSTALL
    ```
@@ -175,6 +176,7 @@ LKM 模式下，当管理器自带的内置驱动与当前运行版本不一致�
    | --- | --- |
    | `CONFIG_KSU=y` | 将驱动编入内核镜像 |
    | `CONFIG_KPROBES=y` | 安装驱动使用的 kprobe/tracepoint 钩子 |
+   | `CONFIG_KALLSYMS_ALL=y` | 运行期解析 `sys_call_table` 等数据符号 |
    | `CONFIG_EXT4_FS=y` | 驱动构建依赖 |
    | `CONFIG_HEADERS_INSTALL=y` | 构建 preinit 运行器所需的 UAPI 头文件 |
 
