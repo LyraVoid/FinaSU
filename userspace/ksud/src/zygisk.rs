@@ -847,7 +847,14 @@ fn is_provider(id: &str) -> bool {
     // Zygisk Next, NeoZygisk and HSSkyBoy/NyaZygisk share the module ID zygisksu.
     matches!(
         id,
-        "zygisksu" | "zygisknext" | "rezygisk" | "neozygisk" | "shirokozygisk" | "onyxzygisk"
+        "zygisksu"
+            | "zygisknext"
+            | "rezygisk"
+            | "neozygisk"
+            | "shirokozygisk"
+            | "onyxzygisk"
+            | "yukizygisk"
+            | "brezygisk"
     )
 }
 
@@ -1433,6 +1440,8 @@ mod tests {
             "neozygisk",
             "shirokozygisk",
             "onyxzygisk",
+            "yukizygisk",
+            "brezygisk",
         ] {
             assert!(is_provider(id));
         }

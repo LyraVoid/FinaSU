@@ -5,9 +5,14 @@ contributor notices are retained; this directory does not contain Zygisk Next.
 
 External provider recognition uses module IDs, not display names. Zygisk Next,
 NeoZygisk and NyaZygisk share `zygisksu`; ReZygisk uses `rezygisk`, OnyxZygisk
-uses `onyxzygisk`. NyaZygisk's ID is declared in
-https://github.com/HSSkyBoy/NyaZygisk/blob/master/build.gradle.kts.
-No NyaZygisk code is imported by this integration.
+uses `onyxzygisk`, and YukiZygisk uses
+`yukizygisk` ([module.prop](https://github.com/Rouyashiki/YukiZygisk/blob/main/module/module.prop)).
+BreZygisk builds under ReZygisk's `rezygisk` ID and also recognises its legacy
+`brezygisk` module directory
+([customize.sh](https://github.com/rrr333nnn333/BreZygisk/blob/main/module/src/customize.sh)).
+NyaZygisk's ID is declared in
+https://github.com/HSSkyBoy/NyaZygisk/blob/master/build.gradle.kts. No NyaZygisk
+code is imported by this integration.
 
 ## Pinned sources
 
@@ -110,8 +115,9 @@ not change provider selection or launch injection.
 
 Provider recognition drives the display and the built-in engine's boot
 step-aside: the Manager names a known external implementation (`zygisksu`,
-`zygisknext`, `rezygisk`, `neozygisk`, `shirokozygisk`, `onyxzygisk`) in the
-home row and the FolkZygisk settings summary, and `post_fs_data` lets it win.
+`zygisknext`, `rezygisk`, `neozygisk`, `shirokozygisk`, `onyxzygisk`,
+`yukizygisk`, `brezygisk`) in the home row and the FolkZygisk settings summary,
+and `post_fs_data` lets it win.
 Recognition never blocks installation, activation or uninstallation of any
 module. Module operations run the same commands as upstream KernelSU and take no
 Zygisk lock, so a module archive installs whether or not it registers the Zygisk

@@ -56,6 +56,8 @@ private val ZygiskProviderIds = setOf(
     "neozygisk",
     "shirokozygisk",
     "onyxzygisk",
+    "yukizygisk",
+    "brezygisk",
 )
 
 /** Whether [id] provides the Zygisk runtime rather than using it. */

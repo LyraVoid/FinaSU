@@ -81,6 +81,8 @@ class ModuleSortTest {
         assertTrue(isZygiskProvider("NeoZygisk"))
         assertTrue(isZygiskProvider("shirokozygisk"))
         assertTrue(isZygiskProvider("onyxzygisk"))
+        assertTrue(isZygiskProvider("yukizygisk"))
+        assertTrue(isZygiskProvider("brezygisk"))
         assertFalse(isZygiskProvider("zygisk_lsposed"))
         assertFalse(isZygiskProvider("zygisk-module-xfingerprint-pay-wechat"))
     }
