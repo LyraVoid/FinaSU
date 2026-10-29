@@ -130,6 +130,7 @@ import me.weishu.kernelsu.ui.navigation3.rememberNavContainerTransformDecorator
 import me.weishu.kernelsu.ui.navigation3.rememberNavOriginState
 import me.weishu.kernelsu.ui.navigation3.rememberNavigator
 import me.weishu.kernelsu.ui.navigation3.trackNavPointer
+import me.weishu.kernelsu.ui.navigation3.wallpaperPageFor
 import me.weishu.kernelsu.ui.screen.about.AboutScreen
 import me.weishu.kernelsu.ui.screen.appprofile.AppProfileScreen
 import me.weishu.kernelsu.ui.screen.colorpalette.ColorPaletteScreen
@@ -282,6 +283,7 @@ open class MainActivity : FragmentActivity() {
 
             val capability by CapabilityRepository.state.collectAsStateWithLifecycle()
             val authenticationSession = rememberAuthenticationSession(this@MainActivity, ksuApp.securityRepository)
+            val wallpaperPage = wallpaperPageFor(navigator.backStack, selectedMainPage)
             // Deterministic entry for verification: am start ... --es route sui_permissions
             val requestedRoute = intent.getStringExtra("route")
             val fakeRequest = intent.getStringExtra("fake_request")
@@ -309,7 +311,7 @@ open class MainActivity : FragmentActivity() {
                     url = uiState.supportLinksCustomUrl,
                 ),
                 LocalLayoutVariant provides uiState.layoutVariant,
-                LocalWallpaperPage provides selectedMainPage,
+                LocalWallpaperPage provides wallpaperPage,
                 LocalCapabilityState provides capability,
                 LocalAppAuthenticator provides authenticationSession.authenticator,
             ) {
