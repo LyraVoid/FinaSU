@@ -59,6 +59,8 @@
     <string name="susfs_release">Release</string>
     <string name="susfs_version">Version</string>
     <string name="susfs_ownership">Independent FinaSU configuration. Does not install SUSFS or modify ksu_susfs / third-party settings.</string>
+    <string name="susfs_ownership_unconfirmed">Ownership is unconfirmed. Other root processes may also change SUSFS settings or rules.</string>
+    <string name="susfs_config_unavailable">Saved configuration unavailable</string>
     <string name="susfs_unsupported">Not supported by the detected capability set</string>
     <string name="susfs_tab_paths">Paths</string>
     <string name="susfs_tab_spoof">Spoofing</string>

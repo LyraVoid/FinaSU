@@ -59,6 +59,8 @@
     <string name="susfs_release">Release</string>
     <string name="susfs_version">Version</string>
     <string name="susfs_ownership">使用独立 FinaSU 配置，不安装 SUSFS，不修改 ksu_susfs 或第三方设置。</string>
+    <string name="susfs_ownership_unconfirmed">管理所有权未确认；其他 root 进程也可能修改 SUSFS 设置或规则。</string>
+    <string name="susfs_config_unavailable">无法读取已保存的配置</string>
     <string name="susfs_unsupported">检测到的能力集不支持此操作</string>
     <string name="susfs_tab_paths">路径</string>
     <string name="susfs_tab_spoof">伪装</string>

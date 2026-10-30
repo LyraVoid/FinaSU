@@ -317,8 +317,9 @@ private fun SusfsOverview(state: SusfsUiState, config: JSONObject?, writable: Bo
             leadingContent = { Icon(Icons.Rounded.VisibilityOff, null) }) }
         item { SegmentedListItem(headlineContent = { Text(susfsManagementLabel(status.management)) },
             supportingContent = { Text(stringResource(susfsManagementHint(status))) }) }
-        item { SegmentedListItem(headlineContent = { Text(stringResource(R.string.susfs_saved_counts,
-            config?.optJSONArray("rules")?.length() ?: 0)) }, supportingContent = { Text(stringResource(R.string.susfs_ownership)) }) }
+        item { SegmentedListItem(headlineContent = { Text(if (config == null) stringResource(R.string.susfs_config_unavailable)
+            else stringResource(R.string.susfs_saved_counts, config.getJSONArray("rules").length())) },
+            supportingContent = { Text(stringResource(R.string.susfs_ownership_unconfirmed)) }) }
         item { SegmentedSwitchItem(title = stringResource(R.string.susfs_automatic),
             summary = stringResource(R.string.susfs_automatic_hint), checked = status.automatic, enabled = writable,
             onCheckedChange = { value -> vm.change { it.put("automatic", value) } }) }
