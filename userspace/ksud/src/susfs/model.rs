@@ -75,20 +75,30 @@ pub struct StaticKstat {
 
 #[allow(dead_code)]
 impl StaticKstat {
+    pub fn flags(&self) -> i32 {
+        [
+            self.ino.is_some(),
+            self.dev.is_some(),
+            self.nlink.is_some(),
+            self.size.is_some(),
+            self.atime_sec.is_some(),
+            self.atime_nsec.is_some(),
+            self.mtime_sec.is_some(),
+            self.mtime_nsec.is_some(),
+            self.ctime_sec.is_some(),
+            self.ctime_nsec.is_some(),
+            self.blocks.is_some(),
+            self.blksize.is_some(),
+        ]
+        .into_iter()
+        .enumerate()
+        .fold(0, |flags, (bit, present)| {
+            flags | (i32::from(present) << bit)
+        })
+    }
+
     pub fn validate(&self) -> Result<()> {
-        if self.ino.is_none()
-            && self.dev.is_none()
-            && self.nlink.is_none()
-            && self.size.is_none()
-            && self.atime_sec.is_none()
-            && self.atime_nsec.is_none()
-            && self.mtime_sec.is_none()
-            && self.mtime_nsec.is_none()
-            && self.ctime_sec.is_none()
-            && self.ctime_nsec.is_none()
-            && self.blocks.is_none()
-            && self.blksize.is_none()
-        {
+        if self.flags() == 0 {
             bail!("Static kstat requires at least one field");
         }
         if [self.size, self.blocks, self.blksize]
@@ -228,6 +238,7 @@ mod tests {
         assert!(fields.validate().is_ok());
         assert_eq!(fields.size, Some(0));
         assert_eq!(fields.ino, None);
+        assert_eq!(fields.flags(), 0x108);
         fields.ctime_nsec = Some(999_999_999);
         assert!(fields.validate().is_ok());
         fields.ctime_nsec = Some(1_000_000_000);
@@ -237,6 +248,31 @@ mod tests {
         assert!(fields.validate().is_err());
         assert!(serde_json::from_str::<StaticKstat>(r#"{"nlink":4294967296}"#).is_err());
         assert!(serde_json::from_str::<StaticKstat>(r#"{"unknown":1}"#).is_err());
+    }
+
+    #[test]
+    fn static_kstat_each_field_has_its_own_flag() {
+        for (bit, name) in [
+            "ino",
+            "dev",
+            "nlink",
+            "size",
+            "atime_sec",
+            "atime_nsec",
+            "mtime_sec",
+            "mtime_nsec",
+            "ctime_sec",
+            "ctime_nsec",
+            "blocks",
+            "blksize",
+        ]
+        .into_iter()
+        .enumerate()
+        {
+            let fields: StaticKstat = serde_json::from_value(serde_json::json!({name: 0})).unwrap();
+            assert!(fields.validate().is_ok());
+            assert_eq!(fields.flags(), 1 << bit);
+        }
     }
     #[test]
     fn default_is_opt_in() {
