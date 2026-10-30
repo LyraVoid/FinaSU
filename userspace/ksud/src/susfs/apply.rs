@@ -278,11 +278,11 @@ pub fn apply(config: &Config, detection: &Detection, phase: Stage) -> Result<Rep
         bail!("SUSFS is unavailable or protocol is read-only");
     }
     #[cfg(target_os = "android")]
-    crate::utils::switch_mnt_ns(1)?;
+    crate::utils::switch_mnt_ns(1).context("Enter PID 1 mount namespace")?;
     apply_with_state(
         config,
         phase,
-        store::read_state()?,
+        store::read_state().context("Read SUSFS state")?,
         store::write_state,
         |key, value, state, report| {
             if key.starts_with("kstat:") {
@@ -399,7 +399,7 @@ fn apply_with_state(
             }
         }
         // Persist after each successful mutation: replay does not silently duplicate rules.
-        persist(&state)?;
+        persist(&state).context("Persist SUSFS operation result")?;
     }
     report.failures.clone_from(&state.failures);
     report.skipped = state
@@ -423,7 +423,7 @@ fn apply_with_state(
     } else {
         store::summarize(&state, &desired, false)
     };
-    persist(&state)?;
+    persist(&state).context("Persist SUSFS summary")?;
     Ok(report)
 }
 

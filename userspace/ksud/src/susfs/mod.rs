@@ -401,13 +401,15 @@ pub fn boot(stage: &str) {
         // Keep the shared provider state stable for this transaction. UTS
         // commits take the same lock, so a separate UTS config lock would only
         // duplicate serialization and couple SUSFS to UTS file permissions.
-        let _lock = store::lock()?;
-        let config = store::read_config()?;
+        let _lock = store::lock().context("Lock SUSFS state")?;
+        let config = store::read_config().context("Read SUSFS configuration")?;
         if !config.automatic || safe_mode() {
             return Ok(());
         }
-        let uts_active = uts_arbitration_active(&config, uts_provider_active)?;
-        let report = apply_with_uts_arbitration(&config, &detect(), phase, uts_active)?;
+        let uts_active =
+            uts_arbitration_active(&config, uts_provider_active).context("Check UTS provider")?;
+        let report = apply_with_uts_arbitration(&config, &detect(), phase, uts_active)
+            .context("Apply SUSFS operations")?;
         log::info!("SUSFS {stage}: {}", serde_json::to_string(&report)?);
         Ok(())
     })();
