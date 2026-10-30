@@ -250,10 +250,10 @@ pub fn on_services() {
     if let Err(e) = crate::zygisk::services() {
         warn!("FolkZygisk health check failed: {e:#}");
     }
+    run_stage("service", ScriptWait::NoWait);
     if let Err(e) = crate::sui::services() {
         warn!("Sui health check failed: {e:#}");
     }
-    run_stage("service", ScriptWait::NoWait);
 }
 
 pub fn on_boot_completed() {
