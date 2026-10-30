@@ -20,6 +20,9 @@
 #include "hook/setuid_hook.h"
 #include "hook/syscall_hook.h"
 #include "hook/syscall_event_bridge.h"
+#ifdef __aarch64__
+#include "hook/init_module_filter.h"
+#endif
 #if defined(__riscv)
 #include "hook/riscv64/syscall_regs.h"
 #endif
@@ -163,6 +166,9 @@ void __init ksu_syscall_hook_manager_init(void)
     ksu_register_syscall_hook(__NR_execveat, ksu_hook_execveat);
     ksu_register_syscall_hook(__NR_newfstatat, ksu_hook_newfstatat);
     ksu_register_syscall_hook(__NR_faccessat, ksu_hook_faccessat);
+#ifdef __aarch64__
+    ksu_init_module_filter_init();
+#endif
 
 #ifdef CONFIG_HAVE_SYSCALL_TRACEPOINTS
     ret = register_trace_prio_sys_enter(ksu_sys_enter_handler, NULL, INT_MIN);
@@ -202,6 +208,9 @@ void __exit ksu_syscall_hook_manager_exit(void)
     ksu_unregister_syscall_hook(__NR_newfstatat);
     ksu_unregister_syscall_hook(__NR_faccessat);
 
+#ifdef __aarch64__
+    ksu_init_module_filter_exit();
+#endif
     ksu_syscall_hook_exit();
 
     ksu_sucompat_exit();

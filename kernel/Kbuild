@@ -19,6 +19,7 @@ kernelsu-objs += hook/syscall_event_bridge.o
 kernelsu-objs += hook/syscall_hook_manager.o
 kernelsu-objs += hook/tp_marker.o
 ifeq ($(CONFIG_ARM64),y)
+kernelsu-objs += hook/init_module_filter.o
 kernelsu-objs += hook/arm64/patch_memory.o
 kernelsu-objs += hook/arm64/syscall_hook.o
 else ifeq ($(CONFIG_X86_64),y)
@@ -227,13 +228,11 @@ $(info -- KernelSU Manager signature size2: $(KSU_EXPECTED_SIZE2))
 $(info -- KernelSU Manager signature hash2: $(KSU_EXPECTED_HASH2))
 endif
 
-# Trusted FinaSU manager slot: prefer the release slot2 when present, else slot1.
+# Trusted FinaSU manager slot: prefer slot2 when present, else slot1.
 ifndef FINASU_TRUSTED_SIZE
-ifeq ($(KSU_SECOND_SIGNATURE_RELEASE),1)
 ifdef KSU_EXPECTED_SIZE2
 FINASU_TRUSTED_SIZE := $(KSU_EXPECTED_SIZE2)
 FINASU_TRUSTED_HASH := $(KSU_EXPECTED_HASH2)
-endif
 endif
 endif
 ifndef FINASU_TRUSTED_SIZE
