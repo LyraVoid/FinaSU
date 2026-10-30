@@ -55,6 +55,57 @@ pub struct Lkm {
     pub mount_prefixes: Vec<String>,
 }
 
+#[allow(dead_code)]
+#[derive(Debug, Default, Clone, Serialize, Deserialize)]
+#[serde(default, deny_unknown_fields)]
+pub struct StaticKstat {
+    pub ino: Option<u64>,
+    pub dev: Option<u64>,
+    pub nlink: Option<u32>,
+    pub size: Option<i64>,
+    pub atime_sec: Option<i64>,
+    pub atime_nsec: Option<u32>,
+    pub mtime_sec: Option<i64>,
+    pub mtime_nsec: Option<u32>,
+    pub ctime_sec: Option<i64>,
+    pub ctime_nsec: Option<u32>,
+    pub blocks: Option<i64>,
+    pub blksize: Option<i64>,
+}
+
+#[allow(dead_code)]
+impl StaticKstat {
+    pub fn validate(&self) -> Result<()> {
+        if self.ino.is_none()
+            && self.dev.is_none()
+            && self.nlink.is_none()
+            && self.size.is_none()
+            && self.atime_sec.is_none()
+            && self.atime_nsec.is_none()
+            && self.mtime_sec.is_none()
+            && self.mtime_nsec.is_none()
+            && self.ctime_sec.is_none()
+            && self.ctime_nsec.is_none()
+            && self.blocks.is_none()
+            && self.blksize.is_none()
+        {
+            bail!("Static kstat requires at least one field");
+        }
+        if [self.size, self.blocks, self.blksize]
+            .into_iter()
+            .flatten()
+            .any(|value| value < 0)
+            || [self.atime_nsec, self.mtime_nsec, self.ctime_nsec]
+                .into_iter()
+                .flatten()
+                .any(|value| value >= 1_000_000_000)
+        {
+            bail!("Static kstat field out of range");
+        }
+        Ok(())
+    }
+}
+
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(tag = "kind", rename_all = "snake_case", deny_unknown_fields)]
 pub enum Rule {
@@ -169,6 +220,24 @@ impl Config {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn static_kstat_validates_optional_fields_without_conflating_zero_and_absent() {
+        assert!(StaticKstat::default().validate().is_err());
+        let mut fields: StaticKstat = serde_json::from_str(r#"{"size":0,"ctime_sec":-1}"#).unwrap();
+        assert!(fields.validate().is_ok());
+        assert_eq!(fields.size, Some(0));
+        assert_eq!(fields.ino, None);
+        fields.ctime_nsec = Some(999_999_999);
+        assert!(fields.validate().is_ok());
+        fields.ctime_nsec = Some(1_000_000_000);
+        assert!(fields.validate().is_err());
+        fields.ctime_nsec = None;
+        fields.size = Some(-1);
+        assert!(fields.validate().is_err());
+        assert!(serde_json::from_str::<StaticKstat>(r#"{"nlink":4294967296}"#).is_err());
+        assert!(serde_json::from_str::<StaticKstat>(r#"{"unknown":1}"#).is_err());
+    }
     #[test]
     fn default_is_opt_in() {
         let config = Config::default();
