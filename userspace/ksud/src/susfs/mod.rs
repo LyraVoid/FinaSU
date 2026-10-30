@@ -391,7 +391,7 @@ pub fn run(command: Command) -> Result<()> {
 }
 
 pub fn boot(stage: &str) {
-    let stage = match stage {
+    let phase = match stage {
         "pre-mount" => apply::Stage::PreMount,
         "post-mount" => apply::Stage::PostMount,
         "service" | "boot-completed" => apply::Stage::Deferred,
@@ -407,15 +407,15 @@ pub fn boot(stage: &str) {
             return Ok(());
         }
         let uts_active = uts_arbitration_active(&config, uts_provider_active)?;
-        let report = apply_with_uts_arbitration(&config, &detect(), stage, uts_active)?;
-        log::info!("SUSFS: {}", serde_json::to_string(&report)?);
+        let report = apply_with_uts_arbitration(&config, &detect(), phase, uts_active)?;
+        log::info!("SUSFS {stage}: {}", serde_json::to_string(&report)?);
         Ok(())
     })();
     if let Err(error) = result {
-        log::warn!("SUSFS boot apply: {error:#}");
+        log::warn!("SUSFS {stage} apply: {error:#}");
     }
     #[cfg(target_os = "android")]
-    if stage == apply::Stage::Deferred {
+    if phase == apply::Stage::Deferred {
         crate::uts_view::resume_after_susfs();
     }
 }
