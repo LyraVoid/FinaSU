@@ -111,6 +111,42 @@ pub fn static_kstat_profile(detection: &super::Detection) -> bool {
             .is_ok_and(|note| verified_lkm_note(&note))
 }
 
+#[allow(dead_code)]
+#[allow(clippy::useless_conversion)]
+pub fn static_kstat_payload(
+    path: &str,
+    fields: &super::model::StaticKstat,
+    metadata: &std::fs::Metadata,
+) -> Result<Kstat> {
+    use std::os::unix::fs::MetadataExt;
+    fields.validate()?;
+    if fields.flags() & !0x108 != 0 {
+        bail!("Static kstat field is not verified for this provider");
+    }
+    Ok(Kstat {
+        is_static: 1,
+        target_ino: metadata.ino().try_into()?,
+        path: bytes(path)?,
+        ino: metadata.ino().try_into()?,
+        dev: metadata.dev().try_into()?,
+        nlink: metadata.nlink().try_into()?,
+        size: fields.size.unwrap_or(metadata.size().try_into()?),
+        atime_sec: metadata.atime().try_into()?,
+        atime_nsec: metadata.atime_nsec().try_into()?,
+        mtime_sec: metadata.mtime().try_into()?,
+        mtime_nsec: metadata.mtime_nsec().try_into()?,
+        ctime_sec: fields
+            .ctime_sec
+            .unwrap_or_else(|| metadata.ctime())
+            .try_into()?,
+        ctime_nsec: metadata.ctime_nsec().try_into()?,
+        blocks: metadata.blocks().try_into()?,
+        blksize: metadata.blksize().try_into()?,
+        flags: fields.flags(),
+        ..Kstat::default()
+    })
+}
+
 pub fn call<T>(command: u32, payload: &mut T) {
     // Invalid reboot magics are rejected by stock kernels; never use real reboot magics.
     // Payload remains owned and live until the syscall/task_work has returned.
@@ -160,6 +196,27 @@ mod tests {
         note[35] ^= 1;
         assert!(!verified_lkm_note(&note));
         assert!(!verified_lkm_note(&note[..20]));
+    }
+
+    #[test]
+    fn static_payload_only_accepts_verified_fields() {
+        let file = tempfile::NamedTempFile::new().unwrap();
+        let metadata = file.as_file().metadata().unwrap();
+        let fields = super::super::model::StaticKstat {
+            size: Some(0),
+            ctime_sec: Some(-1),
+            ..Default::default()
+        };
+        let payload = static_kstat_payload("/data/test", &fields, &metadata).unwrap();
+        assert_eq!(payload.size, 0);
+        assert_eq!(payload.ctime_sec, -1);
+        assert_eq!(payload.flags, 0x108);
+        assert_eq!(payload.err, 126);
+        let unsupported = super::super::model::StaticKstat {
+            ino: Some(1),
+            ..Default::default()
+        };
+        assert!(static_kstat_payload("/data/test", &unsupported, &metadata).is_err());
     }
     #[test]
     fn arm64_layouts() {
