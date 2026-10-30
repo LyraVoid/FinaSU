@@ -39,7 +39,7 @@ class SettingsViewModel(
     }
 
     fun refresh() {
-        if (_uiState.value.isFolkZygiskWriting) return
+        if (_uiState.value.isFolkZygiskWriting || _uiState.value.isKernelUmountWriting) return
         val generation = ++refreshGeneration
         _uiState.update { it.copy(isFolkMountLoading = true, isFolkZygiskLoading = true) }
         viewModelScope.launch {
@@ -78,7 +78,8 @@ class SettingsViewModel(
             }
 
             val kernelUmountStatus = repo.getKernelUmountStatus()
-            val isKernelUmountEnabled = repo.isKernelUmountEnabled()
+            val kernelUmountValue = repo.getKernelUmountValue()
+            val kernelUmountPersistValue = repo.getKernelUmountPersistValue()
             val selinuxHideStatus = repo.getSelinuxHideStatus()
             val isSelinuxHideEnabled = repo.isSelinuxHideEnabled()
             val mountViewFilterStatus = repo.getMountViewFilterStatus()
@@ -165,7 +166,8 @@ class SettingsViewModel(
                     shellSuAdbOnlyStatus = shellSuAdbOnlyStatus,
                     isShellSuAdbOnlyEnabled = isShellSuAdbOnlyEnabled,
                     kernelUmountStatus = kernelUmountStatus,
-                    isKernelUmountEnabled = isKernelUmountEnabled,
+                    kernelUmountValue = kernelUmountValue,
+                    kernelUmountPersistValue = kernelUmountPersistValue,
                     selinuxHideStatus = selinuxHideStatus,
                     isSelinuxHideEnabled = isSelinuxHideEnabled,
                     mountViewFilterStatus = mountViewFilterStatus,
@@ -474,11 +476,34 @@ class SettingsViewModel(
     }
 
     fun setKernelUmountEnabled(enabled: Boolean) {
+        if (_uiState.value.isKernelUmountWriting) return
+        ++refreshGeneration
+        _uiState.update { it.copy(isKernelUmountWriting = true) }
         viewModelScope.launch(Dispatchers.IO) {
-            if (repo.setKernelUmountEnabled(enabled)) {
-                repo.execKsudFeatureSave()
-                _uiState.update { it.copy(isKernelUmountEnabled = enabled) }
+            val changed = repo.setKernelUmountEnabled(enabled)
+            val saved = changed && repo.execKsudFeatureSave()
+            val status = repo.getKernelUmountStatus()
+            val value = repo.getKernelUmountValue()
+            val persistValue = repo.getKernelUmountPersistValue()
+            _uiState.update {
+                it.copy(
+                    kernelUmountStatus = status,
+                    kernelUmountValue = value,
+                    kernelUmountPersistValue = persistValue,
+                    isKernelUmountWriting = false,
+                )
             }
+            if (!changed || !saved) {
+                withContext(Dispatchers.Main) {
+                    Toast.makeText(
+                        ksuApp,
+                        if (!changed) R.string.settings_kernel_umount_write_failed
+                        else R.string.settings_kernel_umount_save_failed,
+                        Toast.LENGTH_LONG,
+                    ).show()
+                }
+            }
+            withContext(Dispatchers.Main) { refresh() }
         }
     }
 

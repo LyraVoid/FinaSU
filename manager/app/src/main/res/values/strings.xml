@@ -284,6 +284,13 @@
     <string name="settings_sucompat_summary">Allow Root access via /system/bin/su, in new processes</string>
     <string name="settings_kernel_umount">Module unmounting (master switch)</string>
     <string name="settings_kernel_umount_summary">Allow apps to remove module mounts at startup. When off, App Profile and custom mountpoint rules have no effect</string>
+    <string name="settings_kernel_umount_unknown">Unable to confirm feature availability</string>
+    <string name="settings_kernel_umount_values">Current: %1$s · Saved for reboot: %2$s</string>
+    <string name="settings_kernel_umount_on">On</string>
+    <string name="settings_kernel_umount_off">Off</string>
+    <string name="settings_kernel_umount_value_unknown">Unknown or not saved</string>
+    <string name="settings_kernel_umount_write_failed">Could not change module unmounting</string>
+    <string name="settings_kernel_umount_save_failed">Changed, but could not save for reboot</string>
     <string name="umount_paths_title">Custom unmount mountpoints</string>
     <string name="umount_paths_summary">Manage mountpoints that selected apps should not see at startup</string>
     <string name="umount_paths_intro_title">Changes the files the app actually sees</string>

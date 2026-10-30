@@ -605,14 +605,29 @@ fun FunctionCategoryContent(uiState: SettingsUiState, actions: SettingsScreenAct
                         "forced" -> stringResource(R.string.feature_status_forced_summary)
                         "unsupported" -> stringResource(id = R.string.feature_status_unsupported_summary)
                         "managed" -> stringResource(id = R.string.feature_status_managed_summary)
-                        else -> stringResource(id = R.string.settings_kernel_umount_summary)
+                        "supported" -> stringResource(id = R.string.settings_kernel_umount_summary)
+                        else -> stringResource(id = R.string.settings_kernel_umount_unknown)
+                    }
+                    val runtime = when (uiState.kernelUmountValue) {
+                        0L -> stringResource(R.string.settings_kernel_umount_off)
+                        null -> stringResource(R.string.settings_kernel_umount_value_unknown)
+                        else -> stringResource(R.string.settings_kernel_umount_on)
+                    }
+                    val persisted = when (uiState.kernelUmountPersistValue) {
+                        0L -> stringResource(R.string.settings_kernel_umount_off)
+                        null -> stringResource(R.string.settings_kernel_umount_value_unknown)
+                        else -> stringResource(R.string.settings_kernel_umount_on)
                     }
                     SegmentedSwitchItem(
                         icon = Icons.Filled.LayersClear,
                         title = stringResource(id = R.string.settings_kernel_umount),
-                        summary = umountSummary,
-                        enabled = uiState.kernelUmountStatus == "supported",
-                        checked = uiState.isKernelUmountEnabled,
+                        summary = "$umountSummary\n${stringResource(R.string.settings_kernel_umount_values, runtime, persisted)}",
+                        enabled = canChangeKernelUmount(
+                            uiState.kernelUmountStatus,
+                            uiState.kernelUmountValue,
+                            uiState.isKernelUmountWriting,
+                        ),
+                        checked = uiState.kernelUmountValue?.let { it != 0L } == true,
                         onCheckedChange = actions.onSetKernelUmountEnabled
                     )
                 },

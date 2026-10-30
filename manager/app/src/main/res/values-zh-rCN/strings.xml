@@ -270,6 +270,13 @@
     <string name="settings_sucompat_summary">允许通过 /system/bin/su 获取 Root 权限</string>
     <string name="settings_kernel_umount">卸载模块（总开关）</string>
     <string name="settings_kernel_umount_summary">允许 App 在启动时移除模块挂载；关闭后，App Profile 和自定义挂载点规则都不会生效</string>
+    <string name="settings_kernel_umount_unknown">无法确认功能是否可用</string>
+    <string name="settings_kernel_umount_values">当前：%1$s · 重启后：%2$s</string>
+    <string name="settings_kernel_umount_on">开启</string>
+    <string name="settings_kernel_umount_off">关闭</string>
+    <string name="settings_kernel_umount_value_unknown">未知或未保存</string>
+    <string name="settings_kernel_umount_write_failed">无法修改卸载模块总开关</string>
+    <string name="settings_kernel_umount_save_failed">已修改，但无法保存供重启后使用</string>
     <string name="settings_finasu_hide">FinaSU Hide</string>
     <string name="umount_paths_title">自定义卸载挂载点</string>
     <string name="umount_paths_summary">管理指定 App 启动时看不到的挂载点</string>

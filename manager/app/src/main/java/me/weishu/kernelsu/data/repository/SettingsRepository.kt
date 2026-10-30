@@ -79,8 +79,9 @@ interface SettingsRepository {
     fun getSuCompatModePref(): Int
 
     suspend fun getKernelUmountStatus(): String
-    fun isKernelUmountEnabled(): Boolean
-    fun setKernelUmountEnabled(enabled: Boolean): Boolean
+    suspend fun getKernelUmountValue(): Long?
+    suspend fun getKernelUmountPersistValue(): Long?
+    suspend fun setKernelUmountEnabled(enabled: Boolean): Boolean
 
     suspend fun getSelinuxHideStatus(): String
     fun isSelinuxHideEnabled(): Boolean

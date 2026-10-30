@@ -329,9 +329,12 @@ class SettingsRepositoryImpl : SettingsRepository {
 
     override suspend fun getKernelUmountStatus(): String = getFeatureStatus("kernel_umount")
 
-    override fun isKernelUmountEnabled(): Boolean = Natives.isKernelUmountEnabled()
+    override suspend fun getKernelUmountValue(): Long? = getFeatureValue("kernel_umount")
 
-    override fun setKernelUmountEnabled(enabled: Boolean): Boolean = Natives.setKernelUmountEnabled(enabled)
+    override suspend fun getKernelUmountPersistValue(): Long? = getFeaturePersistValue("kernel_umount")
+
+    override suspend fun setKernelUmountEnabled(enabled: Boolean): Boolean =
+        execKsudResult("feature set kernel_umount ${if (enabled) 1 else 0}").isSuccess
 
     override suspend fun getSelinuxHideStatus(): String = getFeatureStatus("selinux_hide")
 

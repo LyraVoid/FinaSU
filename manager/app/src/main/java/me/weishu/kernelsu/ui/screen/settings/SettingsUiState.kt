@@ -49,7 +49,9 @@ data class SettingsUiState(
 
     // Kernel Umount
     val kernelUmountStatus: String = "",
-    val isKernelUmountEnabled: Boolean = false,
+    val kernelUmountValue: Long? = null,
+    val kernelUmountPersistValue: Long? = null,
+    val isKernelUmountWriting: Boolean = false,
 
     // SELinux Hide
     val selinuxHideStatus: String = "",
@@ -117,6 +119,9 @@ data class SettingsUiState(
     val allowAnyDynamicManager: Boolean = false,
     val isDynamicManagerAvailable: Boolean = true
 )
+
+internal fun canChangeKernelUmount(status: String, value: Long?, writing: Boolean): Boolean =
+    status == "supported" && value != null && !writing
 
 @Immutable
 data class SettingsScreenActions(
