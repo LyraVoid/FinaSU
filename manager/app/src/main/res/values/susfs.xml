@@ -2,6 +2,7 @@
 <resources>
     <string name="susfs_title">SUSFS</string>
     <string name="susfs_manage">Manage</string>
+    <string name="susfs_view_status">View status</string>
     <string name="susfs_overview">Overview</string>
     <string name="susfs_capabilities">Capabilities</string>
     <string name="susfs_settings">Basic settings</string>

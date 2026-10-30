@@ -2,6 +2,7 @@
 <resources>
     <string name="susfs_title">SUSFS</string>
     <string name="susfs_manage">管理</string>
+    <string name="susfs_view_status">查看状态</string>
     <string name="susfs_overview">概览</string>
     <string name="susfs_capabilities">能力</string>
     <string name="susfs_settings">基础设置</string>

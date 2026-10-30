@@ -222,11 +222,11 @@ internal fun InfoCard(
             if (susfs.detected && !display.hideSusfs) {
                 val interactionSource = remember { MutableInteractionSource() }
                 val haptic = LocalHapticFeedback.current
-                val management = me.weishu.kernelsu.ui.screen.susfsManagementLabel(susfs.management)
+                val provider = me.weishu.kernelsu.ui.screen.susfsProviderLabel(susfs)
                 InfoRow(
                     icon = Icons.Rounded.VisibilityOff,
                     label = stringResource(R.string.susfs_title),
-                    value = "${susfs.version} · ${susfs.implementation} · $management",
+                    value = provider,
                     modifier = Modifier
                         .folkPressScale(interactionSource)
                         .clickable(
@@ -239,7 +239,7 @@ internal fun InfoCard(
                         ),
                     trailingContent = {
                         Text(
-                            text = stringResource(R.string.susfs_manage),
+                            text = stringResource(if (susfs.writable) R.string.susfs_manage else R.string.susfs_view_status),
                             style = FolkType.Summary,
                             color = MaterialTheme.colorScheme.primary,
                         )
@@ -258,12 +258,12 @@ private fun SusfsHomeRow(status: me.weishu.kernelsu.data.susfs.SusfsStatus, onCl
         Column(Modifier.weight(1f)) {
             Text("SUSFS · ${status.version} · ${status.implementation}", style = FolkType.Summary,
                 color = overColor ?: MaterialTheme.colorScheme.onSurface)
-            Text(me.weishu.kernelsu.ui.screen.susfsManagementLabel(status.management), style = FolkType.Machine,
+            Text(me.weishu.kernelsu.ui.screen.susfsProviderLabel(status), style = FolkType.Machine,
                 color = overColor?.copy(alpha = 0.8f)
                     ?: LocalWallpaperSupportingColor.current
                     ?: MaterialTheme.colorScheme.onSurfaceVariant)
         }
-        Text(stringResource(R.string.susfs_manage), style = FolkType.Summary,
+        Text(stringResource(if (status.writable) R.string.susfs_manage else R.string.susfs_view_status), style = FolkType.Summary,
             color = overColor ?: MaterialTheme.colorScheme.primary)
     }
 }
