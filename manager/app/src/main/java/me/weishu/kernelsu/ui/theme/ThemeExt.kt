@@ -3,8 +3,10 @@ package me.weishu.kernelsu.ui.theme
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.spring
 import androidx.compose.material3.ColorScheme
+import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.dynamicDarkColorScheme
 import androidx.compose.material3.dynamicLightColorScheme
+import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
@@ -17,12 +19,14 @@ fun ColorScheme.amoledBackground(amoled: Boolean): ColorScheme =
     else copy(
         background = Color.Black,
         surface = Color.Black,
-        surfaceDim = Color.Black,
+        surfaceDim = Color(0xFF0D0D0D),
         surfaceContainerLowest = Color.Black,
-        surfaceContainerLow = Color.Black,
-        surfaceContainer = Color.Black,
-        surfaceContainerHigh = Color.Black,
-        surfaceContainerHighest = Color.Black,
+        surfaceContainerLow = Color(0xFF050505),
+        surfaceContainer = Color(0xFF0A0A0A),
+        surfaceVariant = Color(0xFF121212),
+        surfaceContainerHigh = Color(0xFF121212),
+        surfaceContainerHighest = Color(0xFF1A1A1A),
+        surfaceBright = Color(0xFF1F1F1F),
     )
 
 /**
@@ -34,12 +38,15 @@ fun ColorScheme.amoledBackground(amoled: Boolean): ColorScheme =
  * and destructive states must stay recognisable, so we keep the semantic error
  * role fixed whatever the wallpaper does.
  */
-fun ColorScheme.withSemanticError(isDark: Boolean): ColorScheme = copy(
-    error = if (isDark) Color(0xFFFFB4AB) else Color(0xFFBA1A1A),
-    onError = if (isDark) Color(0xFF690005) else Color(0xFFFFFFFF),
-    errorContainer = if (isDark) Color(0xFF93000A) else Color(0xFFFFDAD6),
-    onErrorContainer = if (isDark) Color(0xFFFFDAD6) else Color(0xFF410002),
-)
+fun ColorScheme.withSemanticError(isDark: Boolean): ColorScheme {
+    val semantic = if (isDark) darkColorScheme() else lightColorScheme()
+    return copy(
+        error = semantic.error,
+        onError = semantic.onError,
+        errorContainer = semantic.errorContainer,
+        onErrorContainer = semantic.onErrorContainer,
+    )
+}
 
 @Composable
 fun rememberKernelSUColorScheme(
@@ -69,7 +76,7 @@ fun rememberKernelSUColorScheme(
     return rememberDynamicColorScheme(
         seedColor = seed,
         isDark = isDark,
-        isAmoled = isAmoled,
+        isAmoled = false,
         style = paletteStyle,
         specVersion = colorSpec.effectiveFor(paletteStyle),
         contrastLevel = if (generationMode == "custom") contrastLevel else 0.0,
