@@ -47,7 +47,8 @@ class SusfsPresentationTest {
     @Test fun `import preview never implies complete daemon validation`() {
         val json = """{"schema":1,"automatic":true,"settings":{},"rules":[],"lkm":{"hidden_modules":[],"mount_prefixes":[]},"unknown":1}"""
         assertTrue(SusfsInputs.preview(json).getBoolean("automatic"))
-        assertThrows(IllegalArgumentException::class.java) { SusfsInputs.preview(json.replace("\"schema\":1", "\"schema\":2")) }
+        assertEquals(2, SusfsInputs.preview(json.replace("\"schema\":1", "\"schema\":2")).getInt("schema"))
+        assertThrows(IllegalArgumentException::class.java) { SusfsInputs.preview(json.replace("\"schema\":1", "\"schema\":3")) }
         assertThrows(IllegalArgumentException::class.java) { SusfsInputs.preview(" ".repeat(128 * 1024 + 1)) }
     }
 }

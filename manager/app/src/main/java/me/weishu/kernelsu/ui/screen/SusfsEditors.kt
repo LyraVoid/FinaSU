@@ -203,19 +203,22 @@ internal fun SusfsRuleSection(kind: String, config: JSONObject?, status: SusfsSt
     val hint = when (kind) { "path" -> R.string.susfs_path_hint; "map" -> R.string.susfs_map_hint
         "kstat" -> R.string.susfs_kstat_hint; else -> R.string.susfs_redirect_hint }
     val rules = config?.optJSONArray("rules") ?: JSONArray()
-    val entries = (0 until rules.length()).map { rules.getJSONObject(it) }.filter { it.getString("kind") == kind }
+    val entries = (0 until rules.length()).map { rules.getJSONObject(it) }.filter {
+        it.getString("kind") == kind || (kind == "kstat" && it.getString("kind") == "static_kstat")
+    }
     SegmentedColumn(title = stringResource(ruleTitle(kind))) {
         item { SegmentedListItem(enabled = writable && supported, onClick = { original = null; editing = true },
             headlineContent = { Text(stringResource(R.string.susfs_add_rule)) },
             supportingContent = { Text(susfsDisabledReason(status, supported) ?: stringResource(hint)) },
             leadingContent = { Icon(Icons.Rounded.Add, null) }) }
         entries.forEach { rule -> item(key = rule.getString("path")) {
-            SegmentedListItem(enabled = writable && supported, onClick = { original = rule.toString(); editing = true },
+            SegmentedListItem(enabled = writable && supported && rule.getString("kind") != "static_kstat", onClick = { original = rule.toString(); editing = true },
                 headlineContent = { Text(rule.getString("path")) },
                 supportingContent = { Text(when (kind) {
                     "path" -> stringResource(if (rule.optBoolean("looping")) R.string.susfs_loop else R.string.susfs_path_once)
                     "map" -> stringResource(R.string.susfs_map_hint)
-                    "kstat" -> stringResource(if (rule.optBoolean("full_clone")) R.string.susfs_clone else R.string.susfs_kstat_normal)
+                    "kstat" -> if (rule.getString("kind") == "static_kstat") stringResource(R.string.susfs_static_readonly)
+                        else stringResource(if (rule.optBoolean("full_clone")) R.string.susfs_clone else R.string.susfs_kstat_normal)
                     else -> "→ ${rule.getString("destination")}\n${susfsUidLabel(rule.optInt("uid_scheme"))}"
                 }) }, leadingContent = { Icon(when (kind) { "path" -> Icons.Rounded.FolderOff
                     "map" -> Icons.Rounded.Memory; "kstat" -> Icons.Rounded.DataObject; else -> Icons.AutoMirrored.Rounded.AltRoute }, null) },

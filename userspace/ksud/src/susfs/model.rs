@@ -55,7 +55,6 @@ pub struct Lkm {
     pub mount_prefixes: Vec<String>,
 }
 
-#[allow(dead_code)]
 #[derive(Debug, Default, Clone, Serialize, Deserialize)]
 #[serde(default, deny_unknown_fields)]
 pub struct StaticKstat {
@@ -73,7 +72,6 @@ pub struct StaticKstat {
     pub blksize: Option<i64>,
 }
 
-#[allow(dead_code)]
 impl StaticKstat {
     pub fn flags(&self) -> i32 {
         [
@@ -135,6 +133,10 @@ pub enum Rule {
         path: String,
         full_clone: bool,
     },
+    StaticKstat {
+        path: String,
+        fields: StaticKstat,
+    },
 }
 
 pub fn path(value: &str) -> Result<()> {
@@ -169,7 +171,7 @@ impl Config {
     }
 
     pub fn validate(&self) -> Result<()> {
-        if self.schema != 1
+        if !matches!(self.schema, 1 | 2)
             || self.rules.len() > 128
             || self.lkm.hidden_modules.len() > 16
             || self.lkm.mount_prefixes.len() > 8
@@ -189,6 +191,13 @@ impl Config {
                 Rule::Path { path, .. } => ("path", path),
                 Rule::Map { path } => ("map", path),
                 Rule::Kstat { path, .. } => ("kstat", path),
+                Rule::StaticKstat { path, fields } => {
+                    if self.schema != 2 {
+                        bail!("Static kstat requires schema 2");
+                    }
+                    fields.validate()?;
+                    ("kstat", path)
+                }
                 Rule::Redirect {
                     path,
                     destination,
@@ -274,6 +283,26 @@ mod tests {
             assert_eq!(fields.flags(), 1 << bit);
         }
     }
+
+    #[test]
+    fn static_rules_require_schema_two_and_share_dynamic_identity() {
+        let mut config = Config::default();
+        config.rules.push(Rule::StaticKstat {
+            path: "/data/test".to_owned(),
+            fields: StaticKstat {
+                size: Some(0),
+                ..StaticKstat::default()
+            },
+        });
+        assert!(config.validate().is_err());
+        config.schema = 2;
+        assert!(Config::parse(&serde_json::to_string(&config).unwrap()).is_ok());
+        config.rules.push(Rule::Kstat {
+            path: "/data/test".to_owned(),
+            full_clone: false,
+        });
+        assert!(config.validate().is_err());
+    }
     #[test]
     fn default_is_opt_in() {
         let config = Config::default();
@@ -287,7 +316,7 @@ mod tests {
         unknown["execute"] = true.into();
         assert!(Config::parse(&unknown.to_string()).is_err());
         let mut schema = original;
-        schema["schema"] = 2.into();
+        schema["schema"] = 3.into();
         assert!(Config::parse(&schema.to_string()).is_err());
         assert!(Config::parse(&" ".repeat(MAX_CONFIG + 1)).is_err());
         for invalid in [

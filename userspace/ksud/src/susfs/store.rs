@@ -14,6 +14,7 @@ use std::{
 
 const DIR: &str = "/data/adb/ksu/folksu-susfs";
 const CONFIG: &str = "/data/adb/ksu/folksu-susfs/config.json";
+const CONFIG_V1_BACKUP: &str = "/data/adb/ksu/folksu-susfs/config.v1.backup.json";
 const STATE: &str = "/data/adb/ksu/folksu-susfs/state.json";
 
 #[derive(Clone, Default, Serialize, Deserialize)]
@@ -155,6 +156,28 @@ fn atomic(path: &str, contents: &[u8]) -> Result<()> {
 }
 
 pub fn write_config(config: &Config) -> Result<()> {
+    config.validate()?;
+    if config.schema == 2 {
+        match read(CONFIG, super::model::MAX_CONFIG) {
+            Ok(old) if Config::parse(&old)?.schema == 1 => {
+                match read(CONFIG_V1_BACKUP, super::model::MAX_CONFIG) {
+                    Ok(_) => bail!("Schema 1 backup already exists; export it before migrating"),
+                    Err(error)
+                        if error
+                            .downcast_ref::<std::io::Error>()
+                            .is_some_and(|e| e.kind() == std::io::ErrorKind::NotFound) => {}
+                    Err(error) => return Err(error),
+                }
+                atomic(CONFIG_V1_BACKUP, old.as_bytes())?;
+            }
+            Ok(_) => {}
+            Err(error)
+                if error
+                    .downcast_ref::<std::io::Error>()
+                    .is_some_and(|e| e.kind() == std::io::ErrorKind::NotFound) => {}
+            Err(error) => return Err(error),
+        }
+    }
     atomic(CONFIG, &serde_json::to_vec_pretty(config)?)
 }
 pub fn write_state(state: &State) -> Result<()> {

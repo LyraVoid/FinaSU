@@ -70,7 +70,7 @@ object SusfsInputs {
     fun preview(text: String): JSONObject {
         require(text.toByteArray(Charsets.UTF_8).size <= 128 * 1024) { "Configuration exceeds 128 KiB" }
         val json = JSONObject(text)
-        require(json.getInt("schema") == 1) { "Unsupported schema" }
+        require(json.getInt("schema") in 1..2) { "Unsupported schema" }
         json.getBoolean("automatic")
         json.getJSONObject("settings")
         require(json.getJSONArray("rules").length() <= 128) { "Too many rules" }

@@ -46,6 +46,7 @@
     <string name="susfs_loop">Wait for the path to appear</string>
     <string name="susfs_clone">Full clone (LKM requires proc control)</string>
     <string name="susfs_kstat_hint">Enable boot application and make SUSFS available before mounting. Snapshot before mounting, update after mounting. Late-load cannot recreate the original snapshot.</string>
+    <string name="susfs_static_readonly">Static rule · editing and application are not yet available</string>
     <string name="susfs_remove">Remove saved rule</string>
     <string name="susfs_removal_hint">Changing or removing applied rules needs a reboot. Third-party rules are never cleared.</string>
     <string name="susfs_modules">Hidden module names</string>

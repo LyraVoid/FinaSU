@@ -55,6 +55,7 @@ pub fn operations(config: &Config) -> Result<BTreeMap<String, String>> {
             Rule::Map { path } => ("map", path),
             Rule::Redirect { path, .. } => ("redirect", path),
             Rule::Kstat { path, .. } => ("kstat", path),
+            Rule::StaticKstat { path, .. } => ("static_kstat", path),
         };
         ops.insert(format!("{kind}:{path}"), serde_json::to_string(rule)?);
     }
@@ -266,6 +267,7 @@ fn rule(rule: &Rule, detection: &Detection) -> Result<()> {
             abi::checked(payload.err)
         }
         Rule::Kstat { .. } => bail!("Kstat requires paired pre/post mount stages"),
+        Rule::StaticKstat { .. } => bail!("Static kstat application is not available"),
     }
 }
 
@@ -302,6 +304,7 @@ pub fn apply(config: &Config, detection: &Detection, phase: Stage) -> Result<Rep
             } else if key.starts_with("path:")
                 || key.starts_with("map:")
                 || key.starts_with("redirect:")
+                || key.starts_with("static_kstat:")
             {
                 rule(&serde_json::from_str(value)?, detection).map(|()| Outcome::Applied)
             } else {
