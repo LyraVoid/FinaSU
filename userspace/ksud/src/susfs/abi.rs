@@ -86,6 +86,31 @@ impl Default for Kstat {
     }
 }
 
+#[allow(dead_code)]
+pub fn verified_lkm_note(note: &[u8]) -> bool {
+    const BUILD_ID: [u8; 20] = [
+        0x7b, 0x51, 0x39, 0x90, 0x05, 0x2d, 0xe4, 0x6e, 0x2e, 0x70, 0x08, 0x31, 0x9f, 0xbf, 0xf6,
+        0x57, 0x7b, 0xfe, 0x66, 0x02,
+    ];
+    note.len() == 36
+        && note[..12] == [4, 0, 0, 0, 20, 0, 0, 0, 3, 0, 0, 0]
+        && note[12..16] == *b"GNU\0"
+        && note[16..] == BUILD_ID
+}
+
+#[allow(dead_code)]
+pub fn static_kstat_profile(detection: &super::Detection) -> bool {
+    cfg!(target_arch = "aarch64")
+        && detection.implementation == "lkm"
+        && detection.features.iter().any(|f| f == "SUSFS_LKM_MODULES")
+        && detection.supports("CONFIG_KSU_SUSFS_SUS_KSTAT")
+        && detection.proc("susfs_kstat")
+        && std::fs::read_to_string("/sys/module/susfs_guard_lkm/initstate")
+            .is_ok_and(|state| state.trim() == "live")
+        && std::fs::read("/sys/module/susfs_guard_lkm/notes/.note.gnu.build-id")
+            .is_ok_and(|note| verified_lkm_note(&note))
+}
+
 pub fn call<T>(command: u32, payload: &mut T) {
     // Invalid reboot magics are rejected by stock kernels; never use real reboot magics.
     // Payload remains owned and live until the syscall/task_work has returned.
@@ -124,6 +149,18 @@ pub fn string(value: &[u8]) -> Option<String> {
 #[cfg(test)]
 mod tests {
     use super::*;
+    #[test]
+    fn verified_note_requires_exact_header_and_build_id() {
+        let mut note = vec![4, 0, 0, 0, 20, 0, 0, 0, 3, 0, 0, 0, b'G', b'N', b'U', 0];
+        note.extend_from_slice(&[
+            0x7b, 0x51, 0x39, 0x90, 0x05, 0x2d, 0xe4, 0x6e, 0x2e, 0x70, 0x08, 0x31, 0x9f, 0xbf,
+            0xf6, 0x57, 0x7b, 0xfe, 0x66, 0x02,
+        ]);
+        assert!(verified_lkm_note(&note));
+        note[35] ^= 1;
+        assert!(!verified_lkm_note(&note));
+        assert!(!verified_lkm_note(&note[..20]));
+    }
     #[test]
     fn arm64_layouts() {
         assert_eq!(size_of::<Text<16>>(), 20);
