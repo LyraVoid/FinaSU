@@ -41,6 +41,40 @@ impl Ownership {
         }
         Ok(())
     }
+
+    pub fn begin(&mut self, target: ManagementMode, boot_id: &str) -> Result<()> {
+        if self.pending.is_some() || self.mode == target {
+            bail!("SUSFS ownership switch is already pending or active");
+        }
+        if boot_id.is_empty() {
+            bail!("Boot ID is unavailable");
+        }
+        self.pending = Some(ManagementSwitch {
+            target,
+            requested_boot_id: boot_id.to_owned(),
+        });
+        Ok(())
+    }
+
+    pub fn confirm(&mut self, boot_id: &str) -> Result<()> {
+        let pending = self
+            .pending
+            .as_ref()
+            .ok_or_else(|| anyhow::anyhow!("No pending ownership switch"))?;
+        if !pending.may_confirm(boot_id) {
+            bail!("A normal reboot is required before confirmation");
+        }
+        self.mode = pending.target;
+        self.pending = None;
+        Ok(())
+    }
+
+    pub fn cancel(&mut self) -> Result<()> {
+        if self.pending.take().is_none() {
+            bail!("No pending ownership switch");
+        }
+        Ok(())
+    }
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -325,6 +359,23 @@ mod tests {
                 .require_builtin()
                 .is_err()
         );
+    }
+
+    #[test]
+    fn ownership_transitions_fail_closed_until_explicit_confirmation() {
+        let mut state = Ownership::default();
+        assert!(state.begin(ManagementMode::External, "").is_err());
+        state.begin(ManagementMode::External, "boot-a").unwrap();
+        assert!(state.require_builtin().is_err());
+        assert!(state.begin(ManagementMode::Builtin, "boot-a").is_err());
+        assert!(state.confirm("boot-a").is_err());
+        state.confirm("boot-b").unwrap();
+        assert!(state.require_builtin().is_err());
+        state.begin(ManagementMode::Builtin, "boot-b").unwrap();
+        state.cancel().unwrap();
+        assert_eq!(state.mode, ManagementMode::External);
+        assert!(state.require_builtin().is_err());
+        assert!(state.cancel().is_err());
     }
 
     #[test]

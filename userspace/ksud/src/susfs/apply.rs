@@ -277,7 +277,7 @@ fn rule(rule: &Rule, detection: &Detection) -> Result<()> {
             }
             let metadata = fs::metadata(path)?;
             let mut payload = abi::static_kstat_payload(path, fields, &metadata)?;
-            abi::call(0x0005_5572, &mut payload);
+            abi::call_checked(0x0005_5572, &mut payload)?;
             abi::checked(payload.err)
         }
     }

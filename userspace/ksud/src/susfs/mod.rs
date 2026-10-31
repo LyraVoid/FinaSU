@@ -422,44 +422,25 @@ pub fn run(command: Command) -> Result<()> {
             };
             let _lock = store::lock()?;
             let mut ownership = store::read_ownership()?;
-            if ownership.pending.is_some() || ownership.mode == target {
-                bail!("SUSFS ownership switch is already pending or active");
-            }
             let boot_id = std::fs::read_to_string("/proc/sys/kernel/random/boot_id")?
                 .trim()
                 .to_owned();
-            if boot_id.is_empty() {
-                bail!("Boot ID is unavailable");
-            }
-            ownership.pending = Some(model::ManagementSwitch {
-                target,
-                requested_boot_id: boot_id,
-            });
+            ownership.begin(target, &boot_id)?;
             store::write_ownership(&ownership)?;
             println!("{}", serde_json::to_string(&ownership)?);
         }
         Command::ConfirmSwitch => {
             let _lock = store::lock()?;
             let mut ownership = store::read_ownership()?;
-            let pending = ownership
-                .pending
-                .as_ref()
-                .context("No pending ownership switch")?;
             let boot_id = std::fs::read_to_string("/proc/sys/kernel/random/boot_id")?;
-            if !pending.may_confirm(boot_id.trim()) {
-                bail!("A normal reboot is required before confirmation");
-            }
-            ownership.mode = pending.target;
-            ownership.pending = None;
+            ownership.confirm(boot_id.trim())?;
             store::write_ownership(&ownership)?;
             println!("{}", serde_json::to_string(&ownership)?);
         }
         Command::CancelSwitch => {
             let _lock = store::lock()?;
             let mut ownership = store::read_ownership()?;
-            if ownership.pending.take().is_none() {
-                bail!("No pending ownership switch");
-            }
+            ownership.cancel()?;
             store::write_ownership(&ownership)?;
             println!("{}", serde_json::to_string(&ownership)?);
         }

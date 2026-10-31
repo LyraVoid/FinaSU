@@ -144,6 +144,22 @@ pub fn static_kstat_payload(
     })
 }
 
+pub fn call_checked<T>(command: u32, payload: &mut T) -> Result<()> {
+    let result = unsafe {
+        libc::syscall(
+            libc::SYS_reboot,
+            0xdead_beef_u32,
+            0xfafa_fafa_u32,
+            command,
+            std::ptr::from_mut(payload),
+        )
+    };
+    if result != 0 {
+        bail!("SUSFS syscall failed: {}", std::io::Error::last_os_error());
+    }
+    Ok(())
+}
+
 pub fn call<T>(command: u32, payload: &mut T) {
     // Invalid reboot magics are rejected by stock kernels; never use real reboot magics.
     // Payload remains owned and live until the syscall/task_work has returned.
