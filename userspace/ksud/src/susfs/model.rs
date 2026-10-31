@@ -75,6 +75,15 @@ impl Ownership {
         }
         Ok(())
     }
+
+    pub fn validate(&self) -> Result<()> {
+        if self.pending.as_ref().is_some_and(|pending| {
+            pending.target == self.mode || pending.requested_boot_id.trim().is_empty()
+        }) {
+            bail!("Invalid pending SUSFS ownership switch");
+        }
+        Ok(())
+    }
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -359,6 +368,21 @@ mod tests {
                 .require_builtin()
                 .is_err()
         );
+    }
+
+    #[test]
+    fn malformed_pending_ownership_is_not_accepted() {
+        let mut state = Ownership::default();
+        state.pending = Some(ManagementSwitch {
+            target: ManagementMode::Builtin,
+            requested_boot_id: "x".to_owned(),
+        });
+        assert!(state.validate().is_err());
+        state.pending = Some(ManagementSwitch {
+            target: ManagementMode::External,
+            requested_boot_id: " ".to_owned(),
+        });
+        assert!(state.validate().is_err());
     }
 
     #[test]

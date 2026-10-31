@@ -57,7 +57,11 @@ pub fn read_config() -> Result<Config> {
 
 pub fn read_ownership() -> Result<super::model::Ownership> {
     match read(OWNERSHIP, 4096) {
-        Ok(input) => Ok(serde_json::from_str(&input)?),
+        Ok(input) => {
+            let ownership: super::model::Ownership = serde_json::from_str(&input)?;
+            ownership.validate()?;
+            Ok(ownership)
+        }
         Err(error)
             if error
                 .downcast_ref::<std::io::Error>()
@@ -70,6 +74,7 @@ pub fn read_ownership() -> Result<super::model::Ownership> {
 }
 
 pub fn write_ownership(ownership: &super::model::Ownership) -> Result<()> {
+    ownership.validate()?;
     atomic(OWNERSHIP, &serde_json::to_vec_pretty(ownership)?)
 }
 
