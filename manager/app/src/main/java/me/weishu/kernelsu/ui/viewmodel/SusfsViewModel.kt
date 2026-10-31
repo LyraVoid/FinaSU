@@ -157,7 +157,7 @@ class SusfsViewModel(
     }
 
     fun save(text: String) {
-        if (!mutable.value.status.writable) return
+        if (!mutable.value.status.canImport) return
         startSave { text }
     }
 

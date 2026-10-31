@@ -240,7 +240,7 @@ pub fn write_config(config: &Config) -> Result<()> {
     config.validate()?;
     if config.schema == 2 {
         match read(CONFIG, super::model::MAX_CONFIG) {
-            Ok(old) if Config::parse(&old)?.schema == 1 => {
+            Ok(old) if Config::parse(&old).is_ok_and(|previous| previous.schema == 1) => {
                 match read(CONFIG_V1_BACKUP, super::model::MAX_CONFIG) {
                     Ok(backup) if backup == old => {}
                     Ok(_) => bail!("Schema 1 backup already exists; export it before migrating"),
@@ -254,7 +254,11 @@ pub fn write_config(config: &Config) -> Result<()> {
                     Err(error) => return Err(error),
                 }
             }
-            Ok(_) => {}
+            Ok(old) => {
+                Config::parse(&old).context(
+                    "Existing SUSFS configuration is invalid; recover with a schema 1 import",
+                )?;
+            }
             Err(error)
                 if error
                     .downcast_ref::<std::io::Error>()

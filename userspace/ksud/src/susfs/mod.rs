@@ -366,6 +366,7 @@ pub fn run(command: Command) -> Result<()> {
     match command {
         Command::Status => {
             let detection = detect();
+            let ownership = store::read_ownership();
             let uname_provider = uname_provider_state().unwrap_or_else(|_| UnameProviderState {
                 uncertain: true,
                 ..UnameProviderState::default()
@@ -396,6 +397,7 @@ pub fn run(command: Command) -> Result<()> {
                 Err(error) => serde_json::json!({
                     "detection": detection, "automatic": false, "management": "failed",
                     "config_error": error.to_string(),
+                    "ownership": ownership.ok(),
                     "uname_applied": uname_provider.applied,
                     "uname_scheduled": uname_provider.scheduled,
                     "uname_uncertain": uname_provider.uncertain,

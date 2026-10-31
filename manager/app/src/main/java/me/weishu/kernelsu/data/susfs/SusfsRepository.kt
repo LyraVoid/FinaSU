@@ -29,6 +29,7 @@ data class SusfsStatus(
 ) {
     val detected get() = protocol == "compatible" || protocol == "unknown_protocol"
     val writable get() = protocol == "compatible" && error == null && ownership == "builtin" && pendingOwner == null
+    val canImport get() = protocol == "compatible" && ownership == "builtin" && pendingOwner == null
     fun supports(feature: String) = protocol == "compatible" && "CONFIG_KSU_SUSFS_$feature" in features
     fun proc(node: String) = protocol == "compatible" && implementation == "lkm" && node in procNodes
 

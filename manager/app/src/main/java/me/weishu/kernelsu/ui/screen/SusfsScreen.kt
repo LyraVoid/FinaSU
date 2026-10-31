@@ -201,7 +201,7 @@ fun SusfsScreen() {
                     preview.getJSONObject("lkm").getJSONArray("mount_prefixes").length()))
                 Text(stringResource(if (preview.getBoolean("automatic")) R.string.susfs_import_auto_on else R.string.susfs_import_auto_off))
                 Text(stringResource(R.string.susfs_import_warning))
-            } }, confirmButton = { TextButton(enabled = state.status.writable && !state.busy,
+            } }, confirmButton = { TextButton(enabled = state.status.canImport && !state.busy,
                 onClick = { vm.save(text); draft = null }) { Text(stringResource(R.string.susfs_save)) } },
             dismissButton = { TextButton(onClick = { draft = null }) { Text(stringResource(R.string.susfs_cancel)) } })
     }
@@ -392,7 +392,7 @@ private fun SusfsOverview(state: SusfsUiState, config: JSONObject?, writable: Bo
         }
     }
     SegmentedColumn(title = stringResource(R.string.susfs_config)) {
-        item { SegmentedListItem(enabled = status.writable && !state.busy, onClick = import,
+        item { SegmentedListItem(enabled = status.canImport && !state.busy, onClick = import,
             headlineContent = { Text(stringResource(R.string.susfs_import)) }, leadingContent = { Icon(Icons.Rounded.FileOpen, null) }) }
         item { SegmentedListItem(enabled = config != null && !state.busy, onClick = export,
             headlineContent = { Text(stringResource(R.string.susfs_export)) }, leadingContent = { Icon(Icons.Rounded.SaveAlt, null) }) }

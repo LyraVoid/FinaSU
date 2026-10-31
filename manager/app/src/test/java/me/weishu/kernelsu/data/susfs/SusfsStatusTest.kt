@@ -25,6 +25,8 @@ class SusfsStatusTest {
         assertTrue(ready.supports("SUS_PATH"))
         assertFalse(ready.copy(protocol = "root_unavailable").supports("SUS_PATH"))
         assertFalse(ready.copy(error = "Invalid config").writable)
+        assertTrue(ready.copy(ownership = "builtin", error = "Invalid config").canImport)
+        assertFalse(ready.copy(ownership = "external", error = "Invalid config").canImport)
     }
     @Test fun `CLI status preserves saved versus applied`() {
         val status = SusfsStatus.parse("""{"detection":{"status":"compatible","version":"v2.3.0","variant":"GKI","implementation":"builtin","features":[],"proc_nodes":[]},"management":"saved","automatic":false,"config_error":null}""")
