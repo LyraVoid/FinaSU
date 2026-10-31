@@ -69,15 +69,6 @@ fun susfsManagementLabel(status: String): String = stringResource(when (status) 
     else -> R.string.susfs_saved
 })
 
-@Composable
-fun susfsProviderLabel(status: SusfsStatus): String = stringResource(when (status.protocol) {
-    "compatible" -> R.string.susfs_compatible
-    "not_detected" -> R.string.susfs_absent
-    "unknown_protocol" -> R.string.susfs_readonly
-    "root_unavailable" -> R.string.susfs_root
-    else -> R.string.susfs_probe
-})
-
 private val susfsPages = listOf(R.string.susfs_overview, R.string.susfs_settings,
     R.string.susfs_tab_paths, R.string.susfs_tab_spoof, R.string.susfs_tab_redirect, R.string.susfs_tab_extensions)
 

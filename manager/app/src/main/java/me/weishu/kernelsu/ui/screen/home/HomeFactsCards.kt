@@ -222,11 +222,11 @@ internal fun InfoCard(
             if (susfs.detected && !display.hideSusfs) {
                 val interactionSource = remember { MutableInteractionSource() }
                 val haptic = LocalHapticFeedback.current
-                val provider = me.weishu.kernelsu.ui.screen.susfsProviderLabel(susfs)
+                val management = me.weishu.kernelsu.ui.screen.susfsManagementLabel(susfs.management)
                 InfoRow(
                     icon = Icons.Rounded.VisibilityOff,
                     label = stringResource(R.string.susfs_title),
-                    value = provider,
+                    value = "${susfs.version} · ${susfs.implementation} · $management",
                     modifier = Modifier
                         .folkPressScale(interactionSource)
                         .clickable(
@@ -258,7 +258,7 @@ private fun SusfsHomeRow(status: me.weishu.kernelsu.data.susfs.SusfsStatus, onCl
         Column(Modifier.weight(1f)) {
             Text("SUSFS · ${status.version} · ${status.implementation}", style = FolkType.Summary,
                 color = overColor ?: MaterialTheme.colorScheme.onSurface)
-            Text(me.weishu.kernelsu.ui.screen.susfsProviderLabel(status), style = FolkType.Machine,
+            Text(me.weishu.kernelsu.ui.screen.susfsManagementLabel(status.management), style = FolkType.Machine,
                 color = overColor?.copy(alpha = 0.8f)
                     ?: LocalWallpaperSupportingColor.current
                     ?: MaterialTheme.colorScheme.onSurfaceVariant)
