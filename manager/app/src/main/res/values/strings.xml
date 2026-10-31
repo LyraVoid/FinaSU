@@ -1102,6 +1102,7 @@
     <string name="guide_skip">Skip</string>
     <string name="guide_start">Get started</string>
     <string name="guide_page_indicator">Page %1$d of %2$d</string>
+    <string name="panxcz_credit">Customized by Panxcz</string>
     <string name="guide_about_entry_title">Show welcome guide again</string>
     <string name="guide_about_entry_summary">Replay the first-launch introduction</string>
 </resources>
