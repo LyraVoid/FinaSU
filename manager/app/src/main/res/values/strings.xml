@@ -702,6 +702,10 @@
     <string name="settings_finasu_hide_failed">Failed to change FinaSU Hide</string>
     <string name="settings_adb_root" translatable="false">ADB Root</string>
     <string name="settings_adb_root_summary">Run adbd daemon with Root privileges</string>
+    <string name="feature_external_changes_title">Shared settings were changed outside FinaSU</string>
+    <string name="feature_external_changes_summary">An external module or manager changed these runtime values after FinaSU applied its saved settings. FinaSU will not overwrite them automatically.</string>
+    <string name="feature_external_value_on">On</string>
+    <string name="feature_external_value_off">Off</string>
     <string name="menu_sort">Sort</string>
     <string name="sort_by_name">Application name</string>
     <string name="sort_by_package_name">Package name</string>

@@ -33,6 +33,7 @@ import androidx.compose.material.icons.filled.Translate
 import androidx.compose.material.icons.filled.Vaccines
 import androidx.compose.material.icons.filled.VerifiedUser
 import androidx.compose.material.icons.filled.Wallpaper
+import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material.icons.filled.WifiOff
 import androidx.compose.material.icons.automirrored.rounded.Notes
 import androidx.compose.material.icons.automirrored.rounded.LabelOff
@@ -597,6 +598,28 @@ fun BehaviorCategoryContent(uiState: SettingsUiState, actions: SettingsScreenAct
 @Composable
 fun FunctionCategoryContent(uiState: SettingsUiState, actions: SettingsScreenActions) {
     KsuIsValid {
+        if (uiState.externalFeatureChanges.isNotEmpty()) {
+            SegmentedColumn(
+                modifier = GroupModifier,
+                content = listOf {
+                    SegmentedListItem(
+                        leadingContent = { Icon(Icons.Filled.Warning, null) },
+                        headlineContent = { Text(stringResource(R.string.feature_external_changes_title)) },
+                        supportingContent = {
+                            val details = mutableListOf<String>()
+                            for (change in uiState.externalFeatureChanges) {
+                                details += "${featureChangeLabel(change.name)}: " +
+                                    "${featureChangeValue(change.expected)} → ${featureChangeValue(change.actual)}"
+                            }
+                            Text(
+                                "${details.joinToString("\n")}\n\n" +
+                                    stringResource(R.string.feature_external_changes_summary),
+                            )
+                        },
+                    )
+                },
+            )
+        }
         SegmentedColumn(
             modifier = GroupModifier,
             content = listOf(
@@ -890,6 +913,24 @@ fun FunctionCategoryContent(uiState: SettingsUiState, actions: SettingsScreenAct
         )
     }
 }
+
+@Composable
+private fun featureChangeLabel(name: String): String = when (name) {
+    "su_compat" -> stringResource(R.string.settings_sucompat)
+    "kernel_umount" -> stringResource(R.string.settings_kernel_umount)
+    "sulog" -> stringResource(R.string.settings_sulog)
+    "adb_root" -> stringResource(R.string.settings_adb_root)
+    "selinux_hide" -> stringResource(R.string.settings_selinux_hide)
+    "avc_spoof" -> stringResource(R.string.settings_avc_spoof)
+    "shell_su_adb_only" -> stringResource(R.string.settings_shell_su_adb_only)
+    "mount_view_filter" -> stringResource(R.string.settings_mount_view_filter)
+    else -> name
+}
+
+@Composable
+private fun featureChangeValue(value: Long): String = stringResource(
+    if (value == 0L) R.string.feature_external_value_off else R.string.feature_external_value_on,
+)
 
 @Composable
 fun SecurityCategoryContent(uiState: SettingsUiState, actions: SettingsScreenActions) {

@@ -581,6 +581,10 @@
     <string name="download_cancel">取消</string>
     <string name="download_install">安装</string>
     <string name="settings_adb_root_summary">以 Root 权限运行 adbd 守护进程</string>
+    <string name="feature_external_changes_title">共享设置已被外部修改</string>
+    <string name="feature_external_changes_summary">外部模块或管理器在 FinaSU 应用已保存设置后修改了这些运行值。FinaSU 不会自动覆盖。</string>
+    <string name="feature_external_value_on">开启</string>
+    <string name="feature_external_value_off">关闭</string>
     <string name="settings_selinux_hide">隐藏 SELinux 修改</string>
     <string name="settings_selinux_hide_summary">阻止应用检测 SELinux 修改</string>
     <string name="settings_selinux_hide_reboot_required">重启生效</string>

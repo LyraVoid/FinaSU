@@ -30,6 +30,7 @@ import me.weishu.kernelsu.ksuApp
 import me.weishu.kernelsu.magica.BootCompletedReceiver
 import me.weishu.kernelsu.ui.util.execKsud
 import me.weishu.kernelsu.ui.util.execKsudResult
+import me.weishu.kernelsu.ui.util.getFeatureChanges
 import me.weishu.kernelsu.ui.util.getFeaturePersistValue
 import me.weishu.kernelsu.ui.util.getFeatureValue
 import me.weishu.kernelsu.ui.util.getFeatureStatus
@@ -332,6 +333,7 @@ class SettingsRepositoryImpl : SettingsRepository {
     override suspend fun getKernelUmountValue(): Long? = getFeatureValue("kernel_umount")
 
     override suspend fun getKernelUmountPersistValue(): Long? = getFeaturePersistValue("kernel_umount")
+    override suspend fun getExternalFeatureChanges() = getFeatureChanges()
 
     override suspend fun setKernelUmountEnabled(enabled: Boolean): Boolean =
         execKsudResult("feature set kernel_umount ${if (enabled) 1 else 0}").isSuccess

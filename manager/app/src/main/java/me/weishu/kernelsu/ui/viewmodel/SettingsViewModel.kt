@@ -80,6 +80,7 @@ class SettingsViewModel(
             val kernelUmountStatus = repo.getKernelUmountStatus()
             val kernelUmountValue = repo.getKernelUmountValue()
             val kernelUmountPersistValue = repo.getKernelUmountPersistValue()
+            val externalFeatureChanges = repo.getExternalFeatureChanges()
             val selinuxHideStatus = repo.getSelinuxHideStatus()
             val isSelinuxHideEnabled = repo.isSelinuxHideEnabled()
             val mountViewFilterStatus = repo.getMountViewFilterStatus()
@@ -168,6 +169,7 @@ class SettingsViewModel(
                     kernelUmountStatus = kernelUmountStatus,
                     kernelUmountValue = kernelUmountValue,
                     kernelUmountPersistValue = kernelUmountPersistValue,
+                    externalFeatureChanges = externalFeatureChanges,
                     selinuxHideStatus = selinuxHideStatus,
                     isSelinuxHideEnabled = isSelinuxHideEnabled,
                     mountViewFilterStatus = mountViewFilterStatus,

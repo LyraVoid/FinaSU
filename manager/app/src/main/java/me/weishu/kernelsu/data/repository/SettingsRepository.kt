@@ -3,6 +3,7 @@ package me.weishu.kernelsu.data.repository
 import me.weishu.kernelsu.data.model.FolkMountMode
 import me.weishu.kernelsu.data.model.FolkZygiskStatus
 import me.weishu.kernelsu.data.model.FolkMountStatus
+import me.weishu.kernelsu.data.model.FeatureChange
 import me.weishu.kernelsu.data.model.NomountStatus
 import me.weishu.kernelsu.data.model.SuiStatus
 import me.weishu.kernelsu.data.model.SuiApp
@@ -81,6 +82,7 @@ interface SettingsRepository {
     suspend fun getKernelUmountStatus(): String
     suspend fun getKernelUmountValue(): Long?
     suspend fun getKernelUmountPersistValue(): Long?
+    suspend fun getExternalFeatureChanges(): List<FeatureChange>
     suspend fun setKernelUmountEnabled(enabled: Boolean): Boolean
 
     suspend fun getSelinuxHideStatus(): String

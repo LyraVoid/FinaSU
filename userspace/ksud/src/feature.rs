@@ -1,18 +1,44 @@
 use crate::sulog;
 use anyhow::{Context, Result, bail};
 use const_format::concatcp;
-use std::collections::HashMap;
-use std::fs::File;
+use serde::{Deserialize, Serialize, de::DeserializeOwned};
+use std::collections::{BTreeMap, HashMap, HashSet};
+use std::fs::{self, File, OpenOptions};
 use std::io::{Read, Write};
-use std::path::Path;
+use std::os::unix::fs::OpenOptionsExt;
+use std::path::{Path, PathBuf};
 
 use crate::defs;
 use crate::feature_id::{FeatureId, parse_feature_id};
 
 const FEATURE_CONFIG_PATH: &str = concatcp!(defs::WORKING_DIR, ".feature_config");
+const FEATURE_BASELINE_PATH: &str = concatcp!(defs::WORKING_DIR, ".feature_baseline");
+const FEATURE_DRIFT_PATH: &str = concatcp!(defs::WORKING_DIR, ".feature_drift");
+const BOOT_ID_PATH: &str = "/proc/sys/kernel/random/boot_id";
 #[allow(clippy::unreadable_literal)]
 const FEATURE_MAGIC: u32 = 0x7f4b5355;
 const FEATURE_VERSION: u32 = 1;
+
+#[derive(Clone, Debug, Default, PartialEq, Eq, Serialize, Deserialize)]
+struct FeatureSnapshot {
+    boot_id: String,
+    values: BTreeMap<u32, u64>,
+}
+
+#[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize)]
+pub struct FeatureChange {
+    pub id: u32,
+    pub name: String,
+    pub expected: u64,
+    pub actual: u64,
+}
+
+#[derive(Clone, Debug, Default, PartialEq, Eq, Serialize, Deserialize)]
+struct FeatureDrift {
+    boot_id: String,
+    stage: String,
+    changes: Vec<FeatureChange>,
+}
 
 fn set_kernel_feature(feature_id: FeatureId, value: u64) -> Result<()> {
     if feature_id.has_dedicated_manager() {
@@ -119,6 +145,188 @@ pub fn save_binary_config(features: &HashMap<u32, u64>) -> Result<()> {
         .with_context(|| "Failed to sync feature config")?;
 
     log::info!("Saved {} features to config", features.len());
+    Ok(())
+}
+
+fn current_boot_id() -> Result<String> {
+    Ok(fs::read_to_string(BOOT_ID_PATH)
+        .with_context(|| format!("Read {BOOT_ID_PATH}"))?
+        .trim()
+        .to_owned())
+}
+
+fn read_json<T: DeserializeOwned>(path: &str) -> Result<T> {
+    serde_json::from_slice(&fs::read(path).with_context(|| format!("Read {path}"))?)
+        .with_context(|| format!("Parse {path}"))
+}
+
+fn write_json<T: Serialize>(path: &str, value: &T) -> Result<()> {
+    crate::utils::ensure_dir_exists(Path::new(defs::WORKING_DIR))?;
+    let target = Path::new(path);
+    let temporary = PathBuf::from(format!("{}.tmp.{}", path, std::process::id()));
+    let result = (|| -> Result<()> {
+        let mut file = OpenOptions::new()
+            .write(true)
+            .create_new(true)
+            .mode(0o600)
+            .open(&temporary)
+            .with_context(|| format!("Create {}", temporary.display()))?;
+        file.write_all(&serde_json::to_vec(value)?)?;
+        file.sync_all()?;
+        fs::rename(&temporary, target).with_context(|| format!("Replace {}", target.display()))?;
+        Ok(())
+    })();
+    if result.is_err() {
+        let _ = fs::remove_file(&temporary);
+    }
+    result
+}
+
+fn managed_feature_ids() -> Result<HashSet<u32>> {
+    Ok(crate::module::get_managed_features()?
+        .values()
+        .flatten()
+        .filter_map(|name| parse_feature_id(name).ok())
+        .map(|feature| feature as u32)
+        .collect())
+}
+
+fn current_feature_values(managed: &HashSet<u32>) -> BTreeMap<u32, u64> {
+    let mut values = BTreeMap::new();
+    for feature in FeatureId::ALL {
+        let id = feature as u32;
+        if feature.has_dedicated_manager() || managed.contains(&id) {
+            continue;
+        }
+        if let Ok(state) = crate::ksucalls::get_feature(id)
+            && state.supported
+            && !state.forced
+        {
+            values.insert(id, state.value);
+        }
+    }
+    values
+}
+
+fn changed_features(
+    expected: &BTreeMap<u32, u64>,
+    actual: &BTreeMap<u32, u64>,
+) -> Vec<FeatureChange> {
+    expected
+        .iter()
+        .filter_map(|(&id, &expected)| {
+            let &actual = actual.get(&id)?;
+            if actual == expected {
+                return None;
+            }
+            Some(FeatureChange {
+                id,
+                name: FeatureId::from_u32(id)
+                    .map_or("unknown", FeatureId::name)
+                    .to_owned(),
+                expected,
+                actual,
+            })
+        })
+        .collect()
+}
+
+pub fn capture_baseline() {
+    let result = (|| -> Result<()> {
+        let managed = managed_feature_ids()?;
+        let snapshot = FeatureSnapshot {
+            boot_id: current_boot_id()?,
+            values: current_feature_values(&managed),
+        };
+        write_json(FEATURE_BASELINE_PATH, &snapshot)?;
+        write_json(
+            FEATURE_DRIFT_PATH,
+            &FeatureDrift {
+                boot_id: snapshot.boot_id,
+                stage: "boot".to_owned(),
+                changes: Vec::new(),
+            },
+        )
+    })();
+    if let Err(error) = result {
+        log::warn!("Failed to capture feature baseline: {error:#}");
+    }
+}
+
+pub fn detect_external_changes(stage: &str) {
+    let result = (|| -> Result<()> {
+        let snapshot: FeatureSnapshot = read_json(FEATURE_BASELINE_PATH)?;
+        let boot_id = current_boot_id()?;
+        if snapshot.boot_id != boot_id {
+            return Ok(());
+        }
+        let managed = managed_feature_ids()?;
+        let actual = current_feature_values(&managed);
+        let changes = changed_features(&snapshot.values, &actual);
+        if !changes.is_empty() {
+            log::warn!(
+                "Features changed outside FinaSU after {stage}: {}",
+                serde_json::to_string(&changes)?
+            );
+        }
+        write_json(
+            FEATURE_DRIFT_PATH,
+            &FeatureDrift {
+                boot_id,
+                stage: stage.to_owned(),
+                changes,
+            },
+        )
+    })();
+    if let Err(error) = result {
+        log::warn!("Failed to detect external feature changes: {error:#}");
+    }
+}
+
+fn rebase_feature(feature: FeatureId) {
+    if std::env::var_os("KSU_MODULE").is_some() {
+        return;
+    }
+    let result = (|| -> Result<()> {
+        let mut snapshot: FeatureSnapshot = read_json(FEATURE_BASELINE_PATH)?;
+        if snapshot.boot_id != current_boot_id()? {
+            return Ok(());
+        }
+        let state = crate::ksucalls::get_feature(feature as u32)?;
+        if !state.supported || state.forced {
+            return Ok(());
+        }
+        snapshot.values.insert(feature as u32, state.value);
+        write_json(FEATURE_BASELINE_PATH, &snapshot)?;
+
+        let mut drift: FeatureDrift = read_json(FEATURE_DRIFT_PATH)?;
+        if drift.boot_id == snapshot.boot_id {
+            drift.changes.retain(|change| change.id != feature as u32);
+            write_json(FEATURE_DRIFT_PATH, &drift)?;
+        }
+        Ok(())
+    })();
+    if let Err(error) = result {
+        log::warn!("Failed to rebase feature {}: {error:#}", feature.name());
+    }
+}
+
+pub fn external_changes() -> Result<()> {
+    detect_external_changes("on-demand");
+    let boot_id = current_boot_id()?;
+    let drift = read_json::<FeatureDrift>(FEATURE_DRIFT_PATH).unwrap_or_else(|_| FeatureDrift {
+        boot_id: boot_id.clone(),
+        ..FeatureDrift::default()
+    });
+    let visible = if drift.boot_id == boot_id {
+        drift
+    } else {
+        FeatureDrift {
+            boot_id,
+            ..FeatureDrift::default()
+        }
+    };
+    println!("{}", serde_json::to_string(&visible)?);
     Ok(())
 }
 
@@ -262,6 +470,7 @@ pub fn set_feature(id: &str, value: u64) -> Result<()> {
     }
 
     set_kernel_feature(feature_id, value)?;
+    rebase_feature(feature_id);
 
     println!(
         "Feature '{}' set to {value} ({})",
@@ -495,4 +704,51 @@ pub fn init_features() -> Result<()> {
     log::info!("Saved feature configuration to file");
 
     Ok(())
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn external_change_diff_keeps_only_supported_changes() {
+        let expected = BTreeMap::from([
+            (FeatureId::KernelUmount as u32, 1),
+            (FeatureId::SelinuxHide as u32, 1),
+            (FeatureId::Sulog as u32, 0),
+        ]);
+        let actual = BTreeMap::from([
+            (FeatureId::KernelUmount as u32, 0),
+            (FeatureId::SelinuxHide as u32, 1),
+        ]);
+
+        assert_eq!(
+            changed_features(&expected, &actual),
+            vec![FeatureChange {
+                id: FeatureId::KernelUmount as u32,
+                name: "kernel_umount".to_owned(),
+                expected: 1,
+                actual: 0,
+            }]
+        );
+    }
+
+    #[test]
+    fn drift_round_trips_for_the_status_api() {
+        let drift = FeatureDrift {
+            boot_id: "boot".to_owned(),
+            stage: "post-fs-data".to_owned(),
+            changes: vec![FeatureChange {
+                id: 1,
+                name: "kernel_umount".to_owned(),
+                expected: 1,
+                actual: 0,
+            }],
+        };
+        let encoded = serde_json::to_string(&drift).unwrap();
+        assert_eq!(
+            serde_json::from_str::<FeatureDrift>(&encoded).unwrap(),
+            drift
+        );
+    }
 }

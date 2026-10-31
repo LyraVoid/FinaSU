@@ -26,6 +26,7 @@ import me.weishu.kernelsu.core.tasks.ExtractImage
 import me.weishu.kernelsu.core.tasks.ProbeResult
 import me.weishu.kernelsu.core.utils.DataSourceChannel
 import me.weishu.kernelsu.ksuApp
+import me.weishu.kernelsu.data.model.FeatureChange
 import me.weishu.kernelsu.data.modulestore.VerifiedDownloads
 import me.weishu.kernelsu.data.modulestore.copyForInstall
 import okhttp3.OkHttpClient
@@ -271,6 +272,30 @@ suspend fun getFeatureStatus(feature: String): String = withContext(Dispatchers.
     val out = shell.newJob()
         .add("${getKsuDaemonPath()} feature check $feature").to(ArrayList<String>(), null).exec().out
     out.firstOrNull()?.trim().orEmpty()
+}
+
+suspend fun getFeatureChanges(): List<FeatureChange> = withContext(Dispatchers.IO) {
+    val result = execKsudResult("feature changes")
+    if (!result.isSuccess) return@withContext emptyList()
+    parseFeatureChanges(result.out.joinToString("\n"))
+}
+
+internal fun parseFeatureChanges(output: String): List<FeatureChange> {
+    val json = runCatching { JSONObject(output) }.getOrNull() ?: return emptyList()
+    val changes = json.optJSONArray("changes") ?: return emptyList()
+    return buildList {
+        for (index in 0 until changes.length()) {
+            val change = changes.optJSONObject(index) ?: continue
+            add(
+                FeatureChange(
+                    id = change.optInt("id"),
+                    name = change.optString("name"),
+                    expected = change.optLong("expected"),
+                    actual = change.optLong("actual"),
+                ),
+            )
+        }
+    }
 }
 
 suspend fun getFeaturePersistValue(feature: String): Long? = readFeatureValue("--config $feature")

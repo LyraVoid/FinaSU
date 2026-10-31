@@ -6,6 +6,7 @@ import com.materialkolor.dynamiccolor.ColorSpec
 import me.weishu.kernelsu.data.model.FolkMountMode
 import me.weishu.kernelsu.data.model.FolkMountStatus
 import me.weishu.kernelsu.data.model.FolkZygiskStatus
+import me.weishu.kernelsu.data.model.FeatureChange
 import me.weishu.kernelsu.data.model.HomeLayoutStyle
 import me.weishu.kernelsu.data.model.LayoutVariant
 import me.weishu.kernelsu.data.model.NomountStatus
@@ -51,6 +52,7 @@ data class SettingsUiState(
     val kernelUmountStatus: String = "",
     val kernelUmountValue: Long? = null,
     val kernelUmountPersistValue: Long? = null,
+    val externalFeatureChanges: List<FeatureChange> = emptyList(),
     val isKernelUmountWriting: Boolean = false,
 
     // SELinux Hide
