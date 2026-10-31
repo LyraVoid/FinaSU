@@ -328,8 +328,10 @@ private fun SusfsOverview(state: SusfsUiState, config: JSONObject?, writable: Bo
             else -> R.string.susfs_probe
         })) }, supportingContent = { Text(listOf(status.version, status.implementation, status.variant).filter(String::isNotEmpty).joinToString(" · ")) },
             leadingContent = { Icon(Icons.Rounded.VisibilityOff, null) }) }
-        item { SegmentedListItem(headlineContent = { Text(susfsManagementLabel(status.management)) },
-            supportingContent = { Text(stringResource(susfsManagementHint(status))) }) }
+        if (status.ownership == "builtin" && status.pendingOwner == null) item {
+            SegmentedListItem(headlineContent = { Text(susfsManagementLabel(status.management)) },
+                supportingContent = { Text(stringResource(susfsManagementHint(status))) })
+        }
         item { SegmentedListItem(
             headlineContent = { Text(stringResource(when {
                 status.pendingOwner != null -> R.string.susfs_owner_pending
@@ -416,6 +418,7 @@ private fun susfsOperationName(key: String): String {
         "path" -> R.string.susfs_path_rules
         "map" -> R.string.susfs_map_rules
         "kstat" -> R.string.susfs_kstat_rules
+        "static_kstat" -> R.string.susfs_static_title
         "redirect" -> R.string.susfs_redirect_rules
         "module" -> R.string.susfs_modules
         "prefix" -> R.string.susfs_prefixes

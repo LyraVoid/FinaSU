@@ -362,6 +362,9 @@ fn apply_with_state(
         report.pending_reboot.push(key.clone());
     }
     for (key, value) in &desired {
+        if state.uncertain.contains_key(key) {
+            continue;
+        }
         let other_kstat = key
             .strip_prefix("kstat:")
             .map(|path| format!("static_kstat:{path}"))
@@ -550,6 +553,44 @@ mod tests {
         .unwrap();
         assert_eq!(report.status, "pending_reboot");
         assert_eq!(report.pending_reboot, ["static_kstat:/data/test"]);
+    }
+
+    #[test]
+    fn uncertain_operation_is_not_replayed() {
+        let mut config = Config {
+            schema: 2,
+            ..Config::default()
+        };
+        config.rules.push(Rule::StaticKstat {
+            path: "/data/test".to_owned(),
+            fields: super::super::model::StaticKstat {
+                size: Some(1),
+                ..Default::default()
+            },
+        });
+        let mut state = State::default();
+        state
+            .uncertain
+            .insert("static_kstat:/data/test".to_owned(), "prior".to_owned());
+        let saved = RefCell::new(State::default());
+        let report = apply_with_state(
+            &config,
+            Stage::Live,
+            state,
+            |state| {
+                *saved.borrow_mut() = state.clone();
+                Ok(())
+            },
+            |_, _, _, _| panic!("uncertain operations must not be replayed"),
+        )
+        .unwrap();
+        assert_eq!(report.status, "failed");
+        assert!(
+            saved
+                .borrow()
+                .uncertain
+                .contains_key("static_kstat:/data/test")
+        );
     }
 
     #[test]
