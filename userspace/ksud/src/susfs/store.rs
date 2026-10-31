@@ -95,18 +95,24 @@ pub fn backup_for_switch() -> Result<()> {
         Err(error) => return Err(error),
     };
     ensure_dir()?;
-    match fs::symlink_metadata(SWITCH_BACKUP) {
+    backup_config(&contents, Path::new(SWITCH_BACKUP))
+}
+
+fn backup_config(contents: &[u8], directory: &Path) -> Result<()> {
+    let parent = directory.parent().context("SUSFS backup has no parent")?;
+    match fs::symlink_metadata(directory) {
         Ok(md) if md.is_dir() && md.uid() == 0 && md.mode().trailing_zeros() >= 6 => {}
         Ok(_) => bail!("Unsafe SUSFS backup directory"),
         Err(error) if error.kind() == std::io::ErrorKind::NotFound => {
             std::os::unix::fs::DirBuilderExt::mode(&mut fs::DirBuilder::new(), 0o700)
-                .create(SWITCH_BACKUP)?;
-            File::open(DIR)?.sync_all()?;
+                .create(directory)?;
+            File::open(parent)?.sync_all()?;
         }
         Err(error) => return Err(error.into()),
     }
-    let backup = format!("{SWITCH_BACKUP}/{}.json", sha256::digest(&contents));
-    match read(&backup, super::model::MAX_CONFIG) {
+    let backup = directory.join(format!("{}.json", sha256::digest(contents)));
+    let backup_path = backup.to_str().context("Invalid SUSFS backup path")?;
+    match read(backup_path, super::model::MAX_CONFIG) {
         Ok(existing) if existing.as_bytes() == contents => return Ok(()),
         Ok(_) => bail!("A different switch backup already exists; export it before switching"),
         Err(error)
@@ -115,15 +121,15 @@ pub fn backup_for_switch() -> Result<()> {
                 .is_some_and(|e| e.kind() == std::io::ErrorKind::NotFound) => {}
         Err(error) => return Err(error),
     }
-    let mut file = tempfile::NamedTempFile::new_in(SWITCH_BACKUP)?;
+    let mut file = tempfile::NamedTempFile::new_in(directory)?;
     file.as_file()
         .set_permissions(fs::Permissions::from_mode(0o600))?;
-    file.write_all(&contents)?;
+    file.write_all(contents)?;
     file.as_file().sync_all()?;
     file.persist_noclobber(&backup)
         .context("Persist SUSFS switch backup")?;
-    File::open(SWITCH_BACKUP)?.sync_all()?;
-    if read(&backup, super::model::MAX_CONFIG)?.as_bytes() != contents {
+    File::open(directory)?.sync_all()?;
+    if read(backup_path, super::model::MAX_CONFIG)?.as_bytes() != contents {
         bail!("SUSFS switch backup verification failed");
     }
     Ok(())
@@ -318,6 +324,22 @@ pub fn summarize(
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn switch_backup_preserves_distinct_configs_and_detects_tampering() {
+        if unsafe { libc::geteuid() } != 0 {
+            return;
+        }
+        let root = tempfile::tempdir().unwrap();
+        let directory = root.path().join("backups");
+        backup_config(b"first", &directory).unwrap();
+        backup_config(b"first", &directory).unwrap();
+        backup_config(b"second", &directory).unwrap();
+        assert_eq!(std::fs::read_dir(&directory).unwrap().count(), 2);
+        let path = directory.join(format!("{}.json", sha256::digest(b"first")));
+        std::fs::write(path, b"tampered").unwrap();
+        assert!(backup_config(b"first", &directory).is_err());
+    }
     #[test]
     fn status_never_claims_saved_is_applied() {
         let mut state = State::default();
