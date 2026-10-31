@@ -85,6 +85,7 @@ class SusfsViewModel(
                         it.copy(
                             status = status,
                             config = config,
+                            pendingUnameApply = it.pendingUnameApply && status.writable,
                             kernelFactsLoading = true,
                             kernelFactsError = null,
                         )
@@ -177,7 +178,7 @@ class SusfsViewModel(
     }
 
     fun confirmPendingUnameApply() {
-        if (!mutable.value.pendingUnameApply || mutable.value.busy) return
+        if (!mutable.value.pendingUnameApply || mutable.value.busy || !mutable.value.status.writable) return
         mutable.update { it.copy(pendingUnameApply = false) }
         operation(applying = true) { applySusfsWithUtsFallback(repository, utsRepository) }
     }
@@ -187,7 +188,7 @@ class SusfsViewModel(
     }
 
     fun switchOwnership(target: String) {
-        if (target !in setOf("builtin", "external") || mutable.value.busy) return
+        if (target !in setOf("builtin", "external") || mutable.value.busy || mutable.value.pendingUnameApply) return
         operation(saved = false) { repository.switchOwnership(target); "" }
     }
 
