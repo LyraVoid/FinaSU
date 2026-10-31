@@ -84,8 +84,8 @@
     <string name="susfs_owner_cancel">取消待切换状态</string>
     <string name="susfs_owner_cancel_message">将恢复原来的管理方式。请先检查并停用其他写入方；保存的设置可能在下次启动时应用。</string>
     <string name="susfs_unsupported">检测到的能力集不支持此操作</string>
-    <string name="susfs_tab_paths">路径</string>
-    <string name="susfs_tab_spoof">伪装</string>
+    <string name="susfs_tab_paths">路径隐藏</string>
+    <string name="susfs_tab_spoof">文件伪装</string>
     <string name="susfs_tab_redirect">重定向</string>
     <string name="susfs_tab_extensions">扩展</string>
     <string name="susfs_unmanaged">不管理</string>

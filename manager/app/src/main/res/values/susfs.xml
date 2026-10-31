@@ -84,8 +84,8 @@
     <string name="susfs_owner_cancel">Cancel pending switch</string>
     <string name="susfs_owner_cancel_message">The previous management mode will resume. Check and stop other writers first; saved settings may be applied on the next boot.</string>
     <string name="susfs_unsupported">Not supported by the detected capability set</string>
-    <string name="susfs_tab_paths">Paths</string>
-    <string name="susfs_tab_spoof">Spoofing</string>
+    <string name="susfs_tab_paths">Path hiding</string>
+    <string name="susfs_tab_spoof">File disguise</string>
     <string name="susfs_tab_redirect">Redirect</string>
     <string name="susfs_tab_extensions">Extensions</string>
     <string name="susfs_unmanaged">Do not manage</string>

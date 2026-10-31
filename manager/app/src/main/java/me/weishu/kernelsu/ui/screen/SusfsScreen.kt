@@ -148,12 +148,8 @@ fun SusfsScreen() {
                         0 -> SusfsOverview(state, config, writable, vm, { ownershipAction = it },
                             { import.launch(arrayOf("application/json", "text/plain")) },
                             { export.launch("folksu-susfs.json") })
-                        1 -> SusfsBasicPage(config, state.status, writable, vm)
-                        2 -> {
-                            SusfsRuleSection("path", config, state.status, writable, vm)
-                            SusfsRuleSection("map", config, state.status, writable, vm)
-                        }
-                        3 -> {
+                        1 -> {
+                            SusfsBasicPage(config, state.status, writable, vm)
                             SusfsUnameSection(
                                 config,
                                 state.status,
@@ -172,6 +168,12 @@ fun SusfsScreen() {
                                 state.kernelFactsError,
                                 vm,
                             )
+                        }
+                        2 -> {
+                            SusfsRuleSection("path", config, state.status, writable, vm)
+                        }
+                        3 -> {
+                            SusfsRuleSection("map", config, state.status, writable, vm)
                             SusfsRuleSection("kstat", config, state.status, writable, vm)
                         }
                         4 -> SusfsRuleSection("redirect", config, state.status, writable, vm)
