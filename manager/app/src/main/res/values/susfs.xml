@@ -105,6 +105,7 @@
     <string name="susfs_report_hint">This session’s last apply request. Not a live inventory of all kernel rules.</string>
     <string name="susfs_acknowledged">Kernel acknowledged</string>
     <string name="susfs_acknowledged_unknown">Previously acknowledged · current effect unknown</string>
+    <string name="susfs_state_unknown">Unable to confirm application state</string>
     <string name="susfs_import_preview">Review configuration import</string>
     <string name="susfs_import_counts">Rules: %1$d · module names: %2$d · mount prefixes: %3$d</string>
     <string name="susfs_import_auto_on">Boot application is ON in this file.</string>

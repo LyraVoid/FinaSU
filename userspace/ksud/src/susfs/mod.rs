@@ -378,9 +378,10 @@ pub fn run(command: Command) -> Result<()> {
                     .pending
                     .as_ref()
                     .is_some_and(|p| p.may_confirm(boot_id.trim()));
-                let uts_active =
-                    uts_arbitration_active(&config, uts_provider_active).unwrap_or(false);
-                let summary = status_summary(&config, uts_active)?;
+                let summary = match uts_arbitration_active(&config, uts_provider_active) {
+                    Ok(uts_active) => status_summary(&config, uts_active)?,
+                    Err(_) => "unknown",
+                };
                 Ok((config, summary, ownership, switch_ready))
             });
             let status = match config {

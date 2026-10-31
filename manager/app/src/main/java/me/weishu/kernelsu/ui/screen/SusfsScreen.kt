@@ -56,6 +56,7 @@ import me.weishu.kernelsu.wallpaper.LocalFolkWallpaperTokens
 fun susfsManagementLabel(status: String): String = stringResource(when (status) {
     "applied" -> R.string.susfs_applied
     "acknowledged_unknown" -> R.string.susfs_acknowledged_unknown
+    "unknown" -> R.string.susfs_state_unknown
     "partial" -> R.string.susfs_partial
     "skipped" -> R.string.susfs_skipped
     "failed" -> R.string.susfs_failed
