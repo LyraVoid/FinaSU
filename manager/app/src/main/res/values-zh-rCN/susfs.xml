@@ -104,6 +104,7 @@
     <string name="susfs_last_report">上次应用回执</string>
     <string name="susfs_report_hint">当前页面会话中的上次应用请求，并非所有内核规则的实时列表。</string>
     <string name="susfs_acknowledged">内核已确认</string>
+    <string name="susfs_acknowledged_unknown">曾获接口确认 · 当前效果未知</string>
     <string name="susfs_import_preview">确认导入配置</string>
     <string name="susfs_import_counts">规则：%1$d · 模块名称：%2$d · 挂载前缀：%3$d</string>
     <string name="susfs_import_auto_on">此文件已开启开机应用。</string>

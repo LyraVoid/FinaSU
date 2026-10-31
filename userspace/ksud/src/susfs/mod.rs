@@ -330,7 +330,12 @@ fn uts_arbitration_active(config: &Config, query: impl FnOnce() -> Result<bool>)
 }
 
 fn status_summary(config: &Config, uts_active: bool) -> Result<&'static str> {
-    store::summary_with_deferred(config, uname_conflicts(config, uts_active))
+    let summary = store::summary_with_deferred(config, uname_conflicts(config, uts_active))?;
+    Ok(if summary == "applied" && !config.rules.is_empty() {
+        "acknowledged_unknown"
+    } else {
+        summary
+    })
 }
 
 fn apply_with_uts_arbitration(
