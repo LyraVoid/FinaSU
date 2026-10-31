@@ -387,6 +387,9 @@
     <string name="settings_folk_mount_reboot_hint">Entra em vigor após reiniciar.</string>
     <string name="settings_folk_mount_metamodule_compat_hint">Há um metamódulo ativado; seus scripts podem não funcionar com o mecanismo integrado.</string>
     <string name="settings_folk_mount_nomount_unavailable_hint">O driver NoMount não está respondendo; esta inicialização recorre ao mecanismo integrado.</string>
+    <string name="settings_folk_mount_nomount_ui_fallback">A inicialização anterior não confirmou que a interface do NoMount estava pronta; esta inicialização usa o mecanismo Built-in. Isso não prova uma falha no NoMount.</string>
+    <string name="settings_folk_mount_nomount_ui_unconfirmed">A prontidão da interface do NoMount não foi confirmada; a próxima inicialização usará o mecanismo Built-in.</string>
+    <string name="settings_folk_mount_step_interrupted">Uma etapa de montagem anterior não terminou; esta inicialização a ignorou para evitar repetir a mesma falha.</string>
     <string name="settings_folk_mount_write_failed">Falha ao alterar o modo do Folk Mount.</string>
     <string name="settings_nomount">NoMount</string>
     <string name="nomount_section_driver">Driver</string>

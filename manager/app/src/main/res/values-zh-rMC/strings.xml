@@ -385,6 +385,9 @@
     <string name="settings_folk_mount_reboot_hint">重生后生效。</string>
     <string name="settings_folk_mount_metamodule_compat_hint">存在已启用的 metamodule；其脚本可能与内建引擎不兼容。</string>
     <string name="settings_folk_mount_nomount_unavailable_hint">NoMount 驱动无响应；本次启动回退到内建引擎。</string>
+    <string name="settings_folk_mount_nomount_ui_fallback">上次启动没确认 NoMount 界面就绪；本次启动先由 Built-in 引擎接管。这不代表 NoMount 发生故障。</string>
+    <string name="settings_folk_mount_nomount_ui_unconfirmed">未确认 NoMount 界面就绪；下次启动将使用 Built-in 引擎。</string>
+    <string name="settings_folk_mount_step_interrupted">上次挂载步骤没走完；本次启动已跳过，以免同一故障再次出现。</string>
     <string name="settings_folk_mount_write_failed">修改 Folk Mount 模式失败。</string>
     <string name="settings_nomount">NoMount</string>
     <string name="nomount_section_driver">驱动</string>

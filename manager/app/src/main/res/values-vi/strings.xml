@@ -385,6 +385,9 @@
     <string name="settings_folk_mount_reboot_hint">Có hiệu lực sau khi khởi động lại.</string>
     <string name="settings_folk_mount_metamodule_compat_hint">Có một siêu module đang được bật; các script của nó có thể không hoạt động với engine tích hợp.</string>
     <string name="settings_folk_mount_nomount_unavailable_hint">Trình điều khiển NoMount không phản hồi; lần khởi động này quay về engine tích hợp.</string>
+    <string name="settings_folk_mount_nomount_ui_fallback">Lần khởi động trước không xác nhận được giao diện NoMount đã sẵn sàng; lần khởi động này dùng engine Built-in. Điều này không chứng minh NoMount bị lỗi.</string>
+    <string name="settings_folk_mount_nomount_ui_unconfirmed">Chưa xác nhận được giao diện NoMount đã sẵn sàng; lần khởi động tiếp theo sẽ dùng engine Built-in.</string>
+    <string name="settings_folk_mount_step_interrupted">Một bước gắn kết trước đó chưa hoàn tất; lần khởi động này đã bỏ qua để tránh lặp lại cùng lỗi.</string>
     <string name="settings_folk_mount_write_failed">Thay đổi chế độ Folk Mount thất bại.</string>
     <string name="settings_nomount">NoMount</string>
     <string name="nomount_section_driver">Trình điều khiển</string>

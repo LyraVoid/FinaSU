@@ -61,6 +61,7 @@ import me.weishu.kernelsu.data.model.NomountDriverState
 import me.weishu.kernelsu.data.model.SupportLinksStyle
 import me.weishu.kernelsu.data.themestore.ThemeStoreMode
 import me.weishu.kernelsu.ui.component.KsuIsValid
+import me.weishu.kernelsu.ui.component.folkMountWarningText
 import me.weishu.kernelsu.ui.component.material.SegmentedColumn
 import me.weishu.kernelsu.ui.component.material.SegmentedDropdownItem
 import me.weishu.kernelsu.ui.component.material.SegmentedListItem
@@ -821,7 +822,7 @@ fun FunctionCategoryContent(uiState: SettingsUiState, actions: SettingsScreenAct
                                 mode == FolkMountMode.NOMOUNT &&
                                     folkMountStatus.bootProvider != null &&
                                     folkMountStatus.bootProvider != FolkMountProvider.NOMOUNT ->
-                                    folkMountStatus.bootWarning
+                                    folkMountWarningText(folkMountStatus)
                                         ?: stringResource(
                                             id = R.string.settings_folk_mount_nomount_unavailable_hint
                                         )

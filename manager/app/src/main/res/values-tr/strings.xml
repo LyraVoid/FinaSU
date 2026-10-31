@@ -387,6 +387,9 @@
     <string name="settings_folk_mount_reboot_hint">Yeniden başlatmadan sonra etkili olur.</string>
     <string name="settings_folk_mount_metamodule_compat_hint">Etkin bir metamodül mevcut; betikleri yerleşik motorla çalışmayabilir.</string>
     <string name="settings_folk_mount_nomount_unavailable_hint">NoMount sürücüsü yanıt vermiyor; bu önyükleme yerleşik motora geri dönüyor.</string>
+    <string name="settings_folk_mount_nomount_ui_fallback">Önceki önyükleme NoMount arayüzünün hazır olduğunu doğrulayamadı; bu önyükleme Built-in motorunu kullanıyor. Bu, NoMount arızası olduğunu kanıtlamaz.</string>
+    <string name="settings_folk_mount_nomount_ui_unconfirmed">NoMount arayüzünün hazır olduğu doğrulanamadı; sonraki önyükleme Built-in motorunu kullanacak.</string>
+    <string name="settings_folk_mount_step_interrupted">Önceki bağlama adımı tamamlanmadı; aynı hatanın yinelenmemesi için bu önyüklemede atlandı.</string>
     <string name="settings_folk_mount_write_failed">Folk Mount modu değiştirilemedi.</string>
     <string name="settings_nomount">NoMount</string>
     <string name="nomount_section_driver">Sürücü</string>

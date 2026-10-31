@@ -385,6 +385,9 @@
     <string name="settings_folk_mount_reboot_hint">重启后才生效哦喵</string>
     <string name="settings_folk_mount_metamodule_compat_hint">检测到有开着的 metamodule 喵；它的脚本可能跟内建引擎合不来哦</string>
     <string name="settings_folk_mount_nomount_unavailable_hint">NoMount 驱动没回应喵；这次启动会回退到内建引擎哒</string>
+    <string name="settings_folk_mount_nomount_ui_fallback">上次启动没确认 NoMount 界面准备好喵；这次先用 Built-in 引擎啦。这不代表 NoMount 坏掉哦</string>
+    <string name="settings_folk_mount_nomount_ui_unconfirmed">没确认 NoMount 界面准备好喵；下次启动会先用 Built-in 引擎哒</string>
+    <string name="settings_folk_mount_step_interrupted">上次挂载步骤没走完喵；这次先跳过它，免得再踩同一个坑哒</string>
     <string name="settings_folk_mount_write_failed">改 Folk Mount 模式失败啦喵…</string>
     <string name="settings_nomount">NoMount</string>
     <string name="nomount_section_driver">驱动</string>

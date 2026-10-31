@@ -385,6 +385,9 @@
     <string name="settings_folk_mount_reboot_hint">Surte efecto tras reiniciar.</string>
     <string name="settings_folk_mount_metamodule_compat_hint">Hay un metamódulo activado presente; sus scripts pueden no funcionar con el motor integrado.</string>
     <string name="settings_folk_mount_nomount_unavailable_hint">El controlador NoMount no responde; este arranque recurre al motor integrado.</string>
+    <string name="settings_folk_mount_nomount_ui_fallback">El arranque anterior no confirmó que la interfaz de NoMount estuviera lista; este arranque usa el motor Built-in. Esto no demuestra que NoMount tenga un fallo.</string>
+    <string name="settings_folk_mount_nomount_ui_unconfirmed">No se confirmó que la interfaz de NoMount estuviera lista; el próximo arranque usará el motor Built-in.</string>
+    <string name="settings_folk_mount_step_interrupted">Un paso de montaje anterior no terminó; este arranque lo omitió para evitar repetir el mismo fallo.</string>
     <string name="settings_folk_mount_write_failed">No se pudo cambiar el modo de Folk Mount.</string>
     <string name="settings_nomount">NoMount</string>
     <string name="nomount_section_driver">Controlador</string>

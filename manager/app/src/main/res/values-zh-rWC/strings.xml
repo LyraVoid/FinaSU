@@ -385,6 +385,9 @@
     <string name="settings_folk_mount_reboot_hint">重铸仙躯后生效。</string>
     <string name="settings_folk_mount_metamodule_compat_hint">存有已启之元仙符；其符箓或与内置法门不谐。</string>
     <string name="settings_folk_mount_nomount_unavailable_hint">NoMount 驱动无应；此番启道退回内置法门。</string>
+    <string name="settings_folk_mount_nomount_ui_fallback">前番启道未验 NoMount 界面已备；此番启道暂归 Built-in 法门。此非 NoMount 故障之证矣。</string>
+    <string name="settings_folk_mount_nomount_ui_unconfirmed">未验 NoMount 界面已备；下番启道当归 Built-in 法门矣。</string>
+    <string name="settings_folk_mount_step_interrupted">前番挂载法仪未竟；此番启道暂越之，以免旧患复临矣。</string>
     <string name="settings_folk_mount_write_failed">易 Folk Mount 模式败陨。</string>
     <string name="settings_nomount">NoMount</string>
     <string name="nomount_section_driver">驱动</string>

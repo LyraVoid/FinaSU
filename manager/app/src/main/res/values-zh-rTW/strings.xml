@@ -386,6 +386,9 @@
     <string name="settings_folk_mount_reboot_hint">重新啟動後生效。</string>
     <string name="settings_folk_mount_metamodule_compat_hint">偵測到已啟用的 metamodule；其指令碼可能與內建引擎不相容。</string>
     <string name="settings_folk_mount_nomount_unavailable_hint">NoMount 驅動程式沒有回應；本次開機已退回內建引擎。</string>
+    <string name="settings_folk_mount_nomount_ui_fallback">上次開機未確認 NoMount 介面已就緒；本次開機使用 Built-in 引擎。這不代表 NoMount 發生故障。</string>
+    <string name="settings_folk_mount_nomount_ui_unconfirmed">未確認 NoMount 介面已就緒；下次開機會使用 Built-in 引擎。</string>
+    <string name="settings_folk_mount_step_interrupted">上次掛載步驟未完成；本次開機已跳過該步驟，以免再次發生相同故障。</string>
     <string name="settings_folk_mount_write_failed">變更 Folk Mount 模式失敗。</string>
     <string name="settings_nomount">NoMount</string>
     <string name="nomount_section_driver">驅動程式</string>

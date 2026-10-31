@@ -385,6 +385,9 @@
     <string name="settings_folk_mount_reboot_hint">重新开火才认。</string>
     <string name="settings_folk_mount_metamodule_compat_hint">有开着的 metamodule；它的脚本跟内建家伙八成不合。</string>
     <string name="settings_folk_mount_nomount_unavailable_hint">NoMount 驱动没应声；这回开火退回内建家伙。</string>
+    <string name="settings_folk_mount_nomount_ui_fallback">上回开火没确认 NoMount 界面备齐；这回先让 Built-in 家伙掌勺。这可不能证明 NoMount 坏了嘞</string>
+    <string name="settings_folk_mount_nomount_ui_unconfirmed">没确认 NoMount 界面备齐；下回开火先用 Built-in 家伙撑场嘞</string>
+    <string name="settings_folk_mount_step_interrupted">上回挂载没走完；这回先跳过，免得同一锅又糊嘞</string>
     <string name="settings_folk_mount_write_failed">Folk Mount 模式没改成。</string>
     <string name="settings_nomount">NoMount</string>
     <string name="nomount_section_driver">驱动</string>

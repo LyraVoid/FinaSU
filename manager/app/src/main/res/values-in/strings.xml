@@ -385,6 +385,9 @@
     <string name="settings_folk_mount_reboot_hint">Berlaku setelah mulai ulang.</string>
     <string name="settings_folk_mount_metamodule_compat_hint">Ada metamodul yang aktif; skripnya mungkin tidak berfungsi dengan mesin bawaan.</string>
     <string name="settings_folk_mount_nomount_unavailable_hint">Driver NoMount tidak merespons; boot ini kembali ke mesin bawaan.</string>
+    <string name="settings_folk_mount_nomount_ui_fallback">Boot sebelumnya tidak mengonfirmasi kesiapan antarmuka NoMount; boot ini menggunakan mesin Built-in. Ini tidak membuktikan NoMount bermasalah.</string>
+    <string name="settings_folk_mount_nomount_ui_unconfirmed">Kesiapan antarmuka NoMount tidak terkonfirmasi; boot berikutnya akan menggunakan mesin Built-in.</string>
+    <string name="settings_folk_mount_step_interrupted">Langkah pemasangan sebelumnya tidak selesai; boot ini melewatinya agar kegagalan yang sama tidak terulang.</string>
     <string name="settings_folk_mount_write_failed">Gagal mengubah mode Folk Mount.</string>
     <string name="settings_nomount">NoMount</string>
     <string name="nomount_section_driver">Driver</string>

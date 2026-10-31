@@ -385,6 +385,9 @@
     <string name="settings_folk_mount_reboot_hint">神翼再生后生效。</string>
     <string name="settings_folk_mount_metamodule_compat_hint">已有唤醒之 metamodule；其咒语或与内建圣光引擎不合。</string>
     <string name="settings_folk_mount_nomount_unavailable_hint">NoMount 驱动无所应答；此番圣启归于内建圣光引擎。</string>
+    <string name="settings_folk_mount_nomount_ui_fallback">前番圣启未确认 NoMount 圣面已备；此番圣启暂归 Built-in 圣光引擎。此非 NoMount 故障之证焉。</string>
+    <string name="settings_folk_mount_nomount_ui_unconfirmed">未确认 NoMount 圣面已备；下次圣启当归 Built-in 圣光引擎焉。</string>
+    <string name="settings_folk_mount_step_interrupted">前番挂载圣仪未竟；此番圣启暂越之，以免旧患复临焉。</string>
     <string name="settings_folk_mount_write_failed">更改 Folk Mount 模式神恩未至。</string>
     <string name="settings_nomount">NoMount</string>
     <string name="nomount_section_driver">驱动</string>

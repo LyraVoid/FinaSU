@@ -154,6 +154,14 @@ struct RuntimeRecord {
     error: Option<String>,
     /// Provider-specific degradation that did not stop the injection.
     warning: Option<String>,
+    /// Stable identifier for the manager to localize instead of showing the
+    /// diagnostic text above.
+    warning_code: Option<String>,
+}
+
+struct RuntimeWarning {
+    message: String,
+    code: Option<&'static str>,
 }
 
 /// Read the configured mount mode from [`defs::FOLK_MOUNT_CONFIG`].
@@ -297,7 +305,7 @@ fn sanitize(value: &str) -> String {
 
 fn write_runtime(record: &RuntimeRecord) -> Result<()> {
     let contents = format!(
-        "boot_id={}\ngeneration={}\nprovider={}\nresult={}\ntarget_count={}\nerror={}\nwarning={}\n",
+        "boot_id={}\ngeneration={}\nprovider={}\nresult={}\ntarget_count={}\nerror={}\nwarning={}\nwarning_code={}\n",
         record.boot_id,
         record.generation,
         record.provider.as_deref().unwrap_or(""),
@@ -307,6 +315,10 @@ fn write_runtime(record: &RuntimeRecord) -> Result<()> {
             .map_or_else(String::new, |count| count.to_string()),
         record.error.as_deref().map_or_else(String::new, sanitize),
         record.warning.as_deref().map_or_else(String::new, sanitize),
+        record
+            .warning_code
+            .as_deref()
+            .map_or_else(String::new, sanitize),
     );
     write_atomic(Path::new(defs::FOLK_MOUNT_RUNTIME), contents.as_bytes())
 }
@@ -326,6 +338,9 @@ fn read_runtime() -> Option<RuntimeRecord> {
             "target_count" => record.target_count = value.parse().ok(),
             "error" => record.error = (!value.is_empty()).then(|| value.to_string()),
             "warning" => record.warning = (!value.is_empty()).then(|| value.to_string()),
+            "warning_code" => {
+                record.warning_code = (!value.is_empty()).then(|| value.to_string());
+            }
             _ => {}
         }
     }
@@ -343,6 +358,7 @@ fn record_skipped() {
         target_count: None,
         error: None,
         warning: None,
+        warning_code: None,
     };
     if let Err(e) = write_runtime(&record) {
         warn!("folk mount: failed to record skipped state: {e:#}");
@@ -800,6 +816,7 @@ pub fn mount_selected_provider() -> Result<MountOutcome> {
     // recorded failure of the built-in engine itself only gets reported, since
     // there is nothing safer left to fall back to.
     let mut guard_note = None;
+    let mut guard_code = None;
     let mut ui_fallback = false;
     // Driver bootstrap is independent of rule injection. An earlier failed
     // injection may make this cycle fall back to builtin, but it must not leave
@@ -816,6 +833,7 @@ pub fn mount_selected_provider() -> Result<MountOutcome> {
                 let note = format!("NoMount driver could not be prepared ({error:#})");
                 warn!("folk mount: {note}");
                 guard_note = Some(note);
+                guard_code = Some("nomount_driver_unavailable");
                 provider = Provider::Builtin;
             }
         }
@@ -824,6 +842,7 @@ pub fn mount_selected_provider() -> Result<MountOutcome> {
         match crate::mount_ui::previous(&boot_id) {
             crate::mount_ui::Previous::Failed(note) => {
                 guard_note = Some(note);
+                guard_code = Some("nomount_ui_fallback");
                 provider = Provider::Builtin;
                 ui_fallback = true;
             }
@@ -844,6 +863,7 @@ pub fn mount_selected_provider() -> Result<MountOutcome> {
             "the {} never finished, so this boot does not repeat it",
             record.describe()
         ));
+        guard_code = Some("mount_step_interrupted");
         if let Some(note) = &guard_note {
             warn!("folk mount: {note}");
         }
@@ -863,6 +883,7 @@ pub fn mount_selected_provider() -> Result<MountOutcome> {
         target_count: None,
         error: None,
         warning: None,
+        warning_code: None,
     })?;
 
     // Written before the provider runs and cleared when the boot completes: a
@@ -922,8 +943,26 @@ pub fn mount_selected_provider() -> Result<MountOutcome> {
                 outcome.skipped_count
             );
             let warning = guard_note
-                .or(fallback)
-                .or_else(|| outcome.warnings.first().cloned());
+                .map(|message| RuntimeWarning {
+                    message,
+                    code: guard_code,
+                })
+                .or_else(|| {
+                    fallback.map(|message| RuntimeWarning {
+                        message,
+                        code: Some("nomount_driver_unavailable"),
+                    })
+                })
+                .or_else(|| {
+                    outcome
+                        .warnings
+                        .first()
+                        .cloned()
+                        .map(|message| RuntimeWarning {
+                            message,
+                            code: None,
+                        })
+                });
             finish_runtime(
                 &epoch,
                 provider,
@@ -947,13 +986,24 @@ pub fn mount_selected_provider() -> Result<MountOutcome> {
                 outcome.skipped_count,
                 outcome.residue
             );
+            let warning = guard_note
+                .map(|message| RuntimeWarning {
+                    message,
+                    code: guard_code,
+                })
+                .or_else(|| {
+                    fallback.map(|message| RuntimeWarning {
+                        message,
+                        code: Some("nomount_driver_unavailable"),
+                    })
+                });
             finish_runtime(
                 &epoch,
                 provider,
                 result,
                 (provider != Provider::Metamodule).then_some(outcome.target_count),
                 Some(format!("{error:#}")),
-                guard_note.or(fallback),
+                warning,
                 Some(configured),
             );
             Err(error)
@@ -973,6 +1023,7 @@ pub fn record_ui_warning(boot_id: &str, generation: u64, message: &str) {
         && record.provider.as_deref() == Some("nomount")
     {
         record.warning = Some(message.to_string());
+        record.warning_code = Some("nomount_ui_unconfirmed".to_string());
         let _ = write_runtime(&record);
     }
 }
@@ -983,7 +1034,7 @@ fn finish_runtime(
     result: &str,
     target_count: Option<usize>,
     error: Option<String>,
-    warning: Option<String>,
+    warning: Option<RuntimeWarning>,
     configured: Option<Provider>,
 ) {
     let record = RuntimeRecord {
@@ -993,7 +1044,8 @@ fn finish_runtime(
         result: result.to_string(),
         target_count,
         error,
-        warning,
+        warning: warning.as_ref().map(|warning| warning.message.clone()),
+        warning_code: warning.and_then(|warning| warning.code).map(str::to_string),
     };
     if let Err(e) = write_runtime(&record) {
         warn!("folk mount: failed to record runtime state: {e:#}");
@@ -1053,22 +1105,30 @@ pub fn print_status(json: bool) -> Result<()> {
 
     let boot_id = current_boot_id();
     let runtime = read_runtime();
-    let (boot_id, boot_provider, boot_result, target_count, runtime_error, boot_warning) =
-        match (&runtime, &boot_id) {
-            (Some(record), Some(current)) if &record.boot_id == current => (
-                Some(record.boot_id.clone()),
-                record.provider.clone(),
-                if record.result.is_empty() {
-                    "unknown".to_string()
-                } else {
-                    record.result.clone()
-                },
-                record.target_count,
-                record.error.clone(),
-                record.warning.clone(),
-            ),
-            _ => (None, None, "unknown".to_string(), None, None, None),
-        };
+    let (
+        boot_id,
+        boot_provider,
+        boot_result,
+        target_count,
+        runtime_error,
+        boot_warning,
+        boot_warning_code,
+    ) = match (&runtime, &boot_id) {
+        (Some(record), Some(current)) if &record.boot_id == current => (
+            Some(record.boot_id.clone()),
+            record.provider.clone(),
+            if record.result.is_empty() {
+                "unknown".to_string()
+            } else {
+                record.result.clone()
+            },
+            record.target_count,
+            record.error.clone(),
+            record.warning.clone(),
+            record.warning_code.clone(),
+        ),
+        _ => (None, None, "unknown".to_string(), None, None, None, None),
+    };
     let error = config_error.or(runtime_error);
 
     let stdout = std::io::stdout();
@@ -1088,6 +1148,7 @@ pub fn print_status(json: bool) -> Result<()> {
                 "boot_result": boot_result,
                 "target_count": target_count,
                 "boot_warning": boot_warning,
+                "boot_warning_code": boot_warning_code,
                 "error": error,
             })
         )
@@ -1133,6 +1194,12 @@ pub fn print_status(json: bool) -> Result<()> {
             out,
             "boot_warning={}",
             boot_warning.as_deref().unwrap_or("")
+        )
+        .context("failed to write mount status")?;
+        writeln!(
+            out,
+            "boot_warning_code={}",
+            boot_warning_code.as_deref().unwrap_or("")
         )
         .context("failed to write mount status")?;
         writeln!(out, "error={}", error.as_deref().unwrap_or(""))

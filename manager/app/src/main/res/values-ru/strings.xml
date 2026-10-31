@@ -387,6 +387,9 @@
     <string name="settings_folk_mount_reboot_hint">Вступит в силу после перезагрузки.</string>
     <string name="settings_folk_mount_metamodule_compat_hint">Присутствует включённый метамодуль; его скрипты могут не работать со встроенным движком.</string>
     <string name="settings_folk_mount_nomount_unavailable_hint">Драйвер NoMount не отвечает; в этой загрузке используется встроенный движок.</string>
+    <string name="settings_folk_mount_nomount_ui_fallback">При предыдущей загрузке готовность интерфейса NoMount не подтвердилась; в этой загрузке используется движок Built-in. Это не доказывает неисправность NoMount.</string>
+    <string name="settings_folk_mount_nomount_ui_unconfirmed">Готовность интерфейса NoMount не подтвердилась; при следующей загрузке будет использоваться движок Built-in.</string>
+    <string name="settings_folk_mount_step_interrupted">Предыдущий этап монтирования не завершился; эта загрузка пропустила его, чтобы не повторять ту же ошибку.</string>
     <string name="settings_folk_mount_write_failed">Не удалось изменить режим Folk Mount.</string>
     <string name="settings_nomount">NoMount</string>
     <string name="nomount_section_driver">Драйвер</string>

@@ -45,7 +45,8 @@ enum class FolkMountProvider(val token: String) {
  * [metamoduleId] <- `metamodule_id`, [metamoduleEnabled] <- `metamodule_enabled`,
  * [bootId] <- `boot_id`, [bootProvider] <- `boot_provider`,
  * [bootResult] <- `boot_result`, [targetCount] <- `target_count`,
- * [bootWarning] <- `boot_warning` (schema 2), [error] <- `error`.
+ * [bootWarning] <- `boot_warning` (schema 2), [bootWarningCode] <-
+ * `boot_warning_code`, [error] <- `error`.
  */
 @Immutable
 data class FolkMountStatus(
@@ -59,6 +60,8 @@ data class FolkMountStatus(
     val targetCount: Int?,
     /** Provider-specific degradation for this boot, e.g. a NoMount fallback. */
     val bootWarning: String?,
+    /** Stable warning identifier used to localize [bootWarning]. */
+    val bootWarningCode: String? = null,
     val error: String?,
 ) {
     // Re-selecting NoMount is the explicit guard retry after a fallback.
@@ -97,6 +100,7 @@ data class FolkMountStatus(
                 bootResult = json.optString("boot_result", "unknown"),
                 targetCount = json.optIntOrNull("target_count"),
                 bootWarning = json.optStringOrNull("boot_warning"),
+                bootWarningCode = json.optStringOrNull("boot_warning_code"),
                 error = json.optStringOrNull("error"),
             )
         }

@@ -389,6 +389,9 @@ Przed kontynuowaniem upewnij się, że bootloader jest odblokowany!</string>
     <string name="settings_folk_mount_reboot_hint">Zaczyna działać po ponownym uruchomieniu.</string>
     <string name="settings_folk_mount_metamodule_compat_hint">Obecny jest włączony metamoduł; jego skrypty mogą nie działać z wbudowanym mechanizmem.</string>
     <string name="settings_folk_mount_nomount_unavailable_hint">Sterownik NoMount nie odpowiada; to uruchomienie korzysta z wbudowanego mechanizmu.</string>
+    <string name="settings_folk_mount_nomount_ui_fallback">Poprzednie uruchomienie nie potwierdziło gotowości interfejsu NoMount; to uruchomienie używa mechanizmu Built-in. Nie dowodzi to awarii NoMount.</string>
+    <string name="settings_folk_mount_nomount_ui_unconfirmed">Nie potwierdzono gotowości interfejsu NoMount; następne uruchomienie użyje mechanizmu Built-in.</string>
+    <string name="settings_folk_mount_step_interrupted">Poprzedni etap montowania nie zakończył się; to uruchomienie go pominęło, aby uniknąć powtórzenia tego samego błędu.</string>
     <string name="settings_folk_mount_write_failed">Nie udało się zmienić trybu Folk Mount.</string>
     <string name="settings_nomount">NoMount</string>
     <string name="nomount_section_driver">Sterownik</string>

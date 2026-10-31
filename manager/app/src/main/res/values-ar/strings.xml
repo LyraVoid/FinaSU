@@ -387,6 +387,9 @@
     <string name="settings_folk_mount_reboot_hint">يُطبَّق بعد إعادة التشغيل.</string>
     <string name="settings_folk_mount_metamodule_compat_hint">توجد وحدة وصفية مفعّلة؛ قد لا تعمل سكربتاتها مع المحرك المدمج.</string>
     <string name="settings_folk_mount_nomount_unavailable_hint">مشغّل NoMount لا يستجيب؛ يتراجع هذا الإقلاع إلى المحرك المدمج.</string>
+    <string name="settings_folk_mount_nomount_ui_fallback">لم يؤكد الإقلاع السابق جاهزية واجهة NoMount؛ يستخدم هذا الإقلاع محرك Built-in. هذا لا يثبت وجود عطل في NoMount.</string>
+    <string name="settings_folk_mount_nomount_ui_unconfirmed">لم يتم تأكيد جاهزية واجهة NoMount؛ سيستخدم الإقلاع التالي محرك Built-in.</string>
+    <string name="settings_folk_mount_step_interrupted">لم تكتمل خطوة تركيب سابقة؛ تخطاها هذا الإقلاع لتجنب تكرار الفشل نفسه.</string>
     <string name="settings_folk_mount_write_failed">فشل تغيير وضع Folk Mount.</string>
     <string name="settings_nomount">NoMount</string>
     <string name="nomount_section_driver">المشغّل</string>

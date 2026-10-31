@@ -385,6 +385,9 @@
     <string name="settings_folk_mount_reboot_hint">重新觉醒后生效。</string>
     <string name="settings_folk_mount_metamodule_compat_hint">存在已点亮的 metamodule；其咒式可能与内建引擎不兼容。</string>
     <string name="settings_folk_mount_nomount_unavailable_hint">NoMount 驱动没有回应；本次觉醒回退到内建引擎。</string>
+    <string name="settings_folk_mount_nomount_ui_fallback">上次觉醒没确认 NoMount 魔法界面已就绪；本次觉醒先交给 Built-in 法阵。这可不代表 NoMount 出故障。</string>
+    <string name="settings_folk_mount_nomount_ui_unconfirmed">没确认 NoMount 魔法界面已就绪；下次觉醒会先交给 Built-in 法阵。</string>
+    <string name="settings_folk_mount_step_interrupted">上次挂载法阵没走完；本次觉醒跳过它，免得再撞上同一道故障。</string>
     <string name="settings_folk_mount_write_failed">修改 Folk Mount 模式变身失败。</string>
     <string name="settings_nomount">NoMount</string>
     <string name="nomount_section_driver">驱动</string>

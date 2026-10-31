@@ -385,6 +385,9 @@
     <string name="settings_folk_mount_reboot_hint">再起動後に有効になります。</string>
     <string name="settings_folk_mount_metamodule_compat_hint">有効なメタモジュールが存在します。そのスクリプトは内蔵エンジンでは動作しない可能性があります。</string>
     <string name="settings_folk_mount_nomount_unavailable_hint">NoMount ドライバーが応答していません。今回の起動では内蔵エンジンにフォールバックします。</string>
+    <string name="settings_folk_mount_nomount_ui_fallback">前回の起動では NoMount の UI 準備完了を確認できませんでした。今回の起動では Built-in エンジンを使用します。これは NoMount の不具合を証明するものではありません。</string>
+    <string name="settings_folk_mount_nomount_ui_unconfirmed">NoMount の UI 準備完了を確認できませんでした。次回の起動では Built-in エンジンを使用します。</string>
+    <string name="settings_folk_mount_step_interrupted">前回のマウント手順が完了しませんでした。同じ障害を繰り返さないため、今回の起動ではこの手順を省略しました。</string>
     <string name="settings_folk_mount_write_failed">Folk Mount モードの変更に失敗しました。</string>
     <string name="settings_nomount">NoMount</string>
     <string name="nomount_section_driver">ドライバー</string>

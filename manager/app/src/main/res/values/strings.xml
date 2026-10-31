@@ -395,6 +395,9 @@
     <string name="settings_folk_mount_reboot_hint">Takes effect after reboot.</string>
     <string name="settings_folk_mount_metamodule_compat_hint">An enabled metamodule is present; its scripts may not work with the built-in engine.</string>
     <string name="settings_folk_mount_nomount_unavailable_hint">The NoMount driver is not answering; this boot falls back to the built-in engine.</string>
+    <string name="settings_folk_mount_nomount_ui_fallback">The previous boot did not confirm NoMount UI readiness; this boot uses the Built-in engine. This does not prove a NoMount fault.</string>
+    <string name="settings_folk_mount_nomount_ui_unconfirmed">NoMount UI readiness was not confirmed; the next boot will use the Built-in engine.</string>
+    <string name="settings_folk_mount_step_interrupted">A previous mount step did not finish; this boot skipped it to avoid repeating the same failure.</string>
     <string name="settings_folk_mount_write_failed">Failed to change the Folk Mount mode.</string>
     <string name="settings_nomount">NoMount</string>
     <string name="nomount_section_driver">Driver</string>

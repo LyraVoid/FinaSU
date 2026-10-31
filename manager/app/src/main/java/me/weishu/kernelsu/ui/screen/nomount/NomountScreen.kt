@@ -36,6 +36,7 @@ import me.weishu.kernelsu.R
 import me.weishu.kernelsu.data.model.FolkMountMode
 import me.weishu.kernelsu.data.model.NomountDriverState
 import me.weishu.kernelsu.data.model.NomountStatus
+import me.weishu.kernelsu.ui.component.folkMountWarningText
 import me.weishu.kernelsu.ui.component.dialog.ConfirmResult
 import me.weishu.kernelsu.ui.component.dialog.rememberConfirmDialog
 import me.weishu.kernelsu.ui.component.material.ExpressiveScaffold
@@ -113,7 +114,8 @@ private fun SetupSection(state: NomountUiState, viewModel: NomountViewModel) {
     val title = stringResource(R.string.settings_folk_mount_mode_nomount)
     val confirmContent = stringResource(R.string.settings_folk_mount_nomount_confirm)
     val confirmAction = stringResource(R.string.settings_folk_mount_nomount_confirm_ok)
-    val warning = mount.bootWarning.takeIf { mount.configuredMode == FolkMountMode.NOMOUNT }
+    val warning = folkMountWarningText(mount)
+        .takeIf { mount.configuredMode == FolkMountMode.NOMOUNT }
     val summary = listOfNotNull(
         warning ?: stringResource(R.string.settings_folk_mount_mode_nomount_summary),
         stringResource(R.string.settings_folk_mount_reboot_hint),
