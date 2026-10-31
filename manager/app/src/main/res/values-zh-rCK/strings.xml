@@ -274,6 +274,13 @@
     <string name="settings_kernel_umount">收招牌菜（秘酱料级）</string>
     <string name="settings_kernel_umount_summary">在秘酱料里给要的应用收起招牌菜</string>
     <string name="settings_finasu_hide">FinaSU Hide</string>
+    <string name="settings_kernel_umount_unknown">弄不成拿准功能是否能用嘞</string>
+    <string name="settings_kernel_umount_values">眼下：%1$s · 再开火后：%2$s嘞</string>
+    <string name="settings_kernel_umount_on">开启嘞</string>
+    <string name="settings_kernel_umount_off">关闭嘞</string>
+    <string name="settings_kernel_umount_value_unknown">未知或未收好嘞</string>
+    <string name="settings_kernel_umount_write_failed">弄不成修改卸载模块总开关嘞</string>
+    <string name="settings_kernel_umount_save_failed">已修改，但弄不成收好供再开火后使用嘞</string>
     <string name="umount_paths_title">自定义收起招牌菜</string>
     <string name="umount_paths_summary">管理指定应用开张时看不到的招牌菜</string>
     <string name="umount_paths_intro_title">改的是应用真正端上桌的菜</string>
@@ -665,6 +672,10 @@
     <string name="settings_finasu_hide_failed">FinaSU Hide 没改成功</string>
     <string name="settings_adb_root" translatable="false">ADB Root</string>
     <string name="settings_adb_root_summary">让 adbd 看店的拿着大厨权限干活</string>
+    <string name="feature_external_changes_title">共享配法已被外部修改嘞</string>
+    <string name="feature_external_changes_summary">外部模块或管事的在 FinaSU 套上已收好配法后修改了这些运行值。FinaSU 不会顺手覆盖嘞。</string>
+    <string name="feature_external_value_on">开启嘞</string>
+    <string name="feature_external_value_off">关闭嘞</string>
     <string name="menu_sort">排队</string>
     <string name="sort_by_name">菜名</string>
     <string name="sort_by_package_name">招牌号</string>

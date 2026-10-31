@@ -274,6 +274,13 @@
     <string name="settings_kernel_umount">Umount kernel</string>
     <string name="settings_kernel_umount_summary">Unmount modul dari kernel pada profil aplikasi</string>
     <string name="settings_finasu_hide">FinaSU Hide</string>
+    <string name="settings_kernel_umount_unknown">Tidak dapat mengonfirmasi ketersediaan fitur</string>
+    <string name="settings_kernel_umount_values">Saat ini: %1$s · Disimpan untuk reboot: %2$s</string>
+    <string name="settings_kernel_umount_on">Aktif</string>
+    <string name="settings_kernel_umount_off">Nonaktif</string>
+    <string name="settings_kernel_umount_value_unknown">Tidak diketahui atau tidak disimpan</string>
+    <string name="settings_kernel_umount_write_failed">Tidak dapat mengubah pelepasan modul</string>
+    <string name="settings_kernel_umount_save_failed">Diubah, tetapi tidak dapat disimpan untuk boot ulang</string>
     <string name="umount_paths_title">Titik mount khusus untuk di-unmount</string>
     <string name="umount_paths_summary">Kelola titik mount yang tidak boleh dilihat aplikasi terpilih saat mulai</string>
     <string name="umount_paths_intro_title">Mengubah berkas yang benar-benar dilihat aplikasi</string>
@@ -656,6 +663,10 @@
     <string name="settings_finasu_hide_failed">Gagal mengubah FinaSU Hide</string>
     <string name="settings_adb_root">ADB root</string>
     <string name="settings_adb_root_summary">Jalankan daemon adbd dengan hak akses root</string>
+    <string name="feature_external_changes_title">Pengaturan bersama diubah di luar FinaSU</string>
+    <string name="feature_external_changes_summary">Modul atau manajer eksternal mengubah nilai runtime ini setelah FinaSU menerapkan pengaturan tersimpannya. FinaSU tidak akan menimpanya secara otomatis.</string>
+    <string name="feature_external_value_on">Aktif</string>
+    <string name="feature_external_value_off">Nonaktif</string>
     <string name="menu_sort">Urutkan</string>
     <string name="sort_by_name">Nama aplikasi</string>
     <string name="sort_by_package_name">Nama paket</string>

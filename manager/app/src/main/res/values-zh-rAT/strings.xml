@@ -274,6 +274,13 @@
     <string name="settings_kernel_umount">解除圣光阵（灵魂之力层面）</string>
     <string name="settings_kernel_umount_summary">于灵魂之力层为所需圣器解除圣光阵</string>
     <string name="settings_finasu_hide">FinaSU Hide</string>
+    <string name="settings_kernel_umount_unknown">未能勘验功能是否可施焉</string>
+    <string name="settings_kernel_umount_values">今：%1$s · 重启后：%2$s焉</string>
+    <string name="settings_kernel_umount_on">开启焉</string>
+    <string name="settings_kernel_umount_off">关闭焉</string>
+    <string name="settings_kernel_umount_value_unknown">未知或未留存焉</string>
+    <string name="settings_kernel_umount_write_failed">未能修改卸载模块总开关焉</string>
+    <string name="settings_kernel_umount_save_failed">已修改，但未能留存供重启后使用焉</string>
     <string name="umount_paths_title">自定卸载圣光阵</string>
     <string name="umount_paths_summary">掌管指定圣器启程时不得窥见之圣光阵</string>
     <string name="umount_paths_intro_title">更易圣器真正所见之典</string>
@@ -665,6 +672,10 @@
     <string name="settings_finasu_hide_failed">更易 FinaSU Hide 神恩未至</string>
     <string name="settings_adb_root" translatable="false">ADB Root</string>
     <string name="settings_adb_root_summary">以 Root 之权运转 adbd 守望圣使</string>
+    <string name="feature_external_changes_title">共享圣设已被外部修改焉</string>
+    <string name="feature_external_changes_summary">外部模块或掌圣者在 FinaSU 施展已留存圣设后修改了这些运行值。FinaSU 不会自行覆盖焉。</string>
+    <string name="feature_external_value_on">开启焉</string>
+    <string name="feature_external_value_off">关闭焉</string>
     <string name="menu_sort">排列</string>
     <string name="sort_by_name">圣器名</string>
     <string name="sort_by_package_name">圣匣名</string>

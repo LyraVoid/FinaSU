@@ -274,6 +274,13 @@
     <string name="settings_kernel_umount">道核卸符</string>
     <string name="settings_kernel_umount_summary">于道核层为所需凡器卸除仙符</string>
     <string name="settings_finasu_hide">FinaSU Hide</string>
+    <string name="settings_kernel_umount_unknown">未能勘验功能是否可施矣</string>
+    <string name="settings_kernel_umount_values">今：%1$s · 轮转后：%2$s矣</string>
+    <string name="settings_kernel_umount_on">开启矣</string>
+    <string name="settings_kernel_umount_off">关闭矣</string>
+    <string name="settings_kernel_umount_value_unknown">未知或未留存矣</string>
+    <string name="settings_kernel_umount_write_failed">未能修改卸载模块总开关矣</string>
+    <string name="settings_kernel_umount_save_failed">已修改，但未能留存供轮转后使用矣</string>
     <string name="umount_paths_title">自定卸除挂载之点</string>
     <string name="umount_paths_summary">执掌指定凡器启行时不可见之挂载点</string>
     <string name="umount_paths_intro_title">更易凡器真正所见之文卷</string>
@@ -665,6 +672,10 @@
     <string name="settings_finasu_hide_failed">易 FinaSU Hide 败陨</string>
     <string name="settings_adb_root" translatable="false">ADB Root</string>
     <string name="settings_adb_root_summary">以 Root 之权运转 adbd 守护之灵</string>
+    <string name="feature_external_changes_title">共享设符已被外部修改矣</string>
+    <string name="feature_external_changes_summary">外部模块或掌道者在 FinaSU 施行已留存设符后修改了这些运行值。FinaSU 不会自行覆盖矣。</string>
+    <string name="feature_external_value_on">开启矣</string>
+    <string name="feature_external_value_off">关闭矣</string>
     <string name="menu_sort">排序</string>
     <string name="sort_by_name">凡器名讳</string>
     <string name="sort_by_package_name">包名</string>

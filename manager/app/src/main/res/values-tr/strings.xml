@@ -276,6 +276,13 @@
     <string name="settings_kernel_umount">Kernel bağlantısını kes</string>
     <string name="settings_kernel_umount_summary">KernelSU tarafından kontrol edilen çekirdek seviyesinde bağlantı kesme davranışı.</string>
     <string name="settings_finasu_hide">FinaSU Hide</string>
+    <string name="settings_kernel_umount_unknown">Özelliğin kullanılabilirliği doğrulanamıyor</string>
+    <string name="settings_kernel_umount_values">Şu anki: %1$s · Yeniden başlatma için kaydedildi: %2$s</string>
+    <string name="settings_kernel_umount_on">Açık</string>
+    <string name="settings_kernel_umount_off">Kapalı</string>
+    <string name="settings_kernel_umount_value_unknown">Bilinmiyor veya kaydedilmedi</string>
+    <string name="settings_kernel_umount_write_failed">Modül bağlantısının kesilmesi değiştirilemedi</string>
+    <string name="settings_kernel_umount_save_failed">Değiştirildi ancak yeniden başlatma için kaydedilemedi</string>
     <string name="umount_paths_title">Özel kaldırılacak bağlama noktaları</string>
     <string name="umount_paths_summary">Seçili uygulamaların başlangıçta görmemesi gereken bağlama noktalarını yönetin</string>
     <string name="umount_paths_intro_title">Uygulamanın gerçekte gördüğü dosyaları değiştirir</string>
@@ -658,6 +665,10 @@
     <string name="settings_finasu_hide_failed">FinaSU Hide değiştirilemedi</string>
     <string name="settings_adb_root" translatable="false">ADB Root</string>
     <string name="settings_adb_root_summary">adbd daemonını Root ayrıcalıklarıyla çalıştır</string>
+    <string name="feature_external_changes_title">Paylaşılan ayarlar FinaSU dışında değiştirildi</string>
+    <string name="feature_external_changes_summary">FinaSU kayıtlı ayarlarını uyguladıktan sonra harici bir modül veya yönetici bu çalışma zamanı değerlerini değiştirdi. FinaSU otomatik olarak bunların üzerine yazmayacaktır.</string>
+    <string name="feature_external_value_on">Açık</string>
+    <string name="feature_external_value_off">Kapalı</string>
     <string name="menu_sort">Sırala</string>
     <string name="sort_by_name">Uygulama adı</string>
     <string name="sort_by_package_name">Paket adı</string>

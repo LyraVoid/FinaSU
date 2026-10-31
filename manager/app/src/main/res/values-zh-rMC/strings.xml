@@ -274,6 +274,13 @@
     <string name="settings_kernel_umount">卸载模组（基岩核心级）</string>
     <string name="settings_kernel_umount_summary">在基岩核心给需要的应用卸载模组</string>
     <string name="settings_finasu_hide">FinaSU Hide</string>
+    <string name="settings_kernel_umount_unknown">无法确认功能是否可用（主世界）</string>
+    <string name="settings_kernel_umount_values">目前：%1$s · 重新进入世界后：%2$s</string>
+    <string name="settings_kernel_umount_on">开启（主世界）</string>
+    <string name="settings_kernel_umount_off">关闭（主世界）</string>
+    <string name="settings_kernel_umount_value_unknown">未知或未存档</string>
+    <string name="settings_kernel_umount_write_failed">无法修改卸载模块总开关（主世界）</string>
+    <string name="settings_kernel_umount_save_failed">已修改，但无法存档供重新进入世界后使用</string>
     <string name="umount_paths_title">自定义卸载挂载点</string>
     <string name="umount_paths_summary">管理指定应用启动时看不到的挂载点</string>
     <string name="umount_paths_intro_title">改变应用实际看到的文件</string>
@@ -665,6 +672,10 @@
     <string name="settings_finasu_hide_failed">修改 FinaSU Hide 失败</string>
     <string name="settings_adb_root" translatable="false">ADB Root</string>
     <string name="settings_adb_root_summary">以 OP 权限运行 adbd 守护进程</string>
+    <string name="feature_external_changes_title">共享世界设置已被外部修改</string>
+    <string name="feature_external_changes_summary">外部模块或管理员在 FinaSU 应用已存档世界设置后修改了这些运行值。FinaSU 不会自动覆盖。</string>
+    <string name="feature_external_value_on">开启（主世界）</string>
+    <string name="feature_external_value_off">关闭（主世界）</string>
     <string name="menu_sort">排序</string>
     <string name="sort_by_name">应用名</string>
     <string name="sort_by_package_name">包名</string>

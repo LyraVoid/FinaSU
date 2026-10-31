@@ -274,6 +274,13 @@
     <string name="settings_kernel_umount">Kernel umount</string>
     <string name="settings_kernel_umount_summary">Umount modules khỏi Kernel trong Hồ sơ ứng dụng.</string>
     <string name="settings_finasu_hide">FinaSU Hide</string>
+    <string name="settings_kernel_umount_unknown">Không thể xác nhận tính khả dụng của tính năng</string>
+    <string name="settings_kernel_umount_values">Hiện tại: %1$s · Đã lưu để khởi động lại: %2$s</string>
+    <string name="settings_kernel_umount_on">Bật</string>
+    <string name="settings_kernel_umount_off">Tắt</string>
+    <string name="settings_kernel_umount_value_unknown">Không xác định hoặc chưa được lưu</string>
+    <string name="settings_kernel_umount_write_failed">Không thể thay đổi việc ngắt kết nối mô-đun</string>
+    <string name="settings_kernel_umount_save_failed">Đã thay đổi nhưng không thể lưu để khởi động lại</string>
     <string name="umount_paths_title">Điểm gắn kết tùy chỉnh cần tháo</string>
     <string name="umount_paths_summary">Quản lý các điểm gắn kết mà ứng dụng được chọn không được thấy khi khởi động</string>
     <string name="umount_paths_intro_title">Thay đổi tệp mà ứng dụng thực sự nhìn thấy</string>
@@ -656,6 +663,10 @@
     <string name="settings_finasu_hide_failed">Không thể thay đổi FinaSU Hide</string>
     <string name="settings_adb_root" translatable="false">ADB Root</string>
     <string name="settings_adb_root_summary">Chạy tiến trình nền adbd với quyền Root.</string>
+    <string name="feature_external_changes_title">Cài đặt chia sẻ đã được thay đổi bên ngoài FinaSU</string>
+    <string name="feature_external_changes_summary">Mô-đun hoặc trình quản lý bên ngoài đã thay đổi các giá trị thời gian chạy này sau khi FinaSU áp dụng các cài đặt đã lưu của nó. FinaSU sẽ không tự động ghi đè chúng.</string>
+    <string name="feature_external_value_on">Bật</string>
+    <string name="feature_external_value_off">Tắt</string>
     <string name="menu_sort">Sắp xếp</string>
     <string name="sort_by_name">Tên ứng dụng</string>
     <string name="sort_by_package_name">Tên gói</string>

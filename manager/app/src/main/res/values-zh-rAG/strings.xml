@@ -274,6 +274,13 @@
     <string name="settings_kernel_umount">卸载模块（内核级）喵</string>
     <string name="settings_kernel_umount_summary">在内核里帮需要的应用卸载模块喵</string>
     <string name="settings_finasu_hide">FinaSU Hide</string>
+    <string name="settings_kernel_umount_unknown">没法确认功能是否可用喵</string>
+    <string name="settings_kernel_umount_values">现在：%1$s · 重启后：%2$s喵</string>
+    <string name="settings_kernel_umount_on">开启喵</string>
+    <string name="settings_kernel_umount_off">关闭喵</string>
+    <string name="settings_kernel_umount_value_unknown">未知或未保存喵</string>
+    <string name="settings_kernel_umount_write_failed">没法修改卸载模块总开关喵</string>
+    <string name="settings_kernel_umount_save_failed">已修改，但没法保存供重启后使用喵</string>
     <string name="umount_paths_title">自定义卸载挂载点喵</string>
     <string name="umount_paths_summary">管理指定 App 启动时看不到的挂载点喵</string>
     <string name="umount_paths_intro_title">改变 App 真正看到的文件喵</string>
@@ -665,6 +672,10 @@
     <string name="settings_finasu_hide_failed">改 FinaSU Hide 失败啦喵…</string>
     <string name="settings_adb_root" translatable="false">ADB Root</string>
     <string name="settings_adb_root_summary">用 Root 权限跑 adbd 守护进程喵</string>
+    <string name="feature_external_changes_title">共享设定已被外部修改喵</string>
+    <string name="feature_external_changes_summary">外部模块或管理器在 FinaSU 应用已保存设定后修改了这些运行值。FinaSU 不会自己覆盖喵。</string>
+    <string name="feature_external_value_on">开启喵</string>
+    <string name="feature_external_value_off">关闭喵</string>
     <string name="menu_sort">排序喵</string>
     <string name="sort_by_name">应用名喵</string>
     <string name="sort_by_package_name">包名喵</string>

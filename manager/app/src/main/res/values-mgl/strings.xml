@@ -274,6 +274,13 @@
     <string name="settings_kernel_umount">解除魔法阵（心之契约级）</string>
     <string name="settings_kernel_umount_summary">由心之契约为需要的应用解除魔法阵</string>
     <string name="settings_finasu_hide">FinaSU Hide</string>
+    <string name="settings_kernel_umount_unknown">无法确认功能是否可用（魔法契约）</string>
+    <string name="settings_kernel_umount_values">此刻：%1$s · 重铸后：%2$s（魔法契约）</string>
+    <string name="settings_kernel_umount_on">开启（魔法契约）</string>
+    <string name="settings_kernel_umount_off">关闭（魔法契约）</string>
+    <string name="settings_kernel_umount_value_unknown">未知或未铭刻</string>
+    <string name="settings_kernel_umount_write_failed">无法修改卸载模块总开关（魔法契约）</string>
+    <string name="settings_kernel_umount_save_failed">已修改，但无法铭刻供重铸后使用</string>
     <string name="umount_paths_title">自定义卸载魔法阵</string>
     <string name="umount_paths_summary">管理指定应用启程时不可见的魔法阵</string>
     <string name="umount_paths_intro_title">改变应用真正看见的魔法文件</string>
@@ -656,6 +663,10 @@
     <string name="settings_finasu_hide_failed">变更 FinaSU Hide 未成</string>
     <string name="settings_adb_root" translatable="false">ADB Root</string>
     <string name="settings_adb_root_summary">以 Root 权限运行 adbd 守护进程</string>
+    <string name="feature_external_changes_title">共享设定已被外部修改（魔法契约）</string>
+    <string name="feature_external_changes_summary">外部模块或魔法管理者在 FinaSU 施展已铭刻设定后修改了这些运行值。FinaSU 不会自动覆盖。</string>
+    <string name="feature_external_value_on">开启（魔法契约）</string>
+    <string name="feature_external_value_off">关闭（魔法契约）</string>
     <string name="menu_sort">排序</string>
     <string name="sort_by_name">应用名</string>
     <string name="sort_by_package_name">包名</string>

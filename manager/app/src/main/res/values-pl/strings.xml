@@ -278,6 +278,13 @@ Przed kontynuowaniem upewnij się, że bootloader jest odblokowany!</string>
     <string name="settings_kernel_umount">Odmontowanie jądra</string>
     <string name="settings_kernel_umount_summary">Zachowanie odmontowania na poziomie jądra kontrolowane przez KernelSU</string>
     <string name="settings_finasu_hide">FinaSU Hide</string>
+    <string name="settings_kernel_umount_unknown">Nie można potwierdzić dostępności funkcji</string>
+    <string name="settings_kernel_umount_values">Bieżące: %1$s · Zapisano do ponownego uruchomienia: %2$s</string>
+    <string name="settings_kernel_umount_on">Włączone</string>
+    <string name="settings_kernel_umount_off">Wyłączone</string>
+    <string name="settings_kernel_umount_value_unknown">Nieznany lub nie zapisany</string>
+    <string name="settings_kernel_umount_write_failed">Nie można zmienić odmontowania modułu</string>
+    <string name="settings_kernel_umount_save_failed">Zmieniono, ale nie udało się zapisać na czas ponownego uruchomienia</string>
     <string name="umount_paths_title">Niestandardowe punkty montowania do odmontowania</string>
     <string name="umount_paths_summary">Zarządzaj punktami montowania, których wybrane aplikacje nie powinny widzieć podczas uruchamiania</string>
     <string name="umount_paths_intro_title">Zmienia pliki, które aplikacja naprawdę widzi</string>
@@ -660,6 +667,10 @@ Przed kontynuowaniem upewnij się, że bootloader jest odblokowany!</string>
     <string name="settings_finasu_hide_failed">Nie udało się zmienić FinaSU Hide</string>
     <string name="settings_adb_root" translatable="false">ADB Root</string>
     <string name="settings_adb_root_summary">Uruchamiaj demon adbd z uprawnieniami root</string>
+    <string name="feature_external_changes_title">Udostępnione ustawienia zostały zmienione poza FinaSU</string>
+    <string name="feature_external_changes_summary">Zewnętrzny moduł lub menedżer zmienił te wartości środowiska wykonawczego po zastosowaniu przez FinaSU zapisanych ustawień. FinaSU nie nadpisze ich automatycznie.</string>
+    <string name="feature_external_value_on">Włączone</string>
+    <string name="feature_external_value_off">Wyłączone</string>
     <string name="menu_sort">Sortuj</string>
     <string name="sort_by_name">Nazwa aplikacji</string>
     <string name="sort_by_package_name">Nazwa pakietu</string>

@@ -276,6 +276,13 @@
     <string name="settings_kernel_umount">إلغاء تحميل النواة</string>
     <string name="settings_kernel_umount_summary">سلوك إلغاء تحميل مستوى النواة الذي يسيطر عليه KernelSU</string>
     <string name="settings_finasu_hide">FinaSU Hide</string>
+    <string name="settings_kernel_umount_unknown">غير قادر على تأكيد توفر الميزة</string>
+    <string name="settings_kernel_umount_values">الحالي: %1$s · تم الحفظ لإعادة التشغيل: %2$s</string>
+    <string name="settings_kernel_umount_on">مفعّل</string>
+    <string name="settings_kernel_umount_off">معطّل</string>
+    <string name="settings_kernel_umount_value_unknown">غير معروف أو لم يتم حفظه</string>
+    <string name="settings_kernel_umount_write_failed">لا يمكن تغيير إلغاء تحميل الوحدة النمطية</string>
+    <string name="settings_kernel_umount_save_failed">تم التغيير، ولكن لا يمكن حفظه لإعادة التشغيل</string>
     <string name="umount_paths_title">نقاط التركيب المخصصة لإلغاء التحميل</string>
     <string name="umount_paths_summary">إدارة نقاط التركيب التي يجب ألا تراها التطبيقات المحددة عند بدء التشغيل</string>
     <string name="umount_paths_intro_title">يغيّر الملفات التي يراها التطبيق فعليًا</string>
@@ -658,6 +665,10 @@
     <string name="settings_finasu_hide_failed">تعذّر تغيير FinaSU Hide</string>
     <string name="settings_adb_root" translatable="false">ADB Root</string>
     <string name="settings_adb_root_summary">تشغيل خدمة adbd بصلاحيات الجذر</string>
+    <string name="feature_external_changes_title">تم تغيير الإعدادات المشتركة خارج FinaSU</string>
+    <string name="feature_external_changes_summary">قامت وحدة خارجية أو مدير بتغيير قيم وقت التشغيل هذه بعد أن طبق FinaSU إعداداته المحفوظة. لن يقوم FinaSU بالكتابة فوقها تلقائيًا.</string>
+    <string name="feature_external_value_on">مفعّل</string>
+    <string name="feature_external_value_off">معطّل</string>
     <string name="menu_sort">فرز</string>
     <string name="sort_by_name">اسم التطبيق</string>
     <string name="sort_by_package_name">اسم الحزمة</string>

@@ -275,6 +275,13 @@
     <string name="settings_kernel_umount">核心處理解除掛載模組</string>
     <string name="settings_kernel_umount_summary">在核心為需要的應用程式解除掛載模組</string>
     <string name="settings_finasu_hide">FinaSU Hide</string>
+    <string name="settings_kernel_umount_unknown">無法確認功能是否可用</string>
+    <string name="settings_kernel_umount_values">目前：%1$s · 重啟後：%2$s</string>
+    <string name="settings_kernel_umount_on">開啟</string>
+    <string name="settings_kernel_umount_off">關閉</string>
+    <string name="settings_kernel_umount_value_unknown">未知或未儲存</string>
+    <string name="settings_kernel_umount_write_failed">無法修改解除安裝模組總開關</string>
+    <string name="settings_kernel_umount_save_failed">已修改，但無法儲存供重啟後使用</string>
     <string name="umount_paths_title">自訂卸載掛載點</string>
     <string name="umount_paths_summary">管理指定應用程式啟動時看不到的掛載點</string>
     <string name="umount_paths_intro_title">變更應用程式實際看到的檔案</string>
@@ -667,6 +674,10 @@
     <string name="settings_finasu_hide_failed">修改 FinaSU Hide 失敗</string>
     <string name="settings_adb_root" translatable="false">ADB Root</string>
     <string name="settings_adb_root_summary">以 Root 權限執行 adbd 常駐程式</string>
+    <string name="feature_external_changes_title">共享設定已被外部修改</string>
+    <string name="feature_external_changes_summary">外部模組或管理程式在 FinaSU 應用已儲存設定後修改了這些執行值。FinaSU 不會自動覆蓋。</string>
+    <string name="feature_external_value_on">開啟</string>
+    <string name="feature_external_value_off">關閉</string>
     <string name="menu_sort">排序</string>
     <string name="sort_by_name">應用名</string>
     <string name="sort_by_package_name">套件名</string>

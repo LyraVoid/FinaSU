@@ -274,6 +274,13 @@
     <string name="settings_kernel_umount">Desmontaje del kernel</string>
     <string name="settings_kernel_umount_summary">Comportamiento de desmontaje a nivel de kernel controlado por KernelSU</string>
     <string name="settings_finasu_hide">FinaSU Hide</string>
+    <string name="settings_kernel_umount_unknown">No se puede confirmar la disponibilidad de la función</string>
+    <string name="settings_kernel_umount_values">Actual: %1$s · Guardado para reiniciar: %2$s</string>
+    <string name="settings_kernel_umount_on">Activado</string>
+    <string name="settings_kernel_umount_off">Desactivado</string>
+    <string name="settings_kernel_umount_value_unknown">Desconocido o no guardado</string>
+    <string name="settings_kernel_umount_write_failed">No se pudo cambiar el desmontaje del módulo</string>
+    <string name="settings_kernel_umount_save_failed">Cambiado, pero no se pudo guardar para el reinicio</string>
     <string name="umount_paths_title">Puntos de montaje personalizados</string>
     <string name="umount_paths_summary">Gestiona los puntos de montaje que las apps seleccionadas no deben ver al iniciarse</string>
     <string name="umount_paths_intro_title">Cambia los archivos que la app ve realmente</string>
@@ -656,6 +663,10 @@
     <string name="settings_finasu_hide_failed">No se pudo cambiar FinaSU Hide</string>
     <string name="settings_adb_root" translatable="false">ADB Root</string>
     <string name="settings_adb_root_summary">Ejecutar el daemon adbd con privilegios de Root</string>
+    <string name="feature_external_changes_title">Se cambiaron las configuraciones compartidas fuera de FinaSU</string>
+    <string name="feature_external_changes_summary">Un módulo o administrador externo cambió estos valores de tiempo de ejecución después de que FinaSU aplicó su configuración guardada. FinaSU no los sobrescribirá automáticamente.</string>
+    <string name="feature_external_value_on">Activado</string>
+    <string name="feature_external_value_off">Desactivado</string>
     <string name="menu_sort">Ordenar</string>
     <string name="sort_by_name">Nombre de la aplicación</string>
     <string name="sort_by_package_name">Nombre del paquete</string>
