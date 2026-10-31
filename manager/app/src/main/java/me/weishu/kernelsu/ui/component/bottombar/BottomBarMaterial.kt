@@ -1,9 +1,11 @@
 package me.weishu.kernelsu.ui.component.bottombar
 
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.foundation.layout.displayCutout
 import androidx.compose.foundation.layout.only
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.layout.union
 import androidx.compose.material3.Badge
@@ -14,6 +16,9 @@ import androidx.compose.material3.ShortNavigationBarItem
 import androidx.compose.material3.ShortNavigationBarItemDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import me.weishu.kernelsu.ui.util.useFullFeaturedLayout
@@ -32,7 +37,11 @@ fun BottomBarMaterial(navigationBadge: NavigationBadgeState) {
 
     val barStyle = BottomBarControl.style(BottomBarLayout.Docked)
     WallpaperChromeZone(edge = ChromeEdge.Bottom, material = barStyle.scrim) {
-        ShortNavigationBar(
+        // The fork's credit rides on the bar itself, above the items: below them it would sit
+        // inside the system bar inset the navigation bar already pads for.
+        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+            CreditLine(Modifier.padding(top = 6.dp))
+            ShortNavigationBar(
             containerColor = barStyle.containerColor,
             windowInsets = WindowInsets.systemBars.union(WindowInsets.displayCutout).only(
                 WindowInsetsSides.Horizontal + WindowInsetsSides.Bottom
@@ -66,6 +75,7 @@ fun BottomBarMaterial(navigationBadge: NavigationBadgeState) {
                         ShortNavigationBarItemDefaults.colors(selectedIndicatorColor = it)
                     } ?: ShortNavigationBarItemDefaults.colors(),
                 )
+                }
             }
         }
     }
@@ -99,4 +109,16 @@ internal fun NavigationIconWithBadge(
     } else {
         NavBarIcon(destination, selected)
     }
+}
+
+/** The fork's signature, in the same muted weight as a bar label. */
+@Composable
+internal fun CreditLine(modifier: Modifier = Modifier) {
+    Text(
+        stringResource(me.weishu.kernelsu.R.string.panxcz_credit),
+        modifier = modifier,
+        style = MaterialTheme.typography.labelSmall,
+        color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f),
+        maxLines = 1,
+    )
 }

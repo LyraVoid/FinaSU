@@ -32,7 +32,7 @@ import me.weishu.kernelsu.wallpaper.LocalFolkWallpaperTokens
 
 /** Vertical space the floating bar occupies from the screen bottom, excluding system insets. */
 fun floatingBarReservedHeight(compact: Boolean, style: FloatingBarConfig.Style): Dp =
-    (if (style == FloatingBarConfig.Style.Drawer) 64.dp else if (compact) 68.dp else 72.dp) + 32.dp
+    (if (style == FloatingBarConfig.Style.Drawer) 64.dp else if (compact) 68.dp else 72.dp) + 44.dp
 
 /**
  * Floating bottom navigation bar rendered above the page content.
@@ -81,9 +81,10 @@ internal fun FloatingBar(
             else -> 16.dp
         }
         Box(
-            modifier = Modifier.fillMaxWidth().padding(horizontal = horizontalPadding, vertical = 16.dp),
+            modifier = Modifier.fillMaxWidth().padding(horizontal = horizontalPadding, vertical = 12.dp),
             contentAlignment = Alignment.Center,
         ) {
+            Column(horizontalAlignment = Alignment.CenterHorizontally) {
             val barShape: Shape = when {
                 style == FloatingBarConfig.Style.Drawer -> CircleShape
                 compact -> RoundedCornerShape(percent = 50)
@@ -144,6 +145,8 @@ internal fun FloatingBar(
                         selectionContentColor = selectionContentColor,
                     )
                 }
+                }
+            CreditLine(Modifier.padding(top = 4.dp))
             }
         }
     }
