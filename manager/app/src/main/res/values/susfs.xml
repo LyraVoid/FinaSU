@@ -156,6 +156,9 @@
     <string name="susfs_restore_schema1_action">Back up and restore</string>
     <string name="susfs_restore_uname">Restore real kernel identity</string>
     <string name="susfs_use_real_field">Use the real kernel field (default)</string>
+    <string name="susfs_editor_manual">Manual</string>
+    <string name="susfs_editor_slot">Slot info</string>
+    <string name="susfs_editor_presets">Presets</string>
     <string name="susfs_restore_hint">Saves default for both fields. Apply now to restore; merely removing a saved value does not restore the kernel.</string>
     <string name="susfs_uname_hint">Use default to keep each real kernel field. Both fields are required. These are saved targets, not live kernel readings.</string>
     <string name="susfs_uname_invalid">Each field must be nonempty, under 65 UTF-8 bytes, and contain no control characters.</string>

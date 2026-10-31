@@ -156,6 +156,9 @@
     <string name="susfs_restore_schema1_action">备份并恢复</string>
     <string name="susfs_restore_uname">恢复真实内核信息</string>
     <string name="susfs_use_real_field">使用真实内核字段（default）</string>
+    <string name="susfs_editor_manual">手动输入</string>
+    <string name="susfs_editor_slot">槽位信息</string>
+    <string name="susfs_editor_presets">预设值</string>
     <string name="susfs_restore_hint">将两个字段保存为 default。需要立即应用才会恢复；仅删除保存值不会还原内核。</string>
     <string name="susfs_uname_hint">使用 default 保留对应的真实内核字段。两个字段均不能为空。这里显示保存目标，而非实时内核值。</string>
     <string name="susfs_uname_invalid">每个字段均须非空、少于 65 个 UTF-8 字节，且不能包含控制字符。</string>
