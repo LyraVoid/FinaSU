@@ -37,6 +37,8 @@ data class SusfsStatus(
             val json = JSONObject(text)
             val detection = json.getJSONObject("detection")
             val ownership = json.optJSONObject("ownership")
+            val ownershipValid = ownership != null && ownership.has("mode") && ownership.has("pending") &&
+                (ownership.isNull("pending") || ownership.optJSONObject("pending")?.optString("target") in setOf("builtin", "external"))
             fun strings(key: String): List<String> {
                 val array = detection.getJSONArray(key)
                 return List(array.length()) { array.getString(it) }
@@ -48,9 +50,9 @@ data class SusfsStatus(
                 variant = detection.getString("variant"),
                 features = strings("features"), procNodes = strings("proc_nodes"),
                 management = json.getString("management"), automatic = json.getBoolean("automatic"),
-                ownership = ownership?.optString("mode") ?: "unknown",
-                pendingOwner = ownership?.optJSONObject("pending")?.optString("target"),
-                switchReady = json.optBoolean("switch_ready", false),
+                ownership = if (ownershipValid) ownership.optString("mode") else "unknown",
+                pendingOwner = if (ownershipValid) ownership.optJSONObject("pending")?.optString("target") else null,
+                switchReady = ownershipValid && json.optBoolean("switch_ready", false),
                 staticKstatSupported = json.optBoolean("static_kstat_supported", false),
                 unameApplied = json.optBoolean("uname_applied", false),
                 unameScheduled = json.optBoolean("uname_scheduled", false),

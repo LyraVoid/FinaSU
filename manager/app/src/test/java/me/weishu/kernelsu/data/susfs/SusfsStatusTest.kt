@@ -38,6 +38,13 @@ class SusfsStatusTest {
         assertFalse(ready.copy(ownership = "external").writable)
         assertFalse(ready.copy(pendingOwner = "external").writable)
     }
+    @Test fun `malformed ownership response is read only`() {
+        val base = """{"detection":{"status":"compatible","version":"v2.3.0","variant":"GKI","implementation":"builtin","features":[],"proc_nodes":[]},"automatic":false,"config_error":null,"management":"saved","ownership":%s}"""
+        for (ownership in listOf("{}", """{"mode":"builtin"}""", """{"mode":"builtin","pending":{}}""")) {
+            assertFalse(SusfsStatus.parse(base.format(ownership)).writable)
+        }
+        assertTrue(SusfsStatus.parse(base.format("""{"mode":"builtin","pending":null}""")).writable)
+    }
     @Test fun `CLI status preserves idle and deferred management states`() {
         val base = """{"detection":{"status":"compatible","version":"v2.3.0","variant":"GKI","implementation":"builtin","features":[],"proc_nodes":[]},"automatic":false,"config_error":null,"management":"%s"}"""
         assertEquals("idle", SusfsStatus.parse(base.format("idle")).management)

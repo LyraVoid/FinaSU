@@ -46,7 +46,7 @@ impl Ownership {
         if self.pending.is_some() || self.mode == target {
             bail!("SUSFS ownership switch is already pending or active");
         }
-        if boot_id.is_empty() {
+        if boot_id.trim().is_empty() {
             bail!("Boot ID is unavailable");
         }
         self.pending = Some(ManagementSwitch {
@@ -389,6 +389,7 @@ mod tests {
     fn ownership_transitions_fail_closed_until_explicit_confirmation() {
         let mut state = Ownership::default();
         assert!(state.begin(ManagementMode::External, "").is_err());
+        assert!(state.begin(ManagementMode::External, "  ").is_err());
         state.begin(ManagementMode::External, "boot-a").unwrap();
         assert!(state.require_builtin().is_err());
         assert!(state.begin(ManagementMode::Builtin, "boot-a").is_err());
