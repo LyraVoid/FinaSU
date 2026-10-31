@@ -17,6 +17,7 @@ const CONFIG: &str = "/data/adb/ksu/folksu-susfs/config.json";
 const CONFIG_V1_BACKUP: &str = "/data/adb/ksu/folksu-susfs/config.v1.backup.json";
 const STATE: &str = "/data/adb/ksu/folksu-susfs/state.json";
 const OWNERSHIP: &str = "/data/adb/ksu/folksu-susfs/ownership.json";
+const SWITCH_BACKUP: &str = "/data/adb/ksu/folksu-susfs/config.switch.backups";
 
 #[derive(Clone, Default, Serialize, Deserialize)]
 #[serde(deny_unknown_fields)]
@@ -76,6 +77,56 @@ pub fn read_ownership() -> Result<super::model::Ownership> {
 pub fn write_ownership(ownership: &super::model::Ownership) -> Result<()> {
     ownership.validate()?;
     atomic(OWNERSHIP, &serde_json::to_vec_pretty(ownership)?)
+}
+
+pub fn backup_for_switch() -> Result<()> {
+    let contents = match read(CONFIG, super::model::MAX_CONFIG) {
+        Ok(input) => {
+            Config::parse(&input)?;
+            input.into_bytes()
+        }
+        Err(error)
+            if error
+                .downcast_ref::<std::io::Error>()
+                .is_some_and(|e| e.kind() == std::io::ErrorKind::NotFound) =>
+        {
+            serde_json::to_vec_pretty(&Config::default())?
+        }
+        Err(error) => return Err(error),
+    };
+    ensure_dir()?;
+    match fs::symlink_metadata(SWITCH_BACKUP) {
+        Ok(md) if md.is_dir() && md.uid() == 0 && md.mode().trailing_zeros() >= 6 => {}
+        Ok(_) => bail!("Unsafe SUSFS backup directory"),
+        Err(error) if error.kind() == std::io::ErrorKind::NotFound => {
+            std::os::unix::fs::DirBuilderExt::mode(&mut fs::DirBuilder::new(), 0o700)
+                .create(SWITCH_BACKUP)?;
+            File::open(DIR)?.sync_all()?;
+        }
+        Err(error) => return Err(error.into()),
+    }
+    let backup = format!("{SWITCH_BACKUP}/{}.json", sha256::digest(&contents));
+    match read(&backup, super::model::MAX_CONFIG) {
+        Ok(existing) if existing.as_bytes() == contents => return Ok(()),
+        Ok(_) => bail!("A different switch backup already exists; export it before switching"),
+        Err(error)
+            if error
+                .downcast_ref::<std::io::Error>()
+                .is_some_and(|e| e.kind() == std::io::ErrorKind::NotFound) => {}
+        Err(error) => return Err(error),
+    }
+    let mut file = tempfile::NamedTempFile::new_in(SWITCH_BACKUP)?;
+    file.as_file()
+        .set_permissions(fs::Permissions::from_mode(0o600))?;
+    file.write_all(&contents)?;
+    file.as_file().sync_all()?;
+    file.persist_noclobber(&backup)
+        .context("Persist SUSFS switch backup")?;
+    File::open(SWITCH_BACKUP)?.sync_all()?;
+    if read(&backup, super::model::MAX_CONFIG)?.as_bytes() != contents {
+        bail!("SUSFS switch backup verification failed");
+    }
+    Ok(())
 }
 
 fn read(path: &str, max: usize) -> Result<String> {

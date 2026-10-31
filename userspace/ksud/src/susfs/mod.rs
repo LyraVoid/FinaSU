@@ -442,6 +442,7 @@ pub fn run(command: Command) -> Result<()> {
                 .trim()
                 .to_owned();
             ownership.begin(target, &boot_id)?;
+            store::backup_for_switch().context("Back up SUSFS configuration before switching")?;
             store::write_ownership(&ownership)?;
             println!("{}", serde_json::to_string(&ownership)?);
         }
