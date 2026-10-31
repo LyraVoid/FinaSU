@@ -444,11 +444,7 @@ fn apply_with_state(
         persist(&state).context("Persist SUSFS operation result")?;
     }
     report.failures.clone_from(&state.failures);
-    for key in state
-        .uncertain
-        .keys()
-        .filter(|key| desired.contains_key(*key))
-    {
+    for key in state.uncertain.keys() {
         report.failures.insert(
             key.clone(),
             "Previous operation result is unknown; reboot and verify the provider before retrying"

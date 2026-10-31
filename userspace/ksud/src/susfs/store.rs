@@ -283,8 +283,8 @@ pub fn summarize(
     desired: &BTreeMap<String, String>,
     deferred: bool,
 ) -> &'static str {
-    let failed = state.uncertain.keys().any(|key| desired.contains_key(key))
-        || state.failures.keys().any(|key| desired.contains_key(key));
+    let failed =
+        !state.uncertain.is_empty() || state.failures.keys().any(|key| desired.contains_key(key));
     let applied = desired
         .iter()
         .filter(|(key, value)| {
@@ -394,6 +394,15 @@ mod tests {
         assert_eq!(summarize(&state, &uname, true), "deferred");
         assert_eq!(summarize(&state, &path, true), "saved");
         assert_eq!(summarize(&state, &BTreeMap::new(), true), "idle");
+    }
+
+    #[test]
+    fn removed_uncertain_operation_is_not_reported_as_idle() {
+        let mut state = State::default();
+        state
+            .uncertain
+            .insert("path:/old".to_owned(), "old".to_owned());
+        assert_eq!(summarize(&state, &BTreeMap::new(), false), "failed");
     }
 
     #[test]
