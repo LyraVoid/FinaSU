@@ -2,6 +2,7 @@
 #![cfg_attr(not(target_os = "android"), allow(dead_code))]
 mod abi;
 mod apply;
+mod legacy;
 mod model;
 mod store;
 
@@ -47,6 +48,8 @@ pub enum Command {
     Export,
     /// Validate and atomically save JSON from stdin; does not apply it
     Import,
+    /// Validate and normalize JSON from stdin without writing it
+    Preview,
     /// Apply supported live operations; never fabricates pre-mount kstat
     Apply,
     /// Begin an ownership switch; confirmation is required after a reboot
@@ -120,7 +123,15 @@ fn capabilities(detection: &Detection) -> Capabilities {
     Capabilities {
         supported,
         static_kstat_fields: abi::static_kstat_fields(static_supported),
-        redirect_uid_schemes: if redirect { vec![0, 1, 2] } else { Vec::new() },
+        redirect_uid_schemes: if redirect {
+            if detection.implementation == "lkm" {
+                vec![0, 1, 2, 3, 4]
+            } else {
+                vec![0, 1, 2]
+            }
+        } else {
+            Vec::new()
+        },
     }
 }
 
@@ -502,13 +513,36 @@ pub fn run(command: Command) -> Result<()> {
             std::io::stdin()
                 .take((model::MAX_CONFIG + 1) as u64)
                 .read_to_string(&mut input)?;
-            let config = Config::parse(&input)?;
+            let (config, migration) = Config::parse_with_migration(&input)?;
             let _lock = store::lock()?;
             store::read_ownership()?.require_builtin()?;
+            if migration.is_some() {
+                store::backup_source(&input).context("Back up imported source configuration")?;
+            }
             store::write_config(&config)?;
             println!(
                 "{}",
-                serde_json::json!({"status": "saved", "management": store::summary(&config)?})
+                serde_json::json!({
+                    "status": "saved",
+                    "management": store::summary(&config)?,
+                    "migrated": migration.is_some(),
+                    "warnings": migration.map(|value| value.warnings).unwrap_or_default(),
+                })
+            );
+        }
+        Command::Preview => {
+            let mut input = String::new();
+            std::io::stdin()
+                .take((model::MAX_CONFIG + 1) as u64)
+                .read_to_string(&mut input)?;
+            let (config, migration) = Config::parse_with_migration(&input)?;
+            println!(
+                "{}",
+                serde_json::json!({
+                    "config": config,
+                    "migrated": migration.is_some(),
+                    "warnings": migration.map(|value| value.warnings).unwrap_or_default(),
+                })
             );
         }
         Command::Apply => {
@@ -570,6 +604,7 @@ pub fn run(command: Command) -> Result<()> {
 pub fn boot(stage: &str) {
     let phase = match stage {
         "pre-mount" => apply::Stage::PreMount,
+        "pre-mount-late" => apply::Stage::LatePreMount,
         "post-mount" => apply::Stage::PostMount,
         "service" | "boot-completed" => apply::Stage::Deferred,
         _ => return,
@@ -683,13 +718,15 @@ mod tests {
         assert!(builtin_capabilities.supported.contains(&"avc_spoof"));
         assert_eq!(builtin_capabilities.redirect_uid_schemes, [0, 1, 2]);
         assert!(!builtin_capabilities.supported.contains(&"hidden_modules"));
-        assert!(!builtin_capabilities.supported.contains(&"static_kstat"));
+        assert!(builtin_capabilities.supported.contains(&"static_kstat"));
+        assert_eq!(builtin_capabilities.static_kstat_fields.len(), 12);
 
         let lkm = Detection {
             implementation: "lkm",
             features: vec![
                 "SUSFS_LKM_MODULES".to_owned(),
                 "CONFIG_KSU_SUSFS_SUS_KSTAT".to_owned(),
+                "CONFIG_KSU_SUSFS_OPEN_REDIRECT".to_owned(),
             ],
             proc_nodes: vec!["susfs_hide_modules".to_owned()],
             ..builtin
@@ -698,7 +735,8 @@ mod tests {
         assert!(!lkm_capabilities.supported.contains(&"full_clone"));
         assert!(!lkm_capabilities.supported.contains(&"avc_spoof"));
         assert!(lkm_capabilities.supported.contains(&"hidden_modules"));
-        assert!(!lkm_capabilities.supported.contains(&"static_kstat"));
+        assert_eq!(lkm_capabilities.redirect_uid_schemes, [0, 1, 2, 3, 4]);
+        assert!(lkm_capabilities.supported.contains(&"static_kstat"));
     }
 
     #[test]

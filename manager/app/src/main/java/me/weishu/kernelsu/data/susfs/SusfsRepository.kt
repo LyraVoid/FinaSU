@@ -146,6 +146,7 @@ data class SusfsStatus(
 interface SusfsDataSource {
     suspend fun status(): SusfsStatus
     suspend fun export(): String
+    suspend fun preview(text: String): String = error("Import preview unavailable")
     suspend fun save(text: String)
     suspend fun apply(): String
     suspend fun switchOwnership(target: String) { error("Ownership switching unavailable") }
@@ -159,7 +160,7 @@ class SusfsRepository(
     private val dispatcher: CoroutineDispatcher = Dispatchers.IO,
 ) : SusfsDataSource {
     private suspend fun command(action: String, input: String? = null): String = withContext(dispatcher) {
-        require(action in setOf("status", "export", "import", "apply", "switch builtin", "switch external",
+        require(action in setOf("status", "export", "preview", "import", "apply", "switch builtin", "switch external",
             "confirm-switch", "cancel-switch", "restore-schema1"))
         require(input == null || input.toByteArray().size <= 128 * 1024)
         val shell = withTimeout(15_000L) { RootShell.awaitRoot() }
@@ -180,6 +181,7 @@ class SusfsRepository(
 
     override suspend fun status() = SusfsStatus.parse(command("status"))
     override suspend fun export() = command("export")
+    override suspend fun preview(text: String) = command("preview", text)
     override suspend fun save(text: String) {
         command("import", text)
     }

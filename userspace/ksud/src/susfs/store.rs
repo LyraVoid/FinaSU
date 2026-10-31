@@ -18,6 +18,7 @@ const CONFIG_V1_BACKUP: &str = "/data/adb/ksu/folksu-susfs/config.v1.backup.json
 const STATE: &str = "/data/adb/ksu/folksu-susfs/state.json";
 const OWNERSHIP: &str = "/data/adb/ksu/folksu-susfs/ownership.json";
 const SWITCH_BACKUP: &str = "/data/adb/ksu/folksu-susfs/config.switch.backups";
+const SOURCE_BACKUP: &str = "/data/adb/ksu/folksu-susfs/config.source.backups";
 
 #[derive(Clone, Default, Serialize, Deserialize)]
 #[serde(deny_unknown_fields)]
@@ -98,6 +99,10 @@ pub fn backup_for_switch() -> Result<()> {
     backup_config(&contents, Path::new(SWITCH_BACKUP))
 }
 
+pub fn backup_source(input: &str) -> Result<()> {
+    backup_config(input.as_bytes(), Path::new(SOURCE_BACKUP))
+}
+
 fn read_schema1_backup() -> Result<Option<Config>> {
     match read(CONFIG_V1_BACKUP, super::model::MAX_CONFIG) {
         Ok(input) => {
@@ -159,7 +164,7 @@ fn backup_config(contents: &[u8], directory: &Path) -> Result<()> {
     let backup_path = backup.to_str().context("Invalid SUSFS backup path")?;
     match read(backup_path, super::model::MAX_CONFIG) {
         Ok(existing) if existing.as_bytes() == contents => return Ok(()),
-        Ok(_) => bail!("A different switch backup already exists; export it before switching"),
+        Ok(_) => bail!("A different SUSFS backup already exists; export it before retrying"),
         Err(error)
             if error
                 .downcast_ref::<std::io::Error>()
@@ -172,10 +177,10 @@ fn backup_config(contents: &[u8], directory: &Path) -> Result<()> {
     file.write_all(contents)?;
     file.as_file().sync_all()?;
     file.persist_noclobber(&backup)
-        .context("Persist SUSFS switch backup")?;
+        .context("Persist SUSFS backup")?;
     File::open(directory)?.sync_all()?;
     if read(backup_path, super::model::MAX_CONFIG)?.as_bytes() != contents {
-        bail!("SUSFS switch backup verification failed");
+        bail!("SUSFS backup verification failed");
     }
     Ok(())
 }

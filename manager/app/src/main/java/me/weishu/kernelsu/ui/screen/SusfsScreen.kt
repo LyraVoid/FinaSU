@@ -93,6 +93,8 @@ fun SusfsScreen() {
     // Keep all six positions outside pager composition: distant pages may be disposed.
     val scrolls = susfsPages.map { rememberScrollState() }
     var draft by rememberSaveable { mutableStateOf<String?>(null) }
+    var draftPreview by rememberSaveable { mutableStateOf<String?>(null) }
+    var draftWarnings by rememberSaveable { mutableStateOf<String?>(null) }
     var confirmApplyAfterSave by rememberSaveable { mutableStateOf(false) }
     var ownershipAction by rememberSaveable { mutableStateOf<String?>(null) }
     var restoreSchema1 by rememberSaveable { mutableStateOf(false) }
@@ -114,8 +116,17 @@ fun SusfsScreen() {
                         buffer.toByteArray().toString(Charsets.UTF_8)
                     } ?: error("Cannot read configuration")
                 }
-                SusfsInputs.preview(text)
+                var warnings: String? = null
+                val preview = runCatching { SusfsInputs.preview(text) }.getOrElse {
+                    val response = JSONObject(me.weishu.kernelsu.data.susfs.SusfsRepository().preview(text))
+                    warnings = response.optJSONArray("warnings")?.let { values ->
+                        List(values.length()) { values.getString(it) }.joinToString("\n")
+                    }
+                    response.getJSONObject("config")
+                }
                 draft = text
+                draftPreview = preview.toString()
+                draftWarnings = warnings
             } catch (e: CancellationException) { throw e }
             catch (e: Exception) { vm.message(e.message ?: "Import failed") }
         }
@@ -201,17 +212,26 @@ fun SusfsScreen() {
         )
     }
     draft?.let { text ->
-        val preview = remember(text) { SusfsInputs.preview(text) }
-        AlertDialog(onDismissRequest = { draft = null }, title = { Text(stringResource(R.string.susfs_import_preview)) },
+        val preview = remember(draftPreview) { JSONObject(checkNotNull(draftPreview)) }
+        fun dismissPreview() {
+            draft = null
+            draftPreview = null
+            draftWarnings = null
+        }
+        AlertDialog(onDismissRequest = ::dismissPreview, title = { Text(stringResource(R.string.susfs_import_preview)) },
             text = { Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
                 Text(stringResource(R.string.susfs_import_counts, preview.getJSONArray("rules").length(),
                     preview.getJSONObject("lkm").getJSONArray("hidden_modules").length(),
                     preview.getJSONObject("lkm").getJSONArray("mount_prefixes").length()))
                 Text(stringResource(if (preview.getBoolean("automatic")) R.string.susfs_import_auto_on else R.string.susfs_import_auto_off))
+                draftWarnings?.let {
+                    Text(stringResource(R.string.susfs_import_converted))
+                    Text(it, style = MaterialTheme.typography.bodySmall)
+                }
                 Text(stringResource(R.string.susfs_import_warning))
             } }, confirmButton = { TextButton(enabled = state.status.canImport && !state.busy,
-                onClick = { vm.save(text); draft = null }) { Text(stringResource(R.string.susfs_save)) } },
-            dismissButton = { TextButton(onClick = { draft = null }) { Text(stringResource(R.string.susfs_cancel)) } })
+                onClick = { vm.save(text); dismissPreview() }) { Text(stringResource(R.string.susfs_save)) } },
+            dismissButton = { TextButton(onClick = ::dismissPreview) { Text(stringResource(R.string.susfs_cancel)) } })
     }
     if (state.pendingUnameApply) {
         AlertDialog(

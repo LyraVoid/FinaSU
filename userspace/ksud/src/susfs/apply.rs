@@ -11,6 +11,7 @@ use std::{collections::BTreeMap, fs, io::Write, os::unix::fs::MetadataExt};
 pub enum Stage {
     Live,
     PreMount,
+    LatePreMount,
     PostMount,
     Deferred,
 }
@@ -254,9 +255,6 @@ fn rule(rule: &Rule, detection: &Detection) -> Result<()> {
             uid_scheme,
         } => {
             require(detection, "CONFIG_KSU_SUSFS_OPEN_REDIRECT")?;
-            if detection.implementation == "lkm" && *uid_scheme > 2 {
-                bail!("LKM UID schemes 3/4 are not equivalent to built-in SUSFS");
-            }
             let mut payload = abi::Redirect {
                 target: abi::bytes(path)?,
                 destination: abi::bytes(destination)?,
@@ -271,23 +269,12 @@ fn rule(rule: &Rule, detection: &Detection) -> Result<()> {
             if !abi::static_kstat_profile(detection) {
                 bail!("Static kstat provider is not verified or its control is unavailable");
             }
-            let table = fs::read_to_string("/proc/susfs_kstat")?;
-            if !kstat_table_empty(&table) {
-                bail!("Static kstat requires an empty rule table; existing rules were not changed");
-            }
             let metadata = fs::metadata(path)?;
             let mut payload = abi::static_kstat_payload(path, fields, &metadata)?;
             abi::call_checked(0x0005_5572, &mut payload)?;
             abi::checked(payload.err)
         }
     }
-}
-
-fn kstat_table_empty(table: &str) -> bool {
-    table
-        .lines()
-        .next()
-        .is_some_and(|line| line.trim() == "(empty)")
 }
 
 pub fn apply(config: &Config, detection: &Detection, phase: Stage) -> Result<Report> {
@@ -403,7 +390,12 @@ fn apply_with_state(
         {
             continue;
         }
-        if !key.starts_with("kstat:") && (phase == Stage::PreMount || phase == Stage::PostMount) {
+        if !key.starts_with("kstat:")
+            && matches!(
+                phase,
+                Stage::PreMount | Stage::LatePreMount | Stage::PostMount
+            )
+        {
             continue;
         }
         state.uncertain.insert(key.clone(), value.clone());
@@ -490,6 +482,9 @@ fn apply_kstat(
     #[cfg(not(target_os = "android"))]
     let late = false;
     let captured = state.kstat_pending.iter().any(|k| k == key);
+    if phase == Stage::LatePreMount && captured {
+        return Ok(false);
+    }
     if kstat_phase(phase, captured, late) == Some(false) {
         kstat(path, full_clone, detection, false)?;
         state.snapshots.insert(
@@ -514,7 +509,7 @@ fn apply_kstat(
 // Some(false): capture original; Some(true): retarget; None: cannot safely apply.
 const fn kstat_phase(phase: Stage, captured: bool, late: bool) -> Option<bool> {
     match (phase, captured, late) {
-        (Stage::PreMount, false, false) => Some(false),
+        (Stage::PreMount | Stage::LatePreMount, false, false) => Some(false),
         (Stage::PostMount, true, false) => Some(true),
         _ => None,
     }
@@ -524,14 +519,6 @@ const fn kstat_phase(phase: Stage, captured: bool, late: bool) -> Option<bool> {
 mod tests {
     use super::*;
     use std::cell::RefCell;
-
-    #[test]
-    fn static_kstat_only_accepts_an_explicitly_empty_rule_table() {
-        assert!(kstat_table_empty("(empty)\nmaps: armed=0\n"));
-        assert!(!kstat_table_empty(""));
-        assert!(!kstat_table_empty("/data/test ino=1 dev=1 flags=0x8\n"));
-        assert!(!kstat_table_empty("unexpected output"));
-    }
 
     #[test]
     fn changing_kstat_kind_requires_reboot_before_writing() {
@@ -733,6 +720,7 @@ mod tests {
     #[test]
     fn dynamic_kstat_requires_the_real_pre_post_pair() {
         assert_eq!(kstat_phase(Stage::PreMount, false, false), Some(false));
+        assert_eq!(kstat_phase(Stage::LatePreMount, false, false), Some(false));
         assert_eq!(kstat_phase(Stage::PostMount, true, false), Some(true));
         assert_eq!(kstat_phase(Stage::PostMount, false, false), None);
         assert_eq!(kstat_phase(Stage::PreMount, true, false), None);
@@ -742,6 +730,7 @@ mod tests {
         }
         for phase in [
             Stage::PreMount,
+            Stage::LatePreMount,
             Stage::PostMount,
             Stage::Deferred,
             Stage::Live,
@@ -749,6 +738,41 @@ mod tests {
             assert_eq!(kstat_phase(phase, false, true), None);
             assert_eq!(kstat_phase(phase, true, true), None);
         }
+    }
+
+    #[test]
+    fn late_pre_mount_captures_missing_rules_once() {
+        let mut config = Config::default();
+        config.rules.push(Rule::Kstat {
+            path: "/data/test".to_owned(),
+            full_clone: false,
+        });
+        let persisted = RefCell::new(State::default());
+        for _ in 0..2 {
+            let state = persisted.borrow().clone();
+            let report = apply_with_state(
+                &config,
+                Stage::LatePreMount,
+                state,
+                |state| {
+                    *persisted.borrow_mut() = state.clone();
+                    Ok(())
+                },
+                |key, value, state, _| {
+                    if !state.kstat_pending.iter().any(|pending| pending == key) {
+                        state.kstat_pending.push(key.to_owned());
+                        state.snapshots.insert(key.to_owned(), value.to_owned());
+                    }
+                    Ok(Outcome::Deferred)
+                },
+            )
+            .unwrap();
+            assert!(report.pending_reboot.is_empty());
+        }
+        assert_eq!(
+            persisted.borrow().kstat_pending,
+            ["kstat:/data/test".to_owned()]
+        );
     }
 
     #[test]

@@ -84,14 +84,27 @@ object SusfsInputs {
         value.toByteArray(Charsets.UTF_8).size < 8192 &&
         value.none { it.isISOControl() && it != '\n' && it != '\t' }
 
+    fun validStaticKstatValue(field: String, value: String): Boolean {
+        val number = value.toLongOrNull() ?: return false
+        return when (field) {
+            "ino", "dev" -> number >= 0
+            "nlink" -> number in 0..0xffff_ffffL
+            "size", "blocks", "blksize" -> number >= 0
+            "atime_nsec", "mtime_nsec", "ctime_nsec" -> number in 0..999_999_999L
+            "atime_sec", "mtime_sec", "ctime_sec" -> true
+            else -> false
+        }
+    }
+
     fun batchRules(
         kind: String,
         text: String,
         uidScheme: Int = 0,
         looping: Boolean = false,
+        uidSchemes: Set<Int> = setOf(0, 1, 2),
     ): List<JSONObject> {
         require(kind in setOf("path", "map", "redirect")) { "Batch entry is unsupported for this rule type" }
-        require(kind != "redirect" || uidScheme in 0..2) { "Select a verified redirect scope" }
+        require(kind != "redirect" || uidScheme in uidSchemes) { "Select a verified redirect scope" }
         val lines = text.lineSequence().map(String::trim).filter(String::isNotEmpty).toList()
         require(lines.isNotEmpty()) { "Enter at least one rule" }
         require(lines.size <= MAX_RULES) { "Too many rules" }

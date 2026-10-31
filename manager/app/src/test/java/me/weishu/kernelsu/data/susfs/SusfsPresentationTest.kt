@@ -5,6 +5,17 @@ import org.junit.Assert.*
 import org.junit.Test
 
 class SusfsPresentationTest {
+    @Test
+    fun validatesStaticKstatFieldRanges() {
+        assertTrue(SusfsInputs.validStaticKstatValue("ino", "1"))
+        assertFalse(SusfsInputs.validStaticKstatValue("ino", "-1"))
+        assertTrue(SusfsInputs.validStaticKstatValue("nlink", "4294967295"))
+        assertFalse(SusfsInputs.validStaticKstatValue("nlink", "4294967296"))
+        assertTrue(SusfsInputs.validStaticKstatValue("ctime_nsec", "999999999"))
+        assertFalse(SusfsInputs.validStaticKstatValue("ctime_nsec", "1000000000"))
+        assertTrue(SusfsInputs.validStaticKstatValue("ctime_sec", "-1"))
+    }
+
     @Test fun `errors map to stable recovery guidance`() {
         assertEquals(SusfsErrorKind.Capability, susfsErrorKind("Capability unavailable: CONFIG_X"))
         assertEquals(SusfsErrorKind.PendingReboot, susfsErrorKind("Static kstat requires an empty rule table"))
@@ -82,6 +93,10 @@ class SusfsPresentationTest {
         assertThrows(IllegalArgumentException::class.java) { SusfsInputs.batchRules("redirect", "/a") }
         assertThrows(IllegalArgumentException::class.java) { SusfsInputs.batchRules("redirect", "a -> /b") }
         assertThrows(IllegalArgumentException::class.java) { SusfsInputs.batchRules("redirect", "/a -> /a") }
+        val extended = SusfsInputs.batchRules(
+            "redirect", "/a -> /b", uidScheme = 3, uidSchemes = setOf(0, 1, 2, 3, 4),
+        )
+        assertEquals(3, extended.single().getInt("uid_scheme"))
     }
     @Test fun `batch additions are atomic and reject duplicates`() {
         val config = JSONObject("""{"rules":[{"kind":"path","path":"/a"}]}""")

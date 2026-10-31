@@ -258,12 +258,24 @@ fn single_line_text(value: &str, max: usize) -> Result<()> {
 
 impl Config {
     pub fn parse(input: &str) -> Result<Self> {
+        Self::parse_with_migration(input).map(|(config, _)| config)
+    }
+
+    pub fn parse_with_migration(input: &str) -> Result<(Self, Option<super::legacy::Migration>)> {
         if input.len() > MAX_CONFIG {
             bail!("SUSFS config is too large");
         }
-        let config: Self = serde_json::from_str(input)?;
+        let value: serde_json::Value = serde_json::from_str(input)?;
+        let (config, migration) = if value.get("schema").is_some() {
+            (serde_json::from_value(value)?, None)
+        } else if value.get("version").is_some() {
+            let migration = super::legacy::convert(value)?;
+            (migration.config.clone(), Some(migration))
+        } else {
+            bail!("SUSFS configuration has no schema");
+        };
         config.validate()?;
-        Ok(config)
+        Ok((config, migration))
     }
 
     pub fn validate(&self) -> Result<()> {
@@ -278,7 +290,9 @@ impl Config {
             single_line_text(&uname.release, 65)?;
             single_line_text(&uname.version, 65)?;
         }
-        if let Some(cmdline) = &self.settings.cmdline {
+        if let Some(cmdline) = &self.settings.cmdline
+            && !cmdline.is_empty()
+        {
             text(cmdline, 8192)?;
         }
         let mut identities = std::collections::HashSet::new();

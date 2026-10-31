@@ -1,7 +1,6 @@
 // SPDX-License-Identifier: GPL-2.0-only
-// Wire definitions independently implemented from susfs4ksu-lkm's GPL-2.0
-// kernel/susfs_abi.h (inforcqb, 8f6776e7). BakaSU was consulted for command usage,
-// not copied. Keep native C alignment, including the trailing err sentinel.
+// Wire definitions for the SUSFS v2.3.0 control interface. Keep native C
+// alignment, including the trailing error sentinel.
 use anyhow::{Result, bail};
 
 #[repr(C)]
@@ -86,32 +85,26 @@ impl Default for Kstat {
     }
 }
 
-pub fn verified_lkm_note(note: &[u8]) -> bool {
-    const BUILD_ID: [u8; 20] = [
-        0x7b, 0x51, 0x39, 0x90, 0x05, 0x2d, 0xe4, 0x6e, 0x2e, 0x70, 0x08, 0x31, 0x9f, 0xbf, 0xf6,
-        0x57, 0x7b, 0xfe, 0x66, 0x02,
-    ];
-    note.len() == 36
-        && note[..12] == [4, 0, 0, 0, 20, 0, 0, 0, 3, 0, 0, 0]
-        && note[12..16] == *b"GNU\0"
-        && note[16..] == BUILD_ID
-}
-
 pub fn static_kstat_profile(detection: &super::Detection) -> bool {
-    cfg!(target_arch = "aarch64")
-        && detection.implementation == "lkm"
-        && detection.features.iter().any(|f| f == "SUSFS_LKM_MODULES")
-        && detection.supports("CONFIG_KSU_SUSFS_SUS_KSTAT")
-        && detection.proc("susfs_kstat")
-        && std::fs::read_to_string("/sys/module/susfs_guard_lkm/initstate")
-            .is_ok_and(|state| state.trim() == "live")
-        && std::fs::read("/sys/module/susfs_guard_lkm/notes/.note.gnu.build-id")
-            .is_ok_and(|note| verified_lkm_note(&note))
+    detection.supports("CONFIG_KSU_SUSFS_SUS_KSTAT")
 }
 
 pub fn static_kstat_fields(supported: bool) -> Vec<&'static str> {
     if supported {
-        vec!["size", "ctime_sec"]
+        vec![
+            "ino",
+            "dev",
+            "nlink",
+            "size",
+            "atime_sec",
+            "atime_nsec",
+            "mtime_sec",
+            "mtime_nsec",
+            "ctime_sec",
+            "ctime_nsec",
+            "blocks",
+            "blksize",
+        ]
     } else {
         Vec::new()
     }
@@ -125,28 +118,34 @@ pub fn static_kstat_payload(
 ) -> Result<Kstat> {
     use std::os::unix::fs::MetadataExt;
     fields.validate()?;
-    if !matches!(fields.flags(), 0x8 | 0x100) {
-        bail!("Static kstat field is not verified for this provider");
-    }
     Ok(Kstat {
         is_static: 1,
         target_ino: metadata.ino().try_into()?,
         path: bytes(path)?,
-        ino: metadata.ino().try_into()?,
-        dev: metadata.dev().try_into()?,
-        nlink: metadata.nlink().try_into()?,
+        ino: fields.ino.unwrap_or_else(|| metadata.ino()),
+        dev: fields.dev.unwrap_or_else(|| metadata.dev()),
+        nlink: fields.nlink.unwrap_or_else(|| metadata.nlink() as u32),
         size: fields.size.unwrap_or(metadata.size().try_into()?),
-        atime_sec: metadata.atime().try_into()?,
-        atime_nsec: metadata.atime_nsec().try_into()?,
-        mtime_sec: metadata.mtime().try_into()?,
-        mtime_nsec: metadata.mtime_nsec().try_into()?,
+        atime_sec: fields.atime_sec.unwrap_or_else(|| metadata.atime()),
+        atime_nsec: fields.atime_nsec.map_or_else(
+            || metadata.atime_nsec().try_into(),
+            |value| Ok(value.into()),
+        )?,
+        mtime_sec: fields.mtime_sec.unwrap_or_else(|| metadata.mtime()),
+        mtime_nsec: fields.mtime_nsec.map_or_else(
+            || metadata.mtime_nsec().try_into(),
+            |value| Ok(value.into()),
+        )?,
         ctime_sec: fields
             .ctime_sec
             .unwrap_or_else(|| metadata.ctime())
             .try_into()?,
-        ctime_nsec: metadata.ctime_nsec().try_into()?,
-        blocks: metadata.blocks().try_into()?,
-        blksize: metadata.blksize().try_into()?,
+        ctime_nsec: fields.ctime_nsec.map_or_else(
+            || metadata.ctime_nsec().try_into(),
+            |value| Ok(value.into()),
+        )?,
+        blocks: fields.blocks.unwrap_or(metadata.blocks().try_into()?),
+        blksize: fields.blksize.unwrap_or(metadata.blksize().try_into()?),
         flags: fields.flags(),
         ..Kstat::default()
     })
@@ -207,19 +206,6 @@ pub fn string(value: &[u8]) -> Option<String> {
 mod tests {
     use super::*;
     #[test]
-    fn verified_note_requires_exact_header_and_build_id() {
-        let mut note = vec![4, 0, 0, 0, 20, 0, 0, 0, 3, 0, 0, 0, b'G', b'N', b'U', 0];
-        note.extend_from_slice(&[
-            0x7b, 0x51, 0x39, 0x90, 0x05, 0x2d, 0xe4, 0x6e, 0x2e, 0x70, 0x08, 0x31, 0x9f, 0xbf,
-            0xf6, 0x57, 0x7b, 0xfe, 0x66, 0x02,
-        ]);
-        assert!(verified_lkm_note(&note));
-        note[35] ^= 1;
-        assert!(!verified_lkm_note(&note));
-        assert!(!verified_lkm_note(&note[..20]));
-    }
-
-    #[test]
     fn static_payload_only_accepts_verified_fields() {
         let file = tempfile::NamedTempFile::new().unwrap();
         let metadata = file.as_file().metadata().unwrap();
@@ -231,18 +217,58 @@ mod tests {
         assert_eq!(payload.size, 0);
         assert_eq!(payload.flags, 0x8);
         assert_eq!(payload.err, 126);
-        let unsupported = super::super::model::StaticKstat {
-            ino: Some(1),
-            ..Default::default()
-        };
-        assert!(static_kstat_payload("/data/test", &unsupported, &metadata).is_err());
         let combined = super::super::model::StaticKstat {
             size: Some(0),
             ctime_sec: Some(-1),
             ..Default::default()
         };
-        assert!(static_kstat_payload("/data/test", &combined, &metadata).is_err());
-        assert_eq!(static_kstat_fields(true), ["size", "ctime_sec"]);
+        let payload = static_kstat_payload("/data/test", &combined, &metadata).unwrap();
+        assert_eq!(payload.flags, 0x108);
+        let all = super::super::model::StaticKstat {
+            ino: Some(1),
+            dev: Some(2),
+            nlink: Some(3),
+            size: Some(4),
+            atime_sec: Some(5),
+            atime_nsec: Some(6),
+            mtime_sec: Some(7),
+            mtime_nsec: Some(8),
+            ctime_sec: Some(9),
+            ctime_nsec: Some(10),
+            blocks: Some(11),
+            blksize: Some(12),
+        };
+        let payload = static_kstat_payload("/data/test", &all, &metadata).unwrap();
+        assert_eq!(payload.flags, 0xfff);
+        assert_eq!(payload.ino, 1);
+        assert_eq!(payload.dev, 2);
+        assert_eq!(payload.nlink, 3);
+        assert_eq!(payload.size, 4);
+        assert_eq!(payload.atime_sec, 5);
+        assert_eq!(payload.atime_nsec, 6);
+        assert_eq!(payload.mtime_sec, 7);
+        assert_eq!(payload.mtime_nsec, 8);
+        assert_eq!(payload.ctime_sec, 9);
+        assert_eq!(payload.ctime_nsec, 10);
+        assert_eq!(payload.blocks, 11);
+        assert_eq!(payload.blksize, 12);
+        assert_eq!(
+            static_kstat_fields(true),
+            [
+                "ino",
+                "dev",
+                "nlink",
+                "size",
+                "atime_sec",
+                "atime_nsec",
+                "mtime_sec",
+                "mtime_nsec",
+                "ctime_sec",
+                "ctime_nsec",
+                "blocks",
+                "blksize",
+            ]
+        );
         assert!(static_kstat_fields(false).is_empty());
     }
     #[test]

@@ -128,6 +128,9 @@ pub fn on_post_fs_data() -> Result<()> {
         Ok(None) => warn!("kernel module autoload is still running in the background"),
         Err(e) => warn!("kernel module autoload scheduler failed: {e:#}"),
     }
+    // A managed LKM can become visible after the first early capture and before
+    // module mounts. Capture only the kstat rules that were not visible earlier.
+    crate::susfs::boot("pre-mount-late");
 
     // execute metamodule post-fs-data script first (priority)
     if let Err(e) = metamodule::exec_stage_script("post-fs-data", wait) {
