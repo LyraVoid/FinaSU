@@ -368,6 +368,7 @@ pub fn run(command: Command) -> Result<()> {
                     "detection": detection, "automatic": config.automatic,
                     "ownership": ownership,
                     "switch_ready": switch_ready,
+                    "static_kstat_supported": abi::static_kstat_profile(&detection),
                     "management": summary, "config_error": null,
                     "uname_applied": uname_provider.applied,
                     "uname_scheduled": uname_provider.scheduled,

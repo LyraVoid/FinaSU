@@ -267,8 +267,27 @@ fn rule(rule: &Rule, detection: &Detection) -> Result<()> {
             abi::checked(payload.err)
         }
         Rule::Kstat { .. } => bail!("Kstat requires paired pre/post mount stages"),
-        Rule::StaticKstat { .. } => bail!("Static kstat application is not available"),
+        Rule::StaticKstat { path, fields } => {
+            if !abi::static_kstat_profile(detection) {
+                bail!("Static kstat provider is not verified or its control is unavailable");
+            }
+            let table = fs::read_to_string("/proc/susfs_kstat")?;
+            if !kstat_table_empty(&table) {
+                bail!("Static kstat requires an empty rule table; existing rules were not changed");
+            }
+            let metadata = fs::metadata(path)?;
+            let mut payload = abi::static_kstat_payload(path, fields, &metadata)?;
+            abi::call(0x0005_5572, &mut payload);
+            abi::checked(payload.err)
+        }
     }
+}
+
+fn kstat_table_empty(table: &str) -> bool {
+    table
+        .lines()
+        .next()
+        .is_some_and(|line| line.trim() == "(empty)")
 }
 
 pub fn apply(config: &Config, detection: &Detection, phase: Stage) -> Result<Report> {
@@ -479,6 +498,14 @@ const fn kstat_phase(phase: Stage, captured: bool, late: bool) -> Option<bool> {
 mod tests {
     use super::*;
     use std::cell::RefCell;
+
+    #[test]
+    fn static_kstat_only_accepts_an_explicitly_empty_rule_table() {
+        assert!(kstat_table_empty("(empty)\nmaps: armed=0\n"));
+        assert!(!kstat_table_empty(""));
+        assert!(!kstat_table_empty("/data/test ino=1 dev=1 flags=0x8\n"));
+        assert!(!kstat_table_empty("unexpected output"));
+    }
 
     #[test]
     fn boot_stages_only_mark_attempted_operations_uncertain_and_retry_failures() {

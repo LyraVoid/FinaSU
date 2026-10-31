@@ -47,6 +47,12 @@
     <string name="susfs_clone">Full clone (LKM requires proc control)</string>
     <string name="susfs_kstat_hint">Enable boot application and make SUSFS available before mounting. Snapshot before mounting, update after mounting. Late-load cannot recreate the original snapshot.</string>
     <string name="susfs_static_readonly">Static rule · editing and application are not yet available</string>
+    <string name="susfs_static_add">Add static metadata rule</string>
+    <string name="susfs_static_title">Static metadata rule</string>
+    <string name="susfs_static_hint">Leave fields blank to preserve them. This provider currently supports verified size and change-time seconds only. Applying does not verify the target app effect.</string>
+    <string name="susfs_static_unsupported">Static metadata control is unavailable for this provider.</string>
+    <string name="susfs_static_size">Reported size in bytes (optional)</string>
+    <string name="susfs_static_ctime">Reported change time in Unix seconds (optional)</string>
     <string name="susfs_remove">Remove saved rule</string>
     <string name="susfs_removal_hint">Changing or removing applied rules needs a reboot. Third-party rules are never cleared.</string>
     <string name="susfs_modules">Hidden module names</string>

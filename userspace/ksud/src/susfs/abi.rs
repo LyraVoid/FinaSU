@@ -86,7 +86,6 @@ impl Default for Kstat {
     }
 }
 
-#[allow(dead_code)]
 pub fn verified_lkm_note(note: &[u8]) -> bool {
     const BUILD_ID: [u8; 20] = [
         0x7b, 0x51, 0x39, 0x90, 0x05, 0x2d, 0xe4, 0x6e, 0x2e, 0x70, 0x08, 0x31, 0x9f, 0xbf, 0xf6,
@@ -98,7 +97,6 @@ pub fn verified_lkm_note(note: &[u8]) -> bool {
         && note[16..] == BUILD_ID
 }
 
-#[allow(dead_code)]
 pub fn static_kstat_profile(detection: &super::Detection) -> bool {
     cfg!(target_arch = "aarch64")
         && detection.implementation == "lkm"
@@ -111,7 +109,6 @@ pub fn static_kstat_profile(detection: &super::Detection) -> bool {
             .is_ok_and(|note| verified_lkm_note(&note))
 }
 
-#[allow(dead_code)]
 #[allow(clippy::useless_conversion)]
 pub fn static_kstat_payload(
     path: &str,

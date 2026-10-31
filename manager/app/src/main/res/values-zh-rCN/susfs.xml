@@ -47,6 +47,12 @@
     <string name="susfs_clone">完整克隆（LKM 需要 proc 控制）</string>
     <string name="susfs_kstat_hint">请开启开机应用，并确保挂载前 SUSFS 已可用。挂载前采样、挂载后更新；晚加载无法还原原始快照。</string>
     <string name="susfs_static_readonly">静态规则 · 暂不支持编辑和应用</string>
+    <string name="susfs_static_add">添加静态元数据规则</string>
+    <string name="susfs_static_title">静态元数据规则</string>
+    <string name="susfs_static_hint">留空的字段保持原值；当前 provider 仅开放已验证的大小和变更时间秒数。应用成功不代表目标应用效果已验证。</string>
+    <string name="susfs_static_unsupported">当前 provider 不支持已核验的静态元数据控制。</string>
+    <string name="susfs_static_size">显示的大小（字节，可选）</string>
+    <string name="susfs_static_ctime">显示的变更时间（Unix 秒，可选）</string>
     <string name="susfs_remove">移除已保存规则</string>
     <string name="susfs_removal_hint">修改或移除已应用规则需要重启；不会清空第三方规则。</string>
     <string name="susfs_modules">隐藏模块名称</string>
