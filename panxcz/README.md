@@ -2,7 +2,7 @@
 
 Every change here is about installing root as a loadable module on a GKI device
 with SUSFS in the same ramdisk, and about making BRENE's hardening work without
-installing BRENE. The tree is rebased on `LyraVoid/FinaSU@2a559ff4` (the upstream
+installing BRENE. The tree is rebased on `LyraVoid/FinaSU@9b32bde4` (the upstream
 state this fork tracks), and the diff is deliberately small:
 
 1. **`boot_patch` writes the SUSFS guard into the ramdisk.** The stock
@@ -34,6 +34,15 @@ state this fork tracks), and the diff is deliberately small:
    APK therefore serves every supported device: `boot-patch` picks the pair that
    matches the KMI it detected.
 
+5. **Kernels older than GKI 5.10 get upstream's patch set.** A 4.14, 4.19 or
+   5.4 kernel has no `kernelsu.ko` to load and no guard to embed, so SUSFS has
+   to be built in. `panxcz/fetch-legacy-susfs.sh` copies
+   `gitlab.com/simonpunk/susfs4ksu`'s own trees for `kernel-4.14`,
+   `kernel-4.19` and `kernel-5.4` — patches, `fs/`, headers, the module with
+   its prebuilt `ksu_susfs` — verbatim, pinned to one commit each, and CI ships
+   them as `susfs-legacy-kernel-*.zip` next to the APK. See
+   `panxcz/legacy-kernels.md` for what applies and what cannot.
+
 The result is that a manager built from this fork patches a boot image with
 root **and** SUSFS 2.3.0 in one step: no separate ReSuSFS module, no BRENE
 module, no AnyKernel3 zip, no kernel rebuild.
@@ -63,3 +72,6 @@ signing certificate is the one baked into the modules as the second trusted slot
   `vermagic` family and that it exposes `expose_proc` before embedding it.
 - Modules are built in `ghcr.io/ylarod/ddk-min:<kmi>-20260828` with the release
   signature in the second trusted slot, same as upstream.
+- The legacy patch sets are not patched, rewritten or backported here. If
+  upstream moves a legacy branch, `fetch-legacy-susfs.sh` fails instead of
+  publishing a different commit, and the new one has to be reviewed on purpose.
