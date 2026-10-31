@@ -17,6 +17,7 @@ import androidx.compose.foundation.relocation.bringIntoViewRequester
 import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.rounded.ReceiptLong
 import androidx.compose.material.icons.rounded.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -41,7 +42,9 @@ import kotlinx.coroutines.withContext
 import me.weishu.kernelsu.Natives
 import me.weishu.kernelsu.R
 import me.weishu.kernelsu.data.susfs.SusfsInputs
+import me.weishu.kernelsu.data.susfs.SusfsErrorKind
 import me.weishu.kernelsu.data.susfs.SusfsStatus
+import me.weishu.kernelsu.data.susfs.susfsErrorKind
 import me.weishu.kernelsu.ui.component.material.*
 import me.weishu.kernelsu.ui.navigation3.LocalNavigator
 import me.weishu.kernelsu.ui.theme.FolkMotion
@@ -92,6 +95,7 @@ fun SusfsScreen() {
     var draft by rememberSaveable { mutableStateOf<String?>(null) }
     var confirmApplyAfterSave by rememberSaveable { mutableStateOf(false) }
     var ownershipAction by rememberSaveable { mutableStateOf<String?>(null) }
+    var restoreSchema1 by rememberSaveable { mutableStateOf(false) }
     val config = remember(state.config) { state.config?.let(::JSONObject) }
     val writable = state.status.writable && !state.busy && config != null
     val import = rememberLauncherForActivityResult(ActivityResultContracts.OpenDocument()) { uri ->
@@ -146,6 +150,7 @@ fun SusfsScreen() {
                     SusfsNotice(state) { confirmApplyAfterSave = true }
                     when (page) {
                         0 -> SusfsOverview(state, config, writable, vm, { ownershipAction = it },
+                            { restoreSchema1 = true },
                             { import.launch(arrayOf("application/json", "text/plain")) },
                             { export.launch("folksu-susfs.json") })
                         1 -> {
@@ -246,6 +251,24 @@ fun SusfsScreen() {
             },
         )
     }
+    if (restoreSchema1) {
+        AlertDialog(
+            onDismissRequest = { restoreSchema1 = false },
+            title = { Text(stringResource(R.string.susfs_restore_schema1_title)) },
+            text = { Text(stringResource(R.string.susfs_restore_schema1_message)) },
+            confirmButton = {
+                TextButton(enabled = state.status.canImport && !state.busy, onClick = {
+                    restoreSchema1 = false
+                    vm.restoreSchema1()
+                }) { Text(stringResource(R.string.susfs_restore_schema1_action)) }
+            },
+            dismissButton = {
+                TextButton(onClick = { restoreSchema1 = false }) {
+                    Text(stringResource(R.string.susfs_cancel))
+                }
+            },
+        )
+    }
 }
 
 @Composable
@@ -285,12 +308,16 @@ private fun SusfsPage(scroll: ScrollState, content: @Composable ColumnScope.() -
 }
 
 @Composable
-internal fun susfsDisabledReason(status: SusfsStatus, supported: Boolean): String? = when {
+internal fun susfsDisabledReason(status: SusfsStatus, supported: Boolean, writable: Boolean? = null): String? = when {
     status.protocol == "root_unavailable" -> stringResource(R.string.susfs_root)
     status.protocol == "unknown_protocol" -> stringResource(R.string.susfs_readonly)
     status.protocol == "not_detected" -> stringResource(R.string.susfs_absent)
     status.protocol != "compatible" -> stringResource(R.string.susfs_probe)
     status.error != null -> stringResource(R.string.susfs_config_invalid)
+    status.ownership == "external" -> stringResource(R.string.susfs_owner_external_reason)
+    status.ownership == "unknown" -> stringResource(R.string.susfs_owner_unknown_reason)
+    status.pendingOwner != null -> stringResource(R.string.susfs_owner_pending_reason)
+    writable == false -> stringResource(R.string.susfs_busy_reason)
     !supported -> stringResource(R.string.susfs_unsupported)
     else -> null
 }
@@ -298,13 +325,27 @@ internal fun susfsDisabledReason(status: SusfsStatus, supported: Boolean): Strin
 @Composable
 private fun SusfsNotice(state: SusfsUiState, onApplyAfterSave: () -> Unit) {
     val reason = susfsDisabledReason(state.status, true)
-    if (reason != null || state.message != null || state.savedNotice) {
+    val showManagement = state.status.detected && state.status.management != "idle"
+    if (reason != null || showManagement || state.message != null || state.savedNotice) {
         SegmentedColumn {
             reason?.let { item { SegmentedListItem(headlineContent = { Text(it) },
                 supportingContent = state.status.error?.let { detail -> ({ Text(detail) }) },
                 leadingContent = { Icon(Icons.Rounded.Info, null) }) } }
-            state.message?.let { item { SegmentedListItem(headlineContent = { Text(it, color = MaterialTheme.colorScheme.error) },
-                supportingContent = { Text(stringResource(R.string.susfs_error_hint)) }) } }
+            if (showManagement) item {
+                SegmentedListItem(
+                    headlineContent = { Text(susfsManagementLabel(state.status.management)) },
+                    supportingContent = { Text(stringResource(susfsManagementHint(state.status))) },
+                    leadingContent = { Icon(Icons.AutoMirrored.Rounded.ReceiptLong, null) },
+                )
+            }
+            state.message?.let { message ->
+                item {
+                    SegmentedListItem(
+                        headlineContent = { Text(message, color = MaterialTheme.colorScheme.error) },
+                        supportingContent = { Text(susfsErrorHint(message)) },
+                    )
+                }
+            }
             if (state.savedNotice) item { SegmentedListItem(headlineContent = { Text(stringResource(R.string.susfs_save_success)) },
                 supportingContent = { Text(stringResource(R.string.susfs_save_success_hint)) }) }
             if (state.savedNotice && state.status.writable) item {
@@ -320,8 +361,8 @@ private fun SusfsNotice(state: SusfsUiState, onApplyAfterSave: () -> Unit) {
 }
 
 @Composable
-private fun SusfsOverview(state: SusfsUiState, config: JSONObject?, writable: Boolean, vm: SusfsViewModel, ownershipAction: (String) -> Unit,
-    import: () -> Unit, export: () -> Unit) {
+private fun SusfsOverview(state: SusfsUiState, config: JSONObject?, writable: Boolean, vm: SusfsViewModel,
+    ownershipAction: (String) -> Unit, restoreSchema1: () -> Unit, import: () -> Unit, export: () -> Unit) {
     val status = state.status
     SegmentedColumn(title = stringResource(R.string.susfs_overview)) {
         item { SegmentedListItem(headlineContent = { Text(stringResource(when (status.protocol) {
@@ -372,10 +413,18 @@ private fun SusfsOverview(state: SusfsUiState, config: JSONObject?, writable: Bo
             supportingContent = { Text(stringResource(if (Natives.isSafeMode) R.string.susfs_safe_mode else R.string.susfs_apply_hint)) },
             leadingContent = { Icon(Icons.Rounded.PlayArrow, null) }) }
     }
-    state.report?.let { report ->
+    (state.report ?: status.receipt)?.let { report ->
         SegmentedColumn(title = stringResource(R.string.susfs_last_report)) {
             item { SegmentedListItem(headlineContent = { Text(susfsManagementLabel(report.status)) },
-                supportingContent = { Text(stringResource(R.string.susfs_report_hint)) }) }
+                supportingContent = {
+                    Text(listOf(
+                        stringResource(R.string.susfs_report_counts, report.applied.size,
+                            report.failures.size, report.skipped.size, report.deferred.size,
+                            report.pendingReboot.size),
+                        stringResource(if (state.report == null) R.string.susfs_report_persisted_hint
+                            else R.string.susfs_report_hint),
+                    ).joinToString("\n"))
+                }) }
             report.applied.forEach { key -> item(key = "ok:$key") { SegmentedListItem(
                 headlineContent = { Text(susfsOperationName(key)) }, supportingContent = { Text(stringResource(R.string.susfs_acknowledged)) },
                 leadingContent = { Icon(Icons.Rounded.CheckCircle, null) }) } }
@@ -399,12 +448,79 @@ private fun SusfsOverview(state: SusfsUiState, config: JSONObject?, writable: Bo
             headlineContent = { Text(stringResource(R.string.susfs_import)) }, leadingContent = { Icon(Icons.Rounded.FileOpen, null) }) }
         item { SegmentedListItem(enabled = config != null && !state.busy, onClick = export,
             headlineContent = { Text(stringResource(R.string.susfs_export)) }, leadingContent = { Icon(Icons.Rounded.SaveAlt, null) }) }
+        if (status.schema1BackupAvailable) item {
+            SegmentedListItem(
+                enabled = status.canImport && !state.busy,
+                onClick = restoreSchema1,
+                headlineContent = { Text(stringResource(R.string.susfs_restore_schema1)) },
+                supportingContent = { Text(stringResource(R.string.susfs_restore_schema1_hint)) },
+                leadingContent = { Icon(Icons.Rounded.Restore, null) },
+            )
+        }
     }
+    val staticFieldNames = susfsStaticFieldNames(status.capabilities.staticKstatFields)
     SegmentedColumn(title = stringResource(R.string.susfs_capabilities)) {
-        status.features.forEach { feature -> item(key = feature) { SegmentedListItem(headlineContent = { Text(feature.removePrefix("CONFIG_KSU_SUSFS_")) }) } }
-        if (status.features.isEmpty()) item { SegmentedListItem(headlineContent = { Text(stringResource(R.string.susfs_unsupported)) }) }
+        val capabilities = listOf(
+            Triple(R.string.susfs_hide_mounts, status.capabilities.hideMounts, null),
+            Triple(R.string.susfs_logging, status.capabilities.logging, null),
+            Triple(R.string.susfs_avc, status.capabilities.avcSpoof, null),
+            Triple(R.string.susfs_uname, status.capabilities.uname, null),
+            Triple(R.string.susfs_cmdline, status.capabilities.cmdline, null),
+            Triple(R.string.susfs_path_rules, status.capabilities.path, null),
+            Triple(R.string.susfs_map_rules, status.capabilities.map, null),
+            Triple(R.string.susfs_kstat_rules, status.capabilities.dynamicKstat, null),
+            Triple(R.string.susfs_clone, status.capabilities.fullClone, null),
+            Triple(R.string.susfs_static_title, status.capabilities.staticKstat,
+                staticFieldNames.ifEmpty { null }),
+            Triple(R.string.susfs_redirect_rules, status.capabilities.redirect,
+                status.capabilities.redirectUidSchemes.joinToString().ifEmpty { null }),
+            Triple(R.string.susfs_modules, status.capabilities.hiddenModules, null),
+            Triple(R.string.susfs_prefixes, status.capabilities.mountPrefixes, null),
+        )
+        capabilities.forEachIndexed { index, (title, supported, detail) -> item(key = "capability:$index") {
+            SegmentedListItem(
+                headlineContent = { Text(stringResource(title)) },
+                supportingContent = {
+                    Text(listOfNotNull(
+                        stringResource(if (supported) R.string.susfs_available else R.string.susfs_unavailable),
+                        detail,
+                    ).joinToString(" · "))
+                },
+                leadingContent = { Icon(
+                    if (supported) Icons.Rounded.CheckCircle else Icons.Rounded.Block,
+                    null,
+                ) },
+            )
+        } }
     }
 }
+
+@Composable
+internal fun susfsStaticFieldNames(fields: List<String>): String {
+    val names = mutableListOf<String>()
+    for (field in fields) {
+        names += when (field) {
+            "size" -> stringResource(R.string.susfs_field_size)
+            "ctime_sec" -> stringResource(R.string.susfs_field_ctime)
+            else -> field
+        }
+    }
+    return names.joinToString()
+}
+
+@Composable
+private fun susfsErrorHint(message: String): String = stringResource(when (susfsErrorKind(message)) {
+    SusfsErrorKind.Capability -> R.string.susfs_error_capability
+    SusfsErrorKind.StaticKstat -> R.string.susfs_error_static
+    SusfsErrorKind.PendingReboot -> R.string.susfs_error_reboot
+    SusfsErrorKind.Uts -> R.string.susfs_error_uts
+    SusfsErrorKind.Ownership -> R.string.susfs_error_ownership
+    SusfsErrorKind.Busy -> R.string.susfs_error_busy
+    SusfsErrorKind.Timeout -> R.string.susfs_error_timeout
+    SusfsErrorKind.Validation -> R.string.susfs_error_validation
+    SusfsErrorKind.Root -> R.string.susfs_error_root
+    SusfsErrorKind.Unknown -> R.string.susfs_error_hint
+})
 
 private fun susfsManagementHint(status: SusfsStatus): Int = when {
     status.management == "partial" -> R.string.susfs_partial_hint

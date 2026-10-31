@@ -5,6 +5,8 @@
     <string name="susfs_view_status">View status</string>
     <string name="susfs_overview">Overview</string>
     <string name="susfs_capabilities">Capabilities</string>
+    <string name="susfs_available">Available</string>
+    <string name="susfs_unavailable">Unavailable</string>
     <string name="susfs_settings">Basic settings</string>
     <string name="susfs_rules">Rules</string>
     <string name="susfs_lkm">LKM extensions</string>
@@ -45,6 +47,7 @@
     <string name="susfs_batch_input">Rules, one per line</string>
     <string name="susfs_batch_count">%1$d rules ready to save</string>
     <string name="susfs_batch_empty">Enter at least one valid rule.</string>
+    <string name="susfs_batch_invalid">Cannot add rules: %1$s</string>
     <string name="susfs_edit_rule">Edit saved rule</string>
     <string name="susfs_empty">No rules saved</string>
     <string name="susfs_path">Path</string>
@@ -59,6 +62,9 @@
     <string name="susfs_static_unsupported">Static metadata control is unavailable for this provider.</string>
     <string name="susfs_static_size">Reported size in bytes (optional)</string>
     <string name="susfs_static_ctime">Reported change time in Unix seconds (optional)</string>
+    <string name="susfs_static_verified_fields">Verified fields for this provider: %1$s</string>
+    <string name="susfs_field_size">size (bytes)</string>
+    <string name="susfs_field_ctime">change time (Unix seconds)</string>
     <string name="susfs_remove">Remove saved rule</string>
     <string name="susfs_removal_hint">Changing or removing applied rules needs a reboot. Third-party rules are never cleared.</string>
     <string name="susfs_modules">Hidden module names</string>
@@ -78,6 +84,10 @@
     <string name="susfs_owner_external">External management</string>
     <string name="susfs_owner_pending">Management switch pending</string>
     <string name="susfs_owner_unknown">Management mode unavailable</string>
+    <string name="susfs_owner_external_reason">External management owns SUSFS writes. FinaSU is read-only in this mode.</string>
+    <string name="susfs_owner_unknown_reason">FinaSU cannot confirm write ownership, so SUSFS mutations are disabled.</string>
+    <string name="susfs_owner_pending_reason">A management switch is pending. Finish or cancel it before editing.</string>
+    <string name="susfs_busy_reason">Another operation or refresh is in progress.</string>
     <string name="susfs_owner_to_external">Switch to external management</string>
     <string name="susfs_owner_to_builtin">Switch to FinaSU management</string>
     <string name="susfs_owner_switch_hint">Pause FinaSU writes until reboot and confirmation.</string>
@@ -102,6 +112,15 @@
     <string name="susfs_save_success">Configuration saved</string>
     <string name="susfs_save_success_hint">No kernel operation was performed. Apply explicitly or enable boot application.</string>
     <string name="susfs_error_hint">Check the configuration and root authorization. After a timeout, refresh before retrying; an in-flight operation may still finish.</string>
+    <string name="susfs_error_capability">This provider does not expose the required feature. No fallback write was attempted.</string>
+    <string name="susfs_error_static">Static metadata is restricted to a provider and ABI with verified fields. The saved rule was not changed.</string>
+    <string name="susfs_error_reboot">The provider already has metadata rules. FinaSU will not overwrite them; reboot before retrying when the table is empty.</string>
+    <string name="susfs_error_uts">SUSFS uname and UTS View cannot claim the same identity provider. Check the current provider before retrying.</string>
+    <string name="susfs_error_ownership">SUSFS writes are disabled for external or switching ownership. Finish the ownership flow before editing or applying.</string>
+    <string name="susfs_error_busy">Another SUSFS operation is still in progress. Refresh before retrying.</string>
+    <string name="susfs_error_timeout">The request timed out. It may still finish, so refresh and inspect the receipt before retrying.</string>
+    <string name="susfs_error_validation">The daemon rejected the configuration. Fix the reported field; the previous saved configuration remains intact.</string>
+    <string name="susfs_error_root">Root access is unavailable. Restore authorization and refresh.</string>
     <string name="susfs_ack_hint">Acknowledged operations this boot, not proof of hiding effectiveness. After LKM reload, reboot before relying on replay state.</string>
     <string name="susfs_partial_hint">Some operations were acknowledged and others were not. Apply again to inspect itemized reasons.</string>
     <string name="susfs_skipped_hint">The requested operation was unnecessary because the kernel does not expose this control.</string>
@@ -109,6 +128,8 @@
     <string name="susfs_safe_mode">Safe mode · application is disabled</string>
     <string name="susfs_last_report">Last application receipt</string>
     <string name="susfs_report_hint">This session’s last apply request. Not a live inventory of all kernel rules.</string>
+    <string name="susfs_report_persisted_hint">Saved receipt for this boot. It is FinaSU’s record, not a live inventory of third-party rules.</string>
+    <string name="susfs_report_counts">%1$d acknowledged · %2$d failed · %3$d skipped · %4$d deferred · %5$d pending reboot</string>
     <string name="susfs_acknowledged">Kernel acknowledged</string>
     <string name="susfs_acknowledged_unknown">Previously acknowledged · current effect unknown</string>
     <string name="susfs_state_unknown">Unable to confirm application state</string>
@@ -117,6 +138,11 @@
     <string name="susfs_import_auto_on">Boot application is ON in this file.</string>
     <string name="susfs_import_auto_off">Boot application is OFF in this file.</string>
     <string name="susfs_import_warning">Replaces only FinaSU’s saved configuration after strict daemon validation. Does not apply now or clear active / third-party rules. If boot application is on, it may run on the next normal boot.</string>
+    <string name="susfs_restore_schema1">Restore schema 1 backup</string>
+    <string name="susfs_restore_schema1_hint">Use the backup created before static metadata migration.</string>
+    <string name="susfs_restore_schema1_title">Restore the schema 1 configuration?</string>
+    <string name="susfs_restore_schema1_message">The current configuration is backed up first, then replaced by the verified pre-migration file. This does not apply rules or clear active kernel state. Static metadata rules will be removed from the saved configuration.</string>
+    <string name="susfs_restore_schema1_action">Back up and restore</string>
     <string name="susfs_restore_uname">Restore real kernel identity</string>
     <string name="susfs_use_real_field">Use the real kernel field (default)</string>
     <string name="susfs_restore_hint">Saves default for both fields. Apply now to restore; merely removing a saved value does not restore the kernel.</string>

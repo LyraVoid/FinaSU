@@ -54,4 +54,53 @@ class SusfsStatusTest {
         assertEquals("partial", SusfsStatus.parse(base.format("partial")).management)
         assertEquals("skipped", SusfsStatus.parse(base.format("skipped")).management)
     }
+
+    @Test fun `capability profile drives verified controls`() {
+        val status = SusfsStatus.parse("""
+            {
+              "detection":{"status":"compatible","version":"v2.3.0","variant":"GKI-LKM",
+                "implementation":"lkm","features":["SUSFS_LKM_MODULES"],"proc_nodes":["susfs_kstat"]},
+              "automatic":false,"config_error":null,"management":"saved",
+              "ownership":{"mode":"builtin","pending":null},
+              "receipt":{"status":"partial","applied":["path:/a"],
+                "failures":{"static_kstat:/b":"provider unavailable"},
+                "skipped":{"map:/c":"unsupported"},"deferred":["uname"],
+                "pending_reboot":["kstat:/d"]},
+              "schema1_backup_available":true,
+              "capabilities":{
+                "supported":["path","dynamic_kstat","full_clone","static_kstat","redirect","mount_prefixes"],
+                "static_kstat_fields":["size","ctime_sec"],
+                "redirect_uid_schemes":[0,1,2]
+              }
+            }
+        """)
+        assertTrue(status.capabilities.path)
+        assertFalse(status.capabilities.map)
+        assertTrue(status.capabilities.fullClone)
+        assertTrue(status.staticKstatSupported)
+        assertEquals(listOf("size", "ctime_sec"), status.capabilities.staticKstatFields)
+        assertEquals(listOf(0, 1, 2), status.capabilities.redirectUidSchemes)
+        assertFalse(status.capabilities.hiddenModules)
+        assertTrue(status.capabilities.mountPrefixes)
+        assertEquals("partial", status.receipt?.status)
+        assertEquals(listOf("path:/a"), status.receipt?.applied)
+        assertEquals(listOf("kstat:/d"), status.receipt?.pendingReboot)
+        assertTrue(status.schema1BackupAvailable)
+    }
+
+    @Test fun `legacy status derives the previously verified static fields`() {
+        val status = SusfsStatus.parse("""
+            {
+              "detection":{"status":"compatible","version":"v2.3.0","variant":"GKI-LKM",
+                "implementation":"lkm","features":["CONFIG_KSU_SUSFS_SUS_PATH"],
+                "proc_nodes":["susfs_kstat"]},
+              "automatic":false,"config_error":null,"management":"saved",
+              "ownership":{"mode":"builtin","pending":null},
+              "static_kstat_supported":true
+            }
+        """)
+        assertTrue(status.capabilities.path)
+        assertTrue(status.staticKstatSupported)
+        assertEquals(listOf("size", "ctime_sec"), status.capabilities.staticKstatFields)
+    }
 }

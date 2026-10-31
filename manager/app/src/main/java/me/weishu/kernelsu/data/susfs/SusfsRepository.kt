@@ -9,6 +9,24 @@ import me.weishu.kernelsu.ui.util.RootShell
 import org.json.JSONObject
 import java.util.concurrent.TimeUnit
 
+data class SusfsCapabilities(
+    val hideMounts: Boolean = false,
+    val logging: Boolean = false,
+    val avcSpoof: Boolean = false,
+    val uname: Boolean = false,
+    val cmdline: Boolean = false,
+    val path: Boolean = false,
+    val map: Boolean = false,
+    val dynamicKstat: Boolean = false,
+    val fullClone: Boolean = false,
+    val staticKstat: Boolean = false,
+    val staticKstatFields: List<String> = emptyList(),
+    val redirect: Boolean = false,
+    val redirectUidSchemes: List<Int> = emptyList(),
+    val hiddenModules: Boolean = false,
+    val mountPrefixes: Boolean = false,
+)
+
 data class SusfsStatus(
     val protocol: String = "probing",
     val version: String = "",
@@ -22,6 +40,9 @@ data class SusfsStatus(
     val pendingOwner: String? = null,
     val switchReady: Boolean = false,
     val staticKstatSupported: Boolean = false,
+    val capabilities: SusfsCapabilities = SusfsCapabilities(),
+    val receipt: SusfsApplyReport? = null,
+    val schema1BackupAvailable: Boolean = false,
     val unameApplied: Boolean = false,
     val unameScheduled: Boolean = false,
     val unameUncertain: Boolean = false,
@@ -44,17 +65,75 @@ data class SusfsStatus(
                 val array = detection.getJSONArray(key)
                 return List(array.length()) { array.getString(it) }
             }
+            fun integers(array: org.json.JSONArray?) =
+                array?.let { values -> List(values.length()) { values.getInt(it) } }.orEmpty()
+            fun capabilityStrings(array: org.json.JSONArray?) =
+                array?.let { values -> List(values.length()) { values.getString(it) } }.orEmpty()
+            val features = strings("features")
+            val procNodes = strings("proc_nodes")
+            val implementation = detection.getString("implementation")
+            val protocol = detection.getString("status")
+            val legacyStatic = json.optBoolean("static_kstat_supported", false)
+            val capability = json.optJSONObject("capabilities")
+            val advertised = capabilityStrings(capability?.optJSONArray("supported")).toSet()
+            fun enabled(name: String, legacy: Boolean) =
+                if (capability == null) legacy else name in advertised
+            val staticFields = capabilityStrings(capability?.optJSONArray("static_kstat_fields"))
+                .ifEmpty { if (legacyStatic) listOf("size", "ctime_sec") else emptyList() }
+            val redirectSchemes =
+                integers(capability?.optJSONArray("redirect_uid_schemes")).filter { it in 0..2 }
+            val redirect = enabled(
+                "redirect",
+                protocol == "compatible" && "CONFIG_KSU_SUSFS_OPEN_REDIRECT" in features,
+            )
+            val staticKstat = enabled("static_kstat", legacyStatic)
             return SusfsStatus(
-                protocol = detection.getString("status"),
+                protocol = protocol,
                 version = detection.getString("version"),
-                implementation = detection.getString("implementation"),
+                implementation = implementation,
                 variant = detection.getString("variant"),
-                features = strings("features"), procNodes = strings("proc_nodes"),
+                features = features, procNodes = procNodes,
                 management = json.getString("management"), automatic = json.getBoolean("automatic"),
                 ownership = if (ownershipValid) ownership.optString("mode") else "unknown",
                 pendingOwner = if (ownershipValid) ownership.optJSONObject("pending")?.optString("target") else null,
                 switchReady = ownershipValid && json.optBoolean("switch_ready", false),
-                staticKstatSupported = json.optBoolean("static_kstat_supported", false),
+                staticKstatSupported = staticKstat,
+                capabilities = SusfsCapabilities(
+                    hideMounts = enabled("hide_mounts",
+                        protocol == "compatible" && "CONFIG_KSU_SUSFS_SUS_MOUNT" in features),
+                    logging = enabled("logging",
+                        protocol == "compatible" && "CONFIG_KSU_SUSFS_ENABLE_LOG" in features),
+                    avcSpoof = enabled("avc_spoof",
+                        protocol == "compatible" && (implementation != "lkm" ||
+                            "susfs_avc_spoof" in procNodes)),
+                    uname = enabled("uname",
+                        protocol == "compatible" && "CONFIG_KSU_SUSFS_SPOOF_UNAME" in features),
+                    cmdline = enabled("cmdline",
+                        protocol == "compatible" &&
+                            "CONFIG_KSU_SUSFS_SPOOF_CMDLINE_OR_BOOTCONFIG" in features),
+                    path = enabled("path",
+                        protocol == "compatible" && "CONFIG_KSU_SUSFS_SUS_PATH" in features),
+                    map = enabled("map",
+                        protocol == "compatible" && "CONFIG_KSU_SUSFS_SUS_MAP" in features),
+                    dynamicKstat = enabled("dynamic_kstat",
+                        protocol == "compatible" && "CONFIG_KSU_SUSFS_SUS_KSTAT" in features),
+                    fullClone = enabled("full_clone",
+                        protocol == "compatible" &&
+                            "CONFIG_KSU_SUSFS_SUS_KSTAT" in features &&
+                            (implementation != "lkm" || "susfs_kstat" in procNodes)),
+                    staticKstat = staticKstat,
+                    staticKstatFields = staticFields,
+                    redirect = redirect,
+                    redirectUidSchemes = if (capability == null && redirect) listOf(0, 1, 2) else redirectSchemes,
+                    hiddenModules = enabled("hidden_modules",
+                        protocol == "compatible" && implementation == "lkm" &&
+                            "susfs_hide_modules" in procNodes),
+                    mountPrefixes = enabled("mount_prefixes",
+                        protocol == "compatible" && implementation == "lkm" &&
+                            "susfs_hide_mounts" in procNodes),
+                ),
+                receipt = json.optJSONObject("receipt")?.let { SusfsApplyReport.parse(it.toString()) },
+                schema1BackupAvailable = json.optBoolean("schema1_backup_available", false),
                 unameApplied = json.optBoolean("uname_applied", false),
                 unameScheduled = json.optBoolean("uname_scheduled", false),
                 unameUncertain = json.optBoolean("uname_uncertain", false),
@@ -72,6 +151,7 @@ interface SusfsDataSource {
     suspend fun switchOwnership(target: String) { error("Ownership switching unavailable") }
     suspend fun confirmOwnership() { error("Ownership switching unavailable") }
     suspend fun cancelOwnership() { error("Ownership switching unavailable") }
+    suspend fun restoreSchema1() { error("Schema 1 backup restore unavailable") }
 }
 
 /** Only trusted fixed subcommands; imported JSON is stdin, never executable shell text. */
@@ -79,7 +159,8 @@ class SusfsRepository(
     private val dispatcher: CoroutineDispatcher = Dispatchers.IO,
 ) : SusfsDataSource {
     private suspend fun command(action: String, input: String? = null): String = withContext(dispatcher) {
-        require(action in setOf("status", "export", "import", "apply", "switch builtin", "switch external", "confirm-switch", "cancel-switch"))
+        require(action in setOf("status", "export", "import", "apply", "switch builtin", "switch external",
+            "confirm-switch", "cancel-switch", "restore-schema1"))
         require(input == null || input.toByteArray().size <= 128 * 1024)
         val shell = withTimeout(15_000L) { RootShell.awaitRoot() }
         val path = ksuApp.applicationInfo.nativeLibraryDir + "/libksud.so"
@@ -106,4 +187,5 @@ class SusfsRepository(
     override suspend fun switchOwnership(target: String) { command("switch $target") }
     override suspend fun confirmOwnership() { command("confirm-switch") }
     override suspend fun cancelOwnership() { command("cancel-switch") }
+    override suspend fun restoreSchema1() { command("restore-schema1") }
 }

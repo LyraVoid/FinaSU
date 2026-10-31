@@ -98,6 +98,51 @@ pub fn backup_for_switch() -> Result<()> {
     backup_config(&contents, Path::new(SWITCH_BACKUP))
 }
 
+fn read_schema1_backup() -> Result<Option<Config>> {
+    match read(CONFIG_V1_BACKUP, super::model::MAX_CONFIG) {
+        Ok(input) => {
+            let config = Config::parse(&input)
+                .context("Schema 1 backup is invalid; export it before restoring")?;
+            if config.schema != 1 {
+                bail!("Schema 1 backup has an unexpected schema");
+            }
+            Ok(Some(config))
+        }
+        Err(error)
+            if error
+                .downcast_ref::<std::io::Error>()
+                .is_some_and(|e| e.kind() == std::io::ErrorKind::NotFound) =>
+        {
+            Ok(None)
+        }
+        Err(error) => Err(error),
+    }
+}
+
+pub fn schema1_backup_available() -> bool {
+    read_schema1_backup().is_ok_and(|backup| backup.is_some())
+}
+
+pub fn restore_schema1_backup() -> Result<Config> {
+    let backup = read_schema1_backup()?.context("No schema 1 backup is available")?;
+    let current = match read(CONFIG, super::model::MAX_CONFIG) {
+        Ok(input) => input.into_bytes(),
+        Err(error)
+            if error
+                .downcast_ref::<std::io::Error>()
+                .is_some_and(|e| e.kind() == std::io::ErrorKind::NotFound) =>
+        {
+            serde_json::to_vec_pretty(&Config::default())?
+        }
+        Err(error) => return Err(error),
+    };
+    ensure_dir()?;
+    backup_config(&current, Path::new(SWITCH_BACKUP))
+        .context("Back up the current configuration before restoring")?;
+    write_config(&backup)?;
+    Ok(backup)
+}
+
 fn backup_config(contents: &[u8], directory: &Path) -> Result<()> {
     let parent = directory.parent().context("SUSFS backup has no parent")?;
     match fs::symlink_metadata(directory) {

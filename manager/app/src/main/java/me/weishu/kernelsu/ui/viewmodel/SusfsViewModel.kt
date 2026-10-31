@@ -202,6 +202,12 @@ class SusfsViewModel(
         operation(saved = false) { repository.cancelOwnership(); "" }
     }
 
+    fun restoreSchema1() {
+        if (!mutable.value.status.canImport || !mutable.value.status.schema1BackupAvailable ||
+            mutable.value.busy) return
+        operation(saved = false) { repository.restoreSchema1(); "" }
+    }
+
     fun message(text: String) { mutable.update { it.copy(message = text) } }
 
     private fun startApplyCheck() {

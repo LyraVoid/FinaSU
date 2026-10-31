@@ -237,8 +237,21 @@ pub fn path(value: &str) -> Result<()> {
 }
 
 fn text(value: &str, max: usize) -> Result<()> {
-    if value.len() >= max || value.chars().any(char::is_control) {
+    if value.trim().is_empty()
+        || value.len() >= max
+        || value
+            .chars()
+            .any(|c| c.is_control() && c != '\n' && c != '\t')
+    {
         bail!("Invalid SUSFS text field");
+    }
+    Ok(())
+}
+
+fn single_line_text(value: &str, max: usize) -> Result<()> {
+    text(value, max)?;
+    if value.chars().any(char::is_control) {
+        bail!("Invalid single-line SUSFS text field");
     }
     Ok(())
 }
@@ -262,8 +275,8 @@ impl Config {
             bail!("Unsupported schema or too many rules");
         }
         if let Some(uname) = &self.settings.uname {
-            text(&uname.release, 65)?;
-            text(&uname.version, 65)?;
+            single_line_text(&uname.release, 65)?;
+            single_line_text(&uname.version, 65)?;
         }
         if let Some(cmdline) = &self.settings.cmdline {
             text(cmdline, 8192)?;
@@ -492,6 +505,25 @@ mod tests {
         ] {
             assert!(path(invalid).is_err());
         }
+        let mut empty_uname = Config::default();
+        empty_uname.settings.uname = Some(Uname {
+            release: String::new(),
+            version: "#1".to_owned(),
+        });
+        assert!(empty_uname.validate().is_err());
+        let mut multiline_uname = Config::default();
+        multiline_uname.settings.uname = Some(Uname {
+            release: "6.6.0\nspoof".to_owned(),
+            version: "#1".to_owned(),
+        });
+        assert!(multiline_uname.validate().is_err());
+        let mut multiline_cmdline = Config::default();
+        multiline_cmdline.settings.cmdline =
+            Some("androidboot.hardware=qcom\n\tandroidboot.memcg=1".to_owned());
+        assert!(multiline_cmdline.validate().is_ok());
+        let mut empty_cmdline = Config::default();
+        empty_cmdline.settings.cmdline = Some(" \t\n".to_owned());
+        assert!(empty_cmdline.validate().is_err());
     }
 
     #[test]

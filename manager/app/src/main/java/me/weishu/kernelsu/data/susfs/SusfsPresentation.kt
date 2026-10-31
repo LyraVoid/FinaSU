@@ -2,6 +2,36 @@ package me.weishu.kernelsu.data.susfs
 
 import org.json.JSONObject
 
+enum class SusfsErrorKind {
+    Capability,
+    StaticKstat,
+    PendingReboot,
+    Uts,
+    Ownership,
+    Busy,
+    Timeout,
+    Validation,
+    Root,
+    Unknown,
+}
+
+fun susfsErrorKind(message: String): SusfsErrorKind {
+    val lower = message.lowercase()
+    return when {
+        "capability unavailable" in lower -> SusfsErrorKind.Capability
+        "empty rule table" in lower -> SusfsErrorKind.PendingReboot
+        "static kstat" in lower -> SusfsErrorKind.StaticKstat
+        "uts" in lower || "uname" in lower -> SusfsErrorKind.Uts
+        "ownership" in lower || "external or switching" in lower -> SusfsErrorKind.Ownership
+        "busy" in lower -> SusfsErrorKind.Busy
+        "timeout" in lower || "timed out" in lower -> SusfsErrorKind.Timeout
+        "invalid" in lower || "too many" in lower || "duplicate" in lower ||
+            "returned error -22" in lower -> SusfsErrorKind.Validation
+        "root" in lower -> SusfsErrorKind.Root
+        else -> SusfsErrorKind.Unknown
+    }
+}
+
 /** A receipt from FinaSU, not an inventory of kernel or third-party rules. */
 data class SusfsApplyReport(
     val status: String,

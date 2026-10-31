@@ -25,10 +25,11 @@ import org.json.JSONObject
 @Composable
 internal fun SusfsBasicPage(config: JSONObject?, status: SusfsStatus, writable: Boolean, vm: SusfsViewModel) {
     var selected by remember { mutableStateOf<String?>(null) }
-    val options = listOf(Triple("hide_mounts", R.string.susfs_hide_mounts, status.supports("SUS_MOUNT")),
-        Triple("logging", R.string.susfs_logging, status.supports("ENABLE_LOG")),
-        Triple("avc_spoof", R.string.susfs_avc, status.proc("susfs_avc_spoof") ||
-            (status.implementation != "lkm" && status.writable)))
+    val options = listOf(
+        Triple("hide_mounts", R.string.susfs_hide_mounts, status.capabilities.hideMounts),
+        Triple("logging", R.string.susfs_logging, status.capabilities.logging),
+        Triple("avc_spoof", R.string.susfs_avc, status.capabilities.avcSpoof),
+    )
     SegmentedColumn(title = stringResource(R.string.susfs_settings)) {
         options.forEach { (key, title, supported) -> item(key = key) {
             val settings = config?.optJSONObject("settings")
@@ -36,7 +37,7 @@ internal fun SusfsBasicPage(config: JSONObject?, status: SusfsStatus, writable: 
             val managed = mode != 0
             SegmentedListItem(enabled = writable && (supported || managed), onClick = { selected = key },
                 headlineContent = { Text(stringResource(title)) },
-                supportingContent = { Text(susfsDisabledReason(status, supported) ?: stringResource(R.string.susfs_three_state_hint)) },
+                supportingContent = { Text(susfsDisabledReason(status, supported, writable) ?: stringResource(R.string.susfs_three_state_hint)) },
                 trailingContent = { Text(stringResource(listOf(R.string.susfs_unmanaged, R.string.susfs_on, R.string.susfs_off)[mode]),
                     color = MaterialTheme.colorScheme.primary) })
         } }
@@ -65,11 +66,11 @@ internal fun SusfsUnameSection(
 ) {
     var editing by remember { mutableStateOf(false) }
     val uname = config?.optJSONObject("settings")?.optJSONObject("uname")
-    val supported = status.supports("SPOOF_UNAME")
+    val supported = status.capabilities.uname
     SegmentedColumn(title = stringResource(R.string.susfs_uname)) {
         item { SegmentedListItem(enabled = writable && supported, onClick = { editing = true },
             headlineContent = { Text(stringResource(R.string.susfs_uname)) },
-            supportingContent = { Text(susfsDisabledReason(status, supported) ?: if (uname == null)
+            supportingContent = { Text(susfsDisabledReason(status, supported, writable) ?: if (uname == null)
                 stringResource(R.string.susfs_unmanaged) else
                 "${stringResource(R.string.susfs_release)}: ${uname.optString("release")}\n${stringResource(R.string.susfs_version)}: ${uname.optString("version")}") },
             leadingContent = { Icon(Icons.Rounded.Tune, null) }) }
@@ -143,11 +144,11 @@ internal fun SusfsCmdlineSection(
     var editing by remember { mutableStateOf(false) }
     val settings = config?.optJSONObject("settings")
     val value = if (settings == null || settings.isNull("cmdline")) "" else settings.optString("cmdline")
-    val supported = status.supports("SPOOF_CMDLINE_OR_BOOTCONFIG")
+    val supported = status.capabilities.cmdline
     SegmentedColumn(title = stringResource(R.string.susfs_cmdline)) {
         item { SegmentedListItem(enabled = writable && supported, onClick = { editing = true },
             headlineContent = { Text(stringResource(R.string.susfs_cmdline)) },
-            supportingContent = { Text(susfsDisabledReason(status, supported) ?: value.ifEmpty { stringResource(R.string.susfs_unmanaged) }) }) }
+            supportingContent = { Text(susfsDisabledReason(status, supported, writable) ?: value.ifEmpty { stringResource(R.string.susfs_unmanaged) }) }) }
     }
     if (editing) {
         var text by remember { mutableStateOf(value) }
@@ -201,8 +202,12 @@ internal fun SusfsRuleSection(kind: String, config: JSONObject?, status: SusfsSt
     var deleting by remember { mutableStateOf<String?>(null) }
     var editingStatic by remember { mutableStateOf(false) }
     var batchAdding by remember { mutableStateOf(false) }
-    val capability = when (kind) { "path" -> "SUS_PATH"; "map" -> "SUS_MAP"; "kstat" -> "SUS_KSTAT"; else -> "OPEN_REDIRECT" }
-    val supported = status.supports(capability)
+    val supported = when (kind) {
+        "path" -> status.capabilities.path
+        "map" -> status.capabilities.map
+        "kstat" -> status.capabilities.dynamicKstat
+        else -> status.capabilities.redirect
+    }
     val hint = when (kind) { "path" -> R.string.susfs_path_hint; "map" -> R.string.susfs_map_hint
         "kstat" -> R.string.susfs_kstat_hint; else -> R.string.susfs_redirect_hint }
     val rules = config?.optJSONArray("rules") ?: JSONArray()
@@ -211,24 +216,26 @@ internal fun SusfsRuleSection(kind: String, config: JSONObject?, status: SusfsSt
     }
     SegmentedColumn(title = stringResource(ruleTitle(kind))) {
         if (kind == "kstat") item { SegmentedListItem(
-            enabled = writable && status.staticKstatSupported && entries.none { it.getString("kind") == "static_kstat" },
+            enabled = writable && status.capabilities.staticKstat && entries.none { it.getString("kind") == "static_kstat" },
             onClick = { original = null; editingStatic = true },
             headlineContent = { Text(stringResource(R.string.susfs_static_add)) },
-            supportingContent = { Text(stringResource(if (status.staticKstatSupported) R.string.susfs_static_hint else R.string.susfs_static_unsupported)) },
+            supportingContent = { Text(stringResource(if (status.capabilities.staticKstat) R.string.susfs_static_hint else R.string.susfs_static_unsupported)) },
             leadingContent = { Icon(Icons.Rounded.Add, null) },
         ) }
         item { SegmentedListItem(enabled = writable && supported, onClick = { original = null; editing = true },
             headlineContent = { Text(stringResource(R.string.susfs_add_rule)) },
-            supportingContent = { Text(susfsDisabledReason(status, supported) ?: stringResource(hint)) },
+            supportingContent = { Text(susfsDisabledReason(status, supported, writable) ?: stringResource(hint)) },
             leadingContent = { Icon(Icons.Rounded.Add, null) }) }
         if (kind != "kstat") item { SegmentedListItem(enabled = writable && supported, onClick = { batchAdding = true },
             headlineContent = { Text(stringResource(R.string.susfs_batch_add)) },
-            supportingContent = { Text(susfsDisabledReason(status, supported) ?: stringResource(
+            supportingContent = { Text(susfsDisabledReason(status, supported, writable) ?: stringResource(
                 if (kind == "redirect") R.string.susfs_batch_redirect_hint else R.string.susfs_batch_hint)) },
             leadingContent = { Icon(Icons.AutoMirrored.Rounded.PlaylistAdd, null) }) }
         entries.forEach { rule -> item(key = rule.getString("path")) {
             SegmentedListItem(enabled = writable && supported && (rule.getString("kind") != "static_kstat" ||
-                (status.staticKstatSupported && rule.getJSONObject("fields").keys().asSequence().all { it in setOf("size", "ctime_sec") || rule.getJSONObject("fields").isNull(it) })), onClick = {
+                (status.capabilities.staticKstat && rule.getJSONObject("fields").keys().asSequence().all {
+                    it in status.capabilities.staticKstatFields || rule.getJSONObject("fields").isNull(it)
+                })), onClick = {
                 original = rule.toString(); if (rule.getString("kind") == "static_kstat") editingStatic = true else editing = true
             },
                 headlineContent = { Text(rule.getString("path")) },
@@ -250,7 +257,8 @@ internal fun SusfsRuleSection(kind: String, config: JSONObject?, status: SusfsSt
         vm.change { SusfsInputs.replaceRule(it, expected, replacement) }
         editing = false
     }
-    if (editingStatic) SusfsStaticKstatDialog(original, writable && status.staticKstatSupported, { editingStatic = false }) { replacement ->
+    if (editingStatic) SusfsStaticKstatDialog(original, status, writable && status.capabilities.staticKstat,
+        { editingStatic = false }) { replacement ->
         val expected = original
         vm.change {
             it.put("schema", 2)
@@ -258,7 +266,8 @@ internal fun SusfsRuleSection(kind: String, config: JSONObject?, status: SusfsSt
         }
         editingStatic = false
     }
-    if (batchAdding) SusfsBatchRuleDialog(kind, writable && supported, { batchAdding = false }) { additions ->
+    if (batchAdding) SusfsBatchRuleDialog(kind, status.capabilities.redirectUidSchemes,
+        writable && supported, { batchAdding = false }) { additions ->
         vm.change { SusfsInputs.addRules(it, additions) }
         batchAdding = false
     }
@@ -268,7 +277,8 @@ internal fun SusfsRuleSection(kind: String, config: JSONObject?, status: SusfsSt
 }
 
 @Composable
-private fun SusfsBatchRuleDialog(kind: String, writable: Boolean, dismiss: () -> Unit, save: (List<JSONObject>) -> Unit) {
+private fun SusfsBatchRuleDialog(kind: String, schemes: List<Int>, writable: Boolean,
+    dismiss: () -> Unit, save: (List<JSONObject>) -> Unit) {
     var text by remember { mutableStateOf("") }
     var uid by remember { mutableIntStateOf(0) }
     var looping by remember { mutableStateOf(false) }
@@ -285,7 +295,7 @@ private fun SusfsBatchRuleDialog(kind: String, writable: Boolean, dismiss: () ->
                 else "/data/local/tmp/example\n/system/example") })
         if (kind == "redirect") {
             Text(stringResource(R.string.susfs_uid_selection), style = MaterialTheme.typography.titleSmall)
-            SegmentedColumn { (0..2).forEach { value -> item {
+            SegmentedColumn { schemes.forEach { value -> item {
                 SegmentedListItem(selected = uid == value, onClick = { uid = value },
                     headlineContent = { Text(susfsUidLabel(value)) }, trailingContent = { RadioButton(uid == value, null) })
             } } }
@@ -296,22 +306,32 @@ private fun SusfsBatchRuleDialog(kind: String, writable: Boolean, dismiss: () ->
         }
         parsed.fold(
             onSuccess = { Text(stringResource(R.string.susfs_batch_count, it.size)) },
-            onFailure = { Text(it.message ?: stringResource(R.string.susfs_batch_empty), color = MaterialTheme.colorScheme.error) },
+            onFailure = {
+                val detail = it.message.orEmpty()
+                Text(if (text.isBlank()) stringResource(R.string.susfs_batch_empty)
+                    else stringResource(R.string.susfs_batch_invalid, detail),
+                    color = MaterialTheme.colorScheme.error)
+            },
         )
         Text(stringResource(R.string.susfs_removal_hint), style = MaterialTheme.typography.bodySmall)
     }
 }
 
 @Composable
-private fun SusfsStaticKstatDialog(original: String?, writable: Boolean, dismiss: () -> Unit, save: (JSONObject) -> Unit) {
+private fun SusfsStaticKstatDialog(original: String?, status: SusfsStatus, writable: Boolean,
+    dismiss: () -> Unit, save: (JSONObject) -> Unit) {
     val rule = remember(original) { original?.let(::JSONObject) }
     val fields = rule?.optJSONObject("fields")
     var path by remember(original) { mutableStateOf(rule?.optString("path").orEmpty()) }
     var size by remember(original) { mutableStateOf(fields?.opt("size")?.takeUnless { it == JSONObject.NULL }?.toString().orEmpty()) }
     var ctime by remember(original) { mutableStateOf(fields?.opt("ctime_sec")?.takeUnless { it == JSONObject.NULL }?.toString().orEmpty()) }
+    val supported = status.capabilities.staticKstatFields
+    val sizeSupported = "size" in supported
+    val ctimeSupported = "ctime_sec" in supported
+    val verifiedFields = susfsStaticFieldNames(supported)
     val valid = SusfsInputs.validPath(path) && (size.isNotBlank() xor ctime.isNotBlank()) &&
-        (size.isBlank() || size.toLongOrNull()?.let { it >= 0 } == true) &&
-        (ctime.isBlank() || ctime.toLongOrNull() != null)
+        (size.isBlank() || sizeSupported && size.toLongOrNull()?.let { it >= 0 } == true) &&
+        (ctime.isBlank() || ctimeSupported && ctime.toLongOrNull() != null)
     SusfsForm(stringResource(R.string.susfs_static_title), dismiss, writable && valid, {
         val values = JSONObject()
         if (size.isNotBlank()) values.put("size", size.toLong())
@@ -320,8 +340,11 @@ private fun SusfsStaticKstatDialog(original: String?, writable: Boolean, dismiss
     }) {
         Text(stringResource(R.string.susfs_static_hint))
         OutlinedTextField(path, { path = it }, Modifier.fillMaxWidth(), singleLine = true, label = { Text(stringResource(R.string.susfs_path)) })
-        OutlinedTextField(size, { size = it }, Modifier.fillMaxWidth(), singleLine = true, label = { Text(stringResource(R.string.susfs_static_size)) })
-        OutlinedTextField(ctime, { ctime = it }, Modifier.fillMaxWidth(), singleLine = true, label = { Text(stringResource(R.string.susfs_static_ctime)) })
+        if (sizeSupported) OutlinedTextField(size, { size = it }, Modifier.fillMaxWidth(), singleLine = true,
+            label = { Text(stringResource(R.string.susfs_static_size)) })
+        if (ctimeSupported) OutlinedTextField(ctime, { ctime = it }, Modifier.fillMaxWidth(), singleLine = true,
+            label = { Text(stringResource(R.string.susfs_static_ctime)) })
+        Text(stringResource(R.string.susfs_static_verified_fields, verifiedFields))
         Text(stringResource(R.string.susfs_removal_hint), style = MaterialTheme.typography.bodySmall)
     }
 }
@@ -341,7 +364,7 @@ private fun SusfsRuleDialog(kind: String, original: String?, status: SusfsStatus
     var looping by remember { mutableStateOf(rule?.optBoolean("looping") ?: false) }
     var clone by remember { mutableStateOf(rule?.optBoolean("full_clone") ?: false) }
     var uid by remember { mutableIntStateOf(rule?.optInt("uid_scheme") ?: 0) }
-    val cloneSupported = status.implementation != "lkm" || status.proc("susfs_kstat")
+    val cloneSupported = status.capabilities.fullClone
     val valid = SusfsInputs.validPath(path) && (kind != "redirect" ||
         (SusfsInputs.validPath(destination) && destination != path && uid in 0..2)) &&
         (kind != "kstat" || !clone || cloneSupported)
@@ -361,7 +384,7 @@ private fun SusfsRuleDialog(kind: String, original: String?, status: SusfsStatus
                 label = { Text(stringResource(R.string.susfs_destination)) }, isError = destination.isNotEmpty() &&
                     (!SusfsInputs.validPath(destination) || destination == path))
             Text(stringResource(R.string.susfs_uid_selection), style = MaterialTheme.typography.titleSmall)
-            SegmentedColumn { (0..2).forEach { value -> item {
+            SegmentedColumn { status.capabilities.redirectUidSchemes.forEach { value -> item {
                 SegmentedListItem(selected = uid == value, onClick = { uid = value },
                     headlineContent = { Text(susfsUidLabel(value)) }, trailingContent = { RadioButton(uid == value, null) })
             } } }
@@ -390,22 +413,24 @@ internal fun SusfsExtensionsPage(config: JSONObject?, status: SusfsStatus, writa
             supportingContent = { Text(stringResource(R.string.susfs_lkm_only_hint)) }) } }
         return
     }
-    SusfsExtensionSection("hidden_modules", R.string.susfs_modules, "susfs_hide_modules", config, status, writable, vm)
-    SusfsExtensionSection("mount_prefixes", R.string.susfs_prefixes, "susfs_hide_mounts", config, status, writable, vm)
+    SusfsExtensionSection("hidden_modules", R.string.susfs_modules, config, status, writable, vm)
+    SusfsExtensionSection("mount_prefixes", R.string.susfs_prefixes, config, status, writable, vm)
 }
 
 @Composable
-private fun SusfsExtensionSection(key: String, title: Int, node: String, config: JSONObject?, status: SusfsStatus,
+private fun SusfsExtensionSection(key: String, title: Int, config: JSONObject?, status: SusfsStatus,
     writable: Boolean, vm: SusfsViewModel) {
     var adding by remember { mutableStateOf(false) }
     var deleting by remember { mutableStateOf<String?>(null) }
-    val enabled = writable && status.proc(node)
+    val enabled = writable && if (key == "hidden_modules") status.capabilities.hiddenModules
+        else status.capabilities.mountPrefixes
     val array = config?.optJSONObject("lkm")?.optJSONArray(key) ?: JSONArray()
     SegmentedColumn(title = stringResource(title)) {
         item { SegmentedListItem(enabled = enabled, onClick = { adding = true },
             headlineContent = { Text(stringResource(R.string.susfs_add_entry)) },
-            supportingContent = { Text(susfsDisabledReason(status, true) ?: stringResource(if (!status.proc(node))
-                R.string.susfs_proc_hint else if (key == "hidden_modules") R.string.susfs_module_hint else R.string.susfs_prefix_hint)) },
+            supportingContent = { Text(susfsDisabledReason(status, enabled, writable) ?: stringResource(
+                if (key == "hidden_modules") R.string.susfs_module_hint else R.string.susfs_prefix_hint
+            )) },
             leadingContent = { Icon(Icons.Rounded.Add, null) }) }
         for (index in 0 until array.length()) item(key = array.getString(index)) {
             val value = array.getString(index)

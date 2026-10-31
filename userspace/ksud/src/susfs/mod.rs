@@ -55,6 +55,8 @@ pub enum Command {
     ConfirmSwitch,
     /// Cancel a pending ownership switch
     CancelSwitch,
+    /// Restore the schema 1 backup after first backing up the current configuration
+    RestoreSchema1,
 }
 
 #[derive(Debug, Clone, Serialize)]
@@ -65,6 +67,61 @@ pub struct Detection {
     pub implementation: &'static str,
     pub features: Vec<String>,
     pub proc_nodes: Vec<String>,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize)]
+pub struct Capabilities {
+    pub supported: Vec<&'static str>,
+    pub static_kstat_fields: Vec<&'static str>,
+    pub redirect_uid_schemes: Vec<u32>,
+}
+
+fn capabilities(detection: &Detection) -> Capabilities {
+    let kstat = detection.supports("CONFIG_KSU_SUSFS_SUS_KSTAT");
+    let static_supported = abi::static_kstat_profile(detection);
+    let redirect = detection.supports("CONFIG_KSU_SUSFS_OPEN_REDIRECT");
+    let mut supported = Vec::new();
+    for (enabled, name) in [
+        (
+            detection.supports("CONFIG_KSU_SUSFS_SUS_MOUNT"),
+            "hide_mounts",
+        ),
+        (detection.supports("CONFIG_KSU_SUSFS_ENABLE_LOG"), "logging"),
+        (
+            detection.status == "compatible"
+                && if detection.implementation == "lkm" {
+                    detection.proc("susfs_avc_spoof")
+                } else {
+                    true
+                },
+            "avc_spoof",
+        ),
+        (detection.supports("CONFIG_KSU_SUSFS_SPOOF_UNAME"), "uname"),
+        (
+            detection.supports("CONFIG_KSU_SUSFS_SPOOF_CMDLINE_OR_BOOTCONFIG"),
+            "cmdline",
+        ),
+        (detection.supports("CONFIG_KSU_SUSFS_SUS_PATH"), "path"),
+        (detection.supports("CONFIG_KSU_SUSFS_SUS_MAP"), "map"),
+        (kstat, "dynamic_kstat"),
+        (
+            kstat && (detection.implementation != "lkm" || detection.proc("susfs_kstat")),
+            "full_clone",
+        ),
+        (static_supported, "static_kstat"),
+        (redirect, "redirect"),
+        (detection.proc("susfs_hide_modules"), "hidden_modules"),
+        (detection.proc("susfs_hide_mounts"), "mount_prefixes"),
+    ] {
+        if enabled {
+            supported.push(name);
+        }
+    }
+    Capabilities {
+        supported,
+        static_kstat_fields: abi::static_kstat_fields(static_supported),
+        redirect_uid_schemes: if redirect { vec![0, 1, 2] } else { Vec::new() },
+    }
 }
 
 impl Detection {
@@ -338,6 +395,31 @@ fn status_summary(config: &Config, uts_active: bool) -> Result<&'static str> {
     })
 }
 
+fn status_receipt(status: &str) -> Result<serde_json::Value> {
+    let state = store::read_state()?;
+    let mut failures = state.failures.clone();
+    for key in state.uncertain.keys() {
+        failures.insert(
+            key.clone(),
+            "Previous operation result is unknown; reboot and verify the provider before retrying"
+                .to_owned(),
+        );
+    }
+    let skipped: std::collections::BTreeMap<_, _> = state
+        .skipped
+        .iter()
+        .map(|(key, value)| (key.clone(), value.reason.clone()))
+        .collect();
+    Ok(serde_json::json!({
+        "status": status,
+        "applied": state.applied.keys().collect::<Vec<_>>(),
+        "failures": failures,
+        "skipped": skipped,
+        "deferred": Vec::<String>::new(),
+        "pending_reboot": state.pending_reboot,
+    }))
+}
+
 fn apply_with_uts_arbitration(
     config: &Config,
     detection: &Detection,
@@ -366,6 +448,7 @@ pub fn run(command: Command) -> Result<()> {
     match command {
         Command::Status => {
             let detection = detect();
+            let capabilities = capabilities(&detection);
             let ownership = store::read_ownership();
             let uname_provider = uname_provider_state().unwrap_or_else(|_| UnameProviderState {
                 uncertain: true,
@@ -382,15 +465,19 @@ pub fn run(command: Command) -> Result<()> {
                     Ok(uts_active) => status_summary(&config, uts_active)?,
                     Err(_) => "unknown",
                 };
-                Ok((config, summary, ownership, switch_ready))
+                let receipt = status_receipt(summary)?;
+                Ok((config, summary, ownership, switch_ready, receipt))
             });
             let status = match config {
-                Ok((config, summary, ownership, switch_ready)) => serde_json::json!({
+                Ok((config, summary, ownership, switch_ready, receipt)) => serde_json::json!({
                     "detection": detection, "automatic": config.automatic,
                     "ownership": ownership,
                     "switch_ready": switch_ready,
-                    "static_kstat_supported": abi::static_kstat_profile(&detection),
+                    "capabilities": capabilities,
+                    "static_kstat_supported": capabilities.supported.contains(&"static_kstat"),
                     "management": summary, "config_error": null,
+                    "receipt": receipt,
+                    "schema1_backup_available": store::schema1_backup_available(),
                     "uname_applied": uname_provider.applied,
                     "uname_scheduled": uname_provider.scheduled,
                     "uname_uncertain": uname_provider.uncertain,
@@ -399,6 +486,9 @@ pub fn run(command: Command) -> Result<()> {
                     "detection": detection, "automatic": false, "management": "failed",
                     "config_error": error.to_string(),
                     "ownership": ownership.ok(),
+                    "capabilities": capabilities,
+                    "static_kstat_supported": capabilities.supported.contains(&"static_kstat"),
+                    "schema1_backup_available": store::schema1_backup_available(),
                     "uname_applied": uname_provider.applied,
                     "uname_scheduled": uname_provider.scheduled,
                     "uname_uncertain": uname_provider.uncertain,
@@ -463,6 +553,15 @@ pub fn run(command: Command) -> Result<()> {
             ownership.cancel()?;
             store::write_ownership(&ownership)?;
             println!("{}", serde_json::to_string(&ownership)?);
+        }
+        Command::RestoreSchema1 => {
+            let _lock = store::lock()?;
+            store::read_ownership()?.require_builtin()?;
+            let config = store::restore_schema1_backup()?;
+            println!(
+                "{}",
+                serde_json::json!({"status": "saved", "management": store::summary(&config)?})
+            );
         }
     }
     Ok(())
@@ -561,6 +660,45 @@ mod tests {
             .status,
             "unknown_protocol"
         );
+    }
+
+    #[test]
+    fn capability_profile_tracks_provider_controls() {
+        let builtin = Detection {
+            status: "compatible",
+            version: "v2.3.0".to_owned(),
+            variant: "GKI".to_owned(),
+            implementation: "builtin",
+            features: vec![
+                "CONFIG_KSU_SUSFS_SUS_PATH".to_owned(),
+                "CONFIG_KSU_SUSFS_SUS_KSTAT".to_owned(),
+                "CONFIG_KSU_SUSFS_OPEN_REDIRECT".to_owned(),
+            ],
+            proc_nodes: Vec::new(),
+        };
+        let builtin_capabilities = capabilities(&builtin);
+        assert!(builtin_capabilities.supported.contains(&"path"));
+        assert!(builtin_capabilities.supported.contains(&"dynamic_kstat"));
+        assert!(builtin_capabilities.supported.contains(&"full_clone"));
+        assert!(builtin_capabilities.supported.contains(&"avc_spoof"));
+        assert_eq!(builtin_capabilities.redirect_uid_schemes, [0, 1, 2]);
+        assert!(!builtin_capabilities.supported.contains(&"hidden_modules"));
+        assert!(!builtin_capabilities.supported.contains(&"static_kstat"));
+
+        let lkm = Detection {
+            implementation: "lkm",
+            features: vec![
+                "SUSFS_LKM_MODULES".to_owned(),
+                "CONFIG_KSU_SUSFS_SUS_KSTAT".to_owned(),
+            ],
+            proc_nodes: vec!["susfs_hide_modules".to_owned()],
+            ..builtin
+        };
+        let lkm_capabilities = capabilities(&lkm);
+        assert!(!lkm_capabilities.supported.contains(&"full_clone"));
+        assert!(!lkm_capabilities.supported.contains(&"avc_spoof"));
+        assert!(lkm_capabilities.supported.contains(&"hidden_modules"));
+        assert!(!lkm_capabilities.supported.contains(&"static_kstat"));
     }
 
     #[test]

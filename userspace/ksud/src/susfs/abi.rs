@@ -109,6 +109,14 @@ pub fn static_kstat_profile(detection: &super::Detection) -> bool {
             .is_ok_and(|note| verified_lkm_note(&note))
 }
 
+pub fn static_kstat_fields(supported: bool) -> Vec<&'static str> {
+    if supported {
+        vec!["size", "ctime_sec"]
+    } else {
+        Vec::new()
+    }
+}
+
 #[allow(clippy::useless_conversion)]
 pub fn static_kstat_payload(
     path: &str,
@@ -234,6 +242,8 @@ mod tests {
             ..Default::default()
         };
         assert!(static_kstat_payload("/data/test", &combined, &metadata).is_err());
+        assert_eq!(static_kstat_fields(true), ["size", "ctime_sec"]);
+        assert!(static_kstat_fields(false).is_empty());
     }
     #[test]
     fn arm64_layouts() {

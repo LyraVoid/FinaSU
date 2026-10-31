@@ -5,6 +5,17 @@ import org.junit.Assert.*
 import org.junit.Test
 
 class SusfsPresentationTest {
+    @Test fun `errors map to stable recovery guidance`() {
+        assertEquals(SusfsErrorKind.Capability, susfsErrorKind("Capability unavailable: CONFIG_X"))
+        assertEquals(SusfsErrorKind.PendingReboot, susfsErrorKind("Static kstat requires an empty rule table"))
+        assertEquals(SusfsErrorKind.Uts, susfsErrorKind("SUSFS uname provider is not active"))
+        assertEquals(SusfsErrorKind.Ownership, susfsErrorKind("SUSFS management is external or switching"))
+        assertEquals(SusfsErrorKind.Timeout, susfsErrorKind("Operation timed out; refresh"))
+        assertEquals(SusfsErrorKind.Validation, susfsErrorKind("Duplicate SUSFS rule"))
+        assertEquals(SusfsErrorKind.Validation, susfsErrorKind("SUSFS returned error -22"))
+        assertEquals(SusfsErrorKind.Unknown, susfsErrorKind("unexpected"))
+    }
+
     @Test fun `receipt separates acknowledgements errors and reboot requests`() {
         val report = SusfsApplyReport.parse("""{"status":"partial","applied":["path:/a"],"failures":{"uname":"SUSFS returned error -22"},"skipped":{"avc_spoof":"Capability unavailable"},"deferred":["cmdline"],"pending_reboot":["kstat:/b"]}""")
         assertEquals(listOf("path:/a"), report.applied)

@@ -5,6 +5,8 @@
     <string name="susfs_view_status">查看状态</string>
     <string name="susfs_overview">概览</string>
     <string name="susfs_capabilities">能力</string>
+    <string name="susfs_available">可用</string>
+    <string name="susfs_unavailable">不可用</string>
     <string name="susfs_settings">基础设置</string>
     <string name="susfs_rules">规则</string>
     <string name="susfs_lkm">LKM 扩展</string>
@@ -45,6 +47,7 @@
     <string name="susfs_batch_input">规则（每行一条）</string>
     <string name="susfs_batch_count">已解析 %1$d 条规则</string>
     <string name="susfs_batch_empty">请输入至少一条有效规则。</string>
+    <string name="susfs_batch_invalid">无法添加规则：%1$s</string>
     <string name="susfs_edit_rule">编辑已保存规则</string>
     <string name="susfs_empty">尚未保存规则</string>
     <string name="susfs_path">路径</string>
@@ -59,6 +62,9 @@
     <string name="susfs_static_unsupported">当前 provider 不支持已核验的静态元数据控制。</string>
     <string name="susfs_static_size">显示的大小（字节，可选）</string>
     <string name="susfs_static_ctime">显示的变更时间（Unix 秒，可选）</string>
+    <string name="susfs_static_verified_fields">当前 provider 已核验字段：%1$s</string>
+    <string name="susfs_field_size">大小（字节）</string>
+    <string name="susfs_field_ctime">变更时间（Unix 秒）</string>
     <string name="susfs_remove">移除已保存规则</string>
     <string name="susfs_removal_hint">修改或移除已应用规则需要重启；不会清空第三方规则。</string>
     <string name="susfs_modules">隐藏模块名称</string>
@@ -78,6 +84,10 @@
     <string name="susfs_owner_external">外部管理</string>
     <string name="susfs_owner_pending">管理方式切换中</string>
     <string name="susfs_owner_unknown">无法确认管理方式</string>
+    <string name="susfs_owner_external_reason">当前由外部管理 SUSFS 写入，FinaSU 在此模式下只读。</string>
+    <string name="susfs_owner_unknown_reason">无法确认写入归属，已禁用 SUSFS 修改操作。</string>
+    <string name="susfs_owner_pending_reason">管理方式正在切换，请完成或取消切换后再编辑。</string>
+    <string name="susfs_busy_reason">另一项操作或刷新正在进行。</string>
     <string name="susfs_owner_to_external">切换到外部管理</string>
     <string name="susfs_owner_to_builtin">切换到 FinaSU 管理</string>
     <string name="susfs_owner_switch_hint">暂停 FinaSU 写入，重启并确认后完成切换。</string>
@@ -102,6 +112,15 @@
     <string name="susfs_save_success">配置已保存</string>
     <string name="susfs_save_success_hint">未执行内核操作。请手动应用，或开启开机应用。</string>
     <string name="susfs_error_hint">请检查配置和 root 授权。超时后先刷新再重试；已开始的操作仍可能完成。</string>
+    <string name="susfs_error_capability">当前 provider 未开放所需能力，FinaSU 未尝试替代写入。</string>
+    <string name="susfs_error_static">静态元数据仅向已核验 provider、ABI 和字段开放；已保存规则未被修改。</string>
+    <string name="susfs_error_reboot">provider 已有元数据规则。FinaSU 不会覆盖，请重启并在规则表为空后重试。</string>
+    <string name="susfs_error_uts">SUSFS uname 与 UTS 视图不能同时占用身份伪装通道，请先检查当前 provider。</string>
+    <string name="susfs_error_ownership">外部管理或切换期间禁止 SUSFS 写入。完成管理权流程后再编辑或应用。</string>
+    <string name="susfs_error_busy">另一项 SUSFS 操作仍在进行，请先刷新再重试。</string>
+    <string name="susfs_error_timeout">请求已超时，但可能仍在执行；请先刷新并检查回执，再决定是否重试。</string>
+    <string name="susfs_error_validation">守护进程拒绝了配置。请修正报告的字段；原已保存配置保持不变。</string>
+    <string name="susfs_error_root">Root 授权不可用，请恢复授权后刷新。</string>
     <string name="susfs_ack_hint">表示本次启动中内核已确认的操作，不代表隐藏效果已验证。LKM 重载后，请重启再依赖重放状态。</string>
     <string name="susfs_partial_hint">部分操作已获内核确认，另有操作未应用；可再次应用查看逐项原因。</string>
     <string name="susfs_skipped_hint">当前请求无需操作，因为内核未提供该控制项。</string>
@@ -109,6 +128,8 @@
     <string name="susfs_safe_mode">安全模式 · 已禁止应用</string>
     <string name="susfs_last_report">上次应用回执</string>
     <string name="susfs_report_hint">当前页面会话中的上次应用请求，并非所有内核规则的实时列表。</string>
+    <string name="susfs_report_persisted_hint">本次启动保存的回执，仅代表 FinaSU 自己的记录，并非第三方规则的实时列表。</string>
+    <string name="susfs_report_counts">确认 %1$d 项 · 失败 %2$d 项 · 跳过 %3$d 项 · 暂缓 %4$d 项 · 待重启 %5$d 项</string>
     <string name="susfs_acknowledged">内核已确认</string>
     <string name="susfs_acknowledged_unknown">曾获接口确认 · 当前效果未知</string>
     <string name="susfs_state_unknown">无法确认应用状态</string>
@@ -117,6 +138,11 @@
     <string name="susfs_import_auto_on">此文件已开启开机应用。</string>
     <string name="susfs_import_auto_off">此文件未开启开机应用。</string>
     <string name="susfs_import_warning">通过守护进程严格校验后，仅替换 FinaSU 保存的配置；不会立即应用，也不会清除已生效或第三方规则。若开启开机应用，下次正常启动时可能执行。</string>
+    <string name="susfs_restore_schema1">恢复 schema 1 备份</string>
+    <string name="susfs_restore_schema1_hint">使用静态元数据迁移前保存的原始配置。</string>
+    <string name="susfs_restore_schema1_title">恢复 schema 1 配置？</string>
+    <string name="susfs_restore_schema1_message">会先备份当前配置，再用已核验的迁移前文件替换。此操作不会立即应用规则或清除内核状态；已保存的静态元数据规则将从配置中移除。</string>
+    <string name="susfs_restore_schema1_action">备份并恢复</string>
     <string name="susfs_restore_uname">恢复真实内核信息</string>
     <string name="susfs_use_real_field">使用真实内核字段（default）</string>
     <string name="susfs_restore_hint">将两个字段保存为 default。需要立即应用才会恢复；仅删除保存值不会还原内核。</string>
