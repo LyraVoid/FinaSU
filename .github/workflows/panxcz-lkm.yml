@@ -354,7 +354,7 @@ jobs:
           mkdir -p "$bundle/legacy"
           cp legacy/*.zip "$bundle/legacy/"
           cp panxcz/legacy-kernels.md "$bundle/legacy/README.md"
-          (cd "$bundle" && sha256sum * > SHA256SUMS.txt)
+          (cd "$bundle" && sha256sum * legacy/* > SHA256SUMS.txt)
           zip -qr "$bundle.zip" "$bundle"
           ls -la "$bundle.zip"
 
