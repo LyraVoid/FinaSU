@@ -180,13 +180,24 @@ pub fn lock_store() -> Result<store::Lock> {
 }
 
 pub fn uname_provider_state() -> Result<UnameProviderState> {
-    if !detect().supports("CONFIG_KSU_SUSFS_SPOOF_UNAME") {
+    let ownership = store::read_ownership()?;
+    let detection = detect();
+    if detection.status == "not_detected" {
+        return Ok(UnameProviderState::default());
+    }
+    if detection.status != "compatible" {
+        return Ok(UnameProviderState {
+            uncertain: true,
+            ..UnameProviderState::default()
+        });
+    }
+    if !detection.supports("CONFIG_KSU_SUSFS_SPOOF_UNAME") {
         return Ok(UnameProviderState::default());
     }
     let config = store::read_config()?;
     let state = store::read_state()?;
     let mut provider = uname_provider(&config, &state);
-    if store::read_ownership()?.require_builtin().is_err() {
+    if ownership.require_builtin().is_err() {
         provider.scheduled = false;
         provider.uncertain = true;
     }

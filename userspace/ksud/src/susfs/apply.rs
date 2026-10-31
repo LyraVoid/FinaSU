@@ -444,6 +444,17 @@ fn apply_with_state(
         persist(&state).context("Persist SUSFS operation result")?;
     }
     report.failures.clone_from(&state.failures);
+    for key in state
+        .uncertain
+        .keys()
+        .filter(|key| desired.contains_key(*key))
+    {
+        report.failures.insert(
+            key.clone(),
+            "Previous operation result is unknown; reboot and verify the provider before retrying"
+                .to_owned(),
+        );
+    }
     report.skipped = state
         .skipped
         .iter()
@@ -585,6 +596,7 @@ mod tests {
         )
         .unwrap();
         assert_eq!(report.status, "failed");
+        assert!(report.failures.contains_key("static_kstat:/data/test"));
         assert!(
             saved
                 .borrow()
