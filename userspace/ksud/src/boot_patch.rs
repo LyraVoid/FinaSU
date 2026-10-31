@@ -949,6 +949,22 @@ pub fn patch(args: BootPatchArgs) -> Result<()> {
             cpio.add("init", CpioEntry::regular(0o755, ksu_init))?;
             cpio.add("kernelsu.ko", CpioEntry::regular(0o755, kernelsu_ko))?;
 
+            // SUSFS rides in the same ramdisk, next to kernelsu.ko.  The
+            // ksuinit above loads it with expose_proc=1 immediately after
+            // kernelsu.ko, so the hidden paths are covered before Android's
+            // init starts scanning /proc and /sys.
+            #[cfg(target_os = "android")]
+            let guard_asset = assets::get_asset(&format!("{kmi}_susfs_guard.ko"));
+            #[cfg(not(target_os = "android"))]
+            let guard_asset = assets::get_asset(&format!("{arch}/{kmi}_susfs_guard.ko"));
+            match guard_asset {
+                Ok(guard) => {
+                    cpio.add("susfs_guard_lkm.ko", CpioEntry::regular(0o644, guard))?;
+                    println!("- Added SUSFS guard LKM");
+                }
+                Err(_) => println!("- No SUSFS guard asset for {kmi}"),
+            }
+
             #[cfg(target_os = "android")]
             if (backup || (!is_kernelsu_patched && flash))
                 && let Err(e) = do_backup(&mut cpio, &boot_image_file)
@@ -1236,6 +1252,7 @@ fn rebuild_without_ksu(
 ) -> Result<Vec<u8>> {
     println!("- Removing KernelSU from boot image");
     cpio.rm("kernelsu.ko", false);
+    cpio.rm("susfs_guard_lkm.ko", false);
     if cpio.exists("init.real") {
         cpio.mv("init.real", "init")?;
     }

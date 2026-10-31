@@ -1,0 +1,401 @@
+name: PanxCZ FinaSU LKM manager (GKI, every KMI)
+
+# Root as a loadable module, with SUSFS riding in the same ramdisk, for every
+# GKI KMI this fork supports:
+#
+#   kernelsu.ko  built per KMI in the DDK container, trusting THIS repo's key
+#   ksuinit      built from this tree, patched to load /susfs_guard_lkm.ko
+#   susfs guard  v2.3.0 r18.4, one per KMI, embedded as <kmi>_susfs_guard.ko
+#   ksud         built from this tree, with all of the above embedded
+#   APK          manager signed with the same key the modules trust
+#
+# boot-patch picks the module pair that matches the device's KMI, so a single
+# APK serves android12-5.10 through android17-6.18: no AnyKernel3 zip, no
+# kernel rebuild, no separate ReSUSFS module.
+#
+# Every artifact is scanned from the repacked APK before it is published: the
+# modules live inside libksud.so as compressed streams, and the only honest
+# proof they are there is to inflate them and compare hashes.
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+env:
+  # Keep this list in step with the kernelsu matrix below; the manager job
+  # refuses to publish an APK whose module set does not match it exactly.
+  KMIS: >-
+    android12-5.10 android13-5.10 android13-5.15 android14-5.15
+    android14-6.1 android15-6.6 android16-6.12 android17-6.18
+  GUARD_TAG: v2.3.0-r18.4
+  GUARD_REPO: inforcqb/susfs4ksu-lkm
+  DDK_RELEASE: "20260828"
+  # Kernels older than GKI 5.10 cannot take the LKM pair: there is no
+  # kernelsu.ko to load and no SUSFS guard to embed, so SUSFS has to be built
+  # into the kernel. Those lines are served by upstream's own patch set.
+  SUSFS_REPO: https://gitlab.com/simonpunk/susfs4ksu.git
+
+jobs:
+  cert:
+    name: signing certificate the modules will trust
+    runs-on: ubuntu-22.04
+    outputs:
+      size: ${{ steps.cert.outputs.size }}
+      hash: ${{ steps.cert.outputs.hash }}
+    steps:
+      - name: Extract certificate size and hash
+        id: cert
+        env:
+          KEYSTORE_B64: ${{ secrets.KEYSTORE }}
+          STORE_PASS: ${{ secrets.KEYSTORE_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
+        run: |
+          set -euo pipefail
+          test -n "$KEYSTORE_B64" || { echo "KEYSTORE secret is not set"; exit 1; }
+          printf '%s' "$KEYSTORE_B64" | base64 -d > key.jks
+          keytool -exportcert -alias "$KEY_ALIAS" -keystore key.jks \
+            -storepass "$STORE_PASS" -file cert.der >/dev/null
+          size=$(stat -c%s cert.der)
+          hash=$(sha256sum cert.der | cut -d' ' -f1)
+          echo "size=$(printf '0x%04x' "$size")" >> "$GITHUB_OUTPUT"
+          echo "hash=$hash" >> "$GITHUB_OUTPUT"
+          echo "modules will trust: size=$(printf '0x%04x' "$size") sha256=$hash"
+
+  kernelsu:
+    name: kernelsu.ko (${{ matrix.kmi }})
+    needs: cert
+    runs-on: ubuntu-22.04
+    strategy:
+      fail-fast: false
+      matrix:
+        kmi:
+          - android12-5.10
+          - android13-5.10
+          - android13-5.15
+          - android14-5.15
+          - android14-6.1
+          - android15-6.6
+          - android16-6.12
+          - android17-6.18
+    container:
+      image: ghcr.io/ylarod/ddk-min:${{ matrix.kmi }}-20260828
+      options: --privileged
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Build the module
+        working-directory: kernel
+        run: |
+          set -euo pipefail
+          git config --global --add safe.directory '*'
+          make clean >/dev/null 2>&1 || true
+          CONFIG_KSU=m CC=clang make -j"$(nproc)" \
+            KSU_REQUIRE_PREINIT=1 \
+            KSU_EXPECTED_SIZE2="${{ needs.cert.outputs.size }}" \
+            KSU_EXPECTED_HASH2="${{ needs.cert.outputs.hash }}" \
+            KSU_SECOND_SIGNATURE_RELEASE=1
+          test -s kernelsu.ko
+          modinfo kernelsu.ko
+          llvm-strip -d kernelsu.ko
+          cp kernelsu.ko "$GITHUB_WORKSPACE/${{ matrix.kmi }}_kernelsu.ko"
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: kernelsu-ko-${{ matrix.kmi }}
+          path: ${{ matrix.kmi }}_kernelsu.ko
+          if-no-files-found: error
+
+  legacy:
+    name: legacy kernel patches (4.14 / 4.19 / 5.4)
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v4
+
+      # Nothing is patched here: the trees are copied verbatim, so what a user
+      # applies to their kernel is exactly what simonpunk/susfs4ksu publishes.
+      - name: Fetch the upstream patch sets
+        env:
+          SUSFS_REPO_URL: ${{ env.SUSFS_REPO }}
+        run: bash panxcz/fetch-legacy-susfs.sh legacy
+
+      - name: Check every kernel line is complete
+        run: |
+          set -euo pipefail
+          for line in 4.14 4.19 5.4; do
+            zip=legacy/susfs-legacy-kernel-$line.zip
+            test -s "$zip" || { echo "missing $zip"; exit 1; }
+            unzip -l "$zip" | grep -q "50_add_susfs_in_kernel-$line.patch"
+            unzip -l "$zip" | grep -q 'kernel_patches/KernelSU/10_enable_susfs_for_ksu.patch'
+            unzip -l "$zip" | grep -q 'ksu_module_susfs/tools/ksu_susfs_arm64'
+            unzip -p "$zip" '*SOURCE.txt' | grep -q '^commit:  [0-9a-f]\{40\}$'
+          done
+          ls -la legacy
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: legacy-susfs
+          path: legacy/*.zip
+          if-no-files-found: error
+
+  manager:
+    name: ksud + APK
+    needs: [cert, kernelsu, legacy]
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: kernelsu-ko-*
+          path: ko
+          merge-multiple: true
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: legacy-susfs
+          path: legacy
+
+      - name: Check every KMI brought its module
+        run: |
+          set -euo pipefail
+          expected=$(printf '%s\n' $KMIS | wc -l)
+          for kmi in $KMIS; do
+            test -s "ko/${kmi}_kernelsu.ko" || { echo "missing $kmi"; exit 1; }
+          done
+          count=$(ls ko/*_kernelsu.ko | wc -l)
+          test "$count" -eq "$expected" || { echo "$count modules for $expected KMIs"; exit 1; }
+          ls -la ko
+
+      - name: Fetch the SUSFS guard LKM for every KMI
+        run: |
+          set -euo pipefail
+          mkdir -p guards
+          base="https://github.com/$GUARD_REPO/releases/download/$GUARD_TAG"
+          for kmi in $KMIS; do
+            curl -sSL --fail -o "guards/$kmi.ko" "$base/susfs_guard_lkm-$kmi.ko"
+            name=$(modinfo -F name "guards/$kmi.ko")
+            test "$name" = susfs_guard_lkm || { echo "$kmi: module is $name"; exit 1; }
+
+            # The guard has to be built for the kernel family it will be loaded
+            # into; a 5.15 guard on a 6.1 device is a boot loop, not a warning.
+            vermagic=$(modinfo -F vermagic "guards/$kmi.ko")
+            case "$vermagic" in
+              "${kmi#*-}."*) ;;
+              *) echo "$kmi: vermagic is '$vermagic'"; exit 1 ;;
+            esac
+
+            # expose_proc=1 is what publishes /proc/susfs_*; a guard without the
+            # parameter would load but be invisible to every SUSFS manager.
+            modinfo -p "guards/$kmi.ko" | grep -q '^expose_proc:' \
+              || { echo "$kmi: guard has no expose_proc"; exit 1; }
+            echo "$kmi: $(modinfo -F vermagic "guards/$kmi.ko")"
+          done
+
+      - name: Apply the ksuinit guard-loading patch
+        run: |
+          set -euo pipefail
+          git apply --verbose panxcz/ksuinit-load-susfs-guard.patch
+          grep -n 'susfs_guard_lkm.ko' userspace/ksuinit/src/init.rs
+
+      - name: Setup Rust and NDK
+        run: |
+          rustup update stable
+          rustup target add aarch64-linux-android
+      - uses: nttld/setup-ndk@v1
+        id: ndk
+        with:
+          ndk-version: r29
+
+      - uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: . -> target
+          cache-targets: false
+
+      - name: Build ksuinit (static, guard-aware)
+        env:
+          ANDROID_NDK_HOME: ${{ steps.ndk.outputs.ndk-path }}
+        run: |
+          set -euo pipefail
+          source .github/scripts/setup-rust-build.sh aarch64-linux-android 26
+          BUILTINS="$($CLANG_PATH --print-resource-dir)/lib/linux/libclang_rt.builtins-aarch64-android.a"
+          test -f "$BUILTINS"
+          export RUSTFLAGS="-C target-feature=+crt-static -C link-arg=-Wl,-z,max-page-size=16384 -C link-arg=-Wno-unused-command-line-argument -C link-arg=$BUILTINS"
+          cargo build --package ksuinit --target=aarch64-linux-android --release
+          file target/aarch64-linux-android/release/ksuinit | tee /tmp/ksuinit.file
+          grep -q 'statically linked' /tmp/ksuinit.file
+          grep -qa '/susfs_guard_lkm.ko' target/aarch64-linux-android/release/ksuinit
+          grep -qa 'expose_proc=1' target/aarch64-linux-android/release/ksuinit
+
+      - name: Stage the assets ksud embeds
+        run: |
+          set -euo pipefail
+          mkdir -p userspace/ksud/bin/aarch64
+          for kmi in $KMIS; do
+            cp "ko/${kmi}_kernelsu.ko" "userspace/ksud/bin/aarch64/${kmi}_kernelsu.ko"
+            cp "guards/$kmi.ko" "userspace/ksud/bin/aarch64/${kmi}_susfs_guard.ko"
+          done
+          cp target/aarch64-linux-android/release/ksuinit userspace/ksud/bin/aarch64/ksuinit
+          ls -la userspace/ksud/bin/aarch64
+
+      - name: Build ksud
+        env:
+          ANDROID_NDK_HOME: ${{ steps.ndk.outputs.ndk-path }}
+        run: |
+          set -euo pipefail
+          source .github/scripts/setup-rust-build.sh aarch64-linux-android 26
+          cargo build --target aarch64-linux-android --release \
+            --manifest-path ./userspace/ksud/Cargo.toml
+          file target/aarch64-linux-android/release/ksud
+
+      - name: Setup Java 21
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "21"
+
+      - uses: gradle/actions/setup-gradle@v4
+
+      - name: Build the manager APK
+        env:
+          ORG_GRADLE_PROJECT_KEYSTORE_FILE: ${{ github.workspace }}/key.jks
+          ORG_GRADLE_PROJECT_KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
+          ORG_GRADLE_PROJECT_KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
+          ORG_GRADLE_PROJECT_KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
+        run: |
+          set -euo pipefail
+          printf '%s' "${{ secrets.KEYSTORE }}" | base64 -d > key.jks
+          test -s key.jks
+          cd manager
+          ./gradlew --no-daemon clean assembleRelease
+
+      - name: Repack ksud into the APK and re-sign
+        env:
+          KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
+          KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
+        run: |
+          set -euo pipefail
+          python3 repack_apk.py repack \
+            -b release -t release -a arm64-v8a \
+            -K key.jks -A "$KEY_ALIAS" \
+            -P "$KEYSTORE_PASSWORD" -S "$KEY_PASSWORD" \
+            --strip
+          ls -la dist
+
+      - name: Verify the APK is the one these modules trust
+        env:
+          EXPECTED_HASH: ${{ needs.cert.outputs.hash }}
+          EXPECTED_SIZE: ${{ needs.cert.outputs.size }}
+        run: |
+          set -euo pipefail
+          apk=$(ls dist/*.apk | head -1)
+          python3 - "$apk" "$EXPECTED_HASH" "$EXPECTED_SIZE" <<'PY'
+          import hashlib, struct, sys
+          path, want_hash, want_size = sys.argv[1], sys.argv[2], int(sys.argv[3], 16)
+          data = open(path, 'rb').read()
+          eocd = data.rfind(b'PK\x05\x06')
+          cd_off = struct.unpack_from('<I', data, eocd + 16)[0]
+          assert data[cd_off - 16:cd_off] == b'APK Sig Block 42'
+          block_size = struct.unpack_from('<Q', data, cd_off - 24)[0]
+          start = cd_off - 8 - block_size
+          pos, end, v2 = start + 8, cd_off - 24, None
+          while pos < end:
+              pair_len = struct.unpack_from('<Q', data, pos)[0]
+              if struct.unpack_from('<I', data, pos + 8)[0] == 0x7109871A:
+                  v2 = data[pos + 12:pos + 8 + pair_len]
+              pos += 8 + pair_len
+          assert v2, 'no v2 signature block'
+          def lp(buf, p):
+              n = struct.unpack_from('<I', buf, p)[0]
+              return p + 4, p + 4 + n
+          s0, _ = lp(v2, 0)
+          s1, _ = lp(v2, s0)
+          signed0, signed_end = lp(v2, s1)
+          _, digests_end = lp(v2, signed0)
+          certs0, _ = lp(v2, digests_end)
+          c0, c1 = lp(v2, certs0)
+          cert = v2[c0:c1]
+          print(f'APK cert size {len(cert)} sha256 {hashlib.sha256(cert).hexdigest()}')
+          if len(cert) != want_size or hashlib.sha256(cert).hexdigest() != want_hash:
+              sys.exit('APK signing certificate does not match the module trusted key')
+          PY
+          unzip -l "$apk" | grep -q 'lib/arm64-v8a/libksud.so'
+          echo "APK and modules agree"
+
+      - name: Check the modules really sit inside libksud.so
+        run: |
+          set -euo pipefail
+          apk=$(ls dist/*.apk | head -1)
+          if ! dpkg -s zlib1g-dev >/dev/null 2>&1; then
+            sudo apt-get update -qq
+            sudo apt-get install -y zlib1g-dev
+          fi
+          python3 panxcz/verify-embedded-assets.py "$apk" userspace/ksud/bin/aarch64 \
+            --require _kernelsu.ko --require _susfs_guard.ko
+
+      - name: Bundle the modules with the APK
+        run: |
+          set -euo pipefail
+          bundle="finasu-panxcz-all-kmi"
+          mkdir -p "$bundle"
+          cp dist/*.apk "$bundle/"
+          cp target/aarch64-linux-android/release/ksud "$bundle/ksud"
+          cp userspace/ksud/bin/aarch64/ksuinit "$bundle/ksuinit"
+          for kmi in $KMIS; do
+            cp "ko/${kmi}_kernelsu.ko" "$bundle/"
+            cp "guards/$kmi.ko" "$bundle/susfs_guard_lkm-${kmi}.ko"
+          done
+          mkdir -p "$bundle/legacy"
+          cp legacy/*.zip "$bundle/legacy/"
+          cp panxcz/legacy-kernels.md "$bundle/legacy/README.md"
+          # `sha256sum *` would hand the new legacy/ directory to sha256sum; walk the
+          # files instead so the manifest keeps plain relative paths.
+          (cd "$bundle" && find . -type f ! -name SHA256SUMS.txt | sort \
+            | xargs sha256sum | sed 's#  \./#  #' > SHA256SUMS.txt)
+          zip -qr "$bundle.zip" "$bundle"
+          ls -la "$bundle.zip"
+
+      # The run page's artifact download goes through a blob host that is not
+      # always reachable; a release asset is plain github.com, and the phone
+      # needs a stable URL for the manager anyway.
+      - name: Publish the APK and the module bundle
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: panxcz-lkm-all-kmi
+          name: PanxCZ FinaSU LKM (all GKI KMI)
+          prerelease: true
+          body: |
+            FinaSU manager for GKI arm64 devices, signed with this fork's key.
+
+            One APK carries `kernelsu.ko` and the SUSFS 2.3.0 guard for every
+            supported KMI (android12-5.10 … android17-6.18). `boot-patch` writes
+            the pair that matches the device, and `ksuinit` loads the guard with
+            `expose_proc=1` before Android's init starts.
+
+            Kernels older than GKI 5.10 (4.14, 4.19, 5.4) are served by
+            `susfs-legacy-kernel-*.zip`: upstream simonpunk/susfs4ksu's own
+            patch set plus its module, unmodified, for kernels that have to
+            build SUSFS in.
+          files: |
+            dist/*.apk
+            finasu-panxcz-all-kmi.zip
+            legacy/*.zip
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: finasu-manager-panxcz
+          path: |
+            dist/*.apk
+            finasu-panxcz-all-kmi.zip
+            legacy/*.zip
+            ko/*.ko
+            guards/*.ko
+            target/aarch64-linux-android/release/ksud
+            userspace/ksud/bin/aarch64/ksuinit
+          if-no-files-found: error

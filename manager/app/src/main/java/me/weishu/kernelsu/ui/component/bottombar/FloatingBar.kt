@@ -3,6 +3,7 @@ package me.weishu.kernelsu.ui.component.bottombar
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -33,7 +34,7 @@ import me.weishu.kernelsu.wallpaper.LocalFolkWallpaperTokens
 
 /** Vertical space the floating bar occupies from the screen bottom, excluding system insets. */
 fun floatingBarReservedHeight(compact: Boolean, style: FloatingBarConfig.Style): Dp =
-    (if (style == FloatingBarConfig.Style.Drawer) 64.dp else if (compact) 68.dp else 72.dp) + 32.dp
+    (if (style == FloatingBarConfig.Style.Drawer) 64.dp else if (compact) 68.dp else 72.dp) + 44.dp
 
 /**
  * Floating bottom navigation bar rendered above the page content.
@@ -88,76 +89,79 @@ internal fun FloatingBar(
             else -> 16.dp
         }
         Box(
-            modifier = Modifier.fillMaxWidth().padding(horizontal = horizontalPadding, vertical = 16.dp),
+            modifier = Modifier.fillMaxWidth().padding(horizontal = horizontalPadding, vertical = 12.dp),
             contentAlignment = Alignment.Center,
         ) {
-            val barShape: Shape = when {
-                style == FloatingBarConfig.Style.Drawer -> CircleShape
-                compact -> RoundedCornerShape(percent = 50)
-                useGlass -> CircleShape
-                else -> MaterialTheme.shapes.large
-            }
-            Surface(
-                modifier = Modifier
-                    .wrapContentWidth()
-                    .clip(barShape)
-                    .then(
-                        if (useGlass) {
-                            Modifier.navBarGlassEffect(
-                                shape = barShape,
-                                blurStrength = glassBlurStrength,
-                                transparency = glassTransparency,
-                                highlightStrength = glassHighlightStrength,
-                                enableSpecular = glassSpecular,
-                                enableInnerGlow = glassInnerGlow,
-                                enableBorder = glassBorder,
-                                liquidState = liquidState,
-                            )
-                        } else {
-                            Modifier
-                        }
-                    ),
-                shape = barShape,
-                color = if (useGlass) Color.Transparent else containerColor,
-                // A translucent surface cannot carry a shadow: the shadow is painted behind a fill that
-                // no longer hides it, so it reads as a dark halo around the capsule instead of a lift.
-                tonalElevation = 0.dp,
-                shadowElevation = if (useGlass || wallpaperActive) 0.dp else 8.dp,
-                // A white specular rim is invisible on a bright page, so the liquid pill keeps a
-                // hairline of its own to hold the edge in either polarity.
-                border = when {
-                    useGlass || wallpaperActive -> null
-                    else -> BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant)
-                },
-            ) {
-                if (style == FloatingBarConfig.Style.Drawer) {
-                    FloatingBarDrawer(
-                        destinations = destinations,
-                        selectedIndex = selectedIndex,
-                        badge = { badgeFor(it, navigationBadge) },
-                        onSelect = {
-                            if (it == mainPagerState.selectedDestination) return@FloatingBarDrawer
-                            onUserInteraction()
-                            mainPagerState.animateToDestination(it)
-                            me.weishu.kernelsu.media.MediaFeedback.navigation()
-                        },
-                        selectionColor = selectionColor,
-                        selectionContentColor = selectionContentColor,
-                    )
-                } else {
-                    FloatingBarStandard(
-                        destinations = destinations,
-                        selectedIndex = selectedIndex,
-                        badge = { badgeFor(it, navigationBadge) },
-                        onSelect = {
-                            onUserInteraction()
-                            mainPagerState.animateToDestination(it)
-                            me.weishu.kernelsu.media.MediaFeedback.navigation()
-                        },
-                        selectionColor = selectionColor,
-                        selectionContentColor = selectionContentColor,
-                    )
+            Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                val barShape: Shape = when {
+                    style == FloatingBarConfig.Style.Drawer -> CircleShape
+                    compact -> RoundedCornerShape(percent = 50)
+                    useGlass -> CircleShape
+                    else -> MaterialTheme.shapes.large
                 }
+                Surface(
+                    modifier = Modifier
+                        .wrapContentWidth()
+                        .clip(barShape)
+                        .then(
+                            if (useGlass) {
+                                Modifier.navBarGlassEffect(
+                                    shape = barShape,
+                                    blurStrength = glassBlurStrength,
+                                    transparency = glassTransparency,
+                                    highlightStrength = glassHighlightStrength,
+                                    enableSpecular = glassSpecular,
+                                    enableInnerGlow = glassInnerGlow,
+                                    enableBorder = glassBorder,
+                                    liquidState = liquidState,
+                                )
+                            } else {
+                                Modifier
+                            }
+                        ),
+                    shape = barShape,
+                    color = if (useGlass) Color.Transparent else containerColor,
+                    // A translucent surface cannot carry a shadow: the shadow is painted behind a fill that
+                    // no longer hides it, so it reads as a dark halo around the capsule instead of a lift.
+                    tonalElevation = 0.dp,
+                    shadowElevation = if (useGlass || wallpaperActive) 0.dp else 8.dp,
+                    // A white specular rim is invisible on a bright page, so the liquid pill keeps a
+                    // hairline of its own to hold the edge in either polarity.
+                    border = when {
+                        useGlass || wallpaperActive -> null
+                        else -> BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant)
+                    },
+                ) {
+                    if (style == FloatingBarConfig.Style.Drawer) {
+                        FloatingBarDrawer(
+                            destinations = destinations,
+                            selectedIndex = selectedIndex,
+                            badge = { badgeFor(it, navigationBadge) },
+                            onSelect = {
+                                if (it == mainPagerState.selectedDestination) return@FloatingBarDrawer
+                                onUserInteraction()
+                                mainPagerState.animateToDestination(it)
+                                me.weishu.kernelsu.media.MediaFeedback.navigation()
+                            },
+                            selectionColor = selectionColor,
+                            selectionContentColor = selectionContentColor,
+                        )
+                    } else {
+                        FloatingBarStandard(
+                            destinations = destinations,
+                            selectedIndex = selectedIndex,
+                            badge = { badgeFor(it, navigationBadge) },
+                            onSelect = {
+                                onUserInteraction()
+                                mainPagerState.animateToDestination(it)
+                                me.weishu.kernelsu.media.MediaFeedback.navigation()
+                            },
+                            selectionColor = selectionColor,
+                            selectionContentColor = selectionContentColor,
+                        )
+                    }
+                }
+            CreditLine(Modifier.padding(top = 4.dp))
             }
         }
     }
