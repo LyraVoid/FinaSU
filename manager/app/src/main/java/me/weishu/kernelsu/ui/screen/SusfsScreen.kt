@@ -89,6 +89,7 @@ fun SusfsScreen() {
     val scrolls = susfsPages.map { rememberScrollState() }
     var draft by rememberSaveable { mutableStateOf<String?>(null) }
     var confirmApplyAfterSave by rememberSaveable { mutableStateOf(false) }
+    var ownershipAction by rememberSaveable { mutableStateOf<String?>(null) }
     val config = remember(state.config) { state.config?.let(::JSONObject) }
     val writable = state.status.writable && !state.busy && config != null
     val import = rememberLauncherForActivityResult(ActivityResultContracts.OpenDocument()) { uri ->
@@ -142,7 +143,7 @@ fun SusfsScreen() {
                 SusfsPage(scrolls[page]) {
                     SusfsNotice(state) { confirmApplyAfterSave = true }
                     when (page) {
-                        0 -> SusfsOverview(state, config, writable, vm,
+                        0 -> SusfsOverview(state, config, writable, vm, { ownershipAction = it },
                             { import.launch(arrayOf("application/json", "text/plain")) },
                             { export.launch("folksu-susfs.json") })
                         1 -> SusfsBasicPage(config, state.status, writable, vm)
@@ -178,6 +179,18 @@ fun SusfsScreen() {
             }
         }
     }
+    ownershipAction?.let { action ->
+        AlertDialog(
+            onDismissRequest = { ownershipAction = null },
+            title = { Text(stringResource(R.string.susfs_owner_confirm_title)) },
+            text = { Text(stringResource(when (action) { "confirm" -> R.string.susfs_owner_confirm_message; "cancel" -> R.string.susfs_owner_cancel_message; else -> R.string.susfs_owner_switch_message })) },
+            confirmButton = { TextButton(enabled = !state.busy, onClick = {
+                when (action) { "confirm" -> vm.confirmOwnership(); "cancel" -> vm.cancelOwnership(); else -> vm.switchOwnership(action) }
+                ownershipAction = null
+            }) { Text(stringResource(R.string.susfs_owner_confirm)) } },
+            dismissButton = { TextButton(onClick = { ownershipAction = null }) { Text(stringResource(R.string.susfs_cancel)) } },
+        )
+    }
     draft?.let { text ->
         val preview = remember(text) { SusfsInputs.preview(text) }
         AlertDialog(onDismissRequest = { draft = null }, title = { Text(stringResource(R.string.susfs_import_preview)) },
@@ -187,7 +200,7 @@ fun SusfsScreen() {
                     preview.getJSONObject("lkm").getJSONArray("mount_prefixes").length()))
                 Text(stringResource(if (preview.getBoolean("automatic")) R.string.susfs_import_auto_on else R.string.susfs_import_auto_off))
                 Text(stringResource(R.string.susfs_import_warning))
-            } }, confirmButton = { TextButton(enabled = state.status.protocol == "compatible" && !state.busy,
+            } }, confirmButton = { TextButton(enabled = state.status.writable && !state.busy,
                 onClick = { vm.save(text); draft = null }) { Text(stringResource(R.string.susfs_save)) } },
             dismissButton = { TextButton(onClick = { draft = null }) { Text(stringResource(R.string.susfs_cancel)) } })
     }
@@ -303,7 +316,7 @@ private fun SusfsNotice(state: SusfsUiState, onApplyAfterSave: () -> Unit) {
 }
 
 @Composable
-private fun SusfsOverview(state: SusfsUiState, config: JSONObject?, writable: Boolean, vm: SusfsViewModel,
+private fun SusfsOverview(state: SusfsUiState, config: JSONObject?, writable: Boolean, vm: SusfsViewModel, ownershipAction: (String) -> Unit,
     import: () -> Unit, export: () -> Unit) {
     val status = state.status
     SegmentedColumn(title = stringResource(R.string.susfs_overview)) {
@@ -317,6 +330,31 @@ private fun SusfsOverview(state: SusfsUiState, config: JSONObject?, writable: Bo
             leadingContent = { Icon(Icons.Rounded.VisibilityOff, null) }) }
         item { SegmentedListItem(headlineContent = { Text(susfsManagementLabel(status.management)) },
             supportingContent = { Text(stringResource(susfsManagementHint(status))) }) }
+        item { SegmentedListItem(
+            headlineContent = { Text(stringResource(when {
+                status.pendingOwner != null -> R.string.susfs_owner_pending
+                status.ownership == "builtin" -> R.string.susfs_owner_builtin
+                status.ownership == "external" -> R.string.susfs_owner_external
+                else -> R.string.susfs_owner_unknown
+            })) },
+            supportingContent = { Text(stringResource(R.string.susfs_ownership_unconfirmed)) },
+        ) }
+        if (status.pendingOwner != null) item { SegmentedListItem(
+            enabled = status.switchReady && !state.busy,
+            onClick = { ownershipAction("confirm") },
+            headlineContent = { Text(stringResource(R.string.susfs_owner_confirm)) },
+            supportingContent = { Text(stringResource(if (status.switchReady) R.string.susfs_owner_ready else R.string.susfs_owner_reboot)) },
+        ) } else if (status.ownership in setOf("builtin", "external")) item { SegmentedListItem(
+            enabled = !state.busy,
+            onClick = { ownershipAction(if (status.ownership == "builtin") "external" else "builtin") },
+            headlineContent = { Text(stringResource(if (status.ownership == "builtin") R.string.susfs_owner_to_external else R.string.susfs_owner_to_builtin)) },
+            supportingContent = { Text(stringResource(R.string.susfs_owner_switch_hint)) },
+        ) }
+        if (status.pendingOwner != null) item { SegmentedListItem(
+            enabled = !state.busy,
+            onClick = { ownershipAction("cancel") },
+            headlineContent = { Text(stringResource(R.string.susfs_owner_cancel)) },
+        ) }
         item { SegmentedListItem(headlineContent = { Text(if (config == null) stringResource(R.string.susfs_config_unavailable)
             else stringResource(R.string.susfs_saved_counts, config.getJSONArray("rules").length())) },
             supportingContent = { Text(stringResource(R.string.susfs_ownership_unconfirmed)) }) }
@@ -351,7 +389,7 @@ private fun SusfsOverview(state: SusfsUiState, config: JSONObject?, writable: Bo
         }
     }
     SegmentedColumn(title = stringResource(R.string.susfs_config)) {
-        item { SegmentedListItem(enabled = status.protocol == "compatible" && !state.busy, onClick = import,
+        item { SegmentedListItem(enabled = status.writable && !state.busy, onClick = import,
             headlineContent = { Text(stringResource(R.string.susfs_import)) }, leadingContent = { Icon(Icons.Rounded.FileOpen, null) }) }
         item { SegmentedListItem(enabled = config != null && !state.busy, onClick = export,
             headlineContent = { Text(stringResource(R.string.susfs_export)) }, leadingContent = { Icon(Icons.Rounded.SaveAlt, null) }) }

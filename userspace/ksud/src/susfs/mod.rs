@@ -53,6 +53,8 @@ pub enum Command {
     Switch { target: String },
     /// Confirm the pending switch after checking external writers and runtime state
     ConfirmSwitch,
+    /// Cancel a pending ownership switch
+    CancelSwitch,
 }
 
 #[derive(Debug, Clone, Serialize)]
@@ -351,15 +353,21 @@ pub fn run(command: Command) -> Result<()> {
             let uname_provider = uname_provider_state().unwrap_or_default();
             let config = store::read_config().and_then(|config| {
                 let ownership = store::read_ownership()?;
+                let boot_id = std::fs::read_to_string("/proc/sys/kernel/random/boot_id")?;
+                let switch_ready = ownership
+                    .pending
+                    .as_ref()
+                    .is_some_and(|p| p.may_confirm(boot_id.trim()));
                 let uts_active =
                     uts_arbitration_active(&config, uts_provider_active).unwrap_or(false);
                 let summary = status_summary(&config, uts_active)?;
-                Ok((config, summary, ownership))
+                Ok((config, summary, ownership, switch_ready))
             });
             let status = match config {
-                Ok((config, summary, ownership)) => serde_json::json!({
+                Ok((config, summary, ownership, switch_ready)) => serde_json::json!({
                     "detection": detection, "automatic": config.automatic,
                     "ownership": ownership,
+                    "switch_ready": switch_ready,
                     "management": summary, "config_error": null,
                     "uname_applied": uname_provider.applied,
                     "uname_scheduled": uname_provider.scheduled,
@@ -439,6 +447,15 @@ pub fn run(command: Command) -> Result<()> {
             }
             ownership.mode = pending.target;
             ownership.pending = None;
+            store::write_ownership(&ownership)?;
+            println!("{}", serde_json::to_string(&ownership)?);
+        }
+        Command::CancelSwitch => {
+            let _lock = store::lock()?;
+            let mut ownership = store::read_ownership()?;
+            if ownership.pending.take().is_none() {
+                bail!("No pending ownership switch");
+            }
             store::write_ownership(&ownership)?;
             println!("{}", serde_json::to_string(&ownership)?);
         }

@@ -31,6 +31,13 @@ class SusfsStatusTest {
         assertEquals("saved", status.management)
         assertFalse(status.automatic)
     }
+    @Test fun `unknown external and switching ownership never enable writes`() {
+        val ready = SusfsStatus(protocol = "compatible", ownership = "builtin")
+        assertTrue(ready.writable)
+        assertFalse(ready.copy(ownership = "unknown").writable)
+        assertFalse(ready.copy(ownership = "external").writable)
+        assertFalse(ready.copy(pendingOwner = "external").writable)
+    }
     @Test fun `CLI status preserves idle and deferred management states`() {
         val base = """{"detection":{"status":"compatible","version":"v2.3.0","variant":"GKI","implementation":"builtin","features":[],"proc_nodes":[]},"automatic":false,"config_error":null,"management":"%s"}"""
         assertEquals("idle", SusfsStatus.parse(base.format("idle")).management)

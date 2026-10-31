@@ -98,7 +98,7 @@ class SusfsViewModelTest {
     }
 
     private class FakeSusfs : SusfsDataSource {
-        var statusValue = SusfsStatus(protocol = "compatible")
+        var statusValue = SusfsStatus(protocol = "compatible", ownership = "builtin")
         var blockNextStatus: CompletableDeferred<Unit>? = null
         val saved = mutableListOf<String>()
 
