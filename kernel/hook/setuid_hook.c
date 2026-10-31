@@ -59,7 +59,6 @@ static void ksu_handle_susfs_setresuid(uid_t old_uid, uid_t new_uid, bool zygote
         ksu_set_task_tracepoint_flag(current);
         spin_unlock_irq(&current->sighand->siglock);
 
-        pr_info("install fd for manager: %d\n", new_uid);
         ksu_install_fd();
         return;
     }
@@ -106,15 +105,12 @@ int ksu_handle_setresuid(uid_t ruid, uid_t euid, uid_t suid)
 
     // we rely on the fact that zygote always call setresuid(3) with same uids
 
-    pr_info("handle_setresuid from %d to %d\n", old_uid, new_uid);
-
     if (unlikely(is_uid_manager(new_uid))) {
         spin_lock_irq(&current->sighand->siglock);
         ksu_seccomp_allow_cache(current->seccomp.filter, __NR_reboot);
         ksu_set_task_tracepoint_flag(current);
         spin_unlock_irq(&current->sighand->siglock);
 
-        pr_info("install fd for manager: %d\n", new_uid);
         ksu_install_fd();
         ksu_uts_view_on_setresuid(old_uid, new_uid);
         return 0;
