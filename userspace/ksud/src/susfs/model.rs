@@ -27,9 +27,10 @@ impl ManagementSwitch {
 }
 
 #[derive(Debug, Default, Clone, Serialize, Deserialize)]
-#[serde(default, deny_unknown_fields)]
+#[serde(deny_unknown_fields)]
 pub struct Ownership {
     pub mode: ManagementMode,
+    #[serde(deserialize_with = "Option::deserialize")]
     pub pending: Option<ManagementSwitch>,
 }
 
@@ -312,6 +313,18 @@ mod tests {
         ownership.pending = None;
         ownership.mode = ManagementMode::External;
         assert!(ownership.require_builtin().is_err());
+    }
+
+    #[test]
+    fn ownership_file_requires_explicit_mode_and_pending_state() {
+        assert!(serde_json::from_str::<Ownership>("{}").is_err());
+        assert!(serde_json::from_str::<Ownership>(r#"{"mode":"external"}"#).is_err());
+        assert!(
+            serde_json::from_str::<Ownership>(r#"{"mode":"external","pending":null}"#)
+                .unwrap()
+                .require_builtin()
+                .is_err()
+        );
     }
 
     #[test]

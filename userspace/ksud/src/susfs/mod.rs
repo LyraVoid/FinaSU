@@ -350,7 +350,10 @@ pub fn run(command: Command) -> Result<()> {
     match command {
         Command::Status => {
             let detection = detect();
-            let uname_provider = uname_provider_state().unwrap_or_default();
+            let uname_provider = uname_provider_state().unwrap_or_else(|_| UnameProviderState {
+                uncertain: true,
+                ..UnameProviderState::default()
+            });
             let config = store::read_config().and_then(|config| {
                 let ownership = store::read_ownership()?;
                 let boot_id = std::fs::read_to_string("/proc/sys/kernel/random/boot_id")?;

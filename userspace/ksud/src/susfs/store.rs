@@ -180,14 +180,17 @@ pub fn write_config(config: &Config) -> Result<()> {
         match read(CONFIG, super::model::MAX_CONFIG) {
             Ok(old) if Config::parse(&old)?.schema == 1 => {
                 match read(CONFIG_V1_BACKUP, super::model::MAX_CONFIG) {
+                    Ok(backup) if backup == old => {}
                     Ok(_) => bail!("Schema 1 backup already exists; export it before migrating"),
                     Err(error)
                         if error
                             .downcast_ref::<std::io::Error>()
-                            .is_some_and(|e| e.kind() == std::io::ErrorKind::NotFound) => {}
+                            .is_some_and(|e| e.kind() == std::io::ErrorKind::NotFound) =>
+                    {
+                        atomic(CONFIG_V1_BACKUP, old.as_bytes())?;
+                    }
                     Err(error) => return Err(error),
                 }
-                atomic(CONFIG_V1_BACKUP, old.as_bytes())?;
             }
             Ok(_) => {}
             Err(error)
