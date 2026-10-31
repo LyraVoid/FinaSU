@@ -354,7 +354,10 @@ jobs:
           mkdir -p "$bundle/legacy"
           cp legacy/*.zip "$bundle/legacy/"
           cp panxcz/legacy-kernels.md "$bundle/legacy/README.md"
-          (cd "$bundle" && sha256sum * legacy/* > SHA256SUMS.txt)
+          # `sha256sum *` would hand the new legacy/ directory to sha256sum; walk the
+          # files instead so the manifest keeps plain relative paths.
+          (cd "$bundle" && find . -type f ! -name SHA256SUMS.txt | sort \
+            | xargs sha256sum | sed 's#  \./#  #' > SHA256SUMS.txt)
           zip -qr "$bundle.zip" "$bundle"
           ls -la "$bundle.zip"
 
