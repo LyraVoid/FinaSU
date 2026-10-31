@@ -463,6 +463,9 @@ fn provider_state() -> Result<susfs::UnameProviderState> {
 }
 
 fn reject_provider_for_enable(provider: susfs::UnameProviderState) -> Result<()> {
+    if provider.uncertain {
+        bail!("SUSFS uname state is unknown; verify the active owner before enabling UTS View");
+    }
     if provider.blocks_uts() {
         bail!("SUSFS uname spoofing is already applied; use take-over first");
     }
@@ -933,6 +936,25 @@ pub fn resume_after_susfs() {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn enabling_uts_rejects_unknown_or_applied_susfs_uname() {
+        assert!(reject_provider_for_enable(susfs::UnameProviderState::default()).is_ok());
+        assert!(
+            reject_provider_for_enable(susfs::UnameProviderState {
+                uncertain: true,
+                ..susfs::UnameProviderState::default()
+            })
+            .is_err()
+        );
+        assert!(
+            reject_provider_for_enable(susfs::UnameProviderState {
+                applied: true,
+                ..susfs::UnameProviderState::default()
+            })
+            .is_err()
+        );
+    }
 
     #[test]
     fn repairs_group_or_other_writable_working_directory() {
