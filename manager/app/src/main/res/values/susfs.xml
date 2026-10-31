@@ -79,7 +79,7 @@
     <string name="susfs_owner_ready">Verify other writers are stopped and review the current runtime before confirming.</string>
     <string name="susfs_owner_confirm_title">Confirm management change?</string>
     <string name="susfs_owner_switch_message">FinaSU will stop writing SUSFS until you reboot and confirm. Existing rules are not cleared. Export your configuration first; stop other managers before activating a new owner.</string>
-    <string name="susfs_owner_confirm_message">Confirm only after stopping other writers and checking the provider and existing rules. Reboot alone does not prove that rules were cleared or that ownership is exclusive.</string>
+    <string name="susfs_owner_confirm_message">Confirm only after stopping other writers and checking the provider and existing rules. Reboot alone does not prove that rules were cleared or that ownership is exclusive. Switching to FinaSU does not replay settings during this boot; apply manually or wait for the next boot.</string>
     <string name="susfs_owner_confirm">Confirm</string>
     <string name="susfs_owner_cancel">Cancel pending switch</string>
     <string name="susfs_owner_cancel_message">The previous management mode will resume. Check and stop other writers first; saved settings may be applied on the next boot.</string>

@@ -79,7 +79,7 @@
     <string name="susfs_owner_ready">确认前请停用其他写入方并检查当前运行状态。</string>
     <string name="susfs_owner_confirm_title">确认更改管理方式？</string>
     <string name="susfs_owner_switch_message">FinaSU 将停止写入 SUSFS，直到重启并确认。现有规则不会被清除；请先导出配置，并在启用新管理方之前停用其他管理器。</string>
-    <string name="susfs_owner_confirm_message">请先停用其他写入方，检查 provider 和现有规则。重启本身不能证明规则已清除或管理权独占。</string>
+    <string name="susfs_owner_confirm_message">请先停用其他写入方，检查 provider 和现有规则。重启本身不能证明规则已清除或管理权独占。切回 FinaSU 后，本次启动不会自动重放设置；可手动应用或等待下次启动。</string>
     <string name="susfs_owner_confirm">确认</string>
     <string name="susfs_owner_cancel">取消待切换状态</string>
     <string name="susfs_owner_cancel_message">将恢复原来的管理方式。请先检查并停用其他写入方；保存的设置可能在下次启动时应用。</string>
