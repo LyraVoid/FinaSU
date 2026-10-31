@@ -3,6 +3,31 @@ use serde::{Deserialize, Serialize};
 
 pub const MAX_CONFIG: usize = 128 * 1024;
 
+#[allow(dead_code)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "snake_case")]
+pub enum ManagementMode {
+    Builtin,
+    External,
+}
+
+#[allow(dead_code)]
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct ManagementSwitch {
+    pub target: ManagementMode,
+    pub requested_boot_id: String,
+}
+
+#[allow(dead_code)]
+impl ManagementSwitch {
+    pub fn may_confirm(&self, boot_id: &str) -> bool {
+        !boot_id.is_empty()
+            && !self.requested_boot_id.is_empty()
+            && self.requested_boot_id != boot_id
+    }
+}
+
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(deny_unknown_fields)]
 pub struct Config {
@@ -239,6 +264,27 @@ impl Config {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn ownership_switch_requires_a_distinct_known_boot() {
+        for target in [ManagementMode::Builtin, ManagementMode::External] {
+            let pending = ManagementSwitch {
+                target,
+                requested_boot_id: "boot-a".to_owned(),
+            };
+            assert!(!pending.may_confirm("boot-a"));
+            assert!(!pending.may_confirm(""));
+            assert!(pending.may_confirm("boot-b"));
+            let decoded: ManagementSwitch =
+                serde_json::from_str(&serde_json::to_string(&pending).unwrap()).unwrap();
+            assert_eq!(decoded, pending);
+        }
+        let pending = ManagementSwitch {
+            target: ManagementMode::Builtin,
+            requested_boot_id: String::new(),
+        };
+        assert!(!pending.may_confirm("boot-b"));
+    }
 
     #[test]
     fn static_kstat_validates_optional_fields_without_conflating_zero_and_absent() {
