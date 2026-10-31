@@ -19,6 +19,7 @@ class KeystoreSecretStore(
     context: Context,
     private val prefsName: String = PREFS_NAME,
     private val alias: String = KEY_ALIAS,
+    private val legacyAlias: String = LEGACY_KEY_ALIAS,
 ) : SecretStore {
 
     private val prefs = context.applicationContext.getSharedPreferences(prefsName, Context.MODE_PRIVATE)
@@ -36,8 +37,7 @@ class KeystoreSecretStore(
     override fun get(key: String): String? {
         val record = prefs.getString(key, null) ?: return null
         decryptRecord(alias, record)?.let { return it }
-        if (alias != KEY_ALIAS) return null
-        val value = decryptRecord(LEGACY_KEY_ALIAS, record) ?: return null
+        val value = decryptRecord(legacyAlias, record) ?: return null
         runCatching {
             SecretCodec.encryptWithGeneratedIv(secretKey(), value)
         }.onSuccess { migrated ->
