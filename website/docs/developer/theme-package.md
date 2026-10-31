@@ -107,7 +107,7 @@ AES 密钥由应用内固定字符串的 SHA-256 派生。它能阻止普通解�
 ```json
 {
   "customColor": "indigo",
-  "folksu_keyColor": -12345678,
+  "finasu_keyColor": -12345678,
   "nightModeEnabled": true,
   "nightModeFollowSys": true,
   "useSystemDynamicColor": false,
@@ -126,7 +126,7 @@ AES 密钥由应用内固定字符串的 SHA-256 派生。它能阻止普通解�
 | 字段 | 允许值 | FinaSU 内部映射 |
 | --- | --- | --- |
 | `customColor` | 20 个兼容颜色 token | 映射到预设 ARGB |
-| `folksu_keyColor` | 32 位 ARGB 整数 | 精确保留任意种子；优先于 `customColor` |
+| `finasu_keyColor` | 32 位 ARGB 整数 | 精确保留任意种子；优先于 `customColor` |
 | `colorGenerationMode` | `classic` / `custom` | `classic` 优先使用 FolkPatch 色表；`custom` 使用 MaterialKolor |
 | `colorStandard` | `MD3_2021` / `M3E_2025` | 持久化为 `SPEC_2021` / `SPEC_2025` |
 | `colorStyle` | 9 个 UPPER_SNAKE 风格名 | 转为 `PaletteStyle` 名称 |
@@ -361,7 +361,7 @@ surface.<surface-id>.flag.<flag>
 
 ::::: field 数字
 @type `有限数值 + 范围`
-非有限数值删除；超出范围夹到边界并警告。`folksu_keyColor` 允许完整 32 位整数范围。
+非有限数值删除；超出范围夹到边界并警告。`finasu_keyColor` 允许完整 32 位整数范围。
 :::::
 
 ::::: field 枚举

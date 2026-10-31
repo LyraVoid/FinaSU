@@ -10,7 +10,7 @@ class BackupContentTest {
 
     @Test
     fun `bytes payload reports size hash and content`() {
-        val bytes = "hello folksu".toByteArray()
+        val bytes = "hello finasu".toByteArray()
         val content = BackupContent.Bytes(bytes)
 
         assertEquals(bytes.size.toLong(), content.sizeBytes)

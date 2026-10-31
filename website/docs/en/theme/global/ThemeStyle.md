@@ -49,7 +49,7 @@ The theme protocol additionally accepts 5 FolkPatch color tokens:
 light_blue light_green lime deep_orange ink_wash
 ```
 
-A FinaSU export writes both `customColor` and the exact `folksu_keyColor`. The first gives compatible implementations a recognizable catalog entry; the second lets FinaSU keep arbitrary ARGB precision when the theme is imported back.
+A FinaSU export writes both `customColor` and the exact `finasu_keyColor`. The first gives compatible implementations a recognizable catalog entry; the second lets FinaSU keep arbitrary ARGB precision when the theme is imported back.
 
 :::: warning Wallpaper extraction takes priority over the accent color
 

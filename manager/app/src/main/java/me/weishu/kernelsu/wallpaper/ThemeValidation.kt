@@ -40,7 +40,8 @@ internal object ThemeValidation {
             "videoVolume" to 0.0..1.0, "titleImageDayOpacity" to 0.0..1.0,
             "titleImageNightOpacity" to 0.0..1.0, "titleImageDim" to 0.0..1.0,
             "titleImageOffsetX" to -2.0..2.0,
-            "folksu_keyColor" to Int.MIN_VALUE.toDouble()..Int.MAX_VALUE.toDouble(),
+            ThemeSettingsMapping.KEY_COLOR to Int.MIN_VALUE.toDouble()..Int.MAX_VALUE.toDouble(),
+            ThemeSettingsMapping.LEGACY_KEY_COLOR to Int.MIN_VALUE.toDouble()..Int.MAX_VALUE.toDouble(),
         )
         SurfaceRegistry.themeSlots().forEach { slot ->
             slot.fields.filter { it != SurfaceField.Image }.forEach { field ->
@@ -70,7 +71,8 @@ internal object ThemeValidation {
                 warnings += "$key: invalid number; default used"
             } else {
                 val normalized = value.coerceIn(range.start, range.endInclusive)
-                json.put(key, if (key == "folksu_keyColor") normalized.toInt() else normalized)
+                json.put(key, if (key == ThemeSettingsMapping.KEY_COLOR ||
+                    key == ThemeSettingsMapping.LEGACY_KEY_COLOR) normalized.toInt() else normalized)
                 if (normalized != value) warnings += "$key: adjusted to supported range"
             }
         }
@@ -106,7 +108,8 @@ internal object ThemeValidation {
         if (json.optString("meta_type", "phone") !in setOf("phone", "tablet")) {
             warnings += "Legacy or unknown theme type retained as metadata"
         }
-        if (json.has("folksu_keyColor") && json.getInt("folksu_keyColor") !in ThemeSettingsMapping.colors.values &&
+        if (json.has(ThemeSettingsMapping.KEY_COLOR) &&
+            json.getInt(ThemeSettingsMapping.KEY_COLOR) !in ThemeSettingsMapping.colors.values &&
             !json.optBoolean("useSystemDynamicColor")) {
             warnings += "FinaSU custom seed has no FP catalog entry; FP uses the exported customColor fallback"
         }

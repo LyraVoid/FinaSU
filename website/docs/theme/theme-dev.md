@@ -106,7 +106,7 @@ theme.fpt（加密容器）
 ```json
 {
   "customColor": "indigo",
-  "folksu_keyColor": -12345678,
+  "finasu_keyColor": -12345678,
   "nightModeEnabled": true,
   "nightModeFollowSys": true,
   "useSystemDynamicColor": false,

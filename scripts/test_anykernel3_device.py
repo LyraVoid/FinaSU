@@ -23,7 +23,7 @@ def main():
     package.check_returncode()
     base = package.stdout.strip().splitlines()[0].removeprefix("package:")
     daemon = str(Path(base).parent / "lib/arm64/libksud.so")
-    remote = "/data/local/tmp/folksu-anykernel-safe-test.zip"
+    remote = "/data/local/tmp/finasu-anykernel-safe-test.zip"
     # Only creates files inside POSTINSTALL. No block devices, mounts, boot
     # images, property changes, reboot commands or downloaded code.
     script = '''#!/system/bin/sh

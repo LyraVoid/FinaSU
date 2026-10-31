@@ -49,7 +49,7 @@ AMOLED 是深色模式的附加开关，不是第四种独立模式。切回浅�
 light_blue light_green lime deep_orange ink_wash
 ```
 
-FinaSU 导出时同时写入 `customColor` 和精确的 `folksu_keyColor`。前者让兼容实现有可识别的目录项，后者让 FinaSU 在回导时保留任意 ARGB 精度。
+FinaSU 导出时同时写入 `customColor` 和精确的 `finasu_keyColor`。前者让兼容实现有可识别的目录项，后者让 FinaSU 在回导时保留任意 ARGB 精度。
 
 :::: warning 壁纸取色优先于强调色
 

@@ -88,6 +88,12 @@ class BackupManifestTest {
     }
 
     @Test
+    fun `module meta accepts the legacy schema`() {
+        val json = moduleMeta.toJson().replace(MODULE_BACKUP_SCHEMA, LEGACY_MODULE_BACKUP_SCHEMA)
+        assertEquals(moduleMeta, ModuleBackupMeta.fromJson(json).getOrThrow())
+    }
+
+    @Test
     fun `module meta rejects an unknown source`() {
         val json = moduleMeta.toJson().replaceFirst("\"source\": \"archived_installer\"", "\"source\": \"guess\"")
         assertEquals(BackupFormatError.INVALID_FIELD, ModuleBackupMeta.fromJson(json).failureError())

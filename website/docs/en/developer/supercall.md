@@ -126,7 +126,7 @@ The capability flags returned by `GET_INFO` distinguish LKM, trusted Manager, la
 ## Source Layout
 
 ```file-tree title="UAPI and Callers"
-FolkSU
+FinaSU
 ├── kernel/include/uapi/
 │   ├── supercall.h
 │   ├── app_profile.h

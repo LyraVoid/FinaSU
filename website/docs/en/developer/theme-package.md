@@ -107,7 +107,7 @@ Minimal metadata:
 ```json
 {
   "customColor": "indigo",
-  "folksu_keyColor": -12345678,
+  "finasu_keyColor": -12345678,
   "nightModeEnabled": true,
   "nightModeFollowSys": true,
   "useSystemDynamicColor": false,
@@ -126,7 +126,7 @@ Minimal metadata:
 | Field | Allowed values | FinaSU internal mapping |
 | --- | --- | --- |
 | `customColor` | 20 compatible color tokens | Mapped to preset ARGB |
-| `folksu_keyColor` | 32-bit ARGB integer | Preserves any seed exactly; takes priority over `customColor` |
+| `finasu_keyColor` | 32-bit ARGB integer | Preserves any seed exactly; takes priority over `customColor` |
 | `colorGenerationMode` | `classic` / `custom` | `classic` prefers the FolkPatch color table; `custom` uses MaterialKolor |
 | `colorStandard` | `MD3_2021` / `M3E_2025` | Persisted as `SPEC_2021` / `SPEC_2025` |
 | `colorStyle` | 9 UPPER_SNAKE style names | Converted to `PaletteStyle` names |
@@ -361,7 +361,7 @@ Accepts a JSON boolean and also the case-insensitive strings `true` / `false`. O
 
 ::::: field Number
 @type `Finite value + range`
-Non-finite values are removed; out-of-range values are clamped to the boundary with a warning. `folksu_keyColor` allows the full 32-bit integer range.
+Non-finite values are removed; out-of-range values are clamped to the boundary with a warning. `finasu_keyColor` allows the full 32-bit integer range.
 :::::
 
 ::::: field Enum

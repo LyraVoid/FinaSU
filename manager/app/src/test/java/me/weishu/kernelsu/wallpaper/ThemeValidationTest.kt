@@ -19,7 +19,7 @@ class ThemeValidationTest {
             JSONObject().put("nightModeEnabled", "true"),
             JSONObject().put("musicVolume", 2),
             JSONObject().put("titleImageOffsetX", 3),
-            JSONObject().put("folksu_keyColor", 1.5),
+            JSONObject().put(ThemeSettingsMapping.KEY_COLOR, 1.5),
             JSONObject().put("isBackgroundEnabled", true),
             JSONObject().put("fontMode", "custom"),
             JSONObject().put("isMusicEnabled", true).put("musicFilename", "missing.mp3"),
@@ -38,13 +38,13 @@ class ThemeValidationTest {
 
     @Test fun optAccessorCoercionAndSafeRangesAreNormalized() {
         val json = JSONObject().put("nightModeEnabled", "TRUE").put("musicVolume", "2")
-            .put("titleImageOffsetX", 3).put("folksu_keyColor", 1.5)
+            .put("titleImageOffsetX", 3).put(ThemeSettingsMapping.KEY_COLOR, 1.5)
             .put("backgroundBlur", "invalid").put("isAutoPlayEnabled", 1)
         val warnings = ThemeValidation.validate(json, emptyMap())
         assertTrue(json.getBoolean("nightModeEnabled"))
         assertEquals(1.0, json.getDouble("musicVolume"), 0.0)
         assertEquals(2.0, json.getDouble("titleImageOffsetX"), 0.0)
-        assertEquals(1, json.getInt("folksu_keyColor"))
+        assertEquals(1, json.getInt(ThemeSettingsMapping.KEY_COLOR))
         assertFalse(json.has("backgroundBlur"))
         assertFalse(json.has("isAutoPlayEnabled"))
         assertTrue(warnings.any { it.contains("adjusted") })

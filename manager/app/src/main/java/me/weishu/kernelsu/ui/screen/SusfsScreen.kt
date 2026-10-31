@@ -154,7 +154,7 @@ fun SusfsScreen() {
                         0 -> SusfsOverview(state, config, writable, vm, { ownershipAction = it },
                             { restoreSchema1 = true },
                             { import.launch(arrayOf("application/json", "text/plain")) },
-                            { export.launch("folksu-susfs.json") })
+                            { export.launch("finasu-susfs.json") })
                         1 -> {
                             SusfsBasicPage(config, state.status, writable, vm)
                             SusfsUnameSection(

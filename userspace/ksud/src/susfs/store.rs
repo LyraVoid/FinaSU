@@ -12,13 +12,14 @@ use std::{
     path::Path,
 };
 
-const DIR: &str = "/data/adb/ksu/folksu-susfs";
-const CONFIG: &str = "/data/adb/ksu/folksu-susfs/config.json";
-const CONFIG_V1_BACKUP: &str = "/data/adb/ksu/folksu-susfs/config.v1.backup.json";
-const STATE: &str = "/data/adb/ksu/folksu-susfs/state.json";
-const OWNERSHIP: &str = "/data/adb/ksu/folksu-susfs/ownership.json";
-const SWITCH_BACKUP: &str = "/data/adb/ksu/folksu-susfs/config.switch.backups";
-const SOURCE_BACKUP: &str = "/data/adb/ksu/folksu-susfs/config.source.backups";
+const DIR: &str = "/data/adb/ksu/finasu-susfs";
+const CONFIG: &str = "/data/adb/ksu/finasu-susfs/config.json";
+const CONFIG_V1_BACKUP: &str = "/data/adb/ksu/finasu-susfs/config.v1.backup.json";
+const STATE: &str = "/data/adb/ksu/finasu-susfs/state.json";
+const OWNERSHIP: &str = "/data/adb/ksu/finasu-susfs/ownership.json";
+const SWITCH_BACKUP: &str = "/data/adb/ksu/finasu-susfs/config.switch.backups";
+const SOURCE_BACKUP: &str = "/data/adb/ksu/finasu-susfs/config.source.backups";
+const LEGACY_DIR: &str = "/data/adb/ksu/folksu-susfs";
 
 #[derive(Clone, Default, Serialize, Deserialize)]
 #[serde(deny_unknown_fields)]
@@ -44,6 +45,7 @@ pub struct SkippedControl {
 }
 
 pub fn read_config() -> Result<Config> {
+    ensure_dir()?;
     match read(CONFIG, super::model::MAX_CONFIG) {
         Ok(input) => Config::parse(&input),
         Err(error)
@@ -58,6 +60,7 @@ pub fn read_config() -> Result<Config> {
 }
 
 pub fn read_ownership() -> Result<super::model::Ownership> {
+    ensure_dir()?;
     match read(OWNERSHIP, 4096) {
         Ok(input) => {
             let ownership: super::model::Ownership = serde_json::from_str(&input)?;
@@ -104,6 +107,7 @@ pub fn backup_source(input: &str) -> Result<()> {
 }
 
 fn read_schema1_backup() -> Result<Option<Config>> {
+    ensure_dir()?;
     match read(CONFIG_V1_BACKUP, super::model::MAX_CONFIG) {
         Ok(input) => {
             let config = Config::parse(&input)
@@ -203,6 +207,7 @@ fn read(path: &str, max: usize) -> Result<String> {
 }
 
 pub fn read_state() -> Result<State> {
+    ensure_dir()?;
     let boot_id = fs::read_to_string("/proc/sys/kernel/random/boot_id")?
         .trim()
         .to_owned();
@@ -228,17 +233,39 @@ pub fn read_state() -> Result<State> {
 }
 
 fn ensure_dir() -> Result<()> {
-    match fs::symlink_metadata(DIR) {
-        Ok(md) => {
-            if !md.is_dir() || md.uid() != 0 || md.mode() & 0o077 != 0 {
-                bail!("Unsafe SUSFS config directory");
-            }
-        }
+    ensure_dir_at(Path::new(DIR), Path::new(LEGACY_DIR))
+}
+
+fn ensure_dir_at(directory: &Path, legacy: &Path) -> Result<()> {
+    match fs::symlink_metadata(directory) {
+        Ok(md) => validate_private_dir(directory, &md),
         Err(error) if error.kind() == std::io::ErrorKind::NotFound => {
-            std::os::unix::fs::DirBuilderExt::mode(&mut fs::DirBuilder::new(), 0o700)
-                .create(DIR)?;
+            match fs::symlink_metadata(legacy) {
+                Ok(md) => {
+                    validate_private_dir(legacy, &md)?;
+                    fs::rename(legacy, directory).with_context(|| {
+                        format!("Migrate SUSFS directory to {}", directory.display())
+                    })?;
+                }
+                Err(error) if error.kind() == std::io::ErrorKind::NotFound => {
+                    std::os::unix::fs::DirBuilderExt::mode(&mut fs::DirBuilder::new(), 0o700)
+                        .create(directory)?;
+                }
+                Err(error) => return Err(error.into()),
+            }
+            let parent = directory
+                .parent()
+                .context("SUSFS directory has no parent")?;
+            File::open(parent)?.sync_all()?;
+            Ok(())
         }
-        Err(error) => return Err(error.into()),
+        Err(error) => Err(error.into()),
+    }
+}
+
+fn validate_private_dir(path: &Path, md: &fs::Metadata) -> Result<()> {
+    if !md.is_dir() || md.uid() != 0 || md.mode() & 0o077 != 0 {
+        bail!("Unsafe SUSFS config directory: {}", path.display());
     }
     Ok(())
 }
@@ -378,6 +405,23 @@ pub fn summarize(
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn legacy_directory_is_migrated() {
+        if unsafe { libc::geteuid() } != 0 {
+            return;
+        }
+        let root = tempfile::tempdir().unwrap();
+        let legacy = root.path().join("legacy");
+        let current = root.path().join("current");
+        fs::create_dir(&legacy).unwrap();
+        fs::set_permissions(&legacy, fs::Permissions::from_mode(0o700)).unwrap();
+
+        ensure_dir_at(&current, &legacy).unwrap();
+
+        assert!(!legacy.exists());
+        assert!(current.is_dir());
+    }
 
     #[test]
     fn switch_backup_preserves_distinct_configs_and_detects_tampering() {

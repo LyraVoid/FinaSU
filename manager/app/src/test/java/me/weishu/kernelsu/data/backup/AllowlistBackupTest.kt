@@ -69,6 +69,12 @@ class AllowlistBackupTest {
     }
 
     @Test
+    fun `legacy schema remains readable`() {
+        val json = document.toJson().replace(ALLOWLIST_SCHEMA, LEGACY_ALLOWLIST_SCHEMA)
+        assertEquals(document, AllowlistDocument.fromJson(json).getOrThrow())
+    }
+
+    @Test
     fun `unsupported version yields a typed failure`() {
         val json = document.toJson().replaceFirst("\"version\": 1", "\"version\": 2")
         assertEquals(BackupFormatError.UNSUPPORTED_VERSION, AllowlistDocument.fromJson(json).failureError())

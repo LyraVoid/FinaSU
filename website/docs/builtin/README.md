@@ -169,7 +169,7 @@ UTS View 主要影响之后启动、且仍使用初始 UTS namespace 的进程�
 ├── netisolate.json             # 网络隔离持久配置
 ├── nomount_runtime             # NoMount 最近一次注入结果
 ├── nomount_uids                # NoMount 例外 UID
-└── folksu-susfs/               # SUSFS 对接配置与状态
+└── finasu-susfs/               # SUSFS 对接配置与状态
 ```
 
 这些文件用于诊断，不是手工配置入口。直接编辑可能绕过校验、锁和事务回滚，导致管理器显示与内核实际状态不一致。

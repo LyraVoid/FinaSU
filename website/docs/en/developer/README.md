@@ -76,7 +76,7 @@ The lower a layer sits, the closer it is to the kernel, and the wider the impact
 ## Repository Map
 
 ```file-tree title="Development Directories"
-FolkSU
+FinaSU
 ├── kernel/
 │   ├── include/uapi/          # kernel-side UAPI definitions
 │   ├── supercall/             # ioctl dispatch and permissions

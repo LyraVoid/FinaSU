@@ -274,7 +274,7 @@ class BackupEngineTest {
             metaFileName = moduleMetaFileName(fileName),
             bytes = bytes,
             sha256 = bytes.sha256(),
-            metaJson = """{"schema":"folksu.module.backup","version":1}""",
+            metaJson = """{"schema":"$MODULE_BACKUP_SCHEMA","version":$BACKUP_FORMAT_VERSION}""",
         )
     }
 }

@@ -2,19 +2,20 @@
 set -eu
 
 GKI_ROOT=$(pwd)
-FOLKSU_URL="${FOLKSU_URL:-https://github.com/LyraVoid/FinaSU.git}"
-FOLKSU_REF="${FOLKSU_REF:-dev}"
-FOLKSU_KEEP_SOURCE="${FOLKSU_KEEP_SOURCE:-0}"
+FINASU_URL="${FINASU_URL:-${FOLKSU_URL:-https://github.com/LyraVoid/FinaSU.git}}"
+FINASU_REF="${FINASU_REF:-${FOLKSU_REF:-dev}}"
+FINASU_DIR="${FINASU_DIR:-${FOLKSU_DIR:-}}"
+FINASU_KEEP_SOURCE="${FINASU_KEEP_SOURCE:-${FOLKSU_KEEP_SOURCE:-0}}"
 
 display_usage() {
     echo "Usage: $0 [--cleanup] [--dir <path>] [<commit-or-tag>]"
     echo "  --cleanup:              Reverts the changes made by this script."
     echo "  --dir <path>:           Uses an existing FinaSU checkout instead of cloning."
-    echo "  <commit-or-tag>:        Checks out the given ref (default: \$FOLKSU_REF, $FOLKSU_REF)."
+    echo "  <commit-or-tag>:        Checks out the given ref (default: \$FINASU_REF, $FINASU_REF)."
     echo "  -h, --help:             Displays this usage information."
     echo "  (no args):              Clones or updates FinaSU and hooks it into the kernel tree."
     echo ""
-    echo "Environment: FOLKSU_URL, FOLKSU_REF, FOLKSU_DIR, FOLKSU_KEEP_SOURCE"
+    echo "Environment: FINASU_URL, FINASU_REF, FINASU_DIR, FINASU_KEEP_SOURCE"
     echo "Run this from the kernel source root (the directory that contains drivers/)."
 }
 
@@ -46,21 +47,21 @@ perform_cleanup() {
         sed -i '/drivers\/kernelsu\/Kconfig/d' "$DRIVER_KCONFIG"
         echo "[-] Kconfig reverted."
     fi
-    if [ -d "$GKI_ROOT/FinaSU" ] && [ "$FOLKSU_KEEP_SOURCE" != "1" ]; then
+    if [ -d "$GKI_ROOT/FinaSU" ] && [ "$FINASU_KEEP_SOURCE" != "1" ]; then
         rm -rf "$GKI_ROOT/FinaSU"
         echo "[-] FinaSU directory deleted."
     fi
 }
 
 setup_finasu() {
-    ref="${1:-$FOLKSU_REF}"
+    ref="${1:-$FINASU_REF}"
 
-    if [ -n "${FOLKSU_DIR:-}" ]; then
-        SRC_DIR="$FOLKSU_DIR"
+    if [ -n "$FINASU_DIR" ]; then
+        SRC_DIR="$FINASU_DIR"
     else
         SRC_DIR="$GKI_ROOT/FinaSU"
         if [ ! -d "$SRC_DIR" ]; then
-            git clone "$FOLKSU_URL" "$SRC_DIR"
+            git clone "$FINASU_URL" "$SRC_DIR"
         fi
         cd "$SRC_DIR"
         git fetch origin --tags || true
@@ -118,7 +119,7 @@ else
                 echo "[ERROR] --dir requires a path."
                 exit 127
             }
-            FOLKSU_DIR="$1"
+            FINASU_DIR="$1"
             ;;
         -*)
             echo "[ERROR] Unknown option: $1"

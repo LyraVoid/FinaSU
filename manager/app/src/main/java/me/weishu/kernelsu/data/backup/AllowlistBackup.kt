@@ -5,7 +5,9 @@ import org.json.JSONArray
 import org.json.JSONObject
 
 /** Schema identifier of an allow-list export document. */
-const val ALLOWLIST_SCHEMA = "folksu.allowlist"
+const val ALLOWLIST_SCHEMA = "finasu.allowlist"
+
+internal const val LEGACY_ALLOWLIST_SCHEMA = "folksu.allowlist"
 
 /** Highest supported allow-list namespace ordinal. */
 private const val NAMESPACE_MAX = 2
@@ -76,7 +78,7 @@ data class AllowlistDocument(
         /** Parses and validates a document, returning a typed failure instead of throwing. */
         fun fromJson(json: String): Result<AllowlistDocument> = parseBackupDocument {
             val obj = parseBackupObject(json)
-            obj.requireSchemaVersion(ALLOWLIST_SCHEMA)
+            obj.requireSchemaVersion(ALLOWLIST_SCHEMA, LEGACY_ALLOWLIST_SCHEMA)
             val array = obj.optJSONArray("entries")
                 ?: throw BackupFormatException(BackupFormatError.MALFORMED, "missing entries array")
             val entries = ArrayList<AllowlistEntryDto>(array.length())

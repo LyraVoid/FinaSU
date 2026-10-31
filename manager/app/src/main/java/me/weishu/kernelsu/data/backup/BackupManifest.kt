@@ -8,13 +8,17 @@ import org.json.JSONObject
 const val BACKUP_FORMAT_VERSION = 1
 
 /** Schema identifier of a module backup sidecar. */
-const val MODULE_BACKUP_SCHEMA = "folksu.module.backup"
+const val MODULE_BACKUP_SCHEMA = "finasu.module.backup"
 
 /** Schema identifier of a boot image backup sidecar. */
-const val BOOT_BACKUP_SCHEMA = "folksu.boot.backup"
+const val BOOT_BACKUP_SCHEMA = "finasu.boot.backup"
 
 /** Schema identifier of the optional remote index document. */
-const val BACKUP_MANIFEST_SCHEMA = "folksu.backup.manifest"
+const val BACKUP_MANIFEST_SCHEMA = "finasu.backup.manifest"
+
+internal const val LEGACY_MODULE_BACKUP_SCHEMA = "folksu.module.backup"
+internal const val LEGACY_BOOT_BACKUP_SCHEMA = "folksu.boot.backup"
+internal const val LEGACY_BACKUP_MANIFEST_SCHEMA = "folksu.backup.manifest"
 
 /**
  * Sidecar metadata for a module archive.
@@ -58,7 +62,7 @@ data class ModuleBackupMeta(
         /** Parses a sidecar document, returning a typed failure instead of throwing. */
         fun fromJson(json: String): Result<ModuleBackupMeta> = parseBackupDocument {
             val obj = parseBackupObject(json)
-            obj.requireSchemaVersion(MODULE_BACKUP_SCHEMA)
+            obj.requireSchemaVersion(MODULE_BACKUP_SCHEMA, LEGACY_MODULE_BACKUP_SCHEMA)
             ModuleBackupMeta(
                 moduleId = obj.requireString("moduleId"),
                 name = obj.optString("name", ""),
@@ -106,7 +110,7 @@ data class BootBackupMeta(
         /** Parses a sidecar document, returning a typed failure instead of throwing. */
         fun fromJson(json: String): Result<BootBackupMeta> = parseBackupDocument {
             val obj = parseBackupObject(json)
-            obj.requireSchemaVersion(BOOT_BACKUP_SCHEMA)
+            obj.requireSchemaVersion(BOOT_BACKUP_SCHEMA, LEGACY_BOOT_BACKUP_SCHEMA)
             BootBackupMeta(
                 partition = obj.requireString("partition"),
                 sha1 = obj.requireString("sha1"),
@@ -163,7 +167,7 @@ data class BackupManifest(
         /** Parses an index document, returning a typed failure instead of throwing. */
         fun fromJson(json: String): Result<BackupManifest> = parseBackupDocument {
             val obj = parseBackupObject(json)
-            obj.requireSchemaVersion(BACKUP_MANIFEST_SCHEMA)
+            obj.requireSchemaVersion(BACKUP_MANIFEST_SCHEMA, LEGACY_BACKUP_MANIFEST_SCHEMA)
             val array = obj.optJSONArray("entries") ?: JSONArray()
             val entries = ArrayList<BackupManifestEntry>(array.length())
             for (index in 0 until array.length()) {
@@ -201,10 +205,13 @@ internal fun parseBackupObject(json: String): JSONObject = try {
     throw BackupFormatException(BackupFormatError.MALFORMED, "invalid JSON document", e)
 }
 
-/** Rejects documents whose `schema`/`version` pair is not [expectedSchema]/[BACKUP_FORMAT_VERSION]. */
-internal fun JSONObject.requireSchemaVersion(expectedSchema: String) {
+/** Rejects documents whose `schema`/`version` pair is not accepted by this build. */
+internal fun JSONObject.requireSchemaVersion(
+    expectedSchema: String,
+    vararg legacySchemas: String,
+) {
     val schema = optString("schema", "")
-    if (schema != expectedSchema) {
+    if (schema != expectedSchema && schema !in legacySchemas) {
         throw BackupFormatException(
             BackupFormatError.UNSUPPORTED_SCHEMA,
             "expected schema '$expectedSchema' but found '$schema'",

@@ -76,7 +76,7 @@ flowchart TD
 ## 仓库导航
 
 ```file-tree title="开发相关目录"
-FolkSU
+FinaSU
 ├── kernel/
 │   ├── include/uapi/          # 内核侧 UAPI 定义
 │   ├── supercall/             # ioctl 分发与权限

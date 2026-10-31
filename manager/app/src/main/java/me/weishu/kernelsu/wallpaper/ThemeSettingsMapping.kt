@@ -12,6 +12,9 @@ import org.json.JSONObject
 
 /** Protocol names map onto the existing settings repository; no second settings store. */
 internal object ThemeSettingsMapping {
+    internal const val KEY_COLOR = "finasu_keyColor"
+    internal const val LEGACY_KEY_COLOR = "folksu_keyColor"
+
     // FP applies these defaults for old/config-only themes. Language is intentionally absent:
     // a missing language field keeps the user's locale, while an explicit empty field resets it.
     val importDefaults: Map<String, Any> = mapOf(
@@ -40,7 +43,7 @@ internal object ThemeSettingsMapping {
         val color = colors.entries.firstOrNull { it.value == repo.keyColor }?.key
         json.put("customColor", color ?: "indigo")
         // Arbitrary FinaSU seeds have no FP catalog token. Keep the exact value in an extension.
-        json.put("folksu_keyColor", repo.keyColor)
+        json.put(KEY_COLOR, repo.keyColor)
         json.put("nightModeEnabled", mode.isDark)
         json.put("nightModeFollowSys", mode.isSystem)
         json.put("useSystemDynamicColor", repo.useSystemDynamicColor)
@@ -57,7 +60,10 @@ internal object ThemeSettingsMapping {
 
     fun apply(json: JSONObject, repo: SettingsRepository = SettingsRepositoryImpl()) {
         if (json.has("customColor")) colors[json.optString("customColor")]?.let { repo.keyColor = it }
-        if (json.has("folksu_keyColor")) repo.keyColor = json.getInt("folksu_keyColor")
+        when {
+            json.has(KEY_COLOR) -> repo.keyColor = json.getInt(KEY_COLOR)
+            json.has(LEGACY_KEY_COLOR) -> repo.keyColor = json.getInt(LEGACY_KEY_COLOR)
+        }
         if (json.has("nightModeEnabled") || json.has("nightModeFollowSys")) {
             val current = ColorMode.fromValue(repo.themeMode)
             repo.themeMode = when {

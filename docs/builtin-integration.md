@@ -27,7 +27,7 @@ Run from the kernel source root (the directory that contains `drivers/`, or
 `common/` for GKI trees):
 
 ```sh
-./kernel/setup.sh                 # default: clone FinaSU, checkout ${FOLKSU_REF:-dev}
+./kernel/setup.sh                 # default: clone FinaSU, checkout ${FINASU_REF:-dev}
 ./kernel/setup.sh v1.0.7          # or an explicit tag/commit
 ./kernel/setup.sh --dir /path/to/FinaSU
 ./kernel/setup.sh --cleanup

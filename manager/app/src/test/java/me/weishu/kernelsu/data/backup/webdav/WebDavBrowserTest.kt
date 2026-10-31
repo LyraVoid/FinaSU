@@ -64,7 +64,7 @@ class WebDavBrowserTest {
         val transport = TestWebDavTransport(basePath)
         val payload = ByteArray(32 * 1024) { (it % 97).toByte() }
         transport.files["/dav/FinaSU/boot/big.img"] = payload
-        val target = File.createTempFile("folksu-browser-", ".img")
+        val target = File.createTempFile("finasu-browser-", ".img")
 
         runBlocking { browser(transport).downloadTo("boot/big.img", target) }.getOrThrow()
 

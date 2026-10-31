@@ -106,7 +106,7 @@ The export dialog requires a non-empty name and lets you choose phone or tablet.
 ```json
 {
   "customColor": "indigo",
-  "folksu_keyColor": -12345678,
+  "finasu_keyColor": -12345678,
   "nightModeEnabled": true,
   "nightModeFollowSys": true,
   "useSystemDynamicColor": false,

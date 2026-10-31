@@ -126,7 +126,7 @@ flowchart TD
 ## 源码布局
 
 ```file-tree title="UAPI 与调用方"
-FolkSU
+FinaSU
 ├── kernel/include/uapi/
 │   ├── supercall.h
 │   ├── app_profile.h

@@ -73,7 +73,8 @@ object ThemeExportService {
                 }
                 // Retain unknown color tokens unless the user changed the mapped setting.
                 if (original.has("customColor") &&
-                    ThemeSettingsMapping.colors[original.optString("customColor")] == json.optInt("folksu_keyColor")) {
+                    ThemeSettingsMapping.colors[original.optString("customColor")] ==
+                    json.optInt(ThemeSettingsMapping.KEY_COLOR)) {
                     json.put("customColor", original.get("customColor"))
                 }
                 val entries = linkedMapOf<String, File>()

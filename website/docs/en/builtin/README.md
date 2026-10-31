@@ -169,7 +169,7 @@ Different features use different verification standards. For example FolkZygisk 
 ├── netisolate.json             # Network Isolation persistent configuration
 ├── nomount_runtime             # last NoMount injection result
 ├── nomount_uids                # NoMount exception UIDs
-└── folksu-susfs/               # SUSFS integration configuration and state
+└── finasu-susfs/               # SUSFS integration configuration and state
 ```
 
 These files are for diagnostics, not manual configuration entry points. Editing them directly can bypass validation, locks and transaction rollback, causing the Manager display to differ from the kernel's actual state.

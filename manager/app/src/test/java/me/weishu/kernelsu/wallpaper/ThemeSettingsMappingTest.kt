@@ -55,7 +55,12 @@ class ThemeSettingsMappingTest {
         ThemeSettingsMapping.apply(JSONObject(), repository(values))
         assertEquals(mapOf("themeMode" to 6, "keyColor" to 1234), values)
         ThemeSettingsMapping.apply(JSONObject().put("customColor", "blue")
-            .put("folksu_keyColor", -12345), repository(values))
+            .put(ThemeSettingsMapping.KEY_COLOR, -12345), repository(values))
         assertEquals(-12345, values["keyColor"])
+        ThemeSettingsMapping.apply(
+            JSONObject().put(ThemeSettingsMapping.LEGACY_KEY_COLOR, -54321),
+            repository(values),
+        )
+        assertEquals(-54321, values["keyColor"])
     }
 }

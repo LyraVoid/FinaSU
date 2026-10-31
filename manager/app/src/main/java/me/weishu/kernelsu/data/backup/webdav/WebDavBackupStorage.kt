@@ -55,7 +55,7 @@ class WebDavBackupStorage(
     }
 
     override suspend fun open(relativePath: String): Result<BackupContent> = backupResult {
-        val target = File.createTempFile("folksu-restore-", ".tmp")
+        val target = File.createTempFile("finasu-restore-", ".tmp")
         try {
             val response = transport.getToFile(resolve(relativePath), target)
             if (!response.isSuccessful) {

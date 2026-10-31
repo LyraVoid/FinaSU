@@ -33,7 +33,7 @@ class LocalBackupStorage(
 
     override suspend fun test(): Result<Unit> = withContext(Dispatchers.IO) {
         backupResult {
-            val probe = "folksu_probe.tmp"
+            val probe = "finasu_probe.tmp"
             put(probe, ByteArray(0)).getOrThrow()
             delete(probe).getOrThrow()
         }
