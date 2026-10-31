@@ -49,7 +49,7 @@
     <string name="susfs_static_readonly">静态规则 · 暂不支持编辑和应用</string>
     <string name="susfs_static_add">添加静态元数据规则</string>
     <string name="susfs_static_title">静态元数据规则</string>
-    <string name="susfs_static_hint">留空的字段保持原值；当前 provider 仅开放已验证的大小和变更时间秒数。应用成功不代表目标应用效果已验证。</string>
+    <string name="susfs_static_hint">请选择大小或变更时间秒数中的一项，另一项留空。应用成功不代表目标应用效果已验证；当前 provider 要求 kstat 规则表为空。</string>
     <string name="susfs_static_unsupported">当前 provider 不支持已核验的静态元数据控制。</string>
     <string name="susfs_static_size">显示的大小（字节，可选）</string>
     <string name="susfs_static_ctime">显示的变更时间（Unix 秒，可选）</string>

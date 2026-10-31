@@ -117,7 +117,7 @@ pub fn static_kstat_payload(
 ) -> Result<Kstat> {
     use std::os::unix::fs::MetadataExt;
     fields.validate()?;
-    if fields.flags() & !0x108 != 0 {
+    if !matches!(fields.flags(), 0x8 | 0x100) {
         bail!("Static kstat field is not verified for this provider");
     }
     Ok(Kstat {
@@ -201,19 +201,23 @@ mod tests {
         let metadata = file.as_file().metadata().unwrap();
         let fields = super::super::model::StaticKstat {
             size: Some(0),
-            ctime_sec: Some(-1),
             ..Default::default()
         };
         let payload = static_kstat_payload("/data/test", &fields, &metadata).unwrap();
         assert_eq!(payload.size, 0);
-        assert_eq!(payload.ctime_sec, -1);
-        assert_eq!(payload.flags, 0x108);
+        assert_eq!(payload.flags, 0x8);
         assert_eq!(payload.err, 126);
         let unsupported = super::super::model::StaticKstat {
             ino: Some(1),
             ..Default::default()
         };
         assert!(static_kstat_payload("/data/test", &unsupported, &metadata).is_err());
+        let combined = super::super::model::StaticKstat {
+            size: Some(0),
+            ctime_sec: Some(-1),
+            ..Default::default()
+        };
+        assert!(static_kstat_payload("/data/test", &combined, &metadata).is_err());
     }
     #[test]
     fn arm64_layouts() {

@@ -33,6 +33,13 @@ data class SusfsApplyReport(
 }
 
 object SusfsInputs {
+    private fun sameJson(left: Any?, right: Any?): Boolean = when {
+        left is JSONObject && right is JSONObject -> left.length() == right.length() &&
+            left.keys().asSequence().all { right.has(it) && sameJson(left.get(it), right.get(it)) }
+        left is org.json.JSONArray && right is org.json.JSONArray -> left.length() == right.length() &&
+            (0 until left.length()).all { sameJson(left.get(it), right.get(it)) }
+        else -> left == right
+    }
     fun validPath(value: String): Boolean = value.startsWith("/") && value != "/" &&
         value.toByteArray(Charsets.UTF_8).size < 256 && !value.contains("//") &&
         value.none { it.isWhitespace() || it.isISOControl() } &&
@@ -60,9 +67,7 @@ object SusfsInputs {
                 current.getString("path") == expected.getString("path")
         } ?: error("Rule changed elsewhere; refresh before editing")
         val current = rules.getJSONObject(index)
-        require(current.length() == expected.length() && expected.keys().asSequence().all {
-            current.has(it) && current.get(it) == expected.get(it)
-        }) { "Rule changed elsewhere; refresh before editing" }
+        require(sameJson(current, expected)) { "Rule changed elsewhere; refresh before editing" }
         if (replacement == null) rules.remove(index) else rules.put(index, replacement)
     }
 

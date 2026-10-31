@@ -362,6 +362,22 @@ fn apply_with_state(
         report.pending_reboot.push(key.clone());
     }
     for (key, value) in &desired {
+        let other_kstat = key
+            .strip_prefix("kstat:")
+            .map(|path| format!("static_kstat:{path}"))
+            .or_else(|| {
+                key.strip_prefix("static_kstat:")
+                    .map(|path| format!("kstat:{path}"))
+            });
+        if other_kstat.as_ref().is_some_and(|other| {
+            state.applied.contains_key(other)
+                || state.snapshots.contains_key(other)
+                || state.uncertain.contains_key(other)
+                || state.kstat_pending.contains(other)
+        }) {
+            report.pending_reboot.push(key.clone());
+            continue;
+        }
         if state.applied.get(key) == Some(value) {
             continue;
         }
@@ -505,6 +521,35 @@ mod tests {
         assert!(!kstat_table_empty(""));
         assert!(!kstat_table_empty("/data/test ino=1 dev=1 flags=0x8\n"));
         assert!(!kstat_table_empty("unexpected output"));
+    }
+
+    #[test]
+    fn changing_kstat_kind_requires_reboot_before_writing() {
+        let mut config = Config {
+            schema: 2,
+            ..Config::default()
+        };
+        config.rules.push(Rule::StaticKstat {
+            path: "/data/test".to_owned(),
+            fields: super::super::model::StaticKstat {
+                size: Some(1),
+                ..Default::default()
+            },
+        });
+        let mut state = State::default();
+        state
+            .snapshots
+            .insert("kstat:/data/test".to_owned(), "old".to_owned());
+        let report = apply_with_state(
+            &config,
+            Stage::Live,
+            state,
+            |_| Ok(()),
+            |_, _, _, _| panic!("must not replace an existing kstat rule"),
+        )
+        .unwrap();
+        assert_eq!(report.status, "pending_reboot");
+        assert_eq!(report.pending_reboot, ["static_kstat:/data/test"]);
     }
 
     #[test]

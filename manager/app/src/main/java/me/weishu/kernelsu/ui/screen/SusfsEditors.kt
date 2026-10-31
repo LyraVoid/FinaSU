@@ -263,7 +263,7 @@ private fun SusfsStaticKstatDialog(original: String?, writable: Boolean, dismiss
     var path by remember(original) { mutableStateOf(rule?.optString("path").orEmpty()) }
     var size by remember(original) { mutableStateOf(fields?.opt("size")?.takeUnless { it == JSONObject.NULL }?.toString().orEmpty()) }
     var ctime by remember(original) { mutableStateOf(fields?.opt("ctime_sec")?.takeUnless { it == JSONObject.NULL }?.toString().orEmpty()) }
-    val valid = SusfsInputs.validPath(path) && (size.isNotBlank() || ctime.isNotBlank()) &&
+    val valid = SusfsInputs.validPath(path) && (size.isNotBlank() xor ctime.isNotBlank()) &&
         (size.isBlank() || size.toLongOrNull()?.let { it >= 0 } == true) &&
         (ctime.isBlank() || ctime.toLongOrNull() != null)
     SusfsForm(stringResource(R.string.susfs_static_title), dismiss, writable && valid, {

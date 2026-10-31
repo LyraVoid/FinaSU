@@ -44,6 +44,13 @@ class SusfsPresentationTest {
         assertThrows(IllegalArgumentException::class.java) { SusfsInputs.replaceRule(config, original, null) }
         assertEquals(1, config.getJSONArray("rules").length())
     }
+    @Test fun `nested static fields are compared by value`() {
+        val original = """{"kind":"static_kstat","path":"/a","fields":{"size":3}}"""
+        val config = JSONObject("""{"rules":[$original]}""")
+        SusfsInputs.replaceRule(config, original, JSONObject("""{"kind":"static_kstat","path":"/a","fields":{"size":4}}"""))
+        assertEquals(4, config.getJSONArray("rules").getJSONObject(0).getJSONObject("fields").getInt("size"))
+        assertThrows(IllegalArgumentException::class.java) { SusfsInputs.replaceRule(config, original, null) }
+    }
     @Test fun `import preview never implies complete daemon validation`() {
         val json = """{"schema":1,"automatic":true,"settings":{},"rules":[],"lkm":{"hidden_modules":[],"mount_prefixes":[]},"unknown":1}"""
         assertTrue(SusfsInputs.preview(json).getBoolean("automatic"))

@@ -49,7 +49,7 @@
     <string name="susfs_static_readonly">Static rule · editing and application are not yet available</string>
     <string name="susfs_static_add">Add static metadata rule</string>
     <string name="susfs_static_title">Static metadata rule</string>
-    <string name="susfs_static_hint">Leave fields blank to preserve them. This provider currently supports verified size and change-time seconds only. Applying does not verify the target app effect.</string>
+    <string name="susfs_static_hint">Specify either size or change-time seconds; leave the other blank. Applying does not verify the target app effect. This provider currently requires an empty kstat rule table.</string>
     <string name="susfs_static_unsupported">Static metadata control is unavailable for this provider.</string>
     <string name="susfs_static_size">Reported size in bytes (optional)</string>
     <string name="susfs_static_ctime">Reported change time in Unix seconds (optional)</string>
