@@ -39,6 +39,12 @@
     <string name="susfs_uname">Spoof uname</string>
     <string name="susfs_cmdline">Spoof cmdline / bootconfig</string>
     <string name="susfs_add_rule">Add rule</string>
+    <string name="susfs_batch_add">Add multiple rules</string>
+    <string name="susfs_batch_hint">Enter one absolute path per line. The files are saved together after every line passes validation.</string>
+    <string name="susfs_batch_redirect_hint">Enter one source -&gt; destination pair per line. Every pair uses the selected redirect scope.</string>
+    <string name="susfs_batch_input">Rules, one per line</string>
+    <string name="susfs_batch_count">%1$d rules ready to save</string>
+    <string name="susfs_batch_empty">Enter at least one valid rule.</string>
     <string name="susfs_edit_rule">Edit saved rule</string>
     <string name="susfs_empty">No rules saved</string>
     <string name="susfs_path">Path</string>

@@ -5,6 +5,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.AltRoute
+import androidx.compose.material.icons.automirrored.rounded.PlaylistAdd
 import androidx.compose.material.icons.rounded.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -199,6 +200,7 @@ internal fun SusfsRuleSection(kind: String, config: JSONObject?, status: SusfsSt
     var original by remember { mutableStateOf<String?>(null) }
     var deleting by remember { mutableStateOf<String?>(null) }
     var editingStatic by remember { mutableStateOf(false) }
+    var batchAdding by remember { mutableStateOf(false) }
     val capability = when (kind) { "path" -> "SUS_PATH"; "map" -> "SUS_MAP"; "kstat" -> "SUS_KSTAT"; else -> "OPEN_REDIRECT" }
     val supported = status.supports(capability)
     val hint = when (kind) { "path" -> R.string.susfs_path_hint; "map" -> R.string.susfs_map_hint
@@ -219,6 +221,11 @@ internal fun SusfsRuleSection(kind: String, config: JSONObject?, status: SusfsSt
             headlineContent = { Text(stringResource(R.string.susfs_add_rule)) },
             supportingContent = { Text(susfsDisabledReason(status, supported) ?: stringResource(hint)) },
             leadingContent = { Icon(Icons.Rounded.Add, null) }) }
+        if (kind != "kstat") item { SegmentedListItem(enabled = writable && supported, onClick = { batchAdding = true },
+            headlineContent = { Text(stringResource(R.string.susfs_batch_add)) },
+            supportingContent = { Text(susfsDisabledReason(status, supported) ?: stringResource(
+                if (kind == "redirect") R.string.susfs_batch_redirect_hint else R.string.susfs_batch_hint)) },
+            leadingContent = { Icon(Icons.AutoMirrored.Rounded.PlaylistAdd, null) }) }
         entries.forEach { rule -> item(key = rule.getString("path")) {
             SegmentedListItem(enabled = writable && supported && (rule.getString("kind") != "static_kstat" ||
                 (status.staticKstatSupported && rule.getJSONObject("fields").keys().asSequence().all { it in setOf("size", "ctime_sec") || rule.getJSONObject("fields").isNull(it) })), onClick = {
@@ -251,9 +258,48 @@ internal fun SusfsRuleSection(kind: String, config: JSONObject?, status: SusfsSt
         }
         editingStatic = false
     }
+    if (batchAdding) SusfsBatchRuleDialog(kind, writable && supported, { batchAdding = false }) { additions ->
+        vm.change { SusfsInputs.addRules(it, additions) }
+        batchAdding = false
+    }
     deleting?.let { text -> SusfsDeleteDialog(JSONObject(text).getString("path"), writable, { deleting = null }) {
         vm.change { SusfsInputs.replaceRule(it, text, null) }; deleting = null
     } }
+}
+
+@Composable
+private fun SusfsBatchRuleDialog(kind: String, writable: Boolean, dismiss: () -> Unit, save: (List<JSONObject>) -> Unit) {
+    var text by remember { mutableStateOf("") }
+    var uid by remember { mutableIntStateOf(0) }
+    var looping by remember { mutableStateOf(false) }
+    val parsed = remember(kind, text, uid, looping) {
+        runCatching { SusfsInputs.batchRules(kind, text, uid, looping) }
+    }
+    SusfsForm(stringResource(R.string.susfs_batch_add), dismiss, writable && parsed.isSuccess, {
+        save(parsed.getOrThrow())
+    }) {
+        Text(stringResource(if (kind == "redirect") R.string.susfs_batch_redirect_hint else R.string.susfs_batch_hint))
+        OutlinedTextField(text, { text = it }, modifier = Modifier.fillMaxWidth(), minLines = 5,
+            label = { Text(stringResource(R.string.susfs_batch_input)) },
+            placeholder = { Text(if (kind == "redirect") "/source -> /destination\n/source2 -> /destination2"
+                else "/data/local/tmp/example\n/system/example") })
+        if (kind == "redirect") {
+            Text(stringResource(R.string.susfs_uid_selection), style = MaterialTheme.typography.titleSmall)
+            SegmentedColumn { (0..2).forEach { value -> item {
+                SegmentedListItem(selected = uid == value, onClick = { uid = value },
+                    headlineContent = { Text(susfsUidLabel(value)) }, trailingContent = { RadioButton(uid == value, null) })
+            } } }
+        }
+        if (kind == "path") {
+            SegmentedColumn { item { SegmentedSwitchItem(title = stringResource(R.string.susfs_loop),
+                summary = stringResource(R.string.susfs_loop_hint), checked = looping, onCheckedChange = { looping = it }) } }
+        }
+        parsed.fold(
+            onSuccess = { Text(stringResource(R.string.susfs_batch_count, it.size)) },
+            onFailure = { Text(it.message ?: stringResource(R.string.susfs_batch_empty), color = MaterialTheme.colorScheme.error) },
+        )
+        Text(stringResource(R.string.susfs_removal_hint), style = MaterialTheme.typography.bodySmall)
+    }
 }
 
 @Composable

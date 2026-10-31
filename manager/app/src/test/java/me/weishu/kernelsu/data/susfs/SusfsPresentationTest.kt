@@ -58,4 +58,27 @@ class SusfsPresentationTest {
         assertThrows(IllegalArgumentException::class.java) { SusfsInputs.preview(json.replace("\"schema\":1", "\"schema\":3")) }
         assertThrows(IllegalArgumentException::class.java) { SusfsInputs.preview(" ".repeat(128 * 1024 + 1)) }
     }
+    @Test fun `batch path rules ignore blanks and preserve shared options`() {
+        val rules = SusfsInputs.batchRules("path", " /a \n\n/b ", looping = true)
+        assertEquals(listOf("/a", "/b"), rules.map { it.getString("path") })
+        assertTrue(rules.all { it.getBoolean("looping") })
+    }
+    @Test fun `batch redirect rules require source destination pairs`() {
+        val rules = SusfsInputs.batchRules("redirect", "/a -> /b\n/c -> /d", uidScheme = 2)
+        assertEquals(listOf("/a", "/c"), rules.map { it.getString("path") })
+        assertEquals(listOf("/b", "/d"), rules.map { it.getString("destination") })
+        assertTrue(rules.all { it.getInt("uid_scheme") == 2 })
+        assertThrows(IllegalArgumentException::class.java) { SusfsInputs.batchRules("redirect", "/a") }
+        assertThrows(IllegalArgumentException::class.java) { SusfsInputs.batchRules("redirect", "a -> /b") }
+        assertThrows(IllegalArgumentException::class.java) { SusfsInputs.batchRules("redirect", "/a -> /a") }
+    }
+    @Test fun `batch additions are atomic and reject duplicates`() {
+        val config = JSONObject("""{"rules":[{"kind":"path","path":"/a"}]}""")
+        SusfsInputs.addRules(config, SusfsInputs.batchRules("path", "/b\n/c"))
+        assertEquals(3, config.getJSONArray("rules").length())
+        assertThrows(IllegalArgumentException::class.java) {
+            SusfsInputs.addRules(config, SusfsInputs.batchRules("path", "/c\n/d"))
+        }
+        assertEquals(3, config.getJSONArray("rules").length())
+    }
 }

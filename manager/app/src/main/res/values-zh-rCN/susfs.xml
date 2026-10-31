@@ -39,6 +39,12 @@
     <string name="susfs_uname">伪装 uname</string>
     <string name="susfs_cmdline">伪装 cmdline / bootconfig</string>
     <string name="susfs_add_rule">添加规则</string>
+    <string name="susfs_batch_add">批量添加规则</string>
+    <string name="susfs_batch_hint">每行输入一个绝对路径；所有行校验通过后一次性保存。</string>
+    <string name="susfs_batch_redirect_hint">每行输入一对“源路径 -&gt; 目标路径”，所有规则使用所选重定向范围。</string>
+    <string name="susfs_batch_input">规则（每行一条）</string>
+    <string name="susfs_batch_count">已解析 %1$d 条规则</string>
+    <string name="susfs_batch_empty">请输入至少一条有效规则。</string>
     <string name="susfs_edit_rule">编辑已保存规则</string>
     <string name="susfs_empty">尚未保存规则</string>
     <string name="susfs_path">路径</string>

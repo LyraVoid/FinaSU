@@ -33,6 +33,8 @@ data class SusfsApplyReport(
 }
 
 object SusfsInputs {
+    private const val MAX_RULES = 128
+
     private fun sameJson(left: Any?, right: Any?): Boolean = when {
         left is JSONObject && right is JSONObject -> left.length() == right.length() &&
             left.keys().asSequence().all { right.has(it) && sameJson(left.get(it), right.get(it)) }
@@ -51,6 +53,58 @@ object SusfsInputs {
     fun validCmdline(value: String): Boolean = value.isNotBlank() &&
         value.toByteArray(Charsets.UTF_8).size < 8192 &&
         value.none { it.isISOControl() && it != '\n' && it != '\t' }
+
+    fun batchRules(
+        kind: String,
+        text: String,
+        uidScheme: Int = 0,
+        looping: Boolean = false,
+    ): List<JSONObject> {
+        require(kind in setOf("path", "map", "redirect")) { "Batch entry is unsupported for this rule type" }
+        require(kind != "redirect" || uidScheme in 0..2) { "Select a verified redirect scope" }
+        val lines = text.lineSequence().map(String::trim).filter(String::isNotEmpty).toList()
+        require(lines.isNotEmpty()) { "Enter at least one rule" }
+        require(lines.size <= MAX_RULES) { "Too many rules" }
+        val paths = mutableSetOf<String>()
+        return lines.map { line ->
+            val path: String
+            val destination: String?
+            if (kind == "redirect") {
+                val parts = line.split(Regex("\\s+->\\s+"), limit = 2)
+                require(parts.size == 2) { "Redirect rules must use source -> destination" }
+                path = parts[0]
+                destination = parts[1]
+            } else {
+                path = line
+                destination = null
+            }
+            require(validPath(path)) { "Invalid path: $path" }
+            require(paths.add(path)) { "Duplicate path: $path" }
+            if (destination == null) {
+                JSONObject().put("kind", kind).put("path", path)
+                    .apply { if (kind == "path") put("looping", looping) }
+            } else {
+                require(validPath(destination) && destination != path) { "Invalid redirect: $line" }
+                JSONObject().put("kind", kind).put("path", path)
+                    .put("destination", destination).put("uid_scheme", uidScheme)
+            }
+        }
+    }
+
+    fun addRules(config: JSONObject, additions: List<JSONObject>) {
+        val rules = config.getJSONArray("rules")
+        require(rules.length() + additions.size <= MAX_RULES) { "Too many rules" }
+        val identities = (0 until rules.length()).map {
+            val rule = rules.getJSONObject(it)
+            rule.getString("kind") to rule.getString("path")
+        }.toMutableSet()
+        additions.forEach { rule ->
+            require(identities.add(rule.getString("kind") to rule.getString("path"))) {
+                "Rule already exists: ${rule.getString("path")}"
+            }
+        }
+        additions.forEach { rules.put(it) }
+    }
 
     /** Match the entry shown to the user, never an index from an obsolete screen snapshot. */
     fun replaceRule(config: JSONObject, original: String?, replacement: JSONObject?) {
