@@ -32,6 +32,10 @@ env:
   GUARD_TAG: v2.3.0-r18.4
   GUARD_REPO: inforcqb/susfs4ksu-lkm
   DDK_RELEASE: "20260828"
+  # Kernels older than GKI 5.10 cannot take the LKM pair: there is no
+  # kernelsu.ko to load and no SUSFS guard to embed, so SUSFS has to be built
+  # into the kernel. Those lines are served by upstream's own patch set.
+  SUSFS_REPO: https://gitlab.com/simonpunk/susfs4ksu.git
 
 jobs:
   cert:
@@ -105,9 +109,41 @@ jobs:
           path: ${{ matrix.kmi }}_kernelsu.ko
           if-no-files-found: error
 
+  legacy:
+    name: legacy kernel patches (4.14 / 4.19 / 5.4)
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v4
+
+      # Nothing is patched here: the trees are copied verbatim, so what a user
+      # applies to their kernel is exactly what simonpunk/susfs4ksu publishes.
+      - name: Fetch the upstream patch sets
+        env:
+          SUSFS_REPO_URL: ${{ env.SUSFS_REPO }}
+        run: bash panxcz/fetch-legacy-susfs.sh legacy
+
+      - name: Check every kernel line is complete
+        run: |
+          set -euo pipefail
+          for line in 4.14 4.19 5.4; do
+            zip=legacy/susfs-legacy-kernel-$line.zip
+            test -s "$zip" || { echo "missing $zip"; exit 1; }
+            unzip -l "$zip" | grep -q "50_add_susfs_in_kernel-$line.patch"
+            unzip -l "$zip" | grep -q 'kernel_patches/KernelSU/10_enable_susfs_for_ksu.patch'
+            unzip -l "$zip" | grep -q 'ksu_module_susfs/tools/ksu_susfs_arm64'
+            unzip -p "$zip" '*SOURCE.txt' | grep -q '^commit:  [0-9a-f]\{40\}$'
+          done
+          ls -la legacy
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: legacy-susfs
+          path: legacy/*.zip
+          if-no-files-found: error
+
   manager:
     name: ksud + APK
-    needs: [cert, kernelsu]
+    needs: [cert, kernelsu, legacy]
     runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v4
@@ -119,6 +155,11 @@ jobs:
           pattern: kernelsu-ko-*
           path: ko
           merge-multiple: true
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: legacy-susfs
+          path: legacy
 
       - name: Check every KMI brought its module
         run: |
@@ -310,6 +351,9 @@ jobs:
             cp "ko/${kmi}_kernelsu.ko" "$bundle/"
             cp "guards/$kmi.ko" "$bundle/susfs_guard_lkm-${kmi}.ko"
           done
+          mkdir -p "$bundle/legacy"
+          cp legacy/*.zip "$bundle/legacy/"
+          cp panxcz/legacy-kernels.md "$bundle/legacy/README.md"
           (cd "$bundle" && sha256sum * > SHA256SUMS.txt)
           zip -qr "$bundle.zip" "$bundle"
           ls -la "$bundle.zip"
@@ -330,9 +374,15 @@ jobs:
             supported KMI (android12-5.10 … android17-6.18). `boot-patch` writes
             the pair that matches the device, and `ksuinit` loads the guard with
             `expose_proc=1` before Android's init starts.
+
+            Kernels older than GKI 5.10 (4.14, 4.19, 5.4) are served by
+            `susfs-legacy-kernel-*.zip`: upstream simonpunk/susfs4ksu's own
+            patch set plus its module, unmodified, for kernels that have to
+            build SUSFS in.
           files: |
             dist/*.apk
             finasu-panxcz-all-kmi.zip
+            legacy/*.zip
 
       - uses: actions/upload-artifact@v4
         with:
@@ -340,6 +390,7 @@ jobs:
           path: |
             dist/*.apk
             finasu-panxcz-all-kmi.zip
+            legacy/*.zip
             ko/*.ko
             guards/*.ko
             target/aarch64-linux-android/release/ksud
