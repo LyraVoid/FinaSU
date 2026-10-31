@@ -3,15 +3,14 @@ use serde::{Deserialize, Serialize};
 
 pub const MAX_CONFIG: usize = 128 * 1024;
 
-#[allow(dead_code)]
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(rename_all = "snake_case")]
 pub enum ManagementMode {
+    #[default]
     Builtin,
     External,
 }
 
-#[allow(dead_code)]
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(deny_unknown_fields)]
 pub struct ManagementSwitch {
@@ -19,12 +18,27 @@ pub struct ManagementSwitch {
     pub requested_boot_id: String,
 }
 
-#[allow(dead_code)]
 impl ManagementSwitch {
     pub fn may_confirm(&self, boot_id: &str) -> bool {
         !boot_id.is_empty()
             && !self.requested_boot_id.is_empty()
             && self.requested_boot_id != boot_id
+    }
+}
+
+#[derive(Debug, Default, Clone, Serialize, Deserialize)]
+#[serde(default, deny_unknown_fields)]
+pub struct Ownership {
+    pub mode: ManagementMode,
+    pub pending: Option<ManagementSwitch>,
+}
+
+impl Ownership {
+    pub fn require_builtin(&self) -> Result<()> {
+        if self.mode != ManagementMode::Builtin || self.pending.is_some() {
+            bail!("SUSFS management is external or switching");
+        }
+        Ok(())
     }
 }
 
@@ -284,6 +298,20 @@ mod tests {
             requested_boot_id: String::new(),
         };
         assert!(!pending.may_confirm("boot-b"));
+    }
+
+    #[test]
+    fn ownership_writes_only_allowed_for_settled_builtin_mode() {
+        let mut ownership = Ownership::default();
+        assert!(ownership.require_builtin().is_ok());
+        ownership.pending = Some(ManagementSwitch {
+            target: ManagementMode::External,
+            requested_boot_id: "boot".to_owned(),
+        });
+        assert!(ownership.require_builtin().is_err());
+        ownership.pending = None;
+        ownership.mode = ManagementMode::External;
+        assert!(ownership.require_builtin().is_err());
     }
 
     #[test]

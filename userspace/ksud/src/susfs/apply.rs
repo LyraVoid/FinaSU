@@ -272,6 +272,7 @@ fn rule(rule: &Rule, detection: &Detection) -> Result<()> {
 }
 
 pub fn apply(config: &Config, detection: &Detection, phase: Stage) -> Result<Report> {
+    store::read_ownership()?.require_builtin()?;
     config.validate()?;
     if super::safe_mode() {
         bail!("SUSFS apply is disabled in safe mode");

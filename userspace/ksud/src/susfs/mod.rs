@@ -39,7 +39,7 @@ pub struct UnameTakeoverSnapshot {
     applied: Option<model::Uname>,
 }
 
-#[derive(Debug, Clone, Copy, clap::Subcommand)]
+#[derive(Debug, Clone, clap::Subcommand)]
 pub enum Command {
     /// Query the root-only control ABI and the FinaSU management state
     Status,
@@ -49,6 +49,10 @@ pub enum Command {
     Import,
     /// Apply supported live operations; never fabricates pre-mount kstat
     Apply,
+    /// Begin an ownership switch; confirmation is required after a reboot
+    Switch { target: String },
+    /// Confirm the pending switch after checking external writers and runtime state
+    ConfirmSwitch,
 }
 
 #[derive(Debug, Clone, Serialize)]
@@ -179,7 +183,12 @@ pub fn uname_provider_state() -> Result<UnameProviderState> {
     }
     let config = store::read_config()?;
     let state = store::read_state()?;
-    Ok(uname_provider(&config, &state))
+    let mut provider = uname_provider(&config, &state);
+    if store::read_ownership()?.require_builtin().is_err() {
+        provider.scheduled = false;
+        provider.uncertain = true;
+    }
+    Ok(provider)
 }
 
 fn uname_provider(config: &Config, state: &store::State) -> UnameProviderState {
@@ -201,6 +210,7 @@ fn uname_provider(config: &Config, state: &store::State) -> UnameProviderState {
 }
 
 pub fn uname_takeover_snapshot() -> Result<UnameTakeoverSnapshot> {
+    store::read_ownership()?.require_builtin()?;
     let detection = detect();
     if !detection.supports("CONFIG_KSU_SUSFS_SPOOF_UNAME") {
         bail!("SUSFS uname spoofing is unavailable");
@@ -237,6 +247,7 @@ fn set_uname_runtime(release: &str, version: &str) -> Result<()> {
 }
 
 pub fn take_uname_provider(snapshot: &UnameTakeoverSnapshot) -> Result<()> {
+    store::read_ownership()?.require_builtin()?;
     let mut config = snapshot.config.clone();
     config.settings.uname = None;
     store::write_config(&config).context("Persist SUSFS provider handoff")?;
@@ -251,6 +262,7 @@ pub fn take_uname_provider(snapshot: &UnameTakeoverSnapshot) -> Result<()> {
 }
 
 pub fn restore_uname_provider(snapshot: &UnameTakeoverSnapshot) -> Result<()> {
+    store::read_ownership()?.require_builtin()?;
     let mut residuals = Vec::new();
     if let Err(error) = store::write_config(&snapshot.config) {
         residuals.push(format!("config:{error:#}"));
@@ -338,14 +350,16 @@ pub fn run(command: Command) -> Result<()> {
             let detection = detect();
             let uname_provider = uname_provider_state().unwrap_or_default();
             let config = store::read_config().and_then(|config| {
+                let ownership = store::read_ownership()?;
                 let uts_active =
                     uts_arbitration_active(&config, uts_provider_active).unwrap_or(false);
                 let summary = status_summary(&config, uts_active)?;
-                Ok((config, summary))
+                Ok((config, summary, ownership))
             });
             let status = match config {
-                Ok((config, summary)) => serde_json::json!({
+                Ok((config, summary, ownership)) => serde_json::json!({
                     "detection": detection, "automatic": config.automatic,
+                    "ownership": ownership,
                     "management": summary, "config_error": null,
                     "uname_applied": uname_provider.applied,
                     "uname_scheduled": uname_provider.scheduled,
@@ -369,6 +383,7 @@ pub fn run(command: Command) -> Result<()> {
                 .read_to_string(&mut input)?;
             let config = Config::parse(&input)?;
             let _lock = store::lock()?;
+            store::read_ownership()?.require_builtin()?;
             store::write_config(&config)?;
             println!(
                 "{}",
@@ -380,11 +395,52 @@ pub fn run(command: Command) -> Result<()> {
             // provider. Holding it here serializes arbitration without making
             // unrelated SUSFS operations depend on UTS config storage.
             let _lock = store::lock()?;
+            store::read_ownership()?.require_builtin()?;
             let config = store::read_config()?;
             let uts_active = uts_arbitration_active(&config, uts_provider_active)?;
             let result =
                 apply_with_uts_arbitration(&config, &detect(), apply::Stage::Live, uts_active)?;
             println!("{}", serde_json::to_string(&result)?);
+        }
+        Command::Switch { target } => {
+            let target = match target.as_str() {
+                "builtin" => model::ManagementMode::Builtin,
+                "external" => model::ManagementMode::External,
+                _ => bail!("Expected builtin or external"),
+            };
+            let _lock = store::lock()?;
+            let mut ownership = store::read_ownership()?;
+            if ownership.pending.is_some() || ownership.mode == target {
+                bail!("SUSFS ownership switch is already pending or active");
+            }
+            let boot_id = std::fs::read_to_string("/proc/sys/kernel/random/boot_id")?
+                .trim()
+                .to_owned();
+            if boot_id.is_empty() {
+                bail!("Boot ID is unavailable");
+            }
+            ownership.pending = Some(model::ManagementSwitch {
+                target,
+                requested_boot_id: boot_id,
+            });
+            store::write_ownership(&ownership)?;
+            println!("{}", serde_json::to_string(&ownership)?);
+        }
+        Command::ConfirmSwitch => {
+            let _lock = store::lock()?;
+            let mut ownership = store::read_ownership()?;
+            let pending = ownership
+                .pending
+                .as_ref()
+                .context("No pending ownership switch")?;
+            let boot_id = std::fs::read_to_string("/proc/sys/kernel/random/boot_id")?;
+            if !pending.may_confirm(boot_id.trim()) {
+                bail!("A normal reboot is required before confirmation");
+            }
+            ownership.mode = pending.target;
+            ownership.pending = None;
+            store::write_ownership(&ownership)?;
+            println!("{}", serde_json::to_string(&ownership)?);
         }
     }
     Ok(())
@@ -403,6 +459,9 @@ pub fn boot(stage: &str) {
         // duplicate serialization and couple SUSFS to UTS file permissions.
         let _lock = store::lock().context("Lock SUSFS state")?;
         let config = store::read_config().context("Read SUSFS configuration")?;
+        if store::read_ownership()?.require_builtin().is_err() {
+            return Ok(());
+        }
         if !config.automatic || safe_mode() {
             return Ok(());
         }

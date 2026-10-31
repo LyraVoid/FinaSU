@@ -16,6 +16,7 @@ const DIR: &str = "/data/adb/ksu/folksu-susfs";
 const CONFIG: &str = "/data/adb/ksu/folksu-susfs/config.json";
 const CONFIG_V1_BACKUP: &str = "/data/adb/ksu/folksu-susfs/config.v1.backup.json";
 const STATE: &str = "/data/adb/ksu/folksu-susfs/state.json";
+const OWNERSHIP: &str = "/data/adb/ksu/folksu-susfs/ownership.json";
 
 #[derive(Clone, Default, Serialize, Deserialize)]
 #[serde(deny_unknown_fields)]
@@ -52,6 +53,24 @@ pub fn read_config() -> Result<Config> {
         }
         Err(error) => Err(error),
     }
+}
+
+pub fn read_ownership() -> Result<super::model::Ownership> {
+    match read(OWNERSHIP, 4096) {
+        Ok(input) => Ok(serde_json::from_str(&input)?),
+        Err(error)
+            if error
+                .downcast_ref::<std::io::Error>()
+                .is_some_and(|e| e.kind() == std::io::ErrorKind::NotFound) =>
+        {
+            Ok(super::model::Ownership::default())
+        }
+        Err(error) => Err(error),
+    }
+}
+
+pub fn write_ownership(ownership: &super::model::Ownership) -> Result<()> {
+    atomic(OWNERSHIP, &serde_json::to_vec_pretty(ownership)?)
 }
 
 fn read(path: &str, max: usize) -> Result<String> {
