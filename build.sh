@@ -257,6 +257,47 @@ abi_to_bindir() {
     esac
 }
 
+build_folkzygisk() {
+    have make || die "make is required"
+    have python3 || die "python3 is required"
+    local ndk="${ANDROID_NDK_HOME:-}"
+    [[ -n "$ndk" ]] || die "ANDROID_NDK_HOME is not set"
+
+    local abi assets archs=() built=" " destination
+    for abi in $ABIS; do
+        case "$abi" in
+            arm64-v8a)
+                assets=aarch64
+                archs=(arm64-v8a armeabi-v7a)
+                ;;
+            x86_64)
+                assets=x86_64
+                archs=(x86_64 x86)
+                ;;
+            *)
+                warn "FolkZygisk has no package target for $abi; skipping"
+                continue
+                ;;
+        esac
+        if [[ "$built" == *" $assets "* ]]; then
+            continue
+        fi
+        built+="$assets "
+
+        log "building FolkZygisk for ${archs[*]}"
+        make -C userspace/folkzygisk BUILD_TYPE=release ARCHS="${archs[*]}" \
+            NDK_PATH="$ndk"
+
+        destination="userspace/ksud/bin/$assets/folkzygisk"
+        [[ "$destination" == userspace/ksud/bin/*/folkzygisk ]] ||
+            die "unsafe FolkZygisk asset path: $destination"
+        rm -rf -- "$destination"
+        python3 userspace/folkzygisk/package.py \
+            --stage userspace/folkzygisk/build/stage/release \
+            --assets "userspace/ksud/bin/$assets" --target "$assets"
+    done
+}
+
 # ksuinit is a separate binary that ksud embeds; boot-patch fails with
 # "asset not found: ksuinit" if the built ksud does not carry it.
 #
@@ -302,6 +343,10 @@ build_ksud() {
     have cargo || die "cargo is required"
     local ndk="${ANDROID_NDK_HOME:-}"
     [[ -n "$ndk" ]] || die "ANDROID_NDK_HOME is not set"
+    build_folkzygisk
+    # rust-embed compresses the native assets at compile time and does not
+    # reliably notice their content changing in an incremental build.
+    cargo clean --package ksud
 
     local abi triple
     for abi in $ABIS; do
@@ -354,8 +399,10 @@ steps:
            userspace/ksud/bin/aarch64/<kmi>_nomount.ko for ksud to embed
   sui      build the vendored Sui payload and stage it as
            userspace/ksud/bin/<bindir>/sui/ for ksud to embed
+  folkzygisk
+           build and stage the FolkZygisk binaries embedded by ksud
   ksuinit  cross-compile the ksuinit helper ksud embeds (needed by boot-patch)
-  ksud     cross-compile the ksud daemon with cargo-ndk
+  ksud     build packaged FolkZygisk binaries, then cross-compile ksud
   apk      gradle assembleRelease (signed with manager/keystore.properties)
   repack   inject the freshly built ksud into the APK and re-sign it
   all      lkm -> nomount -> sui -> ksuinit -> ksud -> apk -> repack
@@ -381,6 +428,7 @@ main() {
             lkm)     build_lkm ;;
             nomount) build_nomount ;;
             sui)     build_sui ;;
+            folkzygisk) build_folkzygisk ;;
             ksuinit) build_ksuinit ;;
             ksud)    build_ksud ;;
             apk)     build_apk ;;

@@ -27,6 +27,7 @@ const FAILURE_LIMIT: u32 = 3;
 #[serde(rename_all = "snake_case")]
 enum StartupIssueCode {
     EngineMissing,
+    EngineUpdateFailed,
     RuntimeUnsafe,
     MonitorStartFailed,
     MonitorExited,
@@ -39,6 +40,7 @@ impl StartupIssueCode {
     const fn as_str(self) -> &'static str {
         match self {
             Self::EngineMissing => "engine_missing",
+            Self::EngineUpdateFailed => "engine_update_failed",
             Self::RuntimeUnsafe => "runtime_unsafe",
             Self::MonitorStartFailed => "monitor_start_failed",
             Self::MonitorExited => "monitor_exited",
@@ -285,19 +287,6 @@ pub fn post_fs_data(safe_mode: bool) -> Result<()> {
     let mut guard = load_guard(Path::new(BOOT_GUARD))?;
     guard.prepare_cycle(&epoch);
 
-    if !engine_available(Path::new(ENGINE)) {
-        guard.record_issue(
-            &epoch,
-            StartupIssueCode::EngineMissing,
-            "embedded FolkZygisk engine is missing or incomplete",
-            false,
-        );
-        if let Err(error) = write_json(Path::new(BOOT_GUARD), &guard) {
-            log::warn!("Could not persist FolkZygisk engine-missing diagnostic: {error:#}");
-        }
-        anyhow::bail!("FolkZygisk engine missing; install the engine and retry");
-    }
-
     if let Some(runtime) = match read_runtime(Path::new(RUNTIME), Path::new("/proc")) {
         Ok(runtime) => runtime,
         Err(error) => {
@@ -329,6 +318,26 @@ pub fn post_fs_data(safe_mode: bool) -> Result<()> {
             log::warn!("Could not persist FolkZygisk blocked cycle: {error:#}");
         }
         return Ok(());
+    }
+
+    let available = engine_available(Path::new(ENGINE));
+    let update_pending = engine_update_required(Path::new(ENGINE))?;
+    if !available || update_pending {
+        if let Err(error) = install_engine_locked(&epoch, &guard) {
+            let code = if available {
+                StartupIssueCode::EngineUpdateFailed
+            } else {
+                StartupIssueCode::EngineMissing
+            };
+            guard.record_issue(&epoch, code, format!("{error:#}"), false);
+            if let Err(write_error) = write_json(Path::new(BOOT_GUARD), &guard) {
+                log::warn!(
+                    "Could not persist FolkZygisk engine diagnostic: {write_error:#}; original error: {error:#}"
+                );
+            }
+            return Err(error).context("FolkZygisk engine refresh failed");
+        }
+        log::info!("FolkZygisk engine updated from the installed Manager package");
     }
 
     let runtime_dir = Path::new(RUNTIME).parent().context("Runtime directory")?;
@@ -702,15 +711,20 @@ pub fn provider_status() -> Result<ProviderStatus> {
     guard.prepare_cycle(&epoch);
     let engine = engine_available(Path::new(ENGINE));
     let external = providers(Path::new(MODULES), Path::new(UPDATES))?;
+    let enabled = read_config(Path::new(CONFIG))?.enabled;
+    let update_pending = (enabled && external.is_empty())
+        .then(|| engine_update_required(Path::new(ENGINE)))
+        .transpose()?
+        .unwrap_or(false);
     let blocked = guard.blocked();
     Ok(ProviderStatus {
         schema_version: 1,
-        enabled: read_config(Path::new(CONFIG))?.enabled,
+        enabled,
         engine_available: engine,
         enable_blockers: enable_blockers(engine, blocked),
         external_providers: external,
         injection_state: injection_state(runtime.as_ref()),
-        reboot_required: None,
+        reboot_required: update_pending.then_some(true),
         runtime,
         startup_failures: guard.failures,
         startup_blocked: blocked,
@@ -932,6 +946,29 @@ fn engine_available(root: &Path) -> bool {
     }) && root.join(library).is_file()
 }
 
+fn embedded_engine_files() -> Result<Vec<(String, Vec<u8>)>> {
+    crate::zygisk_assets::FILES
+        .iter()
+        .map(|name| {
+            let bytes = crate::assets::get_asset_data(&format!("folkzygisk/{name}"))?;
+            Ok(((*name).to_owned(), bytes.into_owned()))
+        })
+        .collect()
+}
+
+fn engine_update_required(engine: &Path) -> Result<bool> {
+    let files = embedded_engine_files()?;
+    engine_update_required_for(engine, &files)
+}
+
+fn engine_update_required_for(engine: &Path, files: &[(String, Vec<u8>)]) -> Result<bool> {
+    let expected = crate::zygisk_assets::asset_version(files)?;
+    let installed = crate::zygisk_assets::installed_version(
+        engine.parent().context("FolkZygisk engine parent")?,
+    )?;
+    Ok(installed.as_deref() != Some(expected.as_str()))
+}
+
 fn write_config(path: &Path, config: &Config) -> Result<()> {
     write_json(path, config)
 }
@@ -957,13 +994,7 @@ fn install_engine_locked(
 ) -> Result<String> {
     let runtime_is_live = read_runtime(Path::new(RUNTIME), Path::new("/proc"))?.is_some();
     ensure_engine_installable(epoch, guard, runtime_is_live)?;
-    let files = crate::zygisk_assets::FILES
-        .iter()
-        .map(|name| {
-            let bytes = crate::assets::get_asset_data(&format!("folkzygisk/{name}"))?;
-            Ok(((*name).to_owned(), bytes.into_owned()))
-        })
-        .collect::<Result<Vec<_>>>()?;
+    let files = embedded_engine_files()?;
     crate::zygisk_assets::install(
         Path::new(ENGINE).parent().context("Engine parent")?,
         &files,
@@ -1322,6 +1353,23 @@ mod tests {
         assert!(format!("{live:#}").contains("live FolkZygisk engine"));
         let handled = ensure_engine_installable(&epoch, &guard, false).unwrap_err();
         assert!(format!("{handled:#}").contains("already handled"));
+    }
+
+    #[test]
+    fn selected_engine_must_match_embedded_assets() -> Result<()> {
+        let dir = tempfile::tempdir()?;
+        let engine = dir.path().join("bin/folkzygisk");
+        let files = crate::zygisk_assets::FILES
+            .iter()
+            .map(|name| ((*name).to_owned(), vec![1]))
+            .collect::<Vec<_>>();
+        assert!(engine_update_required_for(&engine, &files)?);
+
+        let version = crate::zygisk_assets::asset_version(&files)?;
+        fs::create_dir_all(dir.path().join("bin/folkzygisk-versions").join(&version))?;
+        std::os::unix::fs::symlink(Path::new("folkzygisk-versions").join(version), &engine)?;
+        assert!(!engine_update_required_for(&engine, &files)?);
+        Ok(())
     }
 
     #[test]

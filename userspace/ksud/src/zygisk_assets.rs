@@ -29,11 +29,7 @@ fn mode(name: &str) -> u32 {
     }
 }
 
-pub fn install(
-    parent: &Path,
-    files: &[(String, Vec<u8>)],
-    prepare: impl Fn(&Path) -> Result<()>,
-) -> Result<String> {
+pub fn asset_version(files: &[(String, Vec<u8>)]) -> Result<String> {
     ensure!(files.len() == FILES.len(), "Incomplete FolkZygisk assets");
     let mut identity = Vec::new();
     for (expected, (name, bytes)) in FILES.iter().zip(files) {
@@ -46,7 +42,33 @@ pub fn install(
         identity.extend_from_slice(&(bytes.len() as u64).to_le_bytes());
         identity.extend_from_slice(bytes);
     }
-    let version = sha256::digest(&identity);
+    Ok(sha256::digest(&identity))
+}
+
+pub fn installed_version(parent: &Path) -> Result<Option<String>> {
+    let current = parent.join("folkzygisk");
+    let target = match fs::read_link(&current) {
+        Ok(target) => target,
+        Err(error) if error.kind() == std::io::ErrorKind::NotFound => return Ok(None),
+        Err(error) => return Err(error.into()),
+    };
+    ensure!(
+        target.parent() == Some(Path::new("folkzygisk-versions")),
+        "Unsafe FolkZygisk engine link"
+    );
+    let version = target
+        .file_name()
+        .and_then(|name| name.to_str())
+        .context("Invalid FolkZygisk engine version")?;
+    Ok(Some(version.to_owned()))
+}
+
+pub fn install(
+    parent: &Path,
+    files: &[(String, Vec<u8>)],
+    prepare: impl Fn(&Path) -> Result<()>,
+) -> Result<String> {
+    let version = asset_version(files)?;
     fs::create_dir_all(parent)?;
     let current = parent.join("folkzygisk");
     match fs::symlink_metadata(&current) {
@@ -130,9 +152,12 @@ mod tests {
     fn versions_are_immutable_and_switch_is_explicit() -> Result<()> {
         let dir = tempfile::tempdir()?;
         let first = install(dir.path(), &assets(1), |_| Ok(()))?;
+        assert_eq!(first, asset_version(&assets(1))?);
         assert_eq!(first, install(dir.path(), &assets(1), |_| Ok(()))?);
+        assert_eq!(installed_version(dir.path())?, Some(first.clone()));
         let second = install(dir.path(), &assets(2), |_| Ok(()))?;
         assert_ne!(first, second);
+        assert_eq!(installed_version(dir.path())?, Some(second));
         assert_eq!(
             fs::read(dir.path().join("folkzygisk/bin/zygiskd64"))?,
             vec![2]
