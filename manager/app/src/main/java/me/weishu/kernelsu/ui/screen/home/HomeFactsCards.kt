@@ -18,6 +18,7 @@ import androidx.compose.material.icons.filled.Layers
 import androidx.compose.material.icons.filled.Security
 import androidx.compose.material.icons.filled.Smartphone
 import androidx.compose.material.icons.filled.Tag
+import androidx.compose.material.icons.filled.Tune
 import androidx.compose.material.icons.filled.Vaccines
 import androidx.compose.material.icons.rounded.VisibilityOff
 import androidx.compose.material3.Icon
@@ -79,6 +80,12 @@ internal fun HomeFactsTile(
                     value = value,
                 )
             }
+        }
+        if (state.ksuVersion != null) {
+            HomeFactRow(
+                label = stringResource(R.string.home_hook_type),
+                value = kernelHookValue(state.kernelHook),
+            )
         }
         HomeFactRow(
             label = stringResource(R.string.home_device_model),
@@ -145,6 +152,7 @@ internal fun HomeFactRow(
 @Composable
 internal fun InfoCard(
     systemInfo: SystemInfo,
+    kernelHook: KernelHookState? = null,
     modifier: Modifier = Modifier,
     susfs: me.weishu.kernelsu.data.susfs.SusfsStatus = me.weishu.kernelsu.data.susfs.SusfsStatus(),
     zygiskProvider: String? = null,
@@ -180,6 +188,13 @@ internal fun InfoCard(
                         value = value,
                     )
                 }
+            }
+            if (kernelHook != null) {
+                InfoRow(
+                    icon = Icons.Filled.Tune,
+                    label = stringResource(R.string.home_hook_type),
+                    value = kernelHookValue(kernelHook),
+                )
             }
             InfoRow(
                 icon = Icons.Filled.Smartphone,

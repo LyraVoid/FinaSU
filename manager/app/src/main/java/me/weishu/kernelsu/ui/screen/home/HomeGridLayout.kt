@@ -251,13 +251,6 @@ private fun GridStatusCard(
                 } else if (notInstalled && state.isSELinuxPermissive) {
                     StatusJailbreakButton(onClick = actions.onJailbreakClick)
                 }
-                if (ksuActive && !workCardSurface.hasFlag(SurfaceFlag.HideText)) {
-                    Text(
-                        text = "${stringResource(R.string.home_kernel_backend)}: ${kernelHookValue(state.kernelHook)}",
-                        style = FolkType.Summary,
-                        color = contentColor.copy(alpha = 0.8f),
-                    )
-                }
             }
             if (!workCardSurface.hasFlag(SurfaceFlag.HideIcon)) {
                 Icon(

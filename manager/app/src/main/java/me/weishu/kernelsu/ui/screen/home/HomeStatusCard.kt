@@ -39,7 +39,6 @@ import me.weishu.kernelsu.ui.theme.FolkType
 internal fun statusStateTexts(state: HomeUiState): List<Pair<String, String>> {
     if (state.ksuVersion == null) return emptyList()
     return buildList {
-        add(stringResource(R.string.home_kernel_backend) to kernelHookValue(state.kernelHook))
         val workingMode = workingModeLabel(state)
         if (workingMode.isNotEmpty()) {
             add(stringResource(R.string.home_running_mode) to workingMode)
@@ -59,13 +58,13 @@ internal fun statusStateTexts(state: HomeUiState): List<Pair<String, String>> {
 @Composable
 internal fun kernelHookValue(state: KernelHookState): String {
     val backend = when (state.backend) {
-        KernelHookBackend.TRACEPOINT -> stringResource(R.string.home_kernel_backend_tracepoint)
-        KernelHookBackend.SUSFS_INLINE -> stringResource(R.string.home_kernel_backend_susfs_inline)
+        KernelHookBackend.TRACEPOINT -> stringResource(R.string.home_hook_type_tracepoint)
+        KernelHookBackend.SUSFS_INLINE -> stringResource(R.string.home_hook_type_susfs_inline)
         KernelHookBackend.UNKNOWN,
-        KernelHookBackend.INVALID -> stringResource(R.string.home_kernel_backend_unknown)
+        KernelHookBackend.INVALID -> stringResource(R.string.home_hook_type_unknown)
     }
     return if (state.failed) {
-        stringResource(R.string.home_kernel_backend_failed, backend)
+        stringResource(R.string.home_hook_type_failed, backend)
     } else {
         backend
     }
@@ -220,15 +219,6 @@ internal fun StatusCard(
                             backgroundColor = MaterialTheme.colorScheme.tertiaryContainer,
                         )
                     }
-                }
-                if (ksuActive) {
-                    Spacer(Modifier.height(4.dp))
-                    Text(
-                        text = "${stringResource(R.string.home_kernel_backend)}: ${kernelHookValue(state.kernelHook)}",
-                        style = FolkType.Summary,
-                        color = LocalWallpaperSupportingColor.current
-                            ?: MaterialTheme.colorScheme.onSurfaceVariant
-                    )
                 }
             }
             if (statusTrailing != null) {

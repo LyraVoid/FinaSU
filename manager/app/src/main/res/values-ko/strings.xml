@@ -29,11 +29,11 @@
     <string name="home_metric_storage_swap">스왑</string>
     <string name="home_version">버전</string>
     <string name="home_running_mode">실행 모드</string>
-    <string name="home_kernel_backend">커널 백엔드</string>
-    <string name="home_kernel_backend_tracepoint">Tracepoint</string>
-    <string name="home_kernel_backend_susfs_inline">SUSFS Inline</string>
-    <string name="home_kernel_backend_unknown">이전 버전 / 알 수 없음</string>
-    <string name="home_kernel_backend_failed">%1$s (비정상)</string>
+    <string name="home_hook_type">Hook 유형</string>
+    <string name="home_hook_type_tracepoint">Tracepoint</string>
+    <string name="home_hook_type_susfs_inline">SUSFS Inline</string>
+    <string name="home_hook_type_unknown">이전 버전 / 알 수 없음</string>
+    <string name="home_hook_type_failed">%1$s (비정상)</string>
     <string name="home_running_status">실행 상태</string>
     <string name="home_state_on">켜짐</string>
     <string name="home_working_version">버전: %s</string>
