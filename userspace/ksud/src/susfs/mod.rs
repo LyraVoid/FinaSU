@@ -759,14 +759,25 @@ mod tests {
     #[test]
     fn status_reports_saved_uname_as_deferred_while_uts_is_active() {
         let mut config = Config::default();
-        assert_eq!(status_summary(&config, true).unwrap(), "idle");
+        let desired = apply::operations(&config).unwrap();
+        assert_eq!(
+            store::summarize(&store::State::default(), &desired, true),
+            "idle"
+        );
 
         config.settings.uname = Some(model::Uname {
             release: "6.1.0-test".to_owned(),
             version: "#1".to_owned(),
         });
-        assert_eq!(status_summary(&config, true).unwrap(), "deferred");
-        assert_eq!(status_summary(&config, false).unwrap(), "saved");
+        let desired = apply::operations(&config).unwrap();
+        assert_eq!(
+            store::summarize(&store::State::default(), &desired, true),
+            "deferred"
+        );
+        assert_eq!(
+            store::summarize(&store::State::default(), &desired, false),
+            "saved"
+        );
     }
 
     #[test]
