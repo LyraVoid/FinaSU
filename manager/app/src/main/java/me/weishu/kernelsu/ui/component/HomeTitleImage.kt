@@ -1,10 +1,8 @@
 package me.weishu.kernelsu.ui.component
 
 import android.widget.ImageView
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
-import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -26,16 +24,17 @@ fun HomeTitleImage() {
         return
     }
     val opacity = if (isInDarkTheme()) VisualMediaConfig.titleNightOpacity else VisualMediaConfig.titleDayOpacity
-    Box(Modifier.width(180.dp).height(40.dp).offset(x = (VisualMediaConfig.titleOffsetX * 100f).dp).alpha(opacity)) {
-        AnimatedFileImage(
-            file = file,
-            scaleType = ImageView.ScaleType.FIT_CENTER,
-            contentDescription = stringResource(R.string.app_name),
-            revision = VisualMediaConfig.revision.toString(),
-            dim = VisualMediaConfig.titleDim,
-            modifier = Modifier.width(180.dp).height(40.dp),
-        )
-    }
+    AnimatedFileImage(
+        file = file,
+        scaleType = ImageView.ScaleType.FIT_CENTER,
+        contentDescription = stringResource(R.string.app_name),
+        revision = VisualMediaConfig.revision.toString(),
+        dim = VisualMediaConfig.titleDim,
+        modifier = Modifier
+            .height(40.dp)
+            .offset(x = (VisualMediaConfig.titleOffsetX * 100f).dp)
+            .alpha(opacity),
+    )
 }
 
 /** The text the home top bar shows while no title image is in use. */

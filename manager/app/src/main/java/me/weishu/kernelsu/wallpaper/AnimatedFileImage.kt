@@ -63,6 +63,7 @@ fun AnimatedFileImage(
             ImageView(ctx).apply {
                 this.scaleType = scaleType
                 this.contentDescription = contentDescription
+                adjustViewBounds = true
             }
         },
         update = { view ->
