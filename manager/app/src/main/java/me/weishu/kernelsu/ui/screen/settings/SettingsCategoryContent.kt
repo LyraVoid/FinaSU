@@ -30,6 +30,7 @@ import androidx.compose.material.icons.filled.ShoppingBag
 import androidx.compose.material.icons.filled.SystemUpdate
 import androidx.compose.material.icons.filled.SystemUpdateAlt
 import androidx.compose.material.icons.filled.Translate
+import androidx.compose.material.icons.filled.Tune
 import androidx.compose.material.icons.filled.Vaccines
 import androidx.compose.material.icons.filled.VerifiedUser
 import androidx.compose.material.icons.filled.Wallpaper
@@ -506,6 +507,15 @@ fun AppearanceCategoryContent(uiState: SettingsUiState, actions: SettingsScreenA
                 summary = stringResource(R.string.settings_hide_home_kernel_full_version_summary),
                 checked = uiState.hideHomeKernelFullVersion,
                 onCheckedChange = actions.onSetHideHomeKernelFullVersion,
+            )
+        }
+        item(visible = uiState.hookTypeAvailable) {
+            SegmentedSwitchItem(
+                icon = Icons.Filled.Tune,
+                title = stringResource(R.string.settings_hide_home_hook_type),
+                summary = stringResource(R.string.settings_hide_home_hook_type_summary),
+                checked = uiState.hideHomeHookType,
+                onCheckedChange = actions.onSetHideHomeHookType,
             )
         }
     }

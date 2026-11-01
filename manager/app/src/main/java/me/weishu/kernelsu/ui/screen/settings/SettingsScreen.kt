@@ -124,6 +124,7 @@ fun rememberSettingsActions(
         onSetHideHomeSusfs = viewModel::setHideHomeSusfs,
         onSetHideHomeMount = viewModel::setHideHomeMount,
         onSetHideHomeKernelFullVersion = viewModel::setHideHomeKernelFullVersion,
+        onSetHideHomeHookType = viewModel::setHideHomeHookType,
         onSetEnableNavigationBadge = viewModel::setEnableNavigationBadge,
         onSetEnablePredictiveBack = { enabled ->
             viewModel.setEnablePredictiveBack(enabled)

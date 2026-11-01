@@ -461,6 +461,16 @@ val settingsSearchIndex: List<SettingsSearchEntry> = buildList {
     )
     add(
         SettingsCategory.APPEARANCE.row(
+            id = "appearance.hide_home_hook_type",
+            titleRes = R.string.settings_hide_home_hook_type,
+            summaryRes = R.string.settings_hide_home_hook_type_summary,
+            icon = Icons.Filled.Tune,
+            aliases = listOf("home", "hook", "type", "hide", "card"),
+            available = { it.hookTypeAvailable },
+        )
+    )
+    add(
+        SettingsCategory.APPEARANCE.row(
             id = "appearance.page_scale",
             titleRes = R.string.settings_page_scale,
             summaryRes = R.string.settings_page_scale_summary,

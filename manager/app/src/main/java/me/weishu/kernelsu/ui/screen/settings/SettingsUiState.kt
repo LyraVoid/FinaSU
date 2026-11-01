@@ -41,6 +41,8 @@ data class SettingsUiState(
     val hideHomeSusfs: Boolean = false,
     val hideHomeMount: Boolean = false,
     val hideHomeKernelFullVersion: Boolean = false,
+    val hideHomeHookType: Boolean = false,
+    val hookTypeAvailable: Boolean = false,
     val kernelFullVersionAvailable: Boolean = false,
 
     // Su Compat
@@ -172,6 +174,7 @@ data class SettingsScreenActions(
     val onSetHideHomeSusfs: (Boolean) -> Unit,
     val onSetHideHomeMount: (Boolean) -> Unit,
     val onSetHideHomeKernelFullVersion: (Boolean) -> Unit,
+    val onSetHideHomeHookType: (Boolean) -> Unit,
     val onSetEnableNavigationBadge: (Boolean) -> Unit,
     val onSetEnablePredictiveBack: (Boolean) -> Unit,
     val onSetPageScale: (Float) -> Unit,

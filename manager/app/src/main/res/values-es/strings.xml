@@ -504,6 +504,8 @@
     <string name="settings_hide_home_mount_summary">Quita la fila de montaje de módulos de la tarjeta de información de inicio.</string>
     <string name="settings_hide_home_kernel_full_version">Ocultar compilación del kernel</string>
     <string name="settings_hide_home_kernel_full_version_summary">Quita la fila de compilación del kernel de la tarjeta de información de inicio.</string>
+    <string name="settings_hide_home_hook_type">Ocultar tipo de hook</string>
+    <string name="settings_hide_home_hook_type_summary">Quita la fila del tipo de hook de la tarjeta de información de inicio.</string>
     <string name="settings_category_general">General</string>
     <string name="settings_category_appearance">Apariencia</string>
     <string name="settings_category_behavior">Comportamiento</string>

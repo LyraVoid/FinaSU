@@ -504,6 +504,8 @@
     <string name="settings_hide_home_mount_summary">Hapus baris pemasangan modul dari kartu info beranda.</string>
     <string name="settings_hide_home_kernel_full_version">Sembunyikan build kernel</string>
     <string name="settings_hide_home_kernel_full_version_summary">Hapus baris build kernel dari kartu info beranda.</string>
+    <string name="settings_hide_home_hook_type">Sembunyikan jenis hook</string>
+    <string name="settings_hide_home_hook_type_summary">Hapus baris jenis hook dari kartu info beranda.</string>
     <string name="settings_category_general">Umum</string>
     <string name="settings_category_appearance">Tampilan</string>
     <string name="settings_category_behavior">Perilaku</string>

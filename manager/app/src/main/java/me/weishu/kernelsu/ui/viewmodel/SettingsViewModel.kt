@@ -108,6 +108,7 @@ class SettingsViewModel(
             val isDynamicManagerAvailable = Natives.isDynamicManagerEnabled()
             val isLateLoadMode = Natives.isLateLoadMode
             val kernelFullVersionAvailable = Natives.isManager && !Natives.getFullVersion().isNullOrBlank()
+            val hookTypeAvailable = Natives.isManager
 
             val folkMountResult = repo.getFolkMountStatus()
             val nomountResult = repo.getNomountStatus()
@@ -154,6 +155,8 @@ class SettingsViewModel(
                     hideHomeSusfs = repo.hideHomeSusfs,
                     hideHomeMount = repo.hideHomeMount,
                     hideHomeKernelFullVersion = repo.hideHomeKernelFullVersion,
+                    hideHomeHookType = repo.hideHomeHookType,
+                    hookTypeAvailable = hookTypeAvailable,
                     kernelFullVersionAvailable = kernelFullVersionAvailable,
                     susfsDetected = susfsDetected,
                     colorStyle = colorStyle,
@@ -447,6 +450,11 @@ class SettingsViewModel(
     fun setHideHomeKernelFullVersion(hidden: Boolean) {
         repo.hideHomeKernelFullVersion = hidden
         _uiState.update { it.copy(hideHomeKernelFullVersion = hidden) }
+    }
+
+    fun setHideHomeHookType(hidden: Boolean) {
+        repo.hideHomeHookType = hidden
+        _uiState.update { it.copy(hideHomeHookType = hidden) }
     }
 
     fun setSuCompatMode(mode: Int) {

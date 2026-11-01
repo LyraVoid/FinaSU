@@ -506,6 +506,8 @@
     <string name="settings_hide_home_mount_summary">Remove a linha de montagem de módulos do cartão de informações da tela inicial.</string>
     <string name="settings_hide_home_kernel_full_version">Ocultar compilação do kernel</string>
     <string name="settings_hide_home_kernel_full_version_summary">Remove a linha de compilação do kernel do cartão de informações da tela inicial.</string>
+    <string name="settings_hide_home_hook_type">Ocultar tipo de gancho</string>
+    <string name="settings_hide_home_hook_type_summary">Remove a linha do tipo de gancho do cartão de informações da tela inicial.</string>
     <string name="settings_category_general">Geral</string>
     <string name="settings_category_appearance">Aparência</string>
     <string name="settings_category_behavior">Comportamento</string>

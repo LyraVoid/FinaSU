@@ -504,6 +504,8 @@
     <string name="settings_hide_home_mount_summary">从首页魔法录中隐去模块挂载一行。</string>
     <string name="settings_hide_home_kernel_full_version">隐匿内核全貌</string>
     <string name="settings_hide_home_kernel_full_version_summary">从首页魔法录中隐去内核全貌一行。</string>
+    <string name="settings_hide_home_hook_type">隐匿魔法契约</string>
+    <string name="settings_hide_home_hook_type_summary">从首页魔法录中隐去魔法契约一行。</string>
     <string name="settings_category_general">通用</string>
     <string name="settings_category_appearance">外观</string>
     <string name="settings_category_behavior">行为</string>

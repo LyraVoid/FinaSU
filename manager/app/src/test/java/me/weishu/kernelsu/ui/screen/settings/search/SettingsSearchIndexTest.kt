@@ -75,4 +75,11 @@ class SettingsSearchIndexTest {
         assertFalse(entry.available(SettingsUiState(kernelFullVersionAvailable = false)))
         assertTrue(entry.available(SettingsUiState(kernelFullVersionAvailable = true)))
     }
+
+    @Test
+    fun `hook type hide row is searchable only when the manager is installed`() {
+        val entry = settingsSearchIndex.single { it.id == "appearance.hide_home_hook_type" }
+        assertFalse(entry.available(SettingsUiState(hookTypeAvailable = false)))
+        assertTrue(entry.available(SettingsUiState(hookTypeAvailable = true)))
+    }
 }

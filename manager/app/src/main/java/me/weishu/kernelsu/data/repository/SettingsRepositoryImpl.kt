@@ -148,6 +148,10 @@ class SettingsRepositoryImpl : SettingsRepository {
         get() = prefs.getBoolean("hide_home_kernel_full_version", false)
         set(value) = prefs.edit { putBoolean("hide_home_kernel_full_version", value) }
 
+    override var hideHomeHookType: Boolean
+        get() = prefs.getBoolean("hide_home_hook_type", false)
+        set(value) = prefs.edit { putBoolean("hide_home_hook_type", value) }
+
     override var enablePredictiveBack: Boolean
         get() = prefs.getBoolean("enable_predictive_back", false)
         set(value) = prefs.edit { putBoolean("enable_predictive_back", value) }

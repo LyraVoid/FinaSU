@@ -506,6 +506,8 @@
     <string name="settings_hide_home_mount_summary">Убирает строку монтирования модулей с карточки информации на главном экране.</string>
     <string name="settings_hide_home_kernel_full_version">Скрыть сборку ядра</string>
     <string name="settings_hide_home_kernel_full_version_summary">Убирает строку сборки ядра с карточки информации на главном экране.</string>
+    <string name="settings_hide_home_hook_type">Скрыть тип хука</string>
+    <string name="settings_hide_home_hook_type_summary">Убирает строку типа хука с карточки информации на главном экране.</string>
     <string name="settings_category_general">Общие</string>
     <string name="settings_category_appearance">Внешний вид</string>
     <string name="settings_category_behavior">Поведение</string>

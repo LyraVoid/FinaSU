@@ -81,7 +81,7 @@ internal fun HomeFactsTile(
                 )
             }
         }
-        if (state.ksuVersion != null) {
+        if (state.ksuVersion != null && !display.hideHookType) {
             HomeFactRow(
                 label = stringResource(R.string.home_hook_type),
                 value = kernelHookValue(state.kernelHook),
@@ -189,7 +189,7 @@ internal fun InfoCard(
                     )
                 }
             }
-            if (kernelHook != null) {
+            if (kernelHook != null && !display.hideHookType) {
                 InfoRow(
                     icon = Icons.Filled.Tune,
                     label = stringResource(R.string.home_hook_type),
