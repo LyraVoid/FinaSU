@@ -3,11 +3,9 @@
 
 #include <stdbool.h>
 
-#include "hyper_protocol.h"
-
 void init_monitor();
 
-bool trace_zygote(int pid, enum folkzygisk_injection_kind kind);
+bool trace_zygote(int pid, bool is_tango);
 
 enum rezygiskd_command {
   START = 1,
@@ -20,8 +18,7 @@ enum rezygiskd_command {
   DAEMON64_SET_INFO = 6,
   DAEMON32_SET_INFO = 7,
   DAEMON64_SET_ERROR_INFO = 8,
-  DAEMON32_SET_ERROR_INFO = 9,
-  HYPER_STATUS = 10
+  DAEMON32_SET_ERROR_INFO = 9
 };
 
 int send_control_command(enum rezygiskd_command cmd);

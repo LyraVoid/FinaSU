@@ -2,7 +2,6 @@
 #define DAEMON_H
 
 #include <stdbool.h>
-#include <stdint.h>
 
 #include <unistd.h>
 
@@ -15,9 +14,7 @@ enum rezygiskd_actions {
   GetModuleDir,
   ZygoteRestart,
   UpdateMountNamespace,
-  RemoveModule,
-  ReadHyperPlan,
-  ReportHyperStatus
+  RemoveModule
 };
 
 struct zygisk_modules {
@@ -72,10 +69,5 @@ void rezygiskd_zygote_restart();
 bool rezygiskd_update_mns(enum mount_namespace_state nms_state, char *buf, size_t buf_size);
 
 bool rezygiskd_remove_module(size_t index);
-
-struct hyper_plan;
-bool rezygiskd_read_hyper_plan(struct hyper_plan *plan);
-
-bool rezygiskd_report_hyper_status(uint8_t stage, const char *reason);
 
 #endif /* DAEMON_H */

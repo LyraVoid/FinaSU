@@ -18,10 +18,8 @@
 
 #include "remote_csoloader.h"
 #include "folkzygisk_paths.h"
-#include "hyper_protocol.h"
 
-bool inject_on_main(int pid, const char *lib_path, uintptr_t libc_init_target,
-                    uintptr_t libc_init_got_slot, enum folkzygisk_injection_kind kind) {
+bool inject_on_main(int pid, const char *lib_path, uintptr_t libc_init_target, uintptr_t libc_init_got_slot, bool is_tango) {
   LOGI("injecting %s to zygote %d via GOT hook", lib_path, pid);
 
   uintptr_t break_addr = (uintptr_t)((intptr_t)(-0x0F & ~1) | (intptr_t)(libc_init_target & 1));
@@ -104,7 +102,7 @@ bool inject_on_main(int pid, const char *lib_path, uintptr_t libc_init_target,
   long args[3] = {
     (long)remote_base,
     (long)remote_size,
-    (long)kind
+    is_tango ? 1 : 0
   };
   remote_call(pid, &regs, injector_entry, (uintptr_t)libc_return_addr, args, 3);
 
@@ -141,7 +139,7 @@ bool inject_on_main(int pid, const char *lib_path, uintptr_t libc_init_target,
     return false;                             \
   }
 
-bool trace_zygote(int pid, enum folkzygisk_injection_kind kind) {
+bool trace_zygote(int pid, bool tango_flag) {
   LOGI("start tracing %d (tracer %d)", pid, getpid());
 
   /* INFO: Set value 0 to make compiler happy. */
@@ -185,7 +183,7 @@ bool trace_zygote(int pid, enum folkzygisk_injection_kind kind) {
 
   if (STOPPED_WITH(SIGSTOP, PTRACE_EVENT_STOP)) {
     char *lib_path = FOLKZYGISK_ENGINE_DIR "/lib" LP_SELECT("", "64") "/libzygisk.so";
-    if (!inject_on_main(pid, lib_path, libc_init_resolved, libc_init_got_slot, kind)) {
+    if (!inject_on_main(pid, lib_path, libc_init_resolved, libc_init_got_slot, tango_flag)) {
       LOGE("failed to inject");
 
       return false;

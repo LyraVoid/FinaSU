@@ -16,7 +16,6 @@
 #include "root_impl/kernelsu.h"
 #include "utils.h"
 #include "folkzygisk_paths.h"
-#include "hyper_plan.h"
 
 struct Module {
   char *name;
@@ -47,48 +46,6 @@ struct rzd_info_payload {
 #define PATH_CP_NAME TMP_PATH "/" LP_SELECT("cp32.sock", "cp64.sock")
 #define ZYGISKD_FILE FOLKZYGISK_DAEMON_BASE LP_SELECT("32", "64")
 #define ZYGISKD_PATH FOLKZYGISK_DAEMON_BASE LP_SELECT("32", "64")
-
-static uint32_t hyper_plan_generation;
-
-static bool peer_executable(int fd, char *path, size_t path_size) {
-  struct ucred peer;
-  socklen_t peer_size = sizeof(peer);
-  if (getsockopt(fd, SOL_SOCKET, SO_PEERCRED, &peer, &peer_size) != 0
-      || peer_size != sizeof(peer) || peer.pid <= 0) {
-    return false;
-  }
-  char proc_path[64];
-  snprintf(proc_path, sizeof(proc_path), "/proc/%d/exe", peer.pid);
-  ssize_t length = readlink(proc_path, path, path_size - 1);
-  if (length <= 0 || (size_t)length >= path_size) return false;
-  path[length] = '\0';
-  return true;
-}
-
-static void send_hyper_plan(int client_fd, const struct hyper_plan *plan, const char *reason) {
-  if (plan == NULL) {
-    ssize_t ret = write_uint32_t(client_fd, 0);
-    (void)ret;
-    (void)write_string(client_fd, reason == NULL ? "hyper plan failed" : reason);
-    return;
-  }
-
-  ssize_t ret = write_uint32_t(client_fd, FOLKZYGISK_HYPER_PLAN_VERSION);
-  if (ret != (ssize_t)sizeof(uint32_t)) return;
-  ret = write_uint32_t(client_fd, plan->generation);
-  if (ret != (ssize_t)sizeof(uint32_t)) return;
-  ret = write_size_t(client_fd, plan->count);
-  if (ret != (ssize_t)sizeof(size_t)) return;
-
-  for (uint32_t i = 0; i < plan->count; i++) {
-    ret = write_uint32_t(client_fd, plan->modules[i].slot);
-    if (ret != (ssize_t)sizeof(uint32_t)) return;
-    ret = write_uint8_t(client_fd, plan->modules[i].companion ? 1 : 0);
-    if (ret != (ssize_t)sizeof(uint8_t)) return;
-    if (write_string(client_fd, plan->modules[i].id) == -1) return;
-    if (write_fd(client_fd, plan->modules[i].fd) == -1) return;
-  }
-}
 
 #ifdef __aarch64__
   #define ARCH_STR "arm64-v8a"
@@ -755,64 +712,6 @@ void zygiskd_start(char *restrict argv[]) {
         ret = write_uint8_t(client_fd, 1);
         ASSURE_SIZE_WRITE("RemoveModule", "response", ret, sizeof(uint8_t), break);
 
-        break;
-      }
-      case ReadHyperPlan: {
-        char target[PATH_MAX];
-        struct hyper_plan plan;
-        char reason[256] = "";
-        if (!peer_executable(client_fd, target, sizeof(target))) {
-          send_hyper_plan(client_fd, NULL, "cannot identify HyperOS Runtime peer");
-          break;
-        }
-        if (strcmp(target, FOLKZYGISK_HYPER_TARGET) != 0) {
-          send_hyper_plan(client_fd, NULL, "HyperOS Runtime target identity mismatch");
-          break;
-        }
-        if (!hyper_plan_build(PATH_MODULES_DIR, target, &plan, reason, sizeof(reason))) {
-          send_hyper_plan(client_fd, NULL, reason);
-          break;
-        }
-        if (++hyper_plan_generation == 0) hyper_plan_generation = 1;
-        plan.generation = hyper_plan_generation;
-        send_hyper_plan(client_fd, &plan, NULL);
-        hyper_plan_free(&plan);
-        break;
-      }
-      case ReportHyperStatus: {
-        uint8_t stage = 0;
-        ssize_t ret = read_uint8_t(client_fd, &stage);
-        ASSURE_SIZE_READ("ReportHyperStatus", "stage", ret, sizeof(stage), break);
-        char reason[257] = { 0 };
-        ret = read_string(client_fd, reason, sizeof(reason));
-        if (ret == -1) {
-          LOGE("Failed reading HyperOS Runtime status reason");
-          break;
-        }
-
-        struct ucred peer;
-        socklen_t peer_size = sizeof(peer);
-        if (getsockopt(client_fd, SOL_SOCKET, SO_PEERCRED, &peer, &peer_size) != 0
-            || peer_size != sizeof(peer) || peer.pid <= 0) {
-          LOGE("Cannot identify HyperOS Runtime status peer");
-          break;
-        }
-
-        size_t reason_size = strlen(reason) + 1;
-        size_t payload_size = sizeof(int32_t) + sizeof(uint8_t) + reason_size;
-        if (payload_size > UINT32_MAX) break;
-        struct rzd_msg_header *message = malloc(sizeof(*message) + payload_size);
-        if (message == NULL) break;
-        message->cmd = HYPER_STATUS;
-        message->len = (uint32_t)payload_size;
-        char *payload = message->data;
-        int32_t peer_pid = peer.pid;
-        memcpy(payload, &peer_pid, sizeof(peer_pid));
-        payload += sizeof(peer_pid);
-        *payload++ = (char)stage;
-        memcpy(payload, reason, reason_size);
-        unix_datagram_sendto(CONTROLLER_SOCKET, message, sizeof(*message) + payload_size);
-        free(message);
         break;
       }
     }
