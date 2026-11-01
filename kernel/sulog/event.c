@@ -306,16 +306,14 @@ struct ksu_sulog_pending_event *ksu_sulog_capture_sucompat(const char __user *fi
     return ksu_sulog_capture(KSU_SULOG_EVENT_SUCOMPAT, filename_user, NULL, argv_user, gfp);
 }
 
-struct ksu_sulog_pending_event *ksu_sulog_capture_root_execve_kernel(const char *filename,
-                                                                     const char __user *const __user *argv_user,
-                                                                     gfp_t gfp)
+struct ksu_sulog_pending_event *
+ksu_sulog_capture_root_execve_kernel(const char *filename, const char __user *const __user *argv_user, gfp_t gfp)
 {
     return ksu_sulog_capture(KSU_SULOG_EVENT_ROOT_EXECVE, NULL, filename, argv_user, gfp);
 }
 
 struct ksu_sulog_pending_event *ksu_sulog_capture_sucompat_kernel(const char *filename,
-                                                                  const char __user *const __user *argv_user,
-                                                                  gfp_t gfp)
+                                                                  const char __user *const __user *argv_user, gfp_t gfp)
 {
     return ksu_sulog_capture(KSU_SULOG_EVENT_SUCOMPAT, NULL, filename, argv_user, gfp);
 }
