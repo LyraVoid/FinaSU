@@ -226,7 +226,8 @@ internal fun InfoCard(
                 InfoRow(
                     icon = Icons.Rounded.VisibilityOff,
                     label = stringResource(R.string.susfs_title),
-                    value = "${susfs.version} · ${susfs.implementation} · $management",
+                    value = listOf(susfs.version, susfs.implementation, management)
+                        .filter(String::isNotBlank).joinToString(" · "),
                     modifier = Modifier
                         .folkPressScale(interactionSource)
                         .clickable(
@@ -256,7 +257,9 @@ private fun SusfsHomeRow(status: me.weishu.kernelsu.data.susfs.SusfsStatus, onCl
     val overColor = LocalHomeTileCardContentColor.current
     Row(Modifier.fillMaxWidth().clickable(onClick = onClick).padding(vertical = 4.dp)) {
         Column(Modifier.weight(1f)) {
-            Text("SUSFS · ${status.version} · ${status.implementation}", style = FolkType.Summary,
+            val title = listOf("SUSFS", status.version, status.implementation)
+                .filter(String::isNotBlank).joinToString(" · ")
+            Text(title, style = FolkType.Summary,
                 color = overColor ?: MaterialTheme.colorScheme.onSurface)
             Text(me.weishu.kernelsu.ui.screen.susfsManagementLabel(status.management), style = FolkType.Machine,
                 color = overColor?.copy(alpha = 0.8f)
