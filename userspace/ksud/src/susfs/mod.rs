@@ -397,15 +397,6 @@ fn uts_arbitration_active(config: &Config, query: impl FnOnce() -> Result<bool>)
     }
 }
 
-fn status_summary(config: &Config, uts_active: bool) -> Result<&'static str> {
-    let summary = store::summary_with_deferred(config, uname_conflicts(config, uts_active))?;
-    Ok(if summary == "applied" && !config.rules.is_empty() {
-        "acknowledged_unknown"
-    } else {
-        summary
-    })
-}
-
 fn status_receipt(status: &str) -> Result<serde_json::Value> {
     let state = store::read_state()?;
     let mut failures = state.failures.clone();
@@ -473,7 +464,9 @@ pub fn run(command: Command) -> Result<()> {
                     .as_ref()
                     .is_some_and(|p| p.may_confirm(boot_id.trim()));
                 let summary = match uts_arbitration_active(&config, uts_provider_active) {
-                    Ok(uts_active) => status_summary(&config, uts_active)?,
+                    Ok(uts_active) => {
+                        store::summary_with_deferred(&config, uname_conflicts(&config, uts_active))?
+                    }
                     Err(_) => "unknown",
                 };
                 let receipt = status_receipt(summary)?;
@@ -487,6 +480,7 @@ pub fn run(command: Command) -> Result<()> {
                     "capabilities": capabilities,
                     "static_kstat_supported": capabilities.supported.contains(&"static_kstat"),
                     "management": summary, "config_error": null,
+                    "configured": store::config_exists(),
                     "receipt": receipt,
                     "schema1_backup_available": store::schema1_backup_available(),
                     "uname_applied": uname_provider.applied,
@@ -499,6 +493,7 @@ pub fn run(command: Command) -> Result<()> {
                     "ownership": ownership.ok(),
                     "capabilities": capabilities,
                     "static_kstat_supported": capabilities.supported.contains(&"static_kstat"),
+                    "configured": store::config_exists(),
                     "schema1_backup_available": store::schema1_backup_available(),
                     "uname_applied": uname_provider.applied,
                     "uname_scheduled": uname_provider.scheduled,

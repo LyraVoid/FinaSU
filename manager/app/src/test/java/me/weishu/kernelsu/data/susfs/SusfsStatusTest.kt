@@ -31,7 +31,10 @@ class SusfsStatusTest {
     @Test fun `CLI status preserves saved versus applied`() {
         val status = SusfsStatus.parse("""{"detection":{"status":"compatible","version":"v2.3.0","variant":"GKI","implementation":"builtin","features":[],"proc_nodes":[]},"management":"saved","automatic":false,"config_error":null}""")
         assertEquals("saved", status.management)
+        assertTrue(status.configured)
         assertFalse(status.automatic)
+        val unsaved = SusfsStatus.parse("""{"detection":{"status":"compatible","version":"v2.3.0","variant":"GKI","implementation":"builtin","features":[],"proc_nodes":[]},"management":"idle","configured":false,"automatic":false,"config_error":null}""")
+        assertFalse(unsaved.configured)
     }
     @Test fun `unknown external and switching ownership never enable writes`() {
         val ready = SusfsStatus(protocol = "compatible", ownership = "builtin")

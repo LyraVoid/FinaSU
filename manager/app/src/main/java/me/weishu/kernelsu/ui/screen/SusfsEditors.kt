@@ -454,7 +454,11 @@ private fun SusfsRuleDialog(kind: String, original: String?, status: SusfsStatus
         if (kind == "kstat") {
             Text(stringResource(R.string.susfs_kstat_hint))
             SegmentedColumn { item { SegmentedSwitchItem(title = stringResource(R.string.susfs_clone),
-                summary = stringResource(if (cloneSupported) R.string.susfs_clone_hint else R.string.susfs_proc_hint),
+                summary = stringResource(when {
+                    cloneSupported -> R.string.susfs_clone_hint
+                    status.implementation == "lkm" -> R.string.susfs_proc_hint
+                    else -> R.string.susfs_unsupported
+                }),
                 checked = clone, enabled = cloneSupported || clone, onCheckedChange = { clone = it && cloneSupported }) } }
         }
         if (kind == "map") Text(stringResource(R.string.susfs_map_hint))
@@ -466,7 +470,8 @@ private fun SusfsRuleDialog(kind: String, original: String?, status: SusfsStatus
 internal fun SusfsExtensionsPage(config: JSONObject?, status: SusfsStatus, writable: Boolean, vm: SusfsViewModel) {
     if (status.implementation != "lkm") {
         SegmentedColumn(title = stringResource(R.string.susfs_lkm)) { item { SegmentedListItem(
-            headlineContent = { Text(stringResource(R.string.susfs_lkm_only)) },
+            headlineContent = { Text(susfsDisabledReason(status, false, writable)
+                ?: stringResource(R.string.susfs_lkm_only)) },
             supportingContent = { Text(stringResource(R.string.susfs_lkm_only_hint)) }) } }
         return
     }

@@ -59,6 +59,12 @@ pub fn read_config() -> Result<Config> {
     }
 }
 
+pub fn config_exists() -> bool {
+    Path::new(CONFIG)
+        .symlink_metadata()
+        .is_ok_and(|metadata| metadata.file_type().is_file())
+}
+
 pub fn read_ownership() -> Result<super::model::Ownership> {
     ensure_dir()?;
     match read(OWNERSHIP, 4096) {

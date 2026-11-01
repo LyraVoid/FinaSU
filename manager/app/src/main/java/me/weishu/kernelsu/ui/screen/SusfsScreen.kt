@@ -56,11 +56,11 @@ import org.json.JSONObject
 import me.weishu.kernelsu.wallpaper.LocalFolkWallpaperTokens
 
 @Composable
-fun susfsManagementLabel(status: String): String = stringResource(when (status) {
-    "applied" -> R.string.susfs_applied
+internal fun susfsOperationLabel(status: String): String = stringResource(when (status) {
+    "applied" -> R.string.susfs_acknowledged_boot
     "acknowledged_unknown" -> R.string.susfs_acknowledged_unknown
     "unknown" -> R.string.susfs_state_unknown
-    "partial" -> R.string.susfs_partial
+    "partial" -> R.string.susfs_partial_acknowledged
     "skipped" -> R.string.susfs_skipped
     "failed" -> R.string.susfs_failed
     "pending_reboot" -> R.string.susfs_pending
@@ -68,6 +68,27 @@ fun susfsManagementLabel(status: String): String = stringResource(when (status) 
     "idle" -> R.string.susfs_idle
     else -> R.string.susfs_saved
 })
+
+internal fun susfsProviderLabelResource(status: SusfsStatus): Int = when {
+    status.protocol == "not_detected" -> R.string.susfs_provider_not_detected
+    status.protocol == "compatible" && status.implementation == "builtin" -> R.string.susfs_provider_builtin
+    status.protocol == "compatible" && status.implementation == "lkm" -> R.string.susfs_provider_lkm
+    else -> R.string.susfs_provider_unknown
+}
+
+internal fun susfsControllerLabelResource(status: SusfsStatus): Int = when {
+    status.pendingOwner != null -> R.string.susfs_owner_pending
+    status.ownership == "builtin" -> R.string.susfs_owner_builtin
+    status.ownership == "external" -> R.string.susfs_owner_external
+    else -> R.string.susfs_owner_unknown
+}
+
+internal fun susfsControllerHintResource(status: SusfsStatus): Int = when {
+    status.pendingOwner != null -> R.string.susfs_owner_pending_reason
+    status.ownership == "builtin" -> R.string.susfs_ownership
+    status.ownership == "external" -> R.string.susfs_owner_external_reason
+    else -> R.string.susfs_ownership_unconfirmed
+}
 
 private val susfsPages = listOf(R.string.susfs_overview, R.string.susfs_settings,
     R.string.susfs_tab_paths, R.string.susfs_tab_spoof, R.string.susfs_tab_redirect, R.string.susfs_tab_extensions)
@@ -336,19 +357,11 @@ internal fun susfsDisabledReason(status: SusfsStatus, supported: Boolean, writab
 @Composable
 private fun SusfsNotice(state: SusfsUiState, onApplyAfterSave: () -> Unit) {
     val reason = susfsDisabledReason(state.status, true)
-    val showManagement = state.status.detected && state.status.management != "idle"
-    if (reason != null || showManagement || state.message != null || state.savedNotice) {
+    if (reason != null || state.message != null || state.savedNotice) {
         SegmentedColumn {
             reason?.let { item { SegmentedListItem(headlineContent = { Text(it) },
                 supportingContent = state.status.error?.let { detail -> ({ Text(detail) }) },
                 leadingContent = { Icon(Icons.Rounded.Info, null) }) } }
-            if (showManagement) item {
-                SegmentedListItem(
-                    headlineContent = { Text(susfsManagementLabel(state.status.management)) },
-                    supportingContent = { Text(stringResource(susfsManagementHint(state.status))) },
-                    leadingContent = { Icon(Icons.AutoMirrored.Rounded.ReceiptLong, null) },
-                )
-            }
             state.message?.let { message ->
                 item {
                     SegmentedListItem(
@@ -375,6 +388,7 @@ private fun SusfsNotice(state: SusfsUiState, onApplyAfterSave: () -> Unit) {
 private fun SusfsOverview(state: SusfsUiState, config: JSONObject?, writable: Boolean, vm: SusfsViewModel,
     ownershipAction: (String) -> Unit, restoreSchema1: () -> Unit, import: () -> Unit, export: () -> Unit) {
     val status = state.status
+    val provider = stringResource(susfsProviderLabelResource(status))
     SegmentedColumn(title = stringResource(R.string.susfs_overview)) {
         item { SegmentedListItem(headlineContent = { Text(stringResource(when (status.protocol) {
             "compatible" -> R.string.susfs_compatible
@@ -382,20 +396,21 @@ private fun SusfsOverview(state: SusfsUiState, config: JSONObject?, writable: Bo
             "unknown_protocol" -> R.string.susfs_readonly
             "root_unavailable" -> R.string.susfs_root
             else -> R.string.susfs_probe
-        })) }, supportingContent = { Text(listOf(status.version, status.implementation, status.variant).filter(String::isNotEmpty).joinToString(" · ")) },
+        })) }, supportingContent = { Text(listOf(
+            stringResource(R.string.susfs_provider_label, provider),
+            listOf(status.version, status.variant).filter(String::isNotEmpty).joinToString(" · "),
+        ).filter(String::isNotEmpty).joinToString("\n")) },
             leadingContent = { Icon(Icons.Rounded.VisibilityOff, null) }) }
-        if (status.ownership == "builtin" && status.pendingOwner == null) item {
-            SegmentedListItem(headlineContent = { Text(susfsManagementLabel(status.management)) },
-                supportingContent = { Text(stringResource(susfsManagementHint(status))) })
+        if (status.detected && status.management != "idle") item {
+            val hint = susfsOperationHintResource(status)
+            SegmentedListItem(
+                headlineContent = { Text(susfsOperationLabel(status.management)) },
+                supportingContent = { hint?.let { Text(stringResource(it)) } },
+                leadingContent = { Icon(Icons.AutoMirrored.Rounded.ReceiptLong, null) },
+            )
         }
-        item { SegmentedListItem(
-            headlineContent = { Text(stringResource(when {
-                status.pendingOwner != null -> R.string.susfs_owner_pending
-                status.ownership == "builtin" -> R.string.susfs_owner_builtin
-                status.ownership == "external" -> R.string.susfs_owner_external
-                else -> R.string.susfs_owner_unknown
-            })) },
-            supportingContent = { Text(stringResource(R.string.susfs_ownership_unconfirmed)) },
+        item { SegmentedListItem(headlineContent = { Text(stringResource(susfsControllerLabelResource(status))) },
+            supportingContent = { Text(stringResource(susfsControllerHintResource(status))) },
         ) }
         if (status.pendingOwner != null) item { SegmentedListItem(
             enabled = status.switchReady && !state.busy,
@@ -413,9 +428,11 @@ private fun SusfsOverview(state: SusfsUiState, config: JSONObject?, writable: Bo
             onClick = { ownershipAction("cancel") },
             headlineContent = { Text(stringResource(R.string.susfs_owner_cancel)) },
         ) }
-        item { SegmentedListItem(headlineContent = { Text(if (config == null) stringResource(R.string.susfs_config_unavailable)
-            else stringResource(R.string.susfs_saved_counts, config.getJSONArray("rules").length())) },
-            supportingContent = { Text(stringResource(R.string.susfs_ownership_unconfirmed)) }) }
+        item { SegmentedListItem(headlineContent = { Text(when {
+            config == null -> stringResource(R.string.susfs_config_unavailable)
+            !status.configured -> stringResource(R.string.susfs_config_none)
+            else -> stringResource(R.string.susfs_saved_counts, config.getJSONArray("rules").length())
+        }) }) }
         item { SegmentedSwitchItem(title = stringResource(R.string.susfs_automatic),
             summary = stringResource(R.string.susfs_automatic_hint), checked = status.automatic, enabled = writable,
             onCheckedChange = { value -> vm.change { it.put("automatic", value) } }) }
@@ -426,7 +443,7 @@ private fun SusfsOverview(state: SusfsUiState, config: JSONObject?, writable: Bo
     }
     (state.report ?: status.receipt)?.let { report ->
         SegmentedColumn(title = stringResource(R.string.susfs_last_report)) {
-            item { SegmentedListItem(headlineContent = { Text(susfsManagementLabel(report.status)) },
+            item { SegmentedListItem(headlineContent = { Text(susfsOperationLabel(report.status)) },
                 supportingContent = {
                     Text(listOf(
                         stringResource(R.string.susfs_report_counts, report.applied.size,
@@ -533,12 +550,15 @@ private fun susfsErrorHint(message: String): String = stringResource(when (susfs
     SusfsErrorKind.Unknown -> R.string.susfs_error_hint
 })
 
-private fun susfsManagementHint(status: SusfsStatus): Int = when {
+internal fun susfsOperationHintResource(status: SusfsStatus): Int? = when {
     status.management == "partial" -> R.string.susfs_partial_hint
     status.management == "skipped" -> R.string.susfs_skipped_hint
     status.management == "idle" -> R.string.susfs_idle_hint
     status.management == "deferred" -> R.string.susfs_deferred_hint
     status.management == "saved" && !status.automatic -> R.string.susfs_saved_reboot
+    status.management == "saved" || status.management == "pending_reboot" -> null
+    status.management == "failed" || status.management == "unknown" -> R.string.susfs_error_hint
+    status.implementation == "lkm" -> R.string.susfs_lkm_ack_hint
     else -> R.string.susfs_ack_hint
 }
 

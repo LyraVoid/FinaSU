@@ -237,11 +237,12 @@ internal fun InfoCard(
             if (susfs.detected && !display.hideSusfs) {
                 val interactionSource = remember { MutableInteractionSource() }
                 val haptic = LocalHapticFeedback.current
-                val management = me.weishu.kernelsu.ui.screen.susfsManagementLabel(susfs.management)
+                val provider = stringResource(me.weishu.kernelsu.ui.screen.susfsProviderLabelResource(susfs))
+                val management = me.weishu.kernelsu.ui.screen.susfsOperationLabel(susfs.management)
                 InfoRow(
                     icon = Icons.Rounded.VisibilityOff,
                     label = stringResource(R.string.susfs_title),
-                    value = listOf(susfs.version, susfs.implementation, management)
+                    value = listOf(susfs.version, provider, management)
                         .filter(String::isNotBlank).joinToString(" · "),
                     modifier = Modifier
                         .folkPressScale(interactionSource)
@@ -270,13 +271,14 @@ internal fun InfoCard(
 private fun SusfsHomeRow(status: me.weishu.kernelsu.data.susfs.SusfsStatus, onClick: () -> Unit) {
     if (!status.detected) return
     val overColor = LocalHomeTileCardContentColor.current
+    val provider = stringResource(me.weishu.kernelsu.ui.screen.susfsProviderLabelResource(status))
     Row(Modifier.fillMaxWidth().clickable(onClick = onClick).padding(vertical = 4.dp)) {
         Column(Modifier.weight(1f)) {
-            val title = listOf("SUSFS", status.version, status.implementation)
+            val title = listOf("SUSFS", status.version, provider)
                 .filter(String::isNotBlank).joinToString(" · ")
             Text(title, style = FolkType.Summary,
                 color = overColor ?: MaterialTheme.colorScheme.onSurface)
-            Text(me.weishu.kernelsu.ui.screen.susfsManagementLabel(status.management), style = FolkType.Machine,
+            Text(me.weishu.kernelsu.ui.screen.susfsOperationLabel(status.management), style = FolkType.Machine,
                 color = overColor?.copy(alpha = 0.8f)
                     ?: LocalWallpaperSupportingColor.current
                     ?: MaterialTheme.colorScheme.onSurfaceVariant)
