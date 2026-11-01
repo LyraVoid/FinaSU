@@ -161,8 +161,9 @@ int __init ksu_syscall_hook_manager_init(void)
 #ifdef CONFIG_KRETPROBES
     syscall_regfunc_rp = init_kretprobe("syscall_regfunc", syscall_regfunc_handler);
     syscall_unregfunc_rp = init_kretprobe("syscall_unregfunc", syscall_unregfunc_handler);
-    if (!syscall_regfunc_rp || !syscall_unregfunc_rp)
+    if (!syscall_regfunc_rp || !syscall_unregfunc_rp) {
         ret = -ENOENT;
+    }
 #endif
 
     // Register syscall hooks via dispatcher
