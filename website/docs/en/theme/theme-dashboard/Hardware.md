@@ -48,6 +48,7 @@ Basic rows:
 - Manager version;
 - Kernel version;
 - Full kernel version (when present);
+- Hook type while a driver is connected (`Tracepoint` / `SUSFS Inline`);
 - Device model;
 - SELinux;
 - Seccomp.

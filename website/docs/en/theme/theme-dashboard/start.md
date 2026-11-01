@@ -50,7 +50,7 @@ surface.layout.dashboard.hero
 
 ## Counts and System Info
 
-A full-featured environment shows the superuser and enabled module counts, each taking half of the width horizontally. The system info card then shows the Manager, kernel, device, SELinux, Seccomp and optional capabilities.
+A full-featured environment shows the superuser and enabled module counts, each taking half of the width horizontally. The system info card then shows the Manager, kernel, full version, hook type, device, SELinux, Seccomp and optional capabilities.
 
 ## Difference from Stats
 

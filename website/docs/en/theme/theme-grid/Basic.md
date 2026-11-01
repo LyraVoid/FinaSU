@@ -46,6 +46,7 @@ After the two-column grid, Grid shows a unified system info card:
 
 - Manager version;
 - Kernel version and full version;
+- Hook type (`Tracepoint` / `SUSFS Inline`; older kernels show "Legacy / unknown");
 - Device model;
 - Fingerprint;
 - SELinux;

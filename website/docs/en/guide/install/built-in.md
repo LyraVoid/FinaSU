@@ -113,7 +113,7 @@ Do not enable two KernelSU drivers in the same kernel.
 
 ::: tip SUSFS
 
-The SUSFS kernel implementation is not in the FinaSU repository. Apply only the SUSFS patch matching the target kernel version and enable `CONFIG_KSU_SUSFS`. The current SUSFS integration usually requires `CONFIG_KSU=y` and may also require `CONFIG_THREAD_INFO_IN_TASK=y`.
+The SUSFS kernel implementation is not in the FinaSU repository. Apply only the SUSFS patch matching the target kernel version and enable `CONFIG_KSU_SUSFS`. The current SUSFS integration usually requires `CONFIG_KSU=y` and may also require `CONFIG_THREAD_INFO_IN_TASK=y`. `CONFIG_KSU_SUSFS` enables only the feature layer; select `CONFIG_KSU_HOOK_SUSFS_INLINE` separately for the ARM64 Built-In-only direct entry path.
 
 :::
 
@@ -325,9 +325,9 @@ A system OTA usually does not delete `/data/adb`, but old modules can still brea
 
   Do not keep using the old kernel. Restore the stock `boot` and rebuild a FinaSU kernel matching the new system.
 
-- **SUSFS status is abnormal**
+- **SUSFS status or hook type is abnormal**
 
-  Confirm the kernel has the matching SUSFS patch applied and `CONFIG_KSU_SUSFS` enabled; FinaSU only configures an existing kernel implementation.
+  Confirm the kernel has the matching SUSFS patch applied and `CONFIG_KSU_SUSFS` enabled. For SUSFS Inline, also confirm the build is ARM64 Built-In, the direct-entry check passed, and `CONFIG_KSU_SUSFS` was not mistaken for the backend selector.
 
 :::
 

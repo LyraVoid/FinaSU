@@ -47,6 +47,7 @@ The title is "Manager" and the content is the current system facts:
 - Manager version;
 - Kernel version;
 - Full kernel version;
+- Hook type (hideable; `Tracepoint` / `SUSFS Inline`);
 - Device model;
 - Fingerprint (hideable);
 - SELinux;

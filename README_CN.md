@@ -23,6 +23,7 @@ FinaSU 提供：
 - 内置 FolkZygisk 引擎，并提供管理器控制
 - 内置 Sui 扩展，为支持的应用提供 Shizuku API
 - SUSFS 支持，按内核能力开关
+- 编译期 syscall Hook 选择：默认 Tracepoint，ARM64 Built-In 内核可选择 SUSFS Inline
 - 内核级隐藏：挂载隐藏、SELinux 隐藏、AVC 日志伪装与卸载策略
 - `.fpt` 主题，与 FolkPatch 互通，并提供在线主题商店
 - 多页壁纸、自定义字体与启动图标切换
@@ -60,7 +61,7 @@ Sui 是内置的 Shizuku API 后端：使用 Shizuku 的应用直接走该扩展
 
 ### SUSFS
 
-SUSFS 管理按能力开关。仅在支持的内核上显示相关控件，每次配置变更都会附带应用回执。
+SUSFS 管理按能力开关。仅在支持的内核上显示相关控件，每次配置变更都会附带应用回执。`CONFIG_KSU_SUSFS` 只启用 SUSFS 功能层，与 syscall Hook 后端相互独立；源码集成的 ARM64 内核可以在编译期选择直接入口的 SUSFS Inline，LKM 发布包继续使用 Tracepoint。管理器只通过内核 ABI 读取后端，不能在运行时切换。
 
 ### Folk-Mount
 

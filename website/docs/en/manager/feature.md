@@ -158,7 +158,7 @@ If you cannot even reach the "Working" state, do not go on to install modules, c
 
 ### Device Facts and Support Card
 
-The info card usually shows the Manager version, kernel version, device model, SELinux, Seccomp, and the Zygisk and module mount implementation that were actually detected. SUSFS appears only when it is detected. Some rows can be hidden in [Home Info Settings](/en/setting/home/).
+The info card usually shows the Manager version, kernel version, full kernel version, hook type, device model, SELinux, Seccomp, and the Zygisk and module mount implementation that were actually detected. SUSFS appears only when it is detected. The hook type comes from the kernel `GET_INFO` ABI: the normal values are `Tracepoint` or `SUSFS Inline`; older kernels show "Legacy / unknown", and a failed entry-point registration is shown as abnormal. This field describes the compile-time backend and cannot be switched in the Manager. Some rows can be hidden in [Home Info Settings](/en/setting/home/).
 
 The card at the bottom of the home screen switches between "Learn about FinaSU", "Traditional support content", "Hidden", and "Custom". It only affects presentation and outbound links, not Root or module behavior.
 

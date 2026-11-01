@@ -113,7 +113,7 @@ Built-In 修改的是 Linux 内核，通常位于 `boot`。只刷 `init_boot` �
 
 ::: tip SUSFS
 
-SUSFS 的内核实现不在 FinaSU 仓库中。只应用与目标内核版本匹配的 SUSFS 补丁，并开启 `CONFIG_KSU_SUSFS`。当前 SUSFS 集成通常要求 `CONFIG_KSU=y`，并可能需要 `CONFIG_THREAD_INFO_IN_TASK=y`。
+SUSFS 的内核实现不在 FinaSU 仓库中。只应用与目标内核版本匹配的 SUSFS 补丁，并开启 `CONFIG_KSU_SUSFS`。当前 SUSFS 集成通常要求 `CONFIG_KSU=y`，并可能需要 `CONFIG_THREAD_INFO_IN_TASK=y`。`CONFIG_KSU_SUSFS` 只启用功能层；需要 ARM64 Built-In 专用的直接入口时，另外选择 `CONFIG_KSU_HOOK_SUSFS_INLINE`。
 
 :::
 
@@ -325,9 +325,9 @@ AnyKernel3 包里的脚本以 Root 权限运行，且可能在失败前已经写
 
   不要继续使用旧内核。恢复原厂 `boot`，重新构建匹配新系统的 FinaSU 内核。
 
-- **SUSFS 状态异常**
+- **SUSFS 状态或 Hook 类型异常**
 
-  确认内核已应用匹配版本的 SUSFS 补丁并启用 `CONFIG_KSU_SUSFS`；FinaSU 只配置已有的内核实现。
+  确认内核已应用匹配版本的 SUSFS 补丁并启用 `CONFIG_KSU_SUSFS`。使用 SUSFS Inline 时还要确认构建为 ARM64 Built-In、直接入口检查通过，且没有把 `CONFIG_KSU_SUSFS` 误当成后端开关。
 
 :::
 

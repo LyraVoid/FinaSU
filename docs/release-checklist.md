@@ -104,6 +104,8 @@ curl -s https://api.github.com/repos/LyraVoid/FinaSU/releases/latest |
 - Users in LKM mode see "A newer bundled LKM is available. Tap to update." on Home whenever the
   running module version differs from the APK version code; they install it from the Install page and
   reboot, with no PC and no boot image flashing.
+- Every packaged `kernelsu.ko` uses the default Tracepoint backend. SUSFS Inline requires an ARM64
+  Built-In kernel and is never selected by the LKM release path.
 - Users running a built-in kernel must rebuild and reflash the boot image themselves from the tag.
 
 ## 7. Verify the packaged payloads

@@ -240,7 +240,7 @@ A Metamodule is a special module that declares `metamodule=1` in `module.prop`. 
 
 :::
 
-FolkZygisk steps aside when an external Zygisk provider is detected; features that depend on Zygisk, such as Sui and LSPosed, need at least one available provider. SUSFS is not a kernel implementation built into FinaSU; it needs a source-integrated build or an already loaded SUSFS-LKM.
+FolkZygisk steps aside when an external Zygisk provider is detected; features that depend on Zygisk, such as Sui and LSPosed, need at least one available provider. SUSFS is not a kernel implementation built into FinaSU; it needs a source-integrated build or an already loaded SUSFS-LKM. A source-integrated build can use the default Tracepoint backend or the ARM64 Built-In-only SUSFS Inline backend at compile time.
 
 ## SELinux and Hiding
 

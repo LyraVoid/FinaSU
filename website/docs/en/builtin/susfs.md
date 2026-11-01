@@ -35,6 +35,19 @@ The current integration usually also requires FinaSU to be compiled into the ker
 
 Source integration can provide a fairly complete set of hooks and capabilities, but building, upgrading and re-adapting after a system OTA are all more cumbersome. It suits users who can maintain kernel source and explicitly need the full SUSFS capabilities.
 
+## Hook Type
+
+A source-integrated build can use either compile-time syscall backend:
+
+| Hook type | Configuration | Boundary |
+| --- | --- | --- |
+| Tracepoint | The default `CONFIG_KSU_HOOK_TRACEPOINT` | Works with LKM or Built-In; keeps the generic tracepoint, dispatcher and kprobes |
+| SUSFS Inline | `CONFIG_KSU_HOOK_SUSFS_INLINE=y` | ARM64 Built-In only; the matching SUSFS patch calls FinaSU directly |
+
+`CONFIG_KSU_SUSFS=y` enables the SUSFS feature layer; it does not select Inline. **Tracepoint + SUSFS** and **SUSFS Inline** are separate builds. The latter also requires `CONFIG_KSU=y` and cannot be loaded as an LKM.
+
+Inline does not register the generic syscall tracepoint, dispatcher or kprobes replaced by direct entries. The build checks the kernel source that is actually being compiled for the required `ksu_handle_*` calls. Missing entries, old hook names or Manual Hook conflicts fail the build; there is no fallback to Tracepoint.
+
 ## The SUSFS-LKM Alternative
 
 SUSFS-LKM packages SUSFS as a loadable kernel module, without recompiling the whole kernel. It is usually used in two ways:
@@ -80,6 +93,8 @@ flowchart LR
 - Unknown protocol: read-only display, no unverified control is executed.
 - Compatible protocol: configuration is exposed according to what the kernel reports.
 - Saving the configuration does not mean it is applied; changing rules that are already in effect usually requires a reboot.
+
+The "Hook type" row in the home information card shows the ABI state reported by `GET_INFO`: `Tracepoint` or `SUSFS Inline`. A kernel that predates these capability bits shows "Legacy / unknown"; a selected backend whose entry point is not ready is shown as abnormal. Detecting SUSFS-LKM does not relabel the hook type as Inline.
 
 FinaSU will not patch the kernel, install a `.ko` or load an LKM for you. Loading the LKM and starting it at boot are the responsibility of the module or loader you choose.
 

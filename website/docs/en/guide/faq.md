@@ -222,7 +222,7 @@ Sui is the built-in Shizuku API backend, so compatible apps do not need a separa
 
 ### Why can't I find the SUSFS settings?
 
-SUSFS is a kernel-side capability. FinaSU can work with a source-integrated build or an already loaded SUSFS-LKM; when the current kernel does not report support, the related switches are unavailable. FinaSU itself does not provide a SUSFS implementation and does not load the LKM.
+SUSFS is a kernel-side capability. FinaSU can work with a source-integrated build or an already loaded SUSFS-LKM; when the current kernel does not report support, the related switches are unavailable. FinaSU itself does not provide a SUSFS implementation and does not load the LKM. The source-integrated hook type is fixed at build time as Tracepoint or the ARM64 Built-In-only SUSFS Inline backend and cannot be switched from the Manager.
 
 ## Update and Uninstall
 

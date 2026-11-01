@@ -12,7 +12,7 @@ copyright:
 
 # Component Hiding
 
-<Badge text="Three items on the working card" type="tip" /> <Badge text="Four items in system info" type="info" /> <Badge text="Hiding does not change state" type="warning" />
+<Badge text="Three items on the working card" type="tip" /> <Badge text="Five items in system info" type="info" /> <Badge text="Hiding does not change state" type="warning" />
 
 GridUI hiding controls fall into two groups: the working card's own three flags, and the optional rows of the system info card.
 
@@ -35,11 +35,12 @@ All three flags are stored in `surface.layout.grid.workCard.flag.*` and have his
 Rows that can be hidden:
 
 - Fingerprint;
+- Hook type while a driver is connected;
 - Zygisk implementation (when present);
 - SUSFS (when detected);
 - Module mount implementation (when status is available).
 
-Basic rows always remain: Manager version, kernel, device model, SELinux, Seccomp.
+Basic rows always remain: Manager version, kernel, device model, SELinux, Seccomp. Hook type appears only while a driver is connected, and hiding it does not change the backend.
 
 ## Bottom Support Card
 

@@ -14,7 +14,7 @@ copyright:
 
 <Badge text="CONFIG_KSU=y" type="tip" /> <Badge text="必须匹配签名" type="warning" /> <Badge text="先备份启动镜像" type="danger" />
 
-Built-In 把 FinaSU 驱动直接编入目标内核镜像，而不是作为 `kernelsu.ko` 在启动后加载。它和 LKM 使用同一份驱动源码、钩子和管理器接口，==区别主要在编译方式、启动镜像位置和故障恢复路径==。
+Built-In 把 FinaSU 驱动直接编入目标内核镜像，而不是作为 `kernelsu.ko` 在启动后加载。它和 LKM 使用同一份驱动源码和管理器接口；==Built-In 还可以在编译期选择 Tracepoint 或 SUSFS Inline syscall 后端==，区别还包括启动镜像位置和故障恢复路径。
 
 :::: table Built-In 与 LKM
 
@@ -49,13 +49,36 @@ Kconfig 的硬依赖是：
 | 选项 | 原因 |
 | --- | --- |
 | `CONFIG_KSU=y` | 把驱动编入内核 |
-| `CONFIG_KPROBES=y` | 驱动安装 kprobe/tracepoint 钩子 |
+| `CONFIG_KPROBES=y` | FinaSU 的硬依赖；Tracepoint 后端和保留的 kprobe 功能需要 |
 | `CONFIG_EXT4_FS=y` | 驱动依赖 `ext4_unregister_sysfs` |
 | `CONFIG_HEADERS_INSTALL=y` | 安装目标 UAPI 头，用于编译 preinit runner |
 
 ::::
 
-`CONFIG_KSU_SUSFS` 还要求 `CONFIG_KSU=y` 与 `CONFIG_THREAD_INFO_IN_TASK=y`。只有计划接入已有 SUSFS 内核实现时才开启。
+`CONFIG_KSU_SUSFS` 还要求 `CONFIG_KSU=y` 与 `CONFIG_THREAD_INFO_IN_TASK=y`。只有计划接入已有 SUSFS 内核实现时才开启；它是 SUSFS 功能开关，不是 syscall 后端开关。
+
+## 选择 Hook 类型
+
+内核在编译期选择 syscall 入口，管理器只能读取结果，不能在运行时切换，也不会自动回退到另一种后端。
+
+:::: table Syscall 后端
+
+| Hook 类型 | 配置 | 依赖 | 入口 |
+| --- | --- | --- | --- |
+| Tracepoint | `CONFIG_KSU_HOOK_TRACEPOINT=y` | `HAVE_SYSCALL_TRACEPOINTS`；支持 LKM 与 Built-In | `sys_enter` tracepoint、共享 dispatcher 与其余 kprobe |
+| SUSFS Inline | `CONFIG_KSU_HOOK_SUSFS_INLINE=y` | `ARM64=y`、`CONFIG_KSU=y`、`CONFIG_KSU_SUSFS=y` | 匹配 SUSFS 内核补丁中的直接 `ksu_handle_*` 调用 |
+
+::::
+
+Tracepoint 是默认后端。SUSFS Inline 只支持 ARM64 Built-In：它不注册通用 syscall tracepoint、共享 dispatcher，以及已被 SUSFS 直接入口替代的 kprobe。仍需要 `sys_call_table` 的独立钩子可以保留表解析，但不会复用通用 dispatcher 安装。
+
+`CONFIG_KSU_SUSFS` 与后端正交：
+
+- `CONFIG_KSU_SUSFS=n`：只能使用 Tracepoint。
+- `CONFIG_KSU_SUSFS=y` 且未启用 Inline：Tracepoint + SUSFS 功能。
+- `CONFIG_KSU_SUSFS=y` 且启用 `CONFIG_KSU_HOOK_SUSFS_INLINE=y`：SUSFS Inline。
+
+不要同时启用两个 choice 选项。最终 `.config` 必须只包含一种后端。
 
 ## 把源码接进内核树
 
@@ -180,13 +203,13 @@ Built-In 内核使用的 UAPI 必须同时提供给：
 - `userspace/ksud/src/ksu_uapi.rs` 与 `ksucalls.rs`。
 - Manager JNI 与 Kotlin 调用层。
 
-当前 `KERNEL_SU_UAPI_VERSION` 为 `6`。只改内核结构体而不更新用户态，可能导致请求长度、字段偏移或命令号不一致。详细约束见 [SuperCall 与 UAPI](/developer/supercall/)。
+当前 `KERNEL_SU_UAPI_VERSION` 为 `6`。只改内核结构体而不更新用户态，可能导致请求长度、字段偏移或命令号不一致。`GET_INFO` 通过 `KSU_GET_INFO_FLAG_HOOK_TRACEPOINT`、`KSU_GET_INFO_FLAG_HOOK_SUSFS_INLINE` 和 `KSU_GET_INFO_FLAG_HOOK_READY` 报告后端及注册状态。详细约束见 [SuperCall 与 UAPI](/developer/supercall/)。
 
 ## 版本字符串
 
 内核构建会尝试从 FinaSU checkout 的 Git 信息生成完整版本字符串，并通过 UAPI 提供给管理器。若构建树没有 `kernel/` 所在的 Git 元数据，版本会退化为未知值。
 
-版本字符串只标识驱动来源，不表示 Built-In/LKM、preinit、late-load 或 SUSFS 状态；这些由 `GET_INFO` 的能力标志单独报告。
+版本字符串只标识驱动来源，不表示 Built-In/LKM、preinit、late-load、SUSFS 状态或 Hook 类型；这些由 `GET_INFO` 的能力标志单独报告。
 
 ## SUSFS 集成
 
@@ -198,6 +221,25 @@ CONFIG_KSU_SUSFS=y
 CONFIG_THREAD_INFO_IN_TASK=y
 ```
 
+这段配置仍使用默认 Tracepoint。若还要求编译期启用 Inline：
+
+```text
+CONFIG_KSU_HOOK_SUSFS_INLINE=y
+```
+
+此时匹配的内核补丁必须直接调用 FinaSU 的入口。构建会运行 `kernel/tools/check_susfs_inline.sh` 检查实际参与构建的内核源码；缺少 `ksu_handle_*`、出现旧钩子名或 `CONFIG_KSU_MANUAL_HOOK` 冲突时构建直接失败。
+
+| 路径 | 直接入口 |
+| --- | --- |
+| input / 安全模式 | `ksu_handle_input_handle_event` |
+| exec 与 post-exec | `ksu_handle_execveat*`、`ksu_handle_post_execveat_sucompat` |
+| preinit | `ksu_setup_preinit_file`、`ksu_preinit_handle_post_execveat` |
+| `faccessat` | `ksu_handle_faccessat` |
+| `vfs_statx` / `vfs_fstat` | `ksu_handle_stat`、`ksu_handle_vfs_fstat` |
+| read / init.rc | `ksu_handle_sys_read` |
+| reboot / supercall | `ksu_handle_sys_reboot` |
+| setresuid | `ksu_handle_setresuid` |
+
 本仓库提供 SUSFS 接入点、SELinux 辅助符号和配置层；`fs/susfs.c`、`include/linux/susfs.h` 与各内核版本的路径钩子来自外部 SUSFS 项目。不能把一个内核版本的补丁直接用于另一个版本，也不能把 FinaSU 的驱动侧接口当作完整 SUSFS 实现。
 
 外部还有一种 `susfs-lkm` 方案：它把 SUSFS 侧实现做成可加载内核模块，可由内核模块加载器管理，或封装为 Magisk/FinaSU 模块交付。它和目标内核源码集成版在可见功能、钩子覆盖范围与兼容性上可能有差距；能力仍取决于具体 `susfs-lkm` 版本和内核。不要把它描述成与内核补丁版完全等价。
@@ -205,6 +247,12 @@ CONFIG_THREAD_INFO_IN_TASK=y
 ::: warning SUSFS 不是普通内置能力
 
 “驱动 Built-In”不等于“SUSFS 已开启”。先有匹配的内核实现，再有 `CONFIG_KSU_SUSFS` 和对应配置，管理器中的设置才有实际对象。
+
+:::
+
+::: warning Inline 失败不会静默回退
+
+Inline 初始化失败时，内核仍报告选定的 Hook 类型，但不会设置 `KSU_GET_INFO_FLAG_HOOK_READY`。管理器会显示异常；不会自动改用 Tracepoint。
 
 :::
 
@@ -228,6 +276,10 @@ CONFIG_THREAD_INFO_IN_TASK=y
 确认使用的是匹配内核版本的 SUSFS 补丁、`CONFIG_KSU=y`，并核对补丁是否要求本仓库已经提供的符号。不要同时叠加整套上游驱动补丁。
 ::::
 
+:::: collapse 启用 SUSFS Inline 后构建提示 hook-site check failed
+检查补丁是否在真实的 `fs/`、`drivers/input/` 与 `kernel/` 源码中加入全部直接入口，且没有残留旧钩子名或 Manual Hook 配置。Inline 不能通过 LKM 绕过该检查。
+::::
+
 :::: collapse 可以拿另一个 KMI 的镜像试刷吗
 不可以。KMI、内核配置、分区布局、AVB 与厂商补丁都可能不同。一个 KMI 构建成功不能证明其他 KMI 可启动。
 ::::
@@ -238,4 +290,5 @@ CONFIG_THREAD_INFO_IN_TASK=y
 
 - [Built-In 安装](/guide/install/built-in/)：面向安装者的分区、刷写与恢复流程。
 - [SuperCall 与 UAPI](/developer/supercall/)：驱动 FD、ioctl 权限与 ABI 同步。
+- [SUSFS](/builtin/susfs/)：源码集成、Hook 类型与 SUSFS-LKM 的边界。
 - [构建 FinaSU](/developer/build/)：LKM、载荷、APK 与最终发布流程。

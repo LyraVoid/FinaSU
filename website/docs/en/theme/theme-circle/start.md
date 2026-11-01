@@ -37,7 +37,7 @@ flowchart TD
 | Top bar | Title/title image, music, install, reboot |
 | Status card | Running, not installed or unsupported; version and run mode |
 | Counts | Superuser count, enabled module count |
-| System info | Manager, kernel, device, SELinux, Seccomp and optional capabilities |
+| System info | Manager, kernel, full version, hook type, device, SELinux, Seccomp and optional capabilities |
 | Bottom | Learn about FinaSU, classic support, custom or hidden |
 
 ::::

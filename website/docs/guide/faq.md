@@ -222,7 +222,7 @@ Sui 是内置的 Shizuku API 后端，兼容应用不需要另外安装 Shizuku�
 
 ### 为什么找不到 SUSFS 设置？
 
-SUSFS 是内核侧能力。FinaSU 可以对接源码集成版或已加载的 SUSFS-LKM；当前内核未报告支持时，相关开关不可用。FinaSU 自身不提供 SUSFS 实现，也不会加载 LKM。
+SUSFS 是内核侧能力。FinaSU 可以对接源码集成版或已加载的 SUSFS-LKM；当前内核未报告支持时，相关开关不可用。FinaSU 自身不提供 SUSFS 实现，也不会加载 LKM。源码集成版的 Hook 类型在编译期固定为 Tracepoint 或 ARM64 Built-In 专用的 SUSFS Inline，不能从管理器切换。
 
 ## 更新与卸载
 

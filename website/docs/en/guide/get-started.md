@@ -239,6 +239,8 @@ Replace `KSU_EXPECTED_SIZE2` and `KSU_EXPECTED_HASH2` with the output values and
 
 Apply the SUSFS patch and enable `CONFIG_KSU_SUSFS` only when it matches the target kernel version. The current integration also requires `CONFIG_KSU=y` and `CONFIG_THREAD_INFO_IN_TASK=y`. The FinaSU repository provides the integration point but does not include the SUSFS kernel implementation (`fs/susfs.c` and the hooks for each kernel version).
 
+The default remains Tracepoint. Enable `CONFIG_KSU_HOOK_SUSFS_INLINE` only when the direct SUSFS entry path is required; it is ARM64 Built-In only and expects the patch to contain every `ksu_handle_*` call checked by the build. `CONFIG_KSU_SUSFS` itself does not select the backend.
+
 Full kernel-side documentation is in [Kernel Integration](/en/developer/builtin-integration/#susfs-integration) and [SUSFS](/en/builtin/susfs/).
 
 ### Building the LKM Yourself

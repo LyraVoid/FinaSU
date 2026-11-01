@@ -239,6 +239,8 @@ printf 'size=%s\nhash=%s\n' "$cert_size" "$cert_hash"
 
 只有在内核目标版本匹配时，才应用 SUSFS 补丁并启用 `CONFIG_KSU_SUSFS`。当前集成还要求 `CONFIG_KSU=y` 和 `CONFIG_THREAD_INFO_IN_TASK=y`。FinaSU 仓库提供对接入口，但不包含 SUSFS 内核实现（`fs/susfs.c` 及各内核版本钩子）。
 
+默认仍使用 Tracepoint。明确需要 SUSFS 直接入口时，再启用 `CONFIG_KSU_HOOK_SUSFS_INLINE`；它只支持 ARM64 Built-In，并要求补丁包含构建检查所需的全部 `ksu_handle_*` 调用。`CONFIG_KSU_SUSFS` 本身不选择后端。
+
 完整的内核侧说明见 [内核集成](/developer/builtin-integration/#susfs) 和 [SUSFS](/builtin/susfs/)。
 
 ### 自己构建 LKM

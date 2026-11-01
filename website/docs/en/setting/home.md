@@ -195,16 +195,20 @@ Turning the image switch off returns to the selected text title. The title image
 
 ## Home Screen Information Visibility
 
-The home screen information area offers four hide switches:
+The home screen information area offers six hide switches:
 
 - **Hide system fingerprint**: removes the system and kernel identification rows.
 - **Hide Zygisk implementation**: only appears when a Zygisk implementation actually exists.
 - **Hide SUSFS**: only appears when SUSFS is detected.
 - **Hide module mount**: only appears when the Folk Mount state can be read.
+- **Hide full kernel version**: only appears when the driver provides a full version string.
+- **Hide hook type**: hides the `Tracepoint` / `SUSFS Inline` row reported by the kernel ABI.
+
+The hook type appears after the full kernel version. A kernel without the capability bits shows "Legacy / unknown"; a selected backend whose entry point failed to register shows an abnormal state. This field describes the compile-time entry path, is not a health state, and cannot switch the backend at runtime.
 
 ::: info Hiding is not turning off
 
-These switches only change what the home screen shows. Zygisk, SUSFS, the mount backend and Root authorization keep working as before. When troubleshooting compatibility problems, restore the display first and then judge the actual state.
+These switches only change what the home screen shows. Zygisk, SUSFS, the mount backend, hook type and Root authorization keep working as before. When troubleshooting compatibility problems, restore the display first and then judge the actual state.
 
 :::
 

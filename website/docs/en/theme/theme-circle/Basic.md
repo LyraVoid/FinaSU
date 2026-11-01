@@ -77,6 +77,7 @@ The basic facts are always shown:
 Optional facts appear according to capability:
 
 - Fingerprint;
+- Hook type while a driver is connected (`Tracepoint` / `SUSFS Inline`; older kernels show "Legacy / unknown");
 - The actual Zygisk provider;
 - The actual Folk Mount / NoMount provider;
 - The detected SUSFS version, implementation and management method.

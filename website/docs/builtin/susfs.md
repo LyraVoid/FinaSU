@@ -35,6 +35,19 @@ FinaSU 本身可以通过 LKM 方式安装，这不代表设备自动拥有 SUSF
 
 源码集成可以提供较完整的钩子和能力集，但构建、升级以及系统 OTA 后重新适配都更麻烦。它适合能够维护内核源码、并且明确需要完整 SUSFS 能力的用户。
 
+## Hook 类型
+
+源码集成版可以搭配两种编译期 syscall 后端：
+
+| Hook 类型 | 配置 | 边界 |
+| --- | --- | --- |
+| Tracepoint | 默认的 `CONFIG_KSU_HOOK_TRACEPOINT` | 支持 LKM 或 Built-In；保留通用 tracepoint、dispatcher 与 kprobe |
+| SUSFS Inline | `CONFIG_KSU_HOOK_SUSFS_INLINE=y` | 仅 ARM64 Built-In；由匹配的 SUSFS 补丁直接调用 FinaSU 入口 |
+
+`CONFIG_KSU_SUSFS=y` 表示启用 SUSFS 功能层，不等于选择 Inline。合法的 **Tracepoint + SUSFS** 和 **SUSFS Inline** 是两个不同构建；后者还要求 `CONFIG_KSU=y`，不能做成 LKM。
+
+Inline 不注册被直接入口替代的通用 syscall tracepoint、dispatcher 和 kprobe；构建会检查实际内核源码中的 `ksu_handle_*` 调用。缺少入口、旧钩子名或 Manual Hook 冲突会直接失败，不会自动回退到 Tracepoint。
+
 ## SUSFS-LKM 替代方案
 
 SUSFS-LKM 把 SUSFS 做成可加载内核模块，不需要重新编译完整内核。它通常有两种使用方式：
@@ -80,6 +93,8 @@ flowchart LR
 - 协议未知：只读显示，不执行未经验证的控制。
 - 协议兼容：按内核报告的能力开放配置。
 - 保存配置不等于已经应用，修改已生效规则后通常需要重启。
+
+首页信息卡的“钩子类型”显示当前驱动来自 `GET_INFO` 的 ABI 状态：`Tracepoint` 或 `SUSFS Inline`。旧内核没有对应能力位时显示“旧版 / 未知”；后端已选定但入口未就绪时显示“异常”。SUSFS-LKM 的检测成功不会把 Hook 类型自动改写成 Inline。
 
 FinaSU 不会替你给内核打补丁、安装 `.ko` 或加载 LKM。LKM 的加载与开机自启由你所选择的模块或加载器负责。
 

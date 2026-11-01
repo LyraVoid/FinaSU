@@ -88,7 +88,7 @@ config:
           width: 26
           height: 26
           wrap: true
-        details: UTS View, network isolation, and SUSFS integration are exposed according to actual kernel support. SUSFS requires source integration or a matching SUSFS-LKM.
+        details: UTS View, network isolation, and SUSFS integration follow actual kernel support. SUSFS needs source integration or a matching SUSFS-LKM; source builds can select Tracepoint or the ARM64 Built-In-only SUSFS Inline backend at compile time.
         link: /en/builtin/uts-view/
       - title: Modules & Plugins
         icon:

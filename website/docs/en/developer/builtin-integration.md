@@ -14,7 +14,7 @@ copyright:
 
 <Badge text="CONFIG_KSU=y" type="tip" /> <Badge text="Signature must match" type="warning" /> <Badge text="Back up the boot image" type="danger" />
 
-Built-In compiles the FinaSU driver directly into the target kernel image instead of loading it via `kernelsu.ko` after boot. It shares the same driver source, hooks and Manager interfaces with LKM; ==the differences are mainly the build method, the location in the boot image and the failure recovery path==.
+Built-In compiles the FinaSU driver directly into the target kernel image instead of loading it via `kernelsu.ko` after boot. It shares the same driver source and Manager interfaces with LKM; ==a Built-In kernel can also select the Tracepoint or SUSFS Inline syscall backend at build time==, and it differs in the boot image location and failure recovery path.
 
 :::: table Built-In vs LKM
 
@@ -49,13 +49,36 @@ The hard Kconfig dependencies are:
 | Option | Reason |
 | --- | --- |
 | `CONFIG_KSU=y` | compile the driver into the kernel |
-| `CONFIG_KPROBES=y` | the driver installs kprobe/tracepoint hooks |
+| `CONFIG_KPROBES=y` | hard dependency for FinaSU; required by the Tracepoint backend and retained kprobe features |
 | `CONFIG_EXT4_FS=y` | the driver depends on `ext4_unregister_sysfs` |
 | `CONFIG_HEADERS_INSTALL=y` | install the target UAPI headers, needed to build the preinit runner |
 
 ::::
 
-`CONFIG_KSU_SUSFS` also requires `CONFIG_KSU=y` and `CONFIG_THREAD_INFO_IN_TASK=y`. Enable it only when you plan to attach to an existing kernel-side SUSFS implementation.
+`CONFIG_KSU_SUSFS` also requires `CONFIG_KSU=y` and `CONFIG_THREAD_INFO_IN_TASK=y`. Enable it only when you plan to attach to an existing kernel-side SUSFS implementation. It is the SUSFS feature switch, not the syscall backend selector.
+
+## Choose the Hook Type
+
+The kernel selects the syscall entry path at build time. The Manager can only read the result; there is no runtime switch and no automatic fallback.
+
+:::: table Syscall Backends
+
+| Hook type | Configuration | Requirements | Entry path |
+| --- | --- | --- | --- |
+| Tracepoint | `CONFIG_KSU_HOOK_TRACEPOINT=y` | `HAVE_SYSCALL_TRACEPOINTS`; works with LKM and Built-In | `sys_enter` tracepoint, the shared dispatcher and the remaining kprobes |
+| SUSFS Inline | `CONFIG_KSU_HOOK_SUSFS_INLINE=y` | `ARM64=y`, `CONFIG_KSU=y`, `CONFIG_KSU_SUSFS=y` | Direct `ksu_handle_*` calls from the matching SUSFS kernel patch |
+
+::::
+
+Tracepoint is the default. SUSFS Inline is ARM64 Built-In only: it does not register the generic syscall tracepoint, the shared dispatcher, or the kprobes replaced by SUSFS direct entry points. Independent hooks that still require `sys_call_table` may retain table parsing without installing the generic dispatcher.
+
+`CONFIG_KSU_SUSFS` is orthogonal to the backend:
+
+- `CONFIG_KSU_SUSFS=n`: only Tracepoint is available.
+- `CONFIG_KSU_SUSFS=y` without Inline: Tracepoint plus SUSFS features.
+- `CONFIG_KSU_SUSFS=y` with `CONFIG_KSU_HOOK_SUSFS_INLINE=y`: SUSFS Inline.
+
+Never enable both choice options. The final `.config` must contain exactly one backend.
 
 ## Integrate the Source into the Kernel Tree
 
@@ -180,13 +203,13 @@ The UAPI used by a Built-In kernel must be provided to all of these at the same 
 - `userspace/ksud/src/ksu_uapi.rs` and `ksucalls.rs`.
 - The Manager JNI and the Kotlin call layer.
 
-The current `KERNEL_SU_UAPI_VERSION` is `6`. Changing only the kernel structs without updating userspace can desynchronize request lengths, field offsets or command numbers. See [SuperCall & UAPI](/en/developer/supercall/) for the detailed constraints.
+The current `KERNEL_SU_UAPI_VERSION` is `6`. Changing only the kernel structs without updating userspace can desynchronize request lengths, field offsets or command numbers. `GET_INFO` reports the backend and its registration state through `KSU_GET_INFO_FLAG_HOOK_TRACEPOINT`, `KSU_GET_INFO_FLAG_HOOK_SUSFS_INLINE` and `KSU_GET_INFO_FLAG_HOOK_READY`. See [SuperCall & UAPI](/en/developer/supercall/) for the detailed constraints.
 
 ## Version String
 
 The kernel build attempts to generate a full version string from the Git information of the FinaSU checkout and expose it to the Manager over the UAPI. If the build tree has no Git metadata for `kernel/`, the version degrades to an unknown value.
 
-The version string only identifies the driver source; it does not indicate Built-In/LKM, preinit, late-load or SUSFS state. Those are reported separately through the capability flags of `GET_INFO`.
+The version string only identifies the driver source; it does not indicate Built-In/LKM, preinit, late-load, SUSFS state or hook type. Those are reported separately through the capability flags of `GET_INFO`.
 
 ## SUSFS Integration
 
@@ -198,6 +221,25 @@ CONFIG_KSU_SUSFS=y
 CONFIG_THREAD_INFO_IN_TASK=y
 ```
 
+This configuration still uses the default Tracepoint backend. To select Inline at build time, also enable:
+
+```text
+CONFIG_KSU_HOOK_SUSFS_INLINE=y
+```
+
+The matching kernel patch must then call FinaSU directly. The build runs `kernel/tools/check_susfs_inline.sh` against the kernel source that is actually being compiled; missing `ksu_handle_*` calls, old hook names or a conflicting `CONFIG_KSU_MANUAL_HOOK` reference fail the build.
+
+| Path | Direct entry |
+| --- | --- |
+| input / safe mode | `ksu_handle_input_handle_event` |
+| exec and post-exec | `ksu_handle_execveat*`, `ksu_handle_post_execveat_sucompat` |
+| preinit | `ksu_setup_preinit_file`, `ksu_preinit_handle_post_execveat` |
+| `faccessat` | `ksu_handle_faccessat` |
+| `vfs_statx` / `vfs_fstat` | `ksu_handle_stat`, `ksu_handle_vfs_fstat` |
+| read / init.rc | `ksu_handle_sys_read` |
+| reboot / supercall | `ksu_handle_sys_reboot` |
+| setresuid | `ksu_handle_setresuid` |
+
 This repository provides the SUSFS integration points, the SELinux helper symbols and the configuration layer; `fs/susfs.c`, `include/linux/susfs.h` and the path hooks for each kernel version come from an external SUSFS project. A patch for one kernel version cannot be used directly on another version, and the driver-side interface in FinaSU is not a complete SUSFS implementation.
 
 There is also an external `susfs-lkm` approach: it implements the SUSFS side as a loadable kernel module, which the kernel module loader can manage or which can be delivered as a Magisk/FinaSU module. It may differ from source-integrated versions in visible features, hook coverage and compatibility; the capabilities still depend on the specific `susfs-lkm` version and the kernel. Do not describe it as fully equivalent to the kernel patch version.
@@ -205,6 +247,12 @@ There is also an external `susfs-lkm` approach: it implements the SUSFS side as 
 ::: warning SUSFS Is Not an Ordinary Built-In Capability
 
 A Built-In driver does not mean SUSFS is enabled. Only after a matching kernel implementation exists, followed by `CONFIG_KSU_SUSFS` and the related configuration, do the Settings in the Manager have a real object to act on.
+
+:::
+
+::: warning Inline Failures Do Not Fall Back
+
+If Inline initialization fails, the kernel still reports the selected hook type but does not set `KSU_GET_INFO_FLAG_HOOK_READY`. The Manager shows the abnormal state and does not switch to Tracepoint.
 
 :::
 
@@ -228,6 +276,10 @@ Check driver identity, the current mount backend, whether the module is enabled,
 Confirm you are using the SUSFS patch for the matching kernel version and `CONFIG_KSU=y`, and check whether the patch expects symbols this repository already provides. Do not stack an entire upstream driver patch set on top.
 ::::
 
+:::: collapse The build reports hook-site check failed after enabling SUSFS Inline
+Check that the patch adds every direct entry to the real `fs/`, `drivers/input/` and `kernel/` sources and leaves no old hook name or Manual Hook configuration. Inline cannot bypass the check through an LKM build.
+::::
+
 :::: collapse Can I flash an image from another KMI to try it
 No. KMI, kernel configuration, partition layout, AVB and vendor patches may all differ. A successful build for one KMI does not prove any other KMI can boot.
 ::::
@@ -238,4 +290,5 @@ No. KMI, kernel configuration, partition layout, AVB and vendor patches may all 
 
 - [Built-In installation](/en/guide/install/built-in/): partitions, flashing and recovery flow for installers.
 - [SuperCall & UAPI](/en/developer/supercall/): driver FD, ioctl permissions and ABI synchronization.
+- [SUSFS](/en/builtin/susfs/): source integration, hook types and SUSFS-LKM boundaries.
 - [Build FinaSU](/en/developer/build/): LKM, payloads, APK and the final release flow.

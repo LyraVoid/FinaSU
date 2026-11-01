@@ -77,6 +77,7 @@ CircleUI 使用统一的全宽 tonal card 与纵向间距。页面本身滚动�
 可选事实按能力显示：
 
 - 指纹；
+- 钩子类型（驱动连接时；`Tracepoint` / `SUSFS Inline`，旧内核为“旧版 / 未知”）；
 - Zygisk 实际提供者；
 - Folk Mount / NoMount 实际提供者；
 - 检测到的 SUSFS 版本、实现与管理方式。

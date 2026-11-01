@@ -29,6 +29,7 @@ Safe mode, jailbreak mode and custom LKM are more important state hints and are 
 | Row | Hideable | Extra condition |
 | --- | --- | --- |
 | Fingerprint | Yes | Device information is available |
+| Hook type | Yes | A driver is connected |
 | Zygisk implementation | Yes | A Zygisk provider currently exists |
 | SUSFS | Yes | SUSFS is currently detected |
 | Module mount implementation | Yes | Folk Mount status is available and reading did not fail |
@@ -44,7 +45,7 @@ The following basic facts are always shown:
 - SELinux;
 - Seccomp.
 
-Hiding Zygisk or SUSFS does not turn off FolkZygisk, an external provider or SUSFS kernel features. When troubleshooting detection problems, either show the corresponding row again or check the current boot state on the feature page.
+Hiding Zygisk or SUSFS does not turn off FolkZygisk, an external provider or SUSFS kernel features; hiding the hook type does not change the kernel backend either. When troubleshooting detection problems, either show the corresponding row again or check the current boot state on the feature page.
 
 ## Bottom Support Card
 

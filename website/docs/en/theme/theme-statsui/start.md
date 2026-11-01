@@ -61,7 +61,7 @@ Settings entry: "Settings → Appearance → Layout → Top layout", shown only 
 | Top | The standard status card, or the Grid working card plus counts |
 | Monitoring | CPU temperature waveform, RAM waveform, CPU clusters, battery, zram, swap |
 | Ring statistics | Module, superuser and plugin counts |
-| System info | Manager, kernel, device, SELinux, Seccomp and optional capabilities |
+| System info | Manager, kernel, full version, hook type, device, SELinux, Seccomp and optional capabilities |
 
 ::::
 

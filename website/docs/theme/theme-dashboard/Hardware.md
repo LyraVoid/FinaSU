@@ -48,6 +48,7 @@ Dashboard 的“硬件”页面描述系统事实，而不是持续监控。它�
 - 管理器版本；
 - 内核版本；
 - 完整内核版本（存在时）；
+- 钩子类型（驱动连接时；`Tracepoint` / `SUSFS Inline`）；
 - 设备型号；
 - SELinux；
 - Seccomp。

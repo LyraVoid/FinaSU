@@ -38,7 +38,7 @@ flowchart LR
 
 ## FD 从哪里来
 
-驱动通过重启 syscall 的 kprobe 安装匿名 inode FD。调用方使用固定 magic：
+调用方通过重启 syscall 参数请求匿名 inode FD。Tracepoint 后端在 `reboot` 上注册 kprobe，并通过 `task_work` 安装；SUSFS Inline 后端由内核补丁直接进入 `ksu_handle_sys_reboot` 并安装。两种方式使用相同的固定 magic：
 
 ```text
 KSU_INSTALL_MAGIC1 = 0xDEADBEEF
@@ -51,12 +51,12 @@ KSU_INSTALL_MAGIC2 = 0xCAFEBABE
 sequenceDiagram
     participant U as ksud / JNI
     participant R as reboot syscall
-    participant K as ksu_driver kprobe
-    participant T as task_work
+    participant K as Tracepoint kprobe / Inline direct entry
+    participant F as FD install
     U->>R: reboot(magic1, magic2, 0, &fd)
-    R->>K: pre_handler 识别 magic
-    K->>T: 安排 task_work
-    T->>U: 安装 anon-inode FD
+    R->>K: 后端识别 magic
+    K->>F: task_work 或直接安装
+    F->>U: 写入 anon-inode FD
     U->>U: 保存 FD
     U->>U: ioctl(fd, command, args)
 ```
@@ -121,7 +121,7 @@ flowchart TD
 
 ::::
 
-`GET_INFO` 返回的 capability flags 用于区分 LKM、受信管理器、late-load、PR 构建、Bundled 和 preinit。UAPI 版本是 `6`；feature ID 的当前最大值来自 `KSU_FEATURE_MAX`，不要在客户端硬编码旧的 5 或 6。
+`GET_INFO` 返回的 capability flags 用于区分 LKM、受信管理器、late-load、PR 构建、Bundled、preinit 和 syscall Hook 类型。Hook 相关标志为 `KSU_GET_INFO_FLAG_HOOK_TRACEPOINT`、`KSU_GET_INFO_FLAG_HOOK_SUSFS_INLINE` 与 `KSU_GET_INFO_FLAG_HOOK_READY`。两个类型位同时出现属于冲突；都缺失表示旧内核不支持该状态；类型已报告但 READY 未置位表示后端入口异常。客户端不得把缺失状态假定为 Inline，也不得自动回退。UAPI 版本是 `6`；feature ID 的当前最大值来自 `KSU_FEATURE_MAX`，不要在客户端硬编码旧的 5 或 6。
 
 ## 源码布局
 

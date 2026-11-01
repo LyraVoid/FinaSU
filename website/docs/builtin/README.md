@@ -80,7 +80,7 @@ flowchart TD
 
 ### 内核补丁与 LKM
 
-**SUSFS** 的实现不在此仓库。FinaSU 只提供状态检测、配置和安全对接。没有内核补丁时可以使用匹配的 SUSFS-LKM，但其功能范围通常少于源码集成版。
+**SUSFS** 的实现不在此仓库。FinaSU 只提供状态检测、配置和安全对接。没有内核补丁时可以使用匹配的 SUSFS-LKM，但其功能范围通常少于源码集成版。源码集成版在编译期选择 Tracepoint 或 SUSFS Inline；SUSFS-LKM 不会让现有的 Tracepoint 驱动自动变成 Inline。
 
 ## 开关、配置与本次启动
 

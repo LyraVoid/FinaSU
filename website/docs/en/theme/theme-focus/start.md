@@ -43,7 +43,7 @@ The 2×2 reflow also requires the current full-featured layout. A screen width o
 | Card | Main content | Actions |
 | --- | --- | --- |
 | Status | Run state, version-UAPI, run/safe/jailbreak/custom LKM state | Install, update Manager, jailbreak |
-| Manager | Manager, kernel, device, SELinux, Seccomp, optional capabilities | The SUSFS row can be managed |
+| Manager | Manager, kernel, full version, hook type, device, SELinux, Seccomp, optional capabilities | The SUSFS row can be managed |
 | Device | Battery temperature, CPU temperature, battery level | No separate buttons |
 | Storage | Data, RAM, zram, swap | No separate buttons |
 

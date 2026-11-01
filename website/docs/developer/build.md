@@ -139,6 +139,8 @@ KMIS="android14-6.1 android15-6.6" ./build.sh lkm nomount
 ghcr.io/ylarod/ddk-min:<kmi>-<DDK_RELEASE>
 ```
 
+`build.sh lkm` 始终构建默认 Tracepoint 后端。SUSFS Inline 依赖 `CONFIG_KSU=y`，只存在于 ARM64 Built-In 内核构建中，不会被打进本仓库发布的 `kernelsu.ko`；需要 Inline 时按 [Built-In 内核集成](/developer/builtin-integration/)配置并刷写完整内核。
+
 ### Sui 载荷
 
 ```sh

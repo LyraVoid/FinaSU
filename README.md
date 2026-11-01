@@ -23,6 +23,7 @@ FinaSU provides:
 - The built-in FolkZygisk engine, with manager controls
 - The built-in Sui extension, which serves the Shizuku API to supported apps
 - SUSFS support, gated by kernel capability
+- Compile-time syscall hook selection: Tracepoint by default, or SUSFS Inline for ARM64 Built-In kernels
 - Kernel-level hiding: mount hiding, SELinux hiding, AVC log spoofing, and unmount policy
 - `.fpt` themes with FolkPatch-compatible exchange, plus an online theme store
 - Multi-page wallpapers, custom fonts, and a launcher icon switcher
@@ -60,7 +61,7 @@ The manager hosts the whole interface: the per-app Shizuku permission list, the 
 
 ### SUSFS
 
-SUSFS management is capability-gated. The controls appear only on kernels that support it, and every configuration change is applied with a receipt.
+SUSFS management is capability-gated. The controls appear only on kernels that support it, and every configuration change is applied with a receipt. `CONFIG_KSU_SUSFS` enables the SUSFS feature layer; it is separate from the syscall hook backend. Source-integrated ARM64 kernels can select the direct SUSFS Inline backend at build time, while LKM releases continue to use Tracepoint. The selected backend is reported by the kernel ABI and cannot be switched in the Manager.
 
 ### Folk-Mount
 

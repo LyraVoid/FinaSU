@@ -88,7 +88,7 @@ config:
           width: 26
           height: 26
           wrap: true
-        details: UTS View、网络隔离和 SUSFS 对接按内核实际支持开放；SUSFS 需要源码集成或匹配的 SUSFS-LKM。
+        details: UTS View、网络隔离和 SUSFS 对接按内核实际支持开放；SUSFS 需要源码集成或匹配的 SUSFS-LKM，源码集成版可在编译期选择 Tracepoint 或 ARM64 Built-In 专用的 SUSFS Inline。
         link: /builtin/uts-view/
       - title: 模块与插件
         icon:

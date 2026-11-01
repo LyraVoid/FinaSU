@@ -44,6 +44,7 @@ flowchart TD
 | --- | --- | --- |
 | 首页没有驱动版本、未安装或不支持 | 启动分区、KMI、管理器身份 | [设备兼容性](/troubleshoot/compatibility/)、[管理器认证失败](/troubleshoot/manager-auth/) |
 | 首页有版本，但 Root Shell 一直不可用 | `ksud`、UAPI、Root Shell 回退 | 本页 |
+| 首页 Hook 类型显示“异常”或“旧版 / 未知” | 编译期后端、`GET_INFO` 能力位、入口注册日志 | [内核集成](/developer/builtin-integration/#选择-hook-类型) |
 | 应用没有 Root | UID、Profile、Shell 来源、请求记录 | [Root 授权请求不出现](/troubleshoot/root-request/) |
 | 模块开关保存了但文件或脚本没生效 | 本次启动、挂载提供者、脚本、安全模式 | 本页 |
 | Zygisk 状态异常 | 外部提供者、ABI、注入回执、启动保护 | [FolkZygisk](/builtin/folkzygisk/) |
@@ -185,6 +186,16 @@ Sui ==依赖可用的 Zygisk 后端==。FinaSU 驱动正常、FolkZygisk 开关�
 - **NoMount**需要当前 KMI 的资产或内核内建驱动。
 
 如果功能显示 `unsupported`、`unavailable` 或强制/托管状态，先按对应页面检查。不要通过手改 JSON 或内部状态文件把按钮强行改成开启。
+
+### Hook 类型异常
+
+首页的“钩子类型”来自内核 `GET_INFO`，不是从包名、文件名或主题推断：
+
+- **Tracepoint / SUSFS Inline**：编译期选定的后端，且入口已报告 Ready。
+- **旧版 / 未知**：当前内核没有提供 Hook 能力位；不要假定它一定是 Inline。
+- **异常**：后端已报告，但入口未就绪，或两个类型位同时出现。
+
+检查内核日志中 `tracepoint backend initialization failed` 或 `SUSFS inline: sys_call_table unavailable` 等错误，并核对实际刷入镜像是否与构建配置一致。管理器不会在运行时切换或回退到另一种后端。
 
 ## 导入 `.ko` 后没有效果
 

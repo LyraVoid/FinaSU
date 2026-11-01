@@ -44,6 +44,7 @@ A failure in any layer can make the Manager pages look like "it opens but does n
 | --- | --- | --- |
 | No driver version on the home screen, not installed, or not supported | Boot partition, KMI, Manager identity | [Device Compatibility](/en/troubleshoot/compatibility/), [Manager Authentication Failure](/en/troubleshoot/manager-auth/) |
 | A version shows, but the Root Shell stays unavailable | `ksud`, UAPI, Root Shell fallback | This page |
+| The home screen shows hook type "abnormal" or "Legacy / unknown" | Compile-time backend, `GET_INFO` capability bits, entry registration logs | [Kernel Integration](/en/developer/builtin-integration/#choose-the-hook-type) |
 | Apps have no Root | UID, Profile, Shell origin, request records | [No Root Request Prompt](/en/troubleshoot/root-request/) |
 | The module switch is saved but files or scripts do not take effect | This boot, mount provider, scripts, safe mode | This page |
 | Abnormal Zygisk state | External provider, ABI, injection receipt, boot protection | [FolkZygisk](/en/builtin/folkzygisk/) |
@@ -185,6 +186,16 @@ The Manager being able to display a feature does not mean the current kernel imp
 - **NoMount** requires the assets for the current KMI or a driver built into the kernel.
 
 If a feature shows `unsupported`, `unavailable`, or a forced/managed state, check the corresponding page first. Do not force a button on by hand-editing JSON or internal state files.
+
+### Hook Type Is Abnormal
+
+The Home "Hook type" comes from the kernel `GET_INFO` response; it is never inferred from a package name, file name or theme:
+
+- **Tracepoint / SUSFS Inline**: the selected compile-time backend reports Ready.
+- **Legacy / unknown**: the current kernel does not provide the hook capability bits; do not assume Inline.
+- **Abnormal**: a backend is reported but its entry is not ready, or both type bits are present.
+
+Check the kernel log for errors such as `tracepoint backend initialization failed` or `SUSFS inline: sys_call_table unavailable`, and verify that the flashed image matches the build configuration. The Manager cannot switch or fall back to another backend at runtime.
 
 ## No Effect After Importing a `.ko`
 

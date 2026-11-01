@@ -272,10 +272,12 @@ The home screen information area can hide the following rows:
 - **Zygisk implementation**: the matching switch only appears when a Zygisk implementation actually exists.
 - **SUSFS**: only shown when SUSFS is detected.
 - **Module mount**: only shown when the Folk Mount state is readable.
+- **Full kernel version**: only shown when the current driver provides a full version string.
+- **Hook type**: shows `Tracepoint` / `SUSFS Inline`; older kernels show "Legacy / unknown", and an unready entry point is shown as abnormal.
 
 ::: info Hiding is not turning off
 
-Hiding only changes what the home screen shows; it does not turn off Zygisk, SUSFS or module mounting, and does not change detection results. When troubleshooting compatibility problems, restore the display first and then judge the actual state.
+Hiding only changes what the home screen shows; it does not turn off Zygisk, SUSFS or module mounting, does not change the hook type, and does not change detection results. When troubleshooting compatibility problems, restore the display first and then judge the actual state.
 
 :::
 

@@ -139,6 +139,8 @@ This step builds and stages `kernelsu.ko` and `nomount.ko` for the given KMIs. T
 ghcr.io/ylarod/ddk-min:<kmi>-<DDK_RELEASE>
 ```
 
+`build.sh lkm` always builds the default Tracepoint backend. SUSFS Inline requires `CONFIG_KSU=y` and exists only in ARM64 Built-In kernel builds; it is not packaged into the `kernelsu.ko` released by this repository. For Inline, configure and flash a complete kernel as described in [Built-In Kernel Integration](/en/developer/builtin-integration/).
+
 ### Sui Payload
 
 ```sh

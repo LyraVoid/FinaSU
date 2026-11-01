@@ -38,7 +38,7 @@ Two API layers must be kept apart:
 
 ## Where the FD Comes From
 
-The driver installs an anonymous inode FD through a kprobe on the reboot syscall. Callers use fixed magic values:
+Callers request an anonymous inode FD through reboot syscall arguments. The Tracepoint backend registers a kprobe on `reboot` and installs it through `task_work`; the SUSFS Inline backend is called directly by the kernel patch through `ksu_handle_sys_reboot` and installs it in that path. Both use the same fixed magic values:
 
 ```text
 KSU_INSTALL_MAGIC1 = 0xDEADBEEF
@@ -51,12 +51,12 @@ The kernel recognizes the magic on the `reboot` path and uses `task_work` to ins
 sequenceDiagram
     participant U as ksud / JNI
     participant R as reboot syscall
-    participant K as ksu_driver kprobe
-    participant T as task_work
+    participant K as Tracepoint kprobe / Inline direct entry
+    participant F as FD install
     U->>R: reboot(magic1, magic2, 0, &fd)
-    R->>K: pre_handler recognizes the magic
-    K->>T: schedule task_work
-    T->>U: install the anon-inode FD
+    R->>K: the backend recognizes the magic
+    K->>F: task_work or direct install
+    F->>U: write the anon-inode FD
     U->>U: store the FD
     U->>U: ioctl(fd, command, args)
 ```
@@ -121,7 +121,7 @@ The permission helpers are defined in `kernel/supercall/perm.c`:
 
 ::::
 
-The capability flags returned by `GET_INFO` distinguish LKM, trusted Manager, late-load, PR builds, Bundled and preinit. The UAPI version is `6`; the current maximum feature ID comes from `KSU_FEATURE_MAX`, so do not hardcode an older 5 or 6 on the client side.
+The capability flags returned by `GET_INFO` distinguish LKM, trusted Manager, late-load, PR builds, Bundled, preinit and the syscall hook type. The hook flags are `KSU_GET_INFO_FLAG_HOOK_TRACEPOINT`, `KSU_GET_INFO_FLAG_HOOK_SUSFS_INLINE` and `KSU_GET_INFO_FLAG_HOOK_READY`. Both type bits together are a conflict; neither bit means the old kernel cannot report the state; a reported type without READY means the backend entry point is abnormal. Clients must not assume that a missing state means Inline, and must not fall back automatically. The UAPI version is `6`; the current maximum feature ID comes from `KSU_FEATURE_MAX`, so do not hardcode an older 5 or 6 on the client side.
 
 ## Source Layout
 

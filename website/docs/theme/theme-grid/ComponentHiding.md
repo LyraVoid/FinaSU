@@ -12,7 +12,7 @@ copyright:
 
 # 组件隐藏
 
-<Badge text="工作卡三项" type="tip" /> <Badge text="系统信息四项" type="info" /> <Badge text="隐藏不改变状态" type="warning" />
+<Badge text="工作卡三项" type="tip" /> <Badge text="系统信息五项" type="info" /> <Badge text="隐藏不改变状态" type="warning" />
 
 GridUI 的隐藏控制分成两组：工作卡自己的三个 flag，以及系统信息卡的可选行。
 
@@ -35,11 +35,12 @@ GridUI 的隐藏控制分成两组：工作卡自己的三个 flag，以及系�
 可隐藏的行：
 
 - 指纹；
+- 钩子类型（驱动连接时）；
 - Zygisk 实现（存在时）；
 - SUSFS（检测到时）；
 - 模块挂载实现（状态可用时）。
 
-基础行始终保持：管理器版本、内核、设备型号、SELinux、Seccomp。
+基础行始终保持：管理器版本、内核、设备型号、SELinux、Seccomp。钩子类型只在驱动连接时出现，隐藏它不会改变后端。
 
 ## 底部支持卡片
 

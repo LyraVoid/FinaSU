@@ -242,7 +242,7 @@ FinaSU 保留 `su` 兼容层：符合条件的应用执行 `/system/bin/su` 时�
 
 :::
 
-FolkZygisk 在检测到外部 Zygisk 提供者时会让位；Sui、LSPosed 等依赖 Zygisk 的功能需要至少一个可用提供者。SUSFS 不是 FinaSU 内置的内核实现；它需要内核源码集成版或已加载的 SUSFS-LKM。
+FolkZygisk 在检测到外部 Zygisk 提供者时会让位；Sui、LSPosed 等依赖 Zygisk 的功能需要至少一个可用提供者。SUSFS 不是 FinaSU 内置的内核实现；它需要内核源码集成版或已加载的 SUSFS-LKM。源码集成版可在编译期使用默认 Tracepoint 或 ARM64 Built-In 专用的 SUSFS Inline。
 
 ## SELinux 与隐藏
 
