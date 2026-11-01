@@ -11,6 +11,7 @@
 #include "socket_utils.h"
 
 #include "daemon.h"
+#include "hyper.h"
 
 #define SOCKET_FILE_NAME LP_SELECT("cp32", "cp64") ".sock"
 
@@ -356,6 +357,80 @@ bool rezygiskd_remove_module(size_t index) {
   close(fd);
 
   return res == 1;
+}
+
+bool rezygiskd_read_hyper_plan(struct hyper_plan *plan) {
+  memset(plan, 0, sizeof(*plan));
+  int fd = rezygiskd_connect(1);
+  if (fd == -1) return false;
+
+  safe_write(write_uint8_t(fd, (uint8_t)ReadHyperPlan), "ReadHyperPlan action", return false);
+
+  uint32_t version = 0;
+  safe_read(read_uint32_t(fd, &version), "hyper plan version", return false);
+  if (version != FOLKZYGISK_HYPER_PLAN_VERSION) {
+    char *reason = read_string(fd);
+    LOGE("Hyper plan unavailable: %s", reason == NULL ? "invalid response" : reason);
+    free(reason);
+    close(fd);
+    return false;
+  }
+
+  safe_read(read_uint32_t(fd, &plan->generation), "hyper plan generation", return false);
+  size_t count = 0;
+  safe_read(read_size_t(fd, &count), "hyper plan count", return false);
+  if (count > FOLKZYGISK_HYPER_MAX_MODULES) {
+    LOGE("Hyper plan count is too large: %zu", count);
+    close(fd);
+    return false;
+  }
+
+  for (size_t i = 0; i < count; i++) {
+    struct hyper_module *module = &plan->modules[i];
+    module->fd = -1;
+
+    uint8_t companion = 0;
+    safe_read(read_uint32_t(fd, &module->slot), "hyper module slot", goto fail);
+    safe_read(read_uint8_t(fd, &companion), "hyper module companion", goto fail);
+    char *id = read_string(fd);
+    if (id == NULL) {
+      LOGE("Failed reading hyper module id");
+      goto fail;
+    }
+    snprintf(module->id, sizeof(module->id), "%s", id);
+    free(id);
+    module->companion = companion != 0;
+    module->fd = read_fd(fd);
+    if (module->fd == -1) {
+      LOGE("Failed receiving hyper module fd");
+      goto fail;
+    }
+    plan->count++;
+  }
+
+  close(fd);
+  return true;
+
+  fail:
+    close(fd);
+    for (uint32_t i = 0; i < plan->count; i++) {
+      if (plan->modules[i].fd >= 0) close(plan->modules[i].fd);
+      plan->modules[i].fd = -1;
+    }
+    plan->count = 0;
+    return false;
+}
+
+bool rezygiskd_report_hyper_status(uint8_t stage, const char *reason) {
+  int fd = rezygiskd_connect(1);
+  if (fd == -1) return false;
+
+  safe_write(write_uint8_t(fd, (uint8_t)ReportHyperStatus), "ReportHyperStatus action", return false);
+  safe_write(write_uint8_t(fd, stage), "hyper stage", return false);
+  safe_write(write_string(fd, reason == NULL ? "" : reason), "hyper reason", return false);
+
+  close(fd);
+  return true;
 }
 
 #undef safe_read

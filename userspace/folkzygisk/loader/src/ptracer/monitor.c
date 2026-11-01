@@ -2,6 +2,7 @@
 #include <string.h>
 #include <time.h>
 #include <errno.h>
+#include <elf.h>
 #include <fcntl.h>
 #include <sys/stat.h>
 #include <sys/file.h>
@@ -10,6 +11,7 @@
 #include <sys/epoll.h>
 #include <sys/signalfd.h>
 #include <sys/socket.h>
+#include <sys/system_properties.h>
 #include <sys/un.h>
 #include <sys/wait.h>
 
@@ -18,6 +20,7 @@
 #include "utils.h"
 
 #include "monitor.h"
+#include "hyper_protocol.h"
 
 #define SOCKET_NAME "init_monitor"
 
@@ -25,6 +28,8 @@
 
 static bool update_status(const char *message);
 static unsigned long long process_start_ticks(pid_t pid);
+static bool hyper_target_identity(pid_t pid, const char *program, bool *is_64bit);
+static void handle_hyper_status(const char *data, size_t length);
 
 const char *monitor_stop_reason = NULL;
 
@@ -74,6 +79,19 @@ struct rezygiskd_status status32 = {
   .daemon_info = NULL,
   .daemon_error_info = NULL
 };
+
+struct hyper_monitor_status {
+  uint8_t stage;
+  pid_t spawner_pid;
+  unsigned long long spawner_start_ticks;
+  uint32_t callbacks;
+  pid_t callback_pids[64];
+  size_t callback_pid_count;
+  char firmware[PROP_VALUE_MAX];
+  char reason[256];
+};
+
+static struct hyper_monitor_status hyper;
 
 int monitor_epoll_fd;
 bool monitor_events_running = true;
@@ -425,6 +443,14 @@ void rezygiskd_listener_callback() {
 
         break;
       }
+      case HYPER_STATUS: {
+        if (msg->len != (size_t)nread - sizeof(struct rzd_msg_header)) {
+          LOGE("truncated HyperOS Runtime status");
+          break;
+        }
+        handle_hyper_status(msg->data, msg->len);
+        break;
+      }
     }
 
     free(msg);
@@ -750,6 +776,7 @@ void sigchld_listener_callback() {
 
           const char *tracer = NULL;
           bool is_tango = false;
+          bool is_hyper = false;
 
           do {
             if (tracing_state != TRACING) {
@@ -762,8 +789,46 @@ void sigchld_listener_callback() {
             PRE_INJECT(32, false)
             PRE_INJECT_TANGO
 
+            if (strcmp(program, FOLKZYGISK_HYPER_TARGET) == 0) {
+              bool is_64bit = false;
+              if (!hyper_target_identity(pid, program, &is_64bit)) {
+                hyper.stage = FOLKZYGISK_HYPER_FAILED;
+                snprintf(hyper.reason, sizeof(hyper.reason),
+                         "spawner path did not match a real ELF executable");
+                update_status(NULL);
+              } else {
+                hyper.stage = FOLKZYGISK_HYPER_ARMED;
+                hyper.spawner_pid = pid;
+                hyper.spawner_start_ticks = process_start_ticks(pid);
+                hyper.callbacks = 0;
+                hyper.callback_pid_count = 0;
+                __system_property_get("ro.build.fingerprint", hyper.firmware);
+                hyper.reason[0] = '\0';
+                tracer = FOLKZYGISK_TRACER_BASE LP_SELECT("32", "64");
+                if (is_64bit && strcmp(tracer, FOLKZYGISK_TRACER_BASE "64") != 0) {
+                  tracer = FOLKZYGISK_TRACER_BASE "64";
+                } else if (!is_64bit && strcmp(tracer, FOLKZYGISK_TRACER_BASE "32") != 0) {
+                  tracer = FOLKZYGISK_TRACER_BASE "32";
+                }
+                if (!ensure_daemon_created(is_64bit)) {
+                  hyper.stage = FOLKZYGISK_HYPER_FAILED;
+                  snprintf(hyper.reason, sizeof(hyper.reason),
+                           "HyperOS daemon unavailable");
+                  tracer = NULL;
+                }
+                update_status(NULL);
+                is_hyper = tracer != NULL;
+              }
+            }
+
             if (tracer != NULL) {
-              LOGD("Stopping %d (program: %s, tracer: %s, tango: %s)", pid, program, tracer, is_tango ? "yes" : "no");
+              bool restart_zygote =
+                  !is_tango && !is_hyper
+                  && ((strcmp(program, APP_PROCESS_64) == 0 && count_zygote64 > 1)
+                      || (strcmp(program, APP_PROCESS_32) == 0 && count_zygote32 > 1));
+              LOGD("Stopping %d (program: %s, tracer: %s, tango: %s, hyper: %s)",
+                   pid, program, tracer, is_tango ? "yes" : "no",
+                   is_hyper ? "yes" : "no");
 
               kill(pid, SIGSTOP);
               ptrace(PTRACE_CONT, pid, 0, 0);
@@ -786,10 +851,14 @@ void sigchld_listener_callback() {
                   char pid_str[32];
                   sprintf(pid_str, "%d", pid);
 
-                  LOGI("exec tracer command: %s trace %s --restart%s", tracer, pid_str, is_tango ? " --tango" : "");
+                  LOGI("exec tracer command: %s trace %s%s%s%s", tracer, pid_str,
+                       is_tango ? " --tango" : "", is_hyper ? " --hyos" : "",
+                       restart_zygote ? " --restart" : "");
 
                   /* INFO: Only restart companions if it's not the first time */
-                  if ((strcmp(program, APP_PROCESS_64) == 0 && count_zygote64 > 1) || ((strcmp(program, APP_PROCESS_32) == 0 || is_tango) && count_zygote32 > 1)) {
+                  if (is_hyper) {
+                    execl(tracer, basename(tracer), "trace", pid_str, "--hyos", NULL);
+                  } else if (restart_zygote || (is_tango && count_zygote32 > 1)) {
                     if (is_tango) {
                       execl(tracer, basename(tracer), "trace", pid_str, "--restart", "--tango", NULL);
                     } else {
@@ -879,6 +948,127 @@ static unsigned long long process_start_ticks(pid_t pid) {
   return 0;
 }
 
+static pid_t process_parent_pid(pid_t pid) {
+  char path[64], line[4096];
+  snprintf(path, sizeof(path), "/proc/%d/stat", pid);
+  FILE *file = fopen(path, "r");
+  if (file == NULL) return -1;
+  bool ok = fgets(line, sizeof(line), file) != NULL;
+  fclose(file);
+  if (!ok) return -1;
+  char *cursor = strrchr(line, ')');
+  if (cursor == NULL) return -1;
+  ++cursor;
+  char state;
+  int parent;
+  return sscanf(cursor, " %c %d", &state, &parent) == 2 ? parent : -1;
+}
+
+static bool hyper_target_identity(pid_t pid, const char *program, bool *is_64bit) {
+  if (strcmp(program, FOLKZYGISK_HYPER_TARGET) != 0) return false;
+
+  struct stat target;
+  char proc_path[64];
+  snprintf(proc_path, sizeof(proc_path), "/proc/%d/exe", pid);
+  struct stat executed;
+  if (stat(program, &target) != 0 || stat(proc_path, &executed) != 0
+      || !S_ISREG(target.st_mode) || target.st_dev != executed.st_dev
+      || target.st_ino != executed.st_ino || (target.st_mode & 0111) == 0) {
+    return false;
+  }
+
+  char elf_path[64];
+  snprintf(elf_path, sizeof(elf_path), "/proc/%d/exe", pid);
+  int fd = open(elf_path, O_RDONLY | O_CLOEXEC);
+  if (fd == -1) return false;
+  unsigned char header[20];
+  bool valid = read(fd, header, sizeof(header)) == (ssize_t)sizeof(header)
+               && memcmp(header, ELFMAG, SELFMAG) == 0
+               && header[EI_DATA] == ELFDATA2LSB
+               && (header[EI_CLASS] == ELFCLASS32 || header[EI_CLASS] == ELFCLASS64);
+  close(fd);
+  if (!valid) return false;
+  uint16_t type;
+  memcpy(&type, header + 16, sizeof(type));
+  if (type != ET_DYN && type != ET_EXEC) return false;
+  *is_64bit = header[EI_CLASS] == ELFCLASS64;
+  return true;
+}
+
+static const char *hyper_stage_name(uint8_t stage) {
+  switch (stage) {
+    case FOLKZYGISK_HYPER_PLANNED: return "planned";
+    case FOLKZYGISK_HYPER_ARMED: return "spawner_armed";
+    case FOLKZYGISK_HYPER_INJECTED: return "injected";
+    case FOLKZYGISK_HYPER_RUNTIME_READY: return "runtime_ready";
+    case FOLKZYGISK_HYPER_CALLBACK_DELIVERED: return "callback_delivered";
+    case FOLKZYGISK_HYPER_FAILED: return "failed";
+    case FOLKZYGISK_HYPER_SKIPPED: return "skipped";
+    default: return "skipped";
+  }
+}
+
+static void handle_hyper_status(const char *data, size_t length) {
+  if (length < sizeof(int32_t) + sizeof(uint8_t) + 1) return;
+  int32_t pid;
+  memcpy(&pid, data, sizeof(pid));
+  uint8_t stage = (uint8_t)data[sizeof(pid)];
+  const char *reason = data + sizeof(pid) + sizeof(stage);
+  size_t reason_capacity = length - sizeof(pid) - sizeof(stage);
+  if (memchr(reason, '\0', reason_capacity) == NULL) return;
+
+  bool accepted = false;
+  switch (stage) {
+    case FOLKZYGISK_HYPER_INJECTED:
+      accepted = pid > 0 && pid == hyper.spawner_pid
+                 && (hyper.stage == FOLKZYGISK_HYPER_ARMED
+                     || hyper.stage == FOLKZYGISK_HYPER_INJECTED);
+      break;
+    case FOLKZYGISK_HYPER_RUNTIME_READY:
+      accepted = pid > 0 && pid == hyper.spawner_pid
+                 && (hyper.stage == FOLKZYGISK_HYPER_INJECTED
+                     || hyper.stage == FOLKZYGISK_HYPER_RUNTIME_READY
+                     || hyper.stage == FOLKZYGISK_HYPER_CALLBACK_DELIVERED);
+      break;
+    case FOLKZYGISK_HYPER_CALLBACK_DELIVERED:
+      accepted = pid > 0 && pid != hyper.spawner_pid
+                 && (hyper.stage == FOLKZYGISK_HYPER_RUNTIME_READY
+                     || hyper.stage == FOLKZYGISK_HYPER_CALLBACK_DELIVERED)
+                 && process_parent_pid(pid) == hyper.spawner_pid;
+      for (size_t i = 0; accepted && i < hyper.callback_pid_count; i++) {
+        if (hyper.callback_pids[i] == pid) accepted = false;
+      }
+      if (accepted && hyper.callback_pid_count < sizeof(hyper.callback_pids) / sizeof(hyper.callback_pids[0])) {
+        hyper.callback_pids[hyper.callback_pid_count++] = pid;
+        hyper.callbacks++;
+      } else {
+        accepted = false;
+      }
+      break;
+    case FOLKZYGISK_HYPER_FAILED:
+      accepted = true;
+      break;
+    case FOLKZYGISK_HYPER_SKIPPED:
+      accepted = pid > 0 && pid == hyper.spawner_pid
+                 && hyper.stage == FOLKZYGISK_HYPER_ARMED;
+      break;
+    default:
+      break;
+  }
+  if (!accepted) {
+    LOGW("Ignoring invalid HyperOS Runtime stage %u from pid %d", stage, pid);
+    return;
+  }
+
+  if (stage == FOLKZYGISK_HYPER_FAILED || stage == FOLKZYGISK_HYPER_SKIPPED
+      || stage == FOLKZYGISK_HYPER_INJECTED
+      || stage == FOLKZYGISK_HYPER_RUNTIME_READY || stage == FOLKZYGISK_HYPER_CALLBACK_DELIVERED) {
+    hyper.stage = stage;
+  }
+  snprintf(hyper.reason, sizeof(hyper.reason), "%s", reason);
+  update_status(NULL);
+}
+
 static void json_string(FILE *file, const char *text) {
   fputc('"', file);
   if (text) {
@@ -909,6 +1099,25 @@ static void write_abi_status(FILE *file, const struct rezygiskd_status *status) 
   fputc('}', file);
 }
 
+static void write_hyper_status(FILE *file) {
+  fprintf(file, "{\"stage\":");
+  json_string(file, hyper_stage_name(hyper.stage));
+  fprintf(file,
+          ",\"armed\":%s,\"spawner_pid\":%d,\"spawner_start_ticks\":%llu,"
+          "\"firmware_fingerprint\":",
+          hyper.stage >= FOLKZYGISK_HYPER_ARMED
+              && hyper.stage != FOLKZYGISK_HYPER_FAILED ? "true" : "false",
+          hyper.spawner_pid, hyper.spawner_start_ticks);
+  json_string(file, hyper.firmware);
+  fprintf(file, ",\"module_registered\":%s,\"callbacks\":%u,\"reason\":",
+          hyper.stage >= FOLKZYGISK_HYPER_RUNTIME_READY
+                  && hyper.stage != FOLKZYGISK_HYPER_FAILED
+              ? "true" : "false",
+          hyper.callbacks);
+  json_string(file, hyper.reason);
+  fputc('}', file);
+}
+
 static bool update_status(const char *message) {
   char temporary[] = FOLKZYGISK_STATE_FILE ".XXXXXX";
   int fd = mkstemp(temporary);
@@ -930,7 +1139,9 @@ static bool update_status(const char *message) {
   write_abi_status(json, &status64);
   fputs(",\"32\":", json);
   write_abi_status(json, &status32);
-  fputs("}}\n", json);
+  fputs("},\"hyper\":", json);
+  write_hyper_status(json);
+  fputs("}\n", json);
   bool ok = !ferror(json) && fflush(json) == 0 && fsync(fd) == 0;
   if (fclose(json) != 0) ok = false;
   if (ok && rename(temporary, FOLKZYGISK_STATE_FILE) == 0) return true;

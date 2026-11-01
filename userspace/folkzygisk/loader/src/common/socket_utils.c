@@ -108,10 +108,10 @@ ssize_t write_fd(int fd, int sendfd) {
 int read_fd(int fd) {
   char cmsgbuf[CMSG_SPACE(sizeof(int))];
 
-  int cnt = 1;
+  char marker = 0;
   struct iovec iov = {
-    .iov_base = &cnt,
-    .iov_len = sizeof(cnt)
+    .iov_base = &marker,
+    .iov_len = sizeof(marker)
   };
 
   struct msghdr msg = {
@@ -122,7 +122,7 @@ int read_fd(int fd) {
   };
 
   ssize_t ret = TEMP_FAILURE_RETRY(recvmsg(fd, &msg, MSG_WAITALL));
-  if (ret == -1) {
+  if (ret != 1) {
     PLOGE("recvmsg");
 
     return -1;

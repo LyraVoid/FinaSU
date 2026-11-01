@@ -40,6 +40,7 @@ texts and all original notices; release approval does not rewrite upstream terms
 or claim that the discrepancy was resolved by upstream. Binary releases must
 provide matching modified source, vendored dependencies and build instructions.
 FinaSU modifications recorded below were made on 2026-10-11.
+FinaSU HyperOS Runtime compatibility changes were made on 2026-11-01.
 
 ## FinaSU modifications
 
@@ -71,6 +72,34 @@ enable feature. Changes affect the next boot, never restart zygote automatically
 Startup clears stale runtime artifacts while preserving and checking the monitor
 lock inode, detaches the child session and cgroup before exec, and applies the
 built-in SELinux policy. Socket binding removes the stale socket under that lock.
+
+### HyperOS Rust Runtime compatibility
+
+- The init ptrace monitor treats `/system_ext/bin/hyos_spawner` as an auxiliary
+  target with separate PID, start-time, injection, module-registration and
+  callback-observation state. It never writes that state into either Zygote ABI
+  slot or into the Zygote restart counter.
+- `zygiskd` scans enabled modules' `zn_modules.txt`, confines declared libraries
+  to their module directories, validates the target ELF architecture, removes
+  duplicate file identities, and transfers a versioned module plan by file
+  descriptor. The daemon derives the target from the peer's `/proc/<pid>/exe`.
+- The injected library has an independent HyperOS Runtime API v1 plane. It copies
+  `ZygiskNextHyosModule` registrations, exposes Hyper Runtime only for the spawner
+  injection kind, hooks `selinux_android_setcontext` through the existing PLTI
+  component, and delivers one callback per fork child after successful SELinux
+  specialization.
+- The `zygisk_next_api.h` compatibility header was reconstructed from the public
+  field and function order documented by Zygisk Next. It is not copied from the
+  closed-source Zygisk Next repository and does not import NyaZygisk or ZNNext
+  implementation code. The header exists only to preserve source/binary
+  interoperability.
+- API compatibility is intentionally limited to the Hyper Runtime callback subset
+  plus PLT hooking. Inline hooking, arbitrary symbol-resolver enumeration, and ZN
+  companion creation return explicit failure. A module requiring those facilities
+  is not covered by this compatibility version.
+- Unified both SCM_RIGHTS receivers with the sender's one-byte stream marker.
+  This removes an overread that could stall consecutive FD transfers and also
+  makes the existing companion FD protocol deterministic.
 
 ## Native build
 
