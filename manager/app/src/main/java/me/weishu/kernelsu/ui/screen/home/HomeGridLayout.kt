@@ -1,8 +1,13 @@
 package me.weishu.kernelsu.ui.screen.home
 
+import android.animation.ValueAnimator
 import android.net.Uri
+import androidx.compose.animation.core.Animatable
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.spring
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -17,6 +22,9 @@ import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.interaction.PressInteraction
+import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Block
 import androidx.compose.material.icons.rounded.CheckCircle
@@ -26,6 +34,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.contentColorFor
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.produceState
@@ -37,6 +46,7 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.asImageBitmap
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -48,6 +58,7 @@ import me.weishu.kernelsu.R
 import me.weishu.kernelsu.ui.component.SurfaceOptionsDialog
 import me.weishu.kernelsu.ui.component.statustag.StatusTag
 import me.weishu.kernelsu.ui.theme.FolkType
+import me.weishu.kernelsu.ui.theme.FolkShape
 import me.weishu.kernelsu.ui.theme.isInDarkTheme
 import me.weishu.kernelsu.wallpaper.AnimatedFileImage
 import me.weishu.kernelsu.wallpaper.WallpaperConfig
@@ -129,6 +140,37 @@ private fun GridStatusCard(
     val contentColor = workCardStyle.contentColor ?: contentColorFor(containerColor)
     val backgroundUri = workCardStyle.workCardBackgroundUri
 
+    val interactionSource = remember { MutableInteractionSource() }
+    val reduceMotion = !ValueAnimator.areAnimatorsEnabled()
+    val pressed by interactionSource.collectIsPressedAsState()
+    var longPressActive by remember { mutableStateOf(false) }
+    var petCount by remember { mutableStateOf(0) }
+    val petBounce = remember { Animatable(0f) }
+    val heldDeformation by animateFloatAsState(
+        targetValue = if (backgroundUri != null && !reduceMotion) {
+            if (longPressActive) 0.16f else if (pressed) 0.045f else 0f
+        } else 0f,
+        animationSpec = spring(dampingRatio = 0.55f, stiffness = 300f),
+        label = "workCardHeldDeformation",
+    )
+
+    LaunchedEffect(petCount, reduceMotion, backgroundUri) {
+        if (petCount > 0 && !reduceMotion && backgroundUri != null) {
+            petBounce.snapTo(0.14f)
+            petBounce.animateTo(0f, spring(dampingRatio = 0.28f, stiffness = 180f))
+        } else {
+            petBounce.snapTo(0f)
+        }
+    }
+
+    LaunchedEffect(interactionSource) {
+        interactionSource.interactions.collect { interaction ->
+            if (interaction is PressInteraction.Release || interaction is PressInteraction.Cancel) {
+                longPressActive = false
+            }
+        }
+    }
+
     val statusIcon = when {
         ksuActive -> Icons.Rounded.CheckCircle
         notInstalled -> Icons.Rounded.Warning
@@ -154,12 +196,14 @@ private fun GridStatusCard(
         containerColor = containerColor,
         contentColor = contentColor,
         wallpaperRole = workCardStyle.wallpaperRole,
+        interactionSource = interactionSource,
         onClick = {
-            if (!state.isLateLoadMode) {
-                actions.onInstallClick()
-            }
+            if (backgroundUri != null) petCount++
         },
-        onLongClick = { showWorkCardOptions = true },
+        onLongClick = {
+            longPressActive = true
+            showWorkCardOptions = true
+        },
     ) {
         Box(
             modifier = Modifier
@@ -172,7 +216,13 @@ private fun GridStatusCard(
                 SurfaceBackgroundImage(
                     photo = workCardPhoto,
                     surface = workCardSurface,
-                    modifier = Modifier.matchParentSize(),
+                    modifier = Modifier
+                        .matchParentSize()
+                        .graphicsLayer {
+                            val deformation = heldDeformation + petBounce.value
+                            scaleX = 1f + deformation * 0.7f
+                            scaleY = 1f - deformation
+                        },
                 )
             }
             Column(
@@ -207,6 +257,17 @@ private fun GridStatusCard(
                     modifier = Modifier
                         .align(Alignment.TopEnd)
                         .size(48.dp)
+                )
+            }
+            if (backgroundUri != null && reduceMotion && pressed) {
+                Box(
+                    modifier = Modifier
+                        .matchParentSize()
+                        .border(
+                            width = if (longPressActive) 3.dp else 2.dp,
+                            color = contentColor.copy(alpha = if (longPressActive) 1f else 0.8f),
+                            shape = FolkShape.Corner20,
+                        )
                 )
             }
         }

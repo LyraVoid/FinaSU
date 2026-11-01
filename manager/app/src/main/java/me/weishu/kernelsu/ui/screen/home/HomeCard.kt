@@ -19,7 +19,9 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.contentColorFor
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.staticCompositionLocalOf
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
@@ -46,6 +48,7 @@ internal fun HomeCard(
         if (containerColor == MaterialTheme.colorScheme.surfaceBright) WallpaperSurfaceRole.Group else null,
     onClick: (() -> Unit)? = null,
     onLongClick: (() -> Unit)? = null,
+    interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
     content: @Composable () -> Unit,
 ) {
     TonalCard(
@@ -56,6 +59,7 @@ internal fun HomeCard(
         shape = FolkShape.Corner20,
         onClick = onClick,
         onLongClick = onLongClick,
+        interactionSource = interactionSource,
         navOriginRadius = 20.dp,
         content = content,
     )
