@@ -154,6 +154,11 @@ uint32_t get_manager_uapi_version() {
     return KERNEL_SU_UAPI_VERSION;
 }
 
+uint32_t get_kernel_hook_flags() {
+    return get_info().flags & (KSU_GET_INFO_FLAG_HOOK_TRACEPOINT | KSU_GET_INFO_FLAG_HOOK_SUSFS_INLINE |
+                               KSU_GET_INFO_FLAG_HOOK_READY);
+}
+
 std::string get_full_version() {
     struct ksu_get_full_version_cmd cmd = {};
     if (ksuctl(KSU_IOCTL_GET_FULL_VERSION, &cmd) != 0) {

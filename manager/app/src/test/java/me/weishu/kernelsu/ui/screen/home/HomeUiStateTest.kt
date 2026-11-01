@@ -1,6 +1,7 @@
 package me.weishu.kernelsu.ui.screen.home
 
 import me.weishu.kernelsu.KernelVersion
+import me.weishu.kernelsu.Natives
 import me.weishu.kernelsu.ui.util.RootShellStatus
 import me.weishu.kernelsu.ui.util.module.LatestVersionInfo
 import org.junit.Assert.assertEquals
@@ -13,6 +14,31 @@ import org.junit.Test
  * shows a recovering notice, and only a completed non-root probe raises the failure card.
  */
 class HomeUiStateTest {
+
+    @Test
+    fun `kernel hook state only trusts GET_INFO capability bits`() {
+        val legacy = resolveKernelHookState(0)
+        assertEquals(KernelHookBackend.UNKNOWN, legacy.backend)
+        assertFalse(legacy.failed)
+
+        val tracepoint = resolveKernelHookState(
+            Natives.KSU_GET_INFO_FLAG_HOOK_TRACEPOINT or Natives.KSU_GET_INFO_FLAG_HOOK_READY
+        )
+        assertEquals(KernelHookBackend.TRACEPOINT, tracepoint.backend)
+        assertFalse(tracepoint.failed)
+
+        val inline = resolveKernelHookState(Natives.KSU_GET_INFO_FLAG_HOOK_SUSFS_INLINE)
+        assertEquals(KernelHookBackend.SUSFS_INLINE, inline.backend)
+        assertTrue(inline.failed)
+
+        val conflicting = resolveKernelHookState(
+            Natives.KSU_GET_INFO_FLAG_HOOK_TRACEPOINT or
+                Natives.KSU_GET_INFO_FLAG_HOOK_SUSFS_INLINE or
+                Natives.KSU_GET_INFO_FLAG_HOOK_READY
+        )
+        assertEquals(KernelHookBackend.INVALID, conflicting.backend)
+        assertTrue(conflicting.failed)
+    }
 
     @Test
     fun `all home layouts share detected SUSFS state and navigation action`() {

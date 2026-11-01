@@ -39,6 +39,7 @@ import me.weishu.kernelsu.ui.theme.FolkType
 internal fun statusStateTexts(state: HomeUiState): List<Pair<String, String>> {
     if (state.ksuVersion == null) return emptyList()
     return buildList {
+        add(stringResource(R.string.home_kernel_backend) to kernelHookValue(state.kernelHook))
         val workingMode = workingModeLabel(state)
         if (workingMode.isNotEmpty()) {
             add(stringResource(R.string.home_running_mode) to workingMode)
@@ -52,6 +53,21 @@ internal fun statusStateTexts(state: HomeUiState): List<Pair<String, String>> {
         if (state.showCustomLkmBadge) {
             add(stringResource(R.string.home_lkm_custom) to stringResource(R.string.home_state_on))
         }
+    }
+}
+
+@Composable
+internal fun kernelHookValue(state: KernelHookState): String {
+    val backend = when (state.backend) {
+        KernelHookBackend.TRACEPOINT -> stringResource(R.string.home_kernel_backend_tracepoint)
+        KernelHookBackend.SUSFS_INLINE -> stringResource(R.string.home_kernel_backend_susfs_inline)
+        KernelHookBackend.UNKNOWN,
+        KernelHookBackend.INVALID -> stringResource(R.string.home_kernel_backend_unknown)
+    }
+    return if (state.failed) {
+        stringResource(R.string.home_kernel_backend_failed, backend)
+    } else {
+        backend
     }
 }
 
@@ -98,18 +114,21 @@ internal fun StatusCard(
 ) {
     val ksuActive = state.ksuVersion != null
     val notInstalled = !ksuActive && state.kernelVersion.isGKI()
+    val hookFailed = state.kernelHook.failed
 
     val workCardStyle = HomeWorkCardControl.style(
         layout = HomeWorkCardLayout.Circle,
-        working = ksuActive,
+        working = ksuActive && !hookFailed,
     )
 
     val statusIcon = when {
+        ksuActive && hookFailed -> Icons.Rounded.Warning
         ksuActive -> Icons.Rounded.CheckCircle
         notInstalled -> Icons.Rounded.Warning
         else -> Icons.Rounded.Block
     }
     val statusTitle = when {
+        ksuActive && hookFailed -> kernelHookValue(state.kernelHook)
         ksuActive -> stringResource(R.string.home_working)
         notInstalled -> stringResource(R.string.home_not_installed)
         else -> stringResource(R.string.home_unsupported)
@@ -201,6 +220,15 @@ internal fun StatusCard(
                             backgroundColor = MaterialTheme.colorScheme.tertiaryContainer,
                         )
                     }
+                }
+                if (ksuActive) {
+                    Spacer(Modifier.height(4.dp))
+                    Text(
+                        text = "${stringResource(R.string.home_kernel_backend)}: ${kernelHookValue(state.kernelHook)}",
+                        style = FolkType.Summary,
+                        color = LocalWallpaperSupportingColor.current
+                            ?: MaterialTheme.colorScheme.onSurfaceVariant
+                    )
                 }
             }
             if (statusTrailing != null) {

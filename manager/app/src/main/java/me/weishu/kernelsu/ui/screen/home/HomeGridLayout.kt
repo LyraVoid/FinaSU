@@ -127,12 +127,13 @@ private fun GridStatusCard(
 ) {
     val ksuActive = state.ksuVersion != null
     val notInstalled = !ksuActive && state.kernelVersion.isGKI()
+    val hookFailed = state.kernelHook.failed
 
     val workCardSurface = WallpaperConfig.workCardSurface
     val workCardPhoto = rememberSurfacePhoto(workCardSurface.imageUri.takeIf { workCardSurface.hasImage })
     val workCardStyle = HomeWorkCardControl.style(
         layout = HomeWorkCardLayout.Grid,
-        working = ksuActive,
+        working = ksuActive && !hookFailed,
         surface = workCardSurface,
         photo = workCardPhoto,
     )
@@ -172,11 +173,13 @@ private fun GridStatusCard(
     }
 
     val statusIcon = when {
+        ksuActive && hookFailed -> Icons.Rounded.Warning
         ksuActive -> Icons.Rounded.CheckCircle
         notInstalled -> Icons.Rounded.Warning
         else -> Icons.Rounded.Block
     }
     val statusTitle = when {
+        ksuActive && hookFailed -> kernelHookValue(state.kernelHook)
         ksuActive -> stringResource(R.string.home_working)
         notInstalled -> stringResource(R.string.home_not_installed)
         else -> stringResource(R.string.home_unsupported)
@@ -247,6 +250,13 @@ private fun GridStatusCard(
                     }
                 } else if (notInstalled && state.isSELinuxPermissive) {
                     StatusJailbreakButton(onClick = actions.onJailbreakClick)
+                }
+                if (ksuActive && !workCardSurface.hasFlag(SurfaceFlag.HideText)) {
+                    Text(
+                        text = "${stringResource(R.string.home_kernel_backend)}: ${kernelHookValue(state.kernelHook)}",
+                        style = FolkType.Summary,
+                        color = contentColor.copy(alpha = 0.8f),
+                    )
                 }
             }
             if (!workCardSurface.hasFlag(SurfaceFlag.HideIcon)) {

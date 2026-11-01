@@ -22,6 +22,8 @@
 #include "manager/manager_observer.h"
 #include "manager/throne_tracker.h"
 #include "hook/syscall_hook_manager.h"
+#include "hook/setuid_hook.h"
+#include "feature/sucompat.h"
 #include "hook/lsm_hook.h"
 #include "runtime/ksud.h"
 #include "runtime/ksud_boot.h"
@@ -31,6 +33,9 @@
 #include "infra/file_wrapper.h"
 #include "selinux/selinux.h"
 #include "hook/syscall_hook.h"
+#ifdef __aarch64__
+#include "hook/init_module_filter.h"
+#endif
 #include "feature/adb_root.h"
 #include "feature/selinux_hide.h"
 #include "feature/avc_spoof.h"
@@ -84,6 +89,7 @@ __attribute__((naked)) int __init kernelsu_init_early(void)
 
 struct cred *ksu_cred;
 bool ksu_late_loaded;
+bool ksu_hook_backend_ready;
 
 #ifdef CONFIG_KSU_DEBUG
 bool allow_shell = true;
@@ -159,7 +165,21 @@ int __init kernelsu_init(void)
 #endif
 
     ksu_init_symbol_resolver();
-    ksu_syscall_hook_init();
+#ifdef CONFIG_KSU_HOOK_SUSFS_INLINE
+    ret = ksu_syscall_table_init();
+    if (ret) {
+        pr_warn("SUSFS inline: sys_call_table unavailable: %d\n", ret);
+        ksu_hook_backend_ready = false;
+    } else {
+        ksu_hook_backend_ready = true;
+    }
+#else
+    ret = ksu_syscall_hook_init();
+    if (ret) {
+        pr_err("tracepoint backend initialization failed: %d\n", ret);
+        ksu_hook_backend_ready = false;
+    }
+#endif
 
     ksu_feature_init();
     ksu_module_blacklist_init();
@@ -177,6 +197,9 @@ int __init kernelsu_init(void)
 
     ksu_supercalls_init();
     ksu_app_profile_init();
+#ifdef __aarch64__
+    ksu_init_module_filter_init();
+#endif
 
     if (ksu_late_loaded) {
         pr_info("late load mode, skipping kprobe hooks\n");
@@ -193,7 +216,14 @@ int __init kernelsu_init(void)
         ksu_allowlist_init();
         ksu_load_allow_list();
 
-        ksu_syscall_hook_manager_init();
+#ifdef CONFIG_KSU_HOOK_SUSFS_INLINE
+        ksu_setuid_hook_init();
+        ksu_sucompat_init();
+#else
+        ret = ksu_syscall_hook_manager_init();
+        if (!ret)
+            ksu_hook_backend_ready = true;
+#endif
 
         ksu_throne_tracker_init();
 #ifdef CONFIG_KSU_DYNAMIC_MANAGER
@@ -214,7 +244,14 @@ int __init kernelsu_init(void)
         }
 
     } else {
-        ksu_syscall_hook_manager_init();
+#ifdef CONFIG_KSU_HOOK_SUSFS_INLINE
+        ksu_setuid_hook_init();
+        ksu_sucompat_init();
+#else
+        ret = ksu_syscall_hook_manager_init();
+        if (!ret)
+            ksu_hook_backend_ready = true;
+#endif
 
         ksu_allowlist_init();
 
@@ -244,7 +281,16 @@ void __exit kernelsu_exit(void)
     ksu_netisolate_exit();
 
     // Phase 1: Stop all hooks first to prevent new callbacks
+#ifdef __aarch64__
+    ksu_init_module_filter_exit();
+#endif
+#ifdef CONFIG_KSU_HOOK_SUSFS_INLINE
+    ksu_sucompat_exit();
+    ksu_setuid_hook_exit();
+    ksu_syscall_hook_exit();
+#else
     ksu_syscall_hook_manager_exit();
+#endif
     ksu_avc_spoof_exit();
 
     ksu_supercalls_exit();

@@ -45,6 +45,12 @@ Java_me_weishu_kernelsu_Natives_getManagerUAPIVersion(JNIEnv *env, jobject) {
     return get_manager_uapi_version();
 }
 
+extern "C"
+JNIEXPORT jint JNICALL
+Java_me_weishu_kernelsu_Natives_getKernelHookFlags(JNIEnv *env, jobject) {
+    return (jint) get_kernel_hook_flags();
+}
+
 // One consistent identity snapshot: {version, isManager, kernelUapi, managerUapi}. All four fields
 // come from a single GET_INFO, so a concurrent revoke cannot mix old and new values.
 extern "C"

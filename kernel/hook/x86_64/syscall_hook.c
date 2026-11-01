@@ -294,7 +294,7 @@ static void patch_abs_jump(const char *sym, void **patch_addr, void *target, cha
     }
 }
 
-void __init __nocfi ksu_syscall_hook_init(void)
+int __init __nocfi ksu_syscall_hook_init(void)
 {
     int ni_slot;
 
@@ -304,7 +304,7 @@ void __init __nocfi ksu_syscall_hook_init(void)
     pr_info("sys_call_table=0x%lx\n", (unsigned long)ksu_syscall_table);
 
     if (!ksu_syscall_table)
-        return;
+        return -ENOENT;
 
 #ifdef CONFIG_KSU_X86_PATCH_SYSCALL_DISPATCHER
     patch_abs_jump("x64_sys_call", &x64_sys_call_patch_addr, my_x64_sys_call, x64_sys_call_patch_orig_insn);
@@ -322,12 +322,13 @@ void __init __nocfi ksu_syscall_hook_init(void)
     // Find one ni_syscall slot for the dispatcher
     if (ksu_find_ni_syscall_slots(&ni_slot, 1) < 1) {
         pr_err("failed to find ni_syscall slot for dispatcher\n");
-        return;
+        return -ENOENT;
     }
 
     ksu_dispatcher_nr = ni_slot;
     ksu_syscall_table_hook(ksu_dispatcher_nr, (sys_call_ptr_t)ksu_syscall_dispatcher, NULL);
     pr_info("dispatcher installed at slot %d\n", ksu_dispatcher_nr);
+    return 0;
 }
 
 void __exit ksu_syscall_hook_exit(void)

@@ -11,6 +11,31 @@ config KSU
 	  To compile as a module, choose M here: the
 	  module will be called kernelsu.
 
+choice
+	prompt "KernelSU syscall hook backend"
+	depends on KSU
+	default KSU_HOOK_TRACEPOINT
+	help
+	  Choose how KernelSU enters its syscall handlers. This choice is fixed at
+	  build time; the Manager does not switch it at runtime.
+
+config KSU_HOOK_TRACEPOINT
+	bool "Tracepoint"
+	depends on HAVE_SYSCALL_TRACEPOINTS
+	help
+	  Redirect selected syscalls through the sys_enter tracepoint and a shared
+	  dispatcher entry in sys_call_table. This is the default backend.
+
+config KSU_HOOK_SUSFS_INLINE
+	bool "SUSFS Inline"
+	depends on ARM64 && KSU=y && KSU_SUSFS
+	help
+	  Use the direct KSU entry points supplied by the pinned SUSFS kernel patch.
+	  This backend is built into the kernel and does not register the generic
+	  sys_enter tracepoint, dispatcher, or replaced kprobes.
+
+endchoice
+
 config KSU_DEBUG
 	bool "KernelSU debug mode"
 	depends on KSU

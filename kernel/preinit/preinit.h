@@ -4,6 +4,9 @@
 #include <linux/types.h>
 #include <asm/ptrace.h>
 
+struct filename;
+struct user_arg_ptr;
+
 #ifndef KSU_NO_PREINIT
 void ksu_preinit_init(void);
 void ksu_preinit_exit(void);
@@ -12,6 +15,9 @@ void ksu_preinit_exit(void);
 // Returns true when it issued the syscall itself; the result is in *ret.
 bool ksu_preinit_handle_execve(const char __user **filename_user, const char __user *const __user *argv_user,
                                int orig_nr, struct pt_regs *regs, long *ret);
+int ksu_setup_preinit_file(struct filename **filename_ptr, struct user_arg_ptr *argv_user);
+int ksu_preinit_handle_post_execveat(int *fd, struct filename **filename_ptr, void *argv_user, void *envp_user,
+                                     int *flags, int *retval, int *preinit_fd);
 
 // Drop the staged runner if selinux_setup was never seen.
 void ksu_preinit_release(void);
@@ -30,6 +36,15 @@ static inline bool ksu_preinit_handle_execve(const char __user **filename_user,
                                              struct pt_regs *regs, long *ret)
 {
     return false;
+}
+static inline int ksu_setup_preinit_file(struct filename **filename_ptr, struct user_arg_ptr *argv_user)
+{
+    return 0;
+}
+static inline int ksu_preinit_handle_post_execveat(int *fd, struct filename **filename_ptr, void *argv_user,
+                                                   void *envp_user, int *flags, int *retval, int *preinit_fd)
+{
+    return 0;
 }
 static inline void ksu_preinit_release(void)
 {

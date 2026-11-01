@@ -2,6 +2,7 @@ package me.weishu.kernelsu.ui.screen.home
 
 import androidx.compose.runtime.Immutable
 import me.weishu.kernelsu.KernelVersion
+import me.weishu.kernelsu.Natives
 import me.weishu.kernelsu.data.model.FolkMountProvider
 import me.weishu.kernelsu.data.model.FolkMountStatus
 import me.weishu.kernelsu.ui.util.RootShellStatus
@@ -23,12 +24,42 @@ data class HomeMount(
     val metamodule: HomeMetamodule? = null,
 )
 
+enum class KernelHookBackend {
+    TRACEPOINT,
+    SUSFS_INLINE,
+    UNKNOWN,
+    INVALID,
+}
+
+@Immutable
+data class KernelHookState(
+    val backend: KernelHookBackend = KernelHookBackend.UNKNOWN,
+    val ready: Boolean? = null,
+) {
+    val failed: Boolean
+        get() = backend == KernelHookBackend.INVALID || (backend != KernelHookBackend.UNKNOWN && ready == false)
+}
+
+internal fun resolveKernelHookState(flags: Int): KernelHookState {
+    val tracepoint = flags and Natives.KSU_GET_INFO_FLAG_HOOK_TRACEPOINT != 0
+    val inline = flags and Natives.KSU_GET_INFO_FLAG_HOOK_SUSFS_INLINE != 0
+
+    if (tracepoint && inline) return KernelHookState(KernelHookBackend.INVALID, false)
+    if (!tracepoint && !inline) return KernelHookState()
+
+    return KernelHookState(
+        backend = if (inline) KernelHookBackend.SUSFS_INLINE else KernelHookBackend.TRACEPOINT,
+        ready = flags and Natives.KSU_GET_INFO_FLAG_HOOK_READY != 0,
+    )
+}
+
 @Immutable
 data class HomeUiState(
     val kernelVersion: KernelVersion,
     val ksuVersion: Int?,
     val managerUAPIVersion: Int,
     val kernelUAPIVersion: Int?,
+    val kernelHook: KernelHookState = KernelHookState(),
     val lkmMode: Boolean?,
     val isLkmBundled: Boolean,
     val isManager: Boolean,

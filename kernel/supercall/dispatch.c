@@ -69,6 +69,13 @@ static int do_get_info(void __user *arg)
     }
     if (ksu_preinit_enabled_param() && !ksu_late_loaded)
         cmd.flags |= KSU_GET_INFO_FLAG_PREINIT;
+#ifdef CONFIG_KSU_HOOK_SUSFS_INLINE
+    cmd.flags |= KSU_GET_INFO_FLAG_HOOK_SUSFS_INLINE;
+#else
+    cmd.flags |= KSU_GET_INFO_FLAG_HOOK_TRACEPOINT;
+#endif
+    if (ksu_hook_backend_ready)
+        cmd.flags |= KSU_GET_INFO_FLAG_HOOK_READY;
 #if defined(EXPECTED_SIZE2) && !defined(SECOND_SIGNATURE_RELEASE)
     cmd.flags |= KSU_GET_INFO_FLAG_PR_BUILD;
 #endif
@@ -109,6 +116,13 @@ static int do_get_info_legacy(void __user *arg)
     if (ksu_late_loaded) {
         cmd.flags |= KSU_GET_INFO_FLAG_LATE_LOAD;
     }
+#ifdef CONFIG_KSU_HOOK_SUSFS_INLINE
+    cmd.flags |= KSU_GET_INFO_FLAG_HOOK_SUSFS_INLINE;
+#else
+    cmd.flags |= KSU_GET_INFO_FLAG_HOOK_TRACEPOINT;
+#endif
+    if (ksu_hook_backend_ready)
+        cmd.flags |= KSU_GET_INFO_FLAG_HOOK_READY;
 #if defined(EXPECTED_SIZE2) && !defined(SECOND_SIGNATURE_RELEASE)
     cmd.flags |= KSU_GET_INFO_FLAG_PR_BUILD;
 #endif

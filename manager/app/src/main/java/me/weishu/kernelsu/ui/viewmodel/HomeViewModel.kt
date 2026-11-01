@@ -278,6 +278,10 @@ class HomeViewModel(
             requiresNewKernel = isManager && Natives.managerUAPIVersion > Natives.kernelUAPIVersion,
             requiresNewManager = isManager && Natives.managerUAPIVersion < Natives.kernelUAPIVersion,
             kernelUAPIVersion = kernelUAPIVersion,
+            kernelHook = if (isManager) runCatching {
+                me.weishu.kernelsu.ui.screen.home.resolveKernelHookState(Natives.getKernelHookFlags())
+            }.getOrDefault(me.weishu.kernelsu.ui.screen.home.KernelHookState()) else
+                me.weishu.kernelsu.ui.screen.home.KernelHookState(),
             managerUAPIVersion = managerUAPIVersion,
             isRootAvailable = rootStatus == RootShellStatus.Ready,
             rootStatus = rootStatus,

@@ -175,6 +175,12 @@ object Natives {
     val managerUAPIVersion: Int
         external get
 
+    const val KSU_GET_INFO_FLAG_HOOK_TRACEPOINT = 1 shl 6
+    const val KSU_GET_INFO_FLAG_HOOK_SUSFS_INLINE = 1 shl 7
+    const val KSU_GET_INFO_FLAG_HOOK_READY = 1 shl 8
+
+    external fun getKernelHookFlags(): Int
+
     @Keep
     @Immutable
     @Parcelize

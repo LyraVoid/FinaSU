@@ -178,12 +178,18 @@ awk '
 
 # runtime hunk 11 removes local init-rc, exec and input owners; this tree keeps them.
 cat >"$tmp/ten.expected" <<'EOF'
+Kbuild:1
+core/init.c:2
 core/init.c:3
+core/init.c:4
 core/init.c:5
 core/init.c:7
 core/init.c:8
 feature/adb_root.c:1
+feature/adb_root.c:3
 feature/adb_root.c:6
+feature/adb_root.c:7
+feature/adb_root.h:1
 feature/selinux_hide.c:1
 feature/selinux_hide.c:10
 feature/selinux_hide.c:13
@@ -202,16 +208,27 @@ feature/sucompat.h:1
 hook/setuid_hook.c:1
 hook/setuid_hook.c:2
 hook/setuid_hook.h:reversed
+include/ksu.h:1
+preinit/preinit.c:2
+preinit/preinit.h:2
+runtime/ksud.h:1
 runtime/ksud_integration.c:11
+runtime/ksud_integration.c:2
+runtime/ksud_integration.c:3
 runtime/ksud_integration.c:5
 selinux/rules.c:1
 selinux/selinux.c:1
+sulog/event.c:10
+sulog/event.c:7
+sulog/event.c:9
+sulog/event.h:2
 supercall/dispatch.c:1
 supercall/dispatch.c:3
 supercall/dispatch.c:4
 supercall/dispatch.c:6
 supercall/dispatch.c:7
 supercall/dispatch.c:8
+supercall/supercall.c:2
 EOF
 
 if ! diff -u "$tmp/ten.expected" "$tmp/ten.observed"; then

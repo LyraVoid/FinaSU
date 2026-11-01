@@ -15,8 +15,10 @@ kernelsu-objs += feature/uts_view.o
 
 kernelsu-objs += hook/lsm_hook.o
 kernelsu-objs += hook/setuid_hook.o
+ifndef CONFIG_KSU_HOOK_SUSFS_INLINE
 kernelsu-objs += hook/syscall_event_bridge.o
 kernelsu-objs += hook/syscall_hook_manager.o
+endif
 kernelsu-objs += hook/tp_marker.o
 ifeq ($(CONFIG_ARM64),y)
 kernelsu-objs += hook/init_module_filter.o
@@ -108,6 +110,20 @@ endif
 endif
 
 ccflags-y += -I$(KSU_KERNEL_DIR) -I$(KSU_KERNEL_DIR)/include
+
+ifdef CONFIG_KSU_HOOK_SUSFS_INLINE
+ifneq ($(CONFIG_KSU_SUSFS),y)
+$(error SUSFS Inline requires CONFIG_KSU_SUSFS=y)
+endif
+ifdef KBUILD_EXTMOD
+$(error SUSFS Inline does not support LKM builds)
+endif
+SUSFS_INLINE_CHECK_RESULT := $(shell $(KSU_KERNEL_DIR)/tools/check_susfs_inline.sh "$(srctree)"; echo $$?)
+ifeq ($(lastword $(SUSFS_INLINE_CHECK_RESULT)),0)
+else
+$(error SUSFS Inline hook-site check failed)
+endif
+endif
 
 KSU_UAPI_INC := $(objtree)/usr/include
 ifneq ($(wildcard $(KSU_UAPI_INC)/linux/unistd.h),)

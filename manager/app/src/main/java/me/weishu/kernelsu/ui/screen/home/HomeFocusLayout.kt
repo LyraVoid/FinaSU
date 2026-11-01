@@ -165,8 +165,10 @@ private fun FocusStatusTile(
     val ksuActive = state.ksuVersion != null
     val notInstalled = !ksuActive && state.kernelVersion.isGKI()
     val jailbreak = notInstalled && state.isSELinuxPermissive
+    val hookFailed = state.kernelHook.failed
 
     val statusTitle = when {
+        ksuActive && hookFailed -> kernelHookValue(state.kernelHook)
         ksuActive -> stringResource(R.string.home_working)
         notInstalled -> stringResource(R.string.home_not_installed)
         else -> stringResource(R.string.home_unsupported)

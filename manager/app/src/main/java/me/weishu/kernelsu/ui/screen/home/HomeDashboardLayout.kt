@@ -93,13 +93,16 @@ private fun DashboardHeroCard(
 ) {
     val ksuActive = state.ksuVersion != null
     val notInstalled = !ksuActive && state.kernelVersion.isGKI()
+    val hookFailed = state.kernelHook.failed
 
     val statusIcon = when {
+        ksuActive && hookFailed -> Icons.Rounded.Warning
         ksuActive -> Icons.Rounded.CheckCircle
         notInstalled -> Icons.Rounded.Warning
         else -> Icons.Rounded.Block
     }
     val statusTitle = when {
+        ksuActive && hookFailed -> kernelHookValue(state.kernelHook)
         ksuActive -> stringResource(R.string.home_working)
         notInstalled -> stringResource(R.string.home_not_installed)
         else -> stringResource(R.string.home_unsupported)

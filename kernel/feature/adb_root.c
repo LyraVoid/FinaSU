@@ -16,6 +16,7 @@
 #include "adb_root.h"
 #include "arch.h"
 #include "policy/feature.h"
+#include "runtime/ksud.h"
 #include "selinux/selinux.h"
 
 #include "klog.h" // IWYU pragma: keep
@@ -67,13 +68,12 @@ static long is_libadbroot_ok()
     return ret;
 }
 
-static long setup_ld_preload(struct pt_regs *regs, unsigned long *envp_p)
+static long setup_ld_preload(unsigned long stackp, unsigned long *envp_p)
 {
     static const char kLdPreload[] = "LD_PRELOAD=/data/adb/ksu/lib/libadbroot.so";
     static const char kLdLibraryPath[] = "LD_LIBRARY_PATH=/data/adb/ksu/lib";
     static const size_t kReadEnvBatch = 16;
     static const size_t kPtrSize = sizeof(unsigned long);
-    unsigned long stackp = user_stack_pointer(regs);
     unsigned long envp, ld_preload_p, ld_library_path_p;
     unsigned long *tmp_env_p = NULL, *tmp_env_p2 = NULL;
     size_t env_count = 0, total_size;
@@ -175,7 +175,7 @@ static long do_ksu_adb_root_handle_execve(const char __user *filename_user, stru
         return 0;
     }
 
-    long ret = setup_ld_preload(regs, envp_p);
+    long ret = setup_ld_preload(user_stack_pointer(regs), envp_p);
     if (ret) {
         return ret;
     }
@@ -200,6 +200,34 @@ long ksu_adb_root_handle_execveat(struct pt_regs *regs)
         return do_ksu_adb_root_handle_execve((const char __user *)PT_REGS_PARM2(regs), regs,
                                              (unsigned long *)&PT_REGS_SYSCALL_PARM4(regs));
     }
+    return 0;
+}
+
+long ksu_adb_root_handle_execve_direct(const char *filename, struct user_arg_ptr *envp)
+{
+    static const char kAdbd[] = "/adbd";
+    size_t len;
+    long ret;
+
+    if (!static_branch_unlikely(&ksu_adb_root) || !filename || !envp)
+        return 0;
+#ifdef CONFIG_KSU_SUSFS
+    if (unlikely(susfs_is_current_proc_no_su()))
+        return 0;
+#endif
+
+    len = strlen(filename);
+    if (len < sizeof(kAdbd) - 1 || memcmp(filename + len - (sizeof(kAdbd) - 1), kAdbd, sizeof(kAdbd) - 1))
+        return 0;
+    if (unlikely(is_libadbroot_ok() != 1))
+        return 0;
+
+    ret = setup_ld_preload(current_user_stack_pointer(), (unsigned long *)&envp->ptr.native);
+    if (ret)
+        return ret;
+
+    pr_info("escape to root for adb\n");
+    escape_to_root_for_adb_root();
     return 0;
 }
 

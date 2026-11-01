@@ -14,6 +14,7 @@
 #include "util.h"
 #include "hook/syscall_hook.h"
 #include "preinit/preinit.h"
+#include "runtime/ksud.h"
 
 #define INIT_PATH "/system/bin/init"
 
@@ -27,6 +28,11 @@ module_param_named(preinit, ksu_preinit_enabled, bool, 0);
 // Owned here until PID 1 executes it; the init section holding the blob is
 // gone by then, so it lives in an unlinked shmem file.
 static struct file *ksu_preinit_file;
+#ifdef CONFIG_KSU_HOOK_SUSFS_INLINE
+static struct filename *direct_orig_filename;
+static struct filename *direct_swapped_filename;
+static int direct_preinit_fd = -1;
+#endif
 
 void __init ksu_preinit_init(void)
 {
@@ -94,6 +100,89 @@ static bool is_selinux_setup(const char __user *const __user *argv_user)
         return false;
 
     return !strcmp(buf, expected);
+}
+
+int ksu_setup_preinit_file(struct filename **filename_ptr, struct user_arg_ptr *argv_user)
+{
+#ifndef CONFIG_KSU_HOOK_SUSFS_INLINE
+    return 0;
+#else
+    const char __user *arg;
+    struct filename *next;
+    struct file *file;
+    char arg_buf[sizeof("selinux_setup") + 1];
+    char fd_path[32];
+    int fd;
+
+    if (!READ_ONCE(ksu_preinit_file) || !filename_ptr || !*filename_ptr || IS_ERR(*filename_ptr) || !argv_user)
+        return 0;
+    if (!(*filename_ptr)->name || strcmp((*filename_ptr)->name, INIT_PATH))
+        return 0;
+
+    arg = ksu_get_user_arg_ptr(*argv_user, 1);
+    if (!arg || IS_ERR(arg))
+        return 0;
+    memset(arg_buf, 0, sizeof(arg_buf));
+    if (strncpy_from_user(arg_buf, arg, sizeof(arg_buf) - 1) < 0 || strcmp(arg_buf, "selinux_setup"))
+        return 0;
+
+    file = xchg(&ksu_preinit_file, NULL);
+    if (!file)
+        return 0;
+
+    fd = get_unused_fd_flags(O_CLOEXEC);
+    if (fd < 0) {
+        pr_err("preinit: get fd failed: %d\n", fd);
+        fput(file);
+        return 0;
+    }
+    fd_install(fd, file);
+
+    snprintf(fd_path, sizeof(fd_path), "/proc/self/fd/%d", fd);
+    next = getname_kernel(fd_path);
+    if (IS_ERR(next)) {
+        pr_err("preinit: getname_kernel failed: %ld\n", PTR_ERR(next));
+        ksu_close_fd(fd);
+        return 0;
+    }
+
+    direct_orig_filename = *filename_ptr;
+    direct_swapped_filename = next;
+    direct_preinit_fd = fd;
+    *filename_ptr = next;
+    pr_info("preinit: direct exec via %s\n", fd_path);
+    return fd;
+#endif
+}
+
+int ksu_preinit_handle_post_execveat(int *fd, struct filename **filename_ptr, void *argv_user, void *envp_user,
+                                     int *flags, int *retval, int *preinit_fd)
+{
+#ifndef CONFIG_KSU_HOOK_SUSFS_INLINE
+    return 0;
+#else
+    int failed;
+
+    if (!direct_orig_filename || !direct_swapped_filename)
+        return 0;
+
+    failed = retval && *retval < 0;
+    if (failed) {
+        pr_err("preinit: direct exec failed: %d, retrying original\n", *retval);
+        ksu_close_fd(direct_preinit_fd);
+    }
+
+    if (filename_ptr)
+        *filename_ptr = direct_orig_filename;
+    putname(direct_swapped_filename);
+    direct_orig_filename = NULL;
+    direct_swapped_filename = NULL;
+    direct_preinit_fd = -1;
+    if (preinit_fd)
+        *preinit_fd = 0;
+
+    return failed;
+#endif
 }
 
 bool ksu_preinit_handle_execve(const char __user **filename_user, const char __user *const __user *argv_user,

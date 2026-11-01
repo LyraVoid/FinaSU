@@ -113,6 +113,7 @@ static void ksu_install_fd_tw_func(struct callback_head *cb)
     kfree(tw);
 }
 
+#ifndef CONFIG_KSU_HOOK_SUSFS_INLINE
 static int reboot_handler_pre(struct kprobe *p, struct pt_regs *regs)
 {
     struct pt_regs *real_regs = PT_REAL_REGS(regs);
@@ -143,12 +144,14 @@ static struct kprobe reboot_kp = {
     .symbol_name = REBOOT_SYMBOL,
     .pre_handler = reboot_handler_pre,
 };
+#endif
 
 void __init ksu_supercalls_init(void)
 {
-    int rc;
-
     ksu_supercall_dump_commands();
+
+#ifndef CONFIG_KSU_HOOK_SUSFS_INLINE
+    int rc;
 
     rc = register_kprobe(&reboot_kp);
     if (rc) {
@@ -156,10 +159,13 @@ void __init ksu_supercalls_init(void)
     } else {
         pr_info("reboot kprobe registered successfully\n");
     }
+#endif
 }
 
 void __exit ksu_supercalls_exit(void)
 {
+#ifndef CONFIG_KSU_HOOK_SUSFS_INLINE
     unregister_kprobe(&reboot_kp);
+#endif
     ksu_supercall_cleanup_state();
 }

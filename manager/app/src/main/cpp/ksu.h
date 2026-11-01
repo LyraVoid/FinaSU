@@ -17,6 +17,8 @@ uint32_t get_kernel_uapi_version();
 
 uint32_t get_manager_uapi_version();
 
+uint32_t get_kernel_hook_flags();
+
 uint32_t get_version();
 
 std::string get_full_version();
