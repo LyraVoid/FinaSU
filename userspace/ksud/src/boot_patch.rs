@@ -622,7 +622,7 @@ fn is_vivo_family_value(value: &str) -> bool {
     matches!(value.trim().to_ascii_lowercase().as_str(), "vivo" | "iqoo")
 }
 
-fn detected_vivo_family() -> Option<bool> {
+pub fn detected_vivo_family() -> Option<bool> {
     #[cfg(target_os = "android")]
     {
         android::detect_vivo_family()
@@ -631,6 +631,17 @@ fn detected_vivo_family() -> Option<bool> {
     {
         None
     }
+}
+
+pub fn late_load_module_params(allow_shell: bool, is_vivo_family: Option<bool>) -> String {
+    [
+        allow_shell.then_some("allow_shell=1"),
+        (is_vivo_family == Some(true)).then_some("vivo_module_filter=auto"),
+    ]
+    .into_iter()
+    .flatten()
+    .collect::<Vec<_>>()
+    .join(" ")
 }
 
 fn apply_vivo_filter(config: &mut Vec<String>, forced: Option<&str>, detected: Option<bool>) {
@@ -852,6 +863,21 @@ mod config_tests {
         for invalid in ["", "vr,", "vr;reboot", "a-b"] {
             assert!(parse_vivo_module_filter(invalid).is_err(), "{invalid}");
         }
+    }
+
+    #[test]
+    fn late_load_module_params_preserve_shell_and_vivo_options() {
+        assert_eq!(late_load_module_params(false, Some(false)), "");
+        assert_eq!(late_load_module_params(true, Some(false)), "allow_shell=1");
+        assert_eq!(
+            late_load_module_params(false, Some(true)),
+            "vivo_module_filter=auto"
+        );
+        assert_eq!(
+            late_load_module_params(true, Some(true)),
+            "allow_shell=1 vivo_module_filter=auto"
+        );
+        assert_eq!(late_load_module_params(false, None), "");
     }
 }
 

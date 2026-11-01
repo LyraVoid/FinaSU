@@ -1,7 +1,6 @@
 use anyhow::{Context, Result};
 use log::{info, warn};
-use rustix::cstr;
-use std::{process::Command, time::Instant};
+use std::{ffi::CString, process::Command, time::Instant};
 
 use crate::module::{ScriptWait, handle_updated_modules, prune_modules};
 use crate::{assets, defs, init_event, magic_mount, mount_guard, restorecon, utils};
@@ -59,12 +58,21 @@ pub fn run(package_name: &String, kmi: Option<String>, allow_shell: bool) -> Res
         // 4. Load kernelsu.ko from memory with manual relocation
         info!("Loading kernelsu.ko for KMI {kmi}...");
         // bundled flag is meaningless in jailbreak mode since we can't flash boot to update it.
-        let params = if allow_shell {
-            cstr!("allow_shell=1")
-        } else {
-            cstr!("")
-        };
-        ksuinit::load_module(&ko_data, params).context("Failed to load kernelsu.ko")?;
+        let vivo_family = crate::boot_patch::detected_vivo_family();
+        let params = crate::boot_patch::late_load_module_params(allow_shell, vivo_family);
+        if vivo_family == Some(true)
+            && std::fs::read_to_string("/proc/modules").is_ok_and(|modules| {
+                modules
+                    .lines()
+                    .any(|line| line.split_whitespace().next() == Some("vr"))
+            })
+        {
+            warn!(
+                "vr module is already loaded; vivo_module_filter only blocks future loads and cannot remove it"
+            );
+        }
+        let params = CString::new(params).context("Invalid kernelsu module parameters")?;
+        ksuinit::load_module(&ko_data, &params).context("Failed to load kernelsu.ko")?;
         info!("kernelsu.ko loaded successfully!");
         dump_process_info("after load_module");
     }
