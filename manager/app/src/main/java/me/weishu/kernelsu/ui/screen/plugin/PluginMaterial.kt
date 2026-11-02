@@ -128,6 +128,7 @@ import me.weishu.kernelsu.ui.navigation3.navThemeSignature
 import me.weishu.kernelsu.ui.screen.module.ExpandableDescriptionText
 import me.weishu.kernelsu.ui.screen.module.rememberModuleCardVisual
 import me.weishu.kernelsu.ui.theme.LocalModuleDescriptionMaxLines
+import me.weishu.kernelsu.data.model.pluginLocalizedOrNull
 
 @Composable
 fun PluginPagerMaterial(
@@ -452,10 +453,10 @@ private fun PluginList(
         CardBannerDialog(
             subject = CardSubject(
                 id = plugin.id,
-                name = plugin.name,
+                name = plugin.names.pluginLocalizedOrNull() ?: plugin.name,
                 version = plugin.version,
                 author = plugin.author,
-                description = plugin.description,
+                description = plugin.descriptions.pluginLocalizedOrNull() ?: plugin.description,
             ),
             slot = PluginBannerSlot,
             onDismiss = { bannerDialogPlugin = null },
@@ -472,8 +473,7 @@ private fun PluginLogSheet(
     val pluginId = uiState.logPlugin ?: return
     val pluginName = uiState.plugins
         .firstOrNull { it.id == pluginId }
-        ?.name
-        ?.ifBlank { pluginId }
+        ?.let { it.names.pluginLocalizedOrNull() ?: it.name.ifBlank { it.id } }
         ?: pluginId
     val emptyLog = stringResource(R.string.plugin_log_empty)
 
@@ -531,7 +531,7 @@ private fun PluginUninstallDialog(
         text = {
             Text(
                 text = stringResource(R.string.plugin_uninstall_confirm).format(
-                    plugin.name.ifBlank { plugin.id }
+                    plugin.names.pluginLocalizedOrNull() ?: plugin.name.ifBlank { plugin.id }
                 ),
             )
         },
@@ -579,7 +579,7 @@ private fun PluginConfigSheet(
             verticalArrangement = Arrangement.spacedBy(12.dp),
         ) {
             Text(
-                plugin.name.ifBlank { plugin.id },
+                plugin.names.pluginLocalizedOrNull() ?: plugin.name.ifBlank { plugin.id },
                 style = MaterialTheme.typography.titleLarge,
             )
             Text(
@@ -639,7 +639,7 @@ private fun PluginConfigRow(
     onValueChange: (String) -> Unit,
     onReset: () -> Unit,
 ) {
-    val title = field.label.ifBlank { field.key }
+    val title = field.labels.pluginLocalizedOrNull() ?: field.label.ifBlank { field.key }
     val summary = field.key.takeIf { field.label.isNotBlank() }
     val default = field.default.orEmpty()
     val resettable = field.default != null && value != default
@@ -778,6 +778,9 @@ private fun List<Plugin>.matching(query: String): List<Plugin> {
     return filter { plugin ->
         plugin.id.contains(trimmed, ignoreCase = true) ||
             plugin.name.contains(trimmed, ignoreCase = true) ||
-            plugin.description.contains(trimmed, ignoreCase = true)
+            plugin.names.values.any { it.contains(trimmed, ignoreCase = true) } ||
+            plugin.description.contains(trimmed, ignoreCase = true) ||
+            plugin.descriptions.values.any { it.contains(trimmed, ignoreCase = true) } ||
+            plugin.quickAction?.labels?.values?.any { it.contains(trimmed, ignoreCase = true) } == true
     }
 }

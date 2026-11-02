@@ -7,6 +7,7 @@ import androidx.compose.runtime.Immutable
 data class PluginConfigField(
     val key: String,
     val label: String,
+    val labels: Map<String, String> = emptyMap(),
     val type: String,
     val default: String?,
     val options: List<String>,
@@ -17,6 +18,7 @@ data class PluginConfigField(
 data class PluginQuickAction(
     val function: String,
     val label: String,
+    val labels: Map<String, String> = emptyMap(),
 )
 
 /** An installed plugin as reported by the manager daemon. */
@@ -24,9 +26,11 @@ data class PluginQuickAction(
 data class Plugin(
     val id: String,
     val name: String,
+    val names: Map<String, String> = emptyMap(),
     val author: String,
     val version: String,
     val description: String,
+    val descriptions: Map<String, String> = emptyMap(),
     val license: String,
     val enabled: Boolean,
     val entry: String,
@@ -35,5 +39,7 @@ data class Plugin(
     val depends: List<String>,
     val callbacks: List<String>,
     /** Set when the package cannot be read, in which case the other fields are empty. */
+    val has_manifest: Boolean = true, 
+    val has_action: Boolean = false,
     val error: String?,
 )

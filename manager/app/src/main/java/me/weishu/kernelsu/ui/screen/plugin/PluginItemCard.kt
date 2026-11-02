@@ -40,7 +40,7 @@ import me.weishu.kernelsu.ui.component.module.ModuleButtonConfig
 import me.weishu.kernelsu.ui.screen.module.ModuleButtonStyle
 import me.weishu.kernelsu.ui.screen.module.ModuleCardVisual
 import me.weishu.kernelsu.ui.theme.LocalModuleDescriptionMaxLines
-
+import me.weishu.kernelsu.data.model.pluginLocalizedOrNull
 /**
  * One plugin, drawn with the module card design: same frame, same banner, same folding and the
  * same adaptive action row.
@@ -93,12 +93,12 @@ private fun PluginCardContent(
     val actionable = plugin.error == null && !pending
     val maxLinesLimit = LocalModuleDescriptionMaxLines.current
 
-    val displayName = customInfo?.name?.takeIf { it.isNotBlank() } ?: plugin.name.ifBlank { plugin.id }
+    val displayName = plugin.names.pluginLocalizedOrNull() ?: customInfo?.name?.takeIf { it.isNotBlank() } ?: plugin.name.ifBlank { plugin.id }
     val displayVersion = customInfo?.version?.takeIf { it.isNotBlank() } ?: plugin.version
     val displayAuthor = customInfo?.author?.takeIf { it.isNotBlank() } ?: plugin.author
-    val displayDescription = customInfo?.description?.takeIf { it.isNotBlank() } ?: plugin.description
+    val displayDescription = plugin.descriptions.pluginLocalizedOrNull() ?: customInfo?.description?.takeIf { it.isNotBlank() } ?: plugin.description
 
-    val quickLabel = plugin.quickAction?.label?.takeIf { it.isNotBlank() }
+    val quickLabel = plugin.quickAction?.labels?.pluginLocalizedOrNull() ?: plugin.quickAction?.label?.takeIf { it.isNotBlank() }
     val showRun = actionable && (plugin.quickAction != null || plugin.callbacks.contains("action"))
     val showConfig = actionable && plugin.config.isNotEmpty()
 

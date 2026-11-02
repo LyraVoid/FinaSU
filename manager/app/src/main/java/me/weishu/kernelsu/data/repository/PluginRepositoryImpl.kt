@@ -86,12 +86,15 @@ class PluginRepositoryImpl : PluginRepository {
  */
 private fun quote(value: String): String = "'" + value.replace("'", "'\"'\"'") + "'"
 
+// 1. 修改 toPlugin() 的构造部分：
 private fun JSONObject.toPlugin(): Plugin = Plugin(
     id = getString("id"),
     name = optString("name"),
+    names = optJSONObject("names").toStringMap(),
     author = optString("author"),
     version = optString("version"),
     description = optString("description"),
+    descriptions = optJSONObject("descriptions").toStringMap(), // 新增
     license = optString("license"),
     enabled = optBoolean("enabled"),
     entry = optString("entry"),
@@ -99,14 +102,18 @@ private fun JSONObject.toPlugin(): Plugin = Plugin(
         PluginQuickAction(
             function = it.optString("function"),
             label = it.optString("label"),
+            labels = it.optJSONObject("labels").toStringMap(),    // 新增
         )
     },
     config = optJSONArray("config").toConfigFields(),
     depends = optJSONArray("depends").toStringList(),
     callbacks = optJSONArray("callbacks").toStringList(),
+    has_manifest = optBoolean("has_manifest", true), // 新增
+    has_action = optBoolean("has_action", false),    // 新增
     error = if (isNull("error")) null else optString("error").ifBlank { null },
 )
 
+// 2. 修改 toConfigFields() 的构造部分：
 private fun JSONArray?.toConfigFields(): List<PluginConfigField> {
     if (this == null) return emptyList()
     return (0 until length()).map { index ->
@@ -114,6 +121,7 @@ private fun JSONArray?.toConfigFields(): List<PluginConfigField> {
         PluginConfigField(
             key = field.optString("key"),
             label = field.optString("label"),
+            labels = field.optJSONObject("labels").toStringMap(), // 新增
             type = field.optString("type"),
             default = if (field.isNull("default")) null else field.opt("default")?.toString(),
             options = field.optJSONArray("options").toStringList(),
@@ -121,7 +129,15 @@ private fun JSONArray?.toConfigFields(): List<PluginConfigField> {
     }
 }
 
+
 private fun JSONArray?.toStringList(): List<String> {
     if (this == null) return emptyList()
     return (0 until length()).map { index -> optString(index) }
+}
+
+// 3. 在文件最底部（类外面或里面均可）加上这个工具函数：
+private fun JSONObject?.toStringMap(): Map<String, String> {
+    if (this == null) return emptyMap()
+    return keys().asSequence().associateWith { key -> optString(key) }
+        .filterValues { it.isNotBlank() }
 }
