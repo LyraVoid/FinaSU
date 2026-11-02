@@ -1,6 +1,7 @@
 package me.weishu.kernelsu.ui.screen.home
 
 import android.animation.ValueAnimator
+import android.graphics.BitmapFactory
 import android.net.Uri
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.animateFloatAsState
@@ -10,6 +11,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.PaddingValues
@@ -47,9 +49,11 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.core.net.toUri
 import java.io.File
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -73,8 +77,49 @@ import me.weishu.kernelsu.wallpaper.surface.SurfaceFlag
 private val GridTileSpacing = 12.dp
 
 /**
+ * How far a work-card artwork may stretch the grid tiles away from a square.
+ *
+ * The tiles normally take the height their own content needs. When the work card carries an
+ * artwork the row follows that artwork's aspect instead, so a picture the user cropped taller (or
+ * wider) is shown at its own proportions instead of being forced into the tile's height. The clamps
+ * keep an extreme image from pushing the rest of the home screen off the page.
+ */
+private const val MaxArtworkTileRatio = 1.6f
+private const val MinArtworkTileRatio = 0.62f
+
+/**
+ * The pixel aspect ratio (width / height) of the work card's artwork, or null while it is unknown
+ * or the surface has no image.
+ *
+ * Only the image bounds are read, so this is a cheap header parse rather than a full decode.
+ */
+@Composable
+private fun rememberWorkCardArtworkAspect(uri: String?): Float? {
+    if (uri.isNullOrEmpty()) return null
+    val path = remember(uri) { uri.toUri().path }
+    val aspect by produceState<Float?>(initialValue = null, uri) {
+        value = withContext(Dispatchers.IO) {
+            val file = path?.let(::File)
+            if (file == null || !file.exists() || file.length() == 0L) return@withContext null
+            val bounds = BitmapFactory.Options().apply { inJustDecodeBounds = true }
+            BitmapFactory.decodeFile(file.absolutePath, bounds)
+            if (bounds.outWidth > 0 && bounds.outHeight > 0) {
+                bounds.outWidth.toFloat() / bounds.outHeight.toFloat()
+            } else {
+                null
+            }
+        }
+    }
+    return aspect
+}
+
+/**
  * The two-column grid: a hero status card on the left with the two count cards stacked on the
  * right. Unavailable counts keep their place so changes in capability do not rearrange the grid.
+ *
+ * While the work card paints an artwork the row takes that artwork's aspect, so the picture is
+ * drawn one-to-one and the card grows with it instead of cropping it back to a fixed tile height.
+ * Without an image the row keeps sizing itself from its content, exactly as before.
  */
 @Composable
 internal fun GridHomeContent(
@@ -84,34 +129,50 @@ internal fun GridHomeContent(
     moduleEnabledCount: Int,
 ) {
     val countsAvailable = useFullFeaturedLayout() && state.isRootAvailable
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(IntrinsicSize.Min),
-        horizontalArrangement = Arrangement.spacedBy(GridTileSpacing)
-    ) {
-        GridStatusCard(
-            state = state,
-            actions = actions,
+    val workCardSurface = WallpaperConfig.workCardSurface
+    val artworkAspect = rememberWorkCardArtworkAspect(
+        workCardSurface.imageUri.takeIf { workCardSurface.hasImage }
+    )
+    BoxWithConstraints(modifier = Modifier.fillMaxWidth()) {
+        val tileWidth = (maxWidth - GridTileSpacing) / 2
+        val artworkTileHeight = artworkAspect?.let { aspect ->
+            (tileWidth / aspect).coerceIn(tileWidth * MinArtworkTileRatio, tileWidth * MaxArtworkTileRatio)
+        }
+        Row(
             modifier = Modifier
-                .weight(1f)
-                .fillMaxHeight(),
-        )
-        CountCardPair(
-            superuserCount = superuserCount,
-            moduleEnabledCount = moduleEnabledCount,
-            onOpenSuperUser = actions.onOpenSuperUser,
-            onOpenModule = actions.onOpenModule,
-            layout = CountCardLayout.Vertical,
-            modifier = Modifier
-                .weight(1f)
-                .fillMaxHeight(),
-            pairSpacing = GridTileSpacing,
-            // Keep enough room for the label and value in each tile.
-            contentPadding = PaddingValues(18.dp),
-            emphasis = CountCardEmphasis.Value,
-            available = countsAvailable,
-        )
+                .fillMaxWidth()
+                .then(
+                    if (artworkTileHeight != null) {
+                        Modifier.height(artworkTileHeight)
+                    } else {
+                        Modifier.height(IntrinsicSize.Min)
+                    }
+                ),
+            horizontalArrangement = Arrangement.spacedBy(GridTileSpacing)
+        ) {
+            GridStatusCard(
+                state = state,
+                actions = actions,
+                modifier = Modifier
+                    .weight(1f)
+                    .fillMaxHeight(),
+            )
+            CountCardPair(
+                superuserCount = superuserCount,
+                moduleEnabledCount = moduleEnabledCount,
+                onOpenSuperUser = actions.onOpenSuperUser,
+                onOpenModule = actions.onOpenModule,
+                layout = CountCardLayout.Vertical,
+                modifier = Modifier
+                    .weight(1f)
+                    .fillMaxHeight(),
+                pairSpacing = GridTileSpacing,
+                // Keep enough room for the label and value in each tile.
+                contentPadding = PaddingValues(18.dp),
+                emphasis = CountCardEmphasis.Value,
+                available = countsAvailable,
+            )
+        }
     }
 }
 
@@ -210,8 +271,10 @@ private fun GridStatusCard(
     ) {
         Box(
             modifier = Modifier
-                // Size the image's actual parent, not only the outer Card's Column.
-                .heightIn(min = 160.dp)
+                // Size the image's actual parent, not only the outer Card's Column. The floor is
+                // dropped once an artwork drives the tile height, so a wide picture cannot force
+                // the content taller than the card it is clipped to.
+                .then(if (backgroundUri == null) Modifier.heightIn(min = 160.dp) else Modifier)
                 .fillMaxSize()
                 .onSizeChanged { SurfaceBounds.report(SurfaceRegistry.GRID_WORK_CARD, it.width, it.height) },
         ) {
@@ -219,6 +282,9 @@ private fun GridStatusCard(
                 SurfaceBackgroundImage(
                     photo = workCardPhoto,
                     surface = workCardSurface,
+                    // Show the picture the user actually framed: with Crop the card would cut every
+                    // ratio back to its own aspect, so changing the crop frame would change nothing.
+                    contentScale = ContentScale.Fit,
                     modifier = Modifier
                         .matchParentSize()
                         .graphicsLayer {

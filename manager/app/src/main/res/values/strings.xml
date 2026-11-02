@@ -823,6 +823,7 @@
     <string name="wallpaper_crop_message">Crop the image to fit the screen, or use it as is?</string>
     <string name="wallpaper_crop_confirm">Crop</string>
     <string name="wallpaper_crop_direct">Use as is</string>
+    <string name="surface_crop_reset_ratio">Reset ratio</string>
     <string name="wallpaper_saved">Wallpaper updated</string>
     <string name="wallpaper_removed">Wallpaper removed</string>
     <string name="wallpaper_save_failed">Failed to load the image</string>

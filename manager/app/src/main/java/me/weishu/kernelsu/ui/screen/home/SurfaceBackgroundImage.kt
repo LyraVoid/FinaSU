@@ -140,10 +140,9 @@ internal fun SurfaceBackgroundImage(
             revision = photo.uri.orEmpty(),
             modifier = modifier
                 .alpha(opacity),
-            scaleType = if (contentScale == ContentScale.FillWidth) {
-                ImageView.ScaleType.FIT_CENTER
-            } else {
-                ImageView.ScaleType.CENTER_CROP
+            scaleType = when (contentScale) {
+                ContentScale.FillWidth, ContentScale.Fit -> ImageView.ScaleType.FIT_CENTER
+                else -> ImageView.ScaleType.CENTER_CROP
             },
         )
     } else if (bitmap != null) {
