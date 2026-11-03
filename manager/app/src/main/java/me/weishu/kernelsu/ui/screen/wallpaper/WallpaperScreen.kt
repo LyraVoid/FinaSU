@@ -267,6 +267,8 @@ fun WallpaperScreen() {
     ImageCropPickerHost(
         trigger = mainPickToken.takeIf { it > 0 },
         aspect = windowAspect,
+        // A wallpaper is a full-screen picture: never re-encode it lossily.
+        lossless = true,
         onDismissRequest = { mainPickToken = 0 },
         onPicked = { cropped ->
             mainPickToken = 0
@@ -277,6 +279,7 @@ fun WallpaperScreen() {
     ImageCropPickerHost(
         trigger = pagePickToken.takeIf { it > 0 },
         aspect = windowAspect,
+        lossless = true,
         onDismissRequest = {
             pagePickToken = 0
             pendingPage = NO_PAGE

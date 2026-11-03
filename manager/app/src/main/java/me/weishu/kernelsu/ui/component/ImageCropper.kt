@@ -79,6 +79,7 @@ fun SurfaceCropDialog(
     aspect: Float,
     onDismiss: () -> Unit,
     onCropped: (Uri) -> Unit,
+    lossless: Boolean = false,
 ) {
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
@@ -119,7 +120,7 @@ fun SurfaceCropDialog(
                             failed = false
                             scope.launch {
                                 val result = withContext(Dispatchers.IO) {
-                                    writeCropped(context, image, region)
+                                    writeCropped(context, image, region, source, lossless)
                                 }
                                 saving = false
                                 if (result != null) onCropped(result) else failed = true
@@ -327,7 +328,20 @@ private fun decodeSource(context: Context, uri: Uri): Bitmap? = try {
     null
 }
 
-private fun writeCropped(context: Context, source: Bitmap, region: CropRegion): Uri? {
+private fun writeCropped(
+    context: Context,
+    source: Bitmap,
+    region: CropRegion,
+    original: Uri,
+    lossless: Boolean,
+): Uri? {
+    // A frame that covers the whole picture needs no work at all: hand the untouched original
+    // back, so the wallpaper keeps every pixel the user picked instead of a re-encoded copy.
+    if (region.left == 0 && region.top == 0 &&
+        region.width == source.width && region.height == source.height
+    ) {
+        return original
+    }
     var cropped: Bitmap? = null
     var output: Bitmap? = null
     var file: File? = null
@@ -344,10 +358,12 @@ private fun writeCropped(context: Context, source: Bitmap, region: CropRegion): 
         val directory = File(context.cacheDir, "surface_crop_cache").apply { mkdirs() }
         // A cutout image keeps its transparency: JPEG has no alpha channel and would paint every
         // transparent pixel black, so anything with see-through pixels is written as PNG instead.
-        val keepsAlpha = hasTransparentPixel(output)
-        file = File.createTempFile("cropped_", if (keepsAlpha) ".png" else ".jpg", directory)
+        // Wallpapers ask for [lossless], and a cutout has to stay lossless regardless: JPEG drops
+        // the alpha channel and subsamples chroma, both of which show on a full-screen picture.
+        val encodeLosslessly = lossless || hasTransparentPixel(output)
+        file = File.createTempFile("cropped_", if (encodeLosslessly) ".png" else ".jpg", directory)
         file.outputStream().use {
-            val written = if (keepsAlpha) {
+            val written = if (encodeLosslessly) {
                 output.compress(Bitmap.CompressFormat.PNG, 100, it)
             } else {
                 output.compress(Bitmap.CompressFormat.JPEG, 92, it)
