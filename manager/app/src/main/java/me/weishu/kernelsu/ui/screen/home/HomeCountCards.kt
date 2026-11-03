@@ -27,7 +27,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import me.weishu.kernelsu.R
-import me.weishu.kernelsu.ui.component.FolkMetricValue
+import me.weishu.kernelsu.ui.component.MorphDigits
 import me.weishu.kernelsu.ui.component.material.LocalWallpaperSupportingColor
 import me.weishu.kernelsu.ui.theme.FolkType
 
@@ -168,13 +168,19 @@ internal fun CountCard(
                         overflow = TextOverflow.Ellipsis
                     )
                     Spacer(Modifier.height(4.dp))
-                    FolkMetricValue(
-                        value = count.toString().takeIf { available },
-                        unavailableLabel = stringResource(R.string.metric_unavailable),
-                        style = valueStyle,
-                        unavailableStyle = FolkType.Caption,
-                        color = valueColor
-                    )
+                    if (available) {
+                        MorphDigits(
+                            value = count.toString(),
+                            style = valueStyle,
+                            color = valueColor,
+                        )
+                    } else {
+                        Text(
+                            text = stringResource(R.string.metric_unavailable),
+                            style = FolkType.Caption,
+                            color = supportingColor ?: MaterialTheme.colorScheme.onSurfaceVariant,
+                        )
+                    }
                 }
             }
         }

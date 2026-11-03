@@ -14,7 +14,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Badge
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
@@ -29,6 +28,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.github.fletchmckee.liquid.LiquidState
 import me.weishu.kernelsu.ui.util.useFullFeaturedLayout
 import me.weishu.kernelsu.ui.LocalMainPagerState
+import me.weishu.kernelsu.ui.component.MorphDigits
 import me.weishu.kernelsu.wallpaper.LocalFolkWallpaperTokens
 
 /** Vertical space the floating bar occupies from the screen bottom, excluding system insets. */
@@ -166,10 +166,10 @@ internal fun FloatingBar(
 @Composable
 internal fun FloatingBadge(badge: NavBadge) {
     when (badge.tone) {
-        BadgeTone.Alert -> Badge { Text(badge.count.toString()) }
+        BadgeTone.Alert -> Badge { MorphDigits(value = badge.count.toString()) }
         BadgeTone.Accent -> Badge(
             containerColor = MaterialTheme.colorScheme.primary,
             contentColor = MaterialTheme.colorScheme.onPrimary,
-        ) { Text(badge.count.toString()) }
+        ) { MorphDigits(value = badge.count.toString()) }
     }
 }

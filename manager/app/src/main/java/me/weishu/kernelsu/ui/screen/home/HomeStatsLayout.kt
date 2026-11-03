@@ -32,6 +32,7 @@ import androidx.compose.ui.unit.dp
 import kotlin.math.roundToInt
 import me.weishu.kernelsu.R
 import me.weishu.kernelsu.data.HomeMetrics
+import me.weishu.kernelsu.ui.component.MorphDigits
 import me.weishu.kernelsu.ui.component.chart.ModulePieChart
 import me.weishu.kernelsu.ui.component.chart.PieSlice
 import me.weishu.kernelsu.ui.component.chart.WaveChart
@@ -261,8 +262,8 @@ private fun ChartLegend(
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
         )
-        Text(
-            text = count.toString(),
+        MorphDigits(
+            value = count.toString(),
             style = FolkType.Summary.copy(fontWeight = FontWeight.Medium),
             color = MaterialTheme.colorScheme.onSurface,
         )

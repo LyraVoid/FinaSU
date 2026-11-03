@@ -20,6 +20,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import me.weishu.kernelsu.ui.util.useFullFeaturedLayout
 import me.weishu.kernelsu.ui.LocalMainPagerState
+import me.weishu.kernelsu.ui.component.MorphDigits
 import me.weishu.kernelsu.ui.component.material.ChromeEdge
 import me.weishu.kernelsu.ui.component.material.WallpaperChromeZone
 
@@ -84,14 +85,14 @@ internal fun NavigationIconWithBadge(
             badge = {
                 when (badge.tone) {
                     BadgeTone.Alert -> Badge {
-                        Text(badge.count.toString())
+                        MorphDigits(value = badge.count.toString())
                     }
 
                     BadgeTone.Accent -> Badge(
                         containerColor = MaterialTheme.colorScheme.primary,
                         contentColor = MaterialTheme.colorScheme.onPrimary,
                     ) {
-                        Text(badge.count.toString())
+                        MorphDigits(value = badge.count.toString())
                     }
                 }
             }
