@@ -128,7 +128,7 @@ hello-plugin/
 | `author` | string | 否 | 作者 |
 | `version` | string | 否 | 面向用户的版本 |
 | `description` | string | 否 | 主要说明 |
-| `descriptions` | object | 否 | 按语言代码保存说明，当前管理器保留但不作为主显示来源 |
+| `descriptions` | object | 否 | 按语言代码保存说明；管理器按系统语言（`zh-CN`、`zh_CN`、`zh` 依次匹配）优先显示，未命中时回退到 `description` |
 | `license` | string | 否 | 许可证文本 |
 | `min_version` | number | 否 | 要求的最低 FinaSU host versionCode |
 | `depends` | string[] | 否 | 依赖的插件 ID |

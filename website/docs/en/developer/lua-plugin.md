@@ -128,7 +128,7 @@ These paths are managed by the host; plugins must not read them, tamper with the
 | `author` | string | No | Author |
 | `version` | string | No | User-facing version |
 | `description` | string | No | Main description |
-| `descriptions` | object | No | Descriptions per language code; the Manager currently keeps them but does not use them as the primary display source |
+| `descriptions` | object | No | Descriptions per language code; the Manager prefers the one matching the system language (`zh-CN`, then `zh_CN`, then `zh`) and falls back to `description` |
 | `license` | string | No | License text |
 | `min_version` | number | No | Minimum required FinaSU host versionCode |
 | `depends` | string[] | No | Plugin IDs this plugin depends on |
