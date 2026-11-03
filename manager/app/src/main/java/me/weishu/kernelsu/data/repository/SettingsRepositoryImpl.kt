@@ -19,6 +19,8 @@ import me.weishu.kernelsu.data.model.LayoutVariant
 import me.weishu.kernelsu.data.model.NomountStatus
 import me.weishu.kernelsu.data.model.ModuleCustomOrderStore
 import me.weishu.kernelsu.data.model.ModuleSortGroup
+import me.weishu.kernelsu.data.model.ModuleNameOrder
+import me.weishu.kernelsu.data.model.ModuleNameOrderStore
 import me.weishu.kernelsu.data.model.SuiStatus
 import me.weishu.kernelsu.data.model.SuiApp
 import me.weishu.kernelsu.data.sui.SuiBridge
@@ -213,12 +215,20 @@ class SettingsRepositoryImpl : SettingsRepository {
         get() = prefs.getBoolean("module_sort_enabled_first", false)
         set(value) = prefs.edit { putBoolean("module_sort_enabled_first", value) }
 
+    override var moduleSortNameOrder: ModuleNameOrder
+        get() = ModuleNameOrderStore.decode(prefs.getString(ModuleNameOrderStore.Key, null))
+        set(value) = prefs.edit { putString(ModuleNameOrderStore.Key, ModuleNameOrderStore.encode(value)) }
+
     override var moduleSortCustomOrder: List<String>
         get() = ModuleCustomOrderStore.decode(prefs.getString(ModuleCustomOrderStore.Key, null))
         set(value) = prefs.edit {
             if (value.isEmpty()) remove(ModuleCustomOrderStore.Key)
             else putString(ModuleCustomOrderStore.Key, ModuleCustomOrderStore.encode(value))
         }
+
+    override var moduleSortCustomOrderEnabled: Boolean
+        get() = prefs.getBoolean("module_sort_custom_order_enabled", false)
+        set(value) = prefs.edit { putBoolean("module_sort_custom_order_enabled", value) }
 
     override var superuserShowSystemApps: Boolean
         get() = prefs.getBoolean("show_system_apps", false)

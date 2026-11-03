@@ -37,20 +37,21 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.WindowInsetsSides
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
+import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
+import androidx.compose.foundation.lazy.staggeredgrid.items
+import androidx.compose.foundation.lazy.staggeredgrid.rememberLazyStaggeredGridState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
@@ -98,6 +99,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
+import androidx.compose.ui.hapticfeedback.HapticFeedback
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.layout.FixedScale
@@ -120,6 +122,10 @@ import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
+import sh.calvin.reorderable.ReorderableCollectionItemScope
+import sh.calvin.reorderable.ReorderableItem
+import sh.calvin.reorderable.rememberReorderableLazyListState
+import sh.calvin.reorderable.rememberReorderableLazyStaggeredGridState
 import me.weishu.kernelsu.R
 import me.weishu.kernelsu.data.model.LayoutVariant
 import me.weishu.kernelsu.data.model.Module
@@ -145,7 +151,6 @@ import me.weishu.kernelsu.ui.component.material.FolkTextButton
 import me.weishu.kernelsu.ui.component.material.SearchAppBar
 import me.weishu.kernelsu.ui.component.material.SnackBarHost
 import me.weishu.kernelsu.ui.component.material.rememberSearchAppBarScrollBehavior
-import me.weishu.kernelsu.ui.component.module.TwoColumnGrid
 import me.weishu.kernelsu.ui.component.module.splicedLazyColumnGroup
 import me.weishu.kernelsu.ui.navigation3.LocalNavOriginState
 import me.weishu.kernelsu.ui.navigation3.NavOrigin
@@ -221,7 +226,6 @@ fun ModulePagerMaterial(
 
     val shortcutState = rememberModuleShortcutState(context)
     val showShortcutDialog = remember { mutableStateOf(false) }
-    var showSortSheet by remember { mutableStateOf(false) }
     var bannerDialogModule by remember { mutableStateOf<Module?>(null) }
     val confirmDialog = rememberConfirmDialog(
         onConfirm = {
@@ -377,12 +381,27 @@ fun ModulePagerMaterial(
                             contentDescription = null,
                         )
                     }
+                    var showSortMenu by remember { mutableStateOf(false) }
                     FolkIconButton(
-                        onClick = { showSortSheet = true }
+                        onClick = { showSortMenu = true }
                     ) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.Sort,
                             contentDescription = stringResource(id = R.string.module_sort)
+                        )
+                        ModuleSortMenu(
+                            expanded = showSortMenu,
+                            groups = uiState.sortGroups,
+                            enabledFirst = uiState.sortEnabledFirst,
+                            nameOrder = uiState.sortNameOrder,
+                            customOrder = uiState.customOrder,
+                            customOrderEnabled = uiState.customOrderEnabled,
+                            onDismiss = { showSortMenu = false },
+                            onGroupChange = actions.onSetSortGroup,
+                            onEnabledFirstChange = actions.onSetSortEnabledFirst,
+                            onNameOrderChange = actions.onSetSortNameOrder,
+                            onCustomOrderEnabledChange = actions.onSetCustomOrderEnabled,
+                            onResetCustomOrder = actions.onResetCustomOrder,
                         )
                     }
                 },
@@ -513,12 +532,22 @@ fun ModulePagerMaterial(
             val latestRefreshing = rememberUpdatedState(uiState.isRefreshing)
             ScrollToTopOnChange(
                 listState,
-                uiState.sortGroups,
-                uiState.sortEnabledFirst,
-                uiState.customOrder,
                 refreshTick.intValue,
                 isBusy = { latestRefreshing.value },
             ) { latestModuleList.value }
+
+            val sortKey = listOf(
+                uiState.sortGroups,
+                uiState.sortEnabledFirst,
+                uiState.sortNameOrder,
+            )
+            var previousSortKey by remember { mutableStateOf(sortKey) }
+            LaunchedEffect(sortKey) {
+                if (previousSortKey != sortKey) {
+                    previousSortKey = sortKey
+                    listState.animateScrollToItem(0)
+                }
+            }
 
             val m3eSearchQuery = uiState.searchStatus.searchText
             val displayModules =
@@ -539,22 +568,10 @@ fun ModulePagerMaterial(
                 actions = actions,
                 onModuleAddShortcut = { module, type -> onModuleAddShortcut(module, type) },
                 onModuleLongPress = { bannerDialogModule = it },
+                reorderEnabled = uiState.customOrderEnabled && displayModules === uiState.moduleList,
             )
         }
     }
-
-    ModuleSortSheet(
-        show = showSortSheet,
-        groups = uiState.sortGroups,
-        enabledFirst = uiState.sortEnabledFirst,
-        customOrder = uiState.customOrder,
-        displayModules = uiState.moduleList,
-        onDismiss = { showSortSheet = false },
-        onGroupChange = actions.onSetSortGroup,
-        onEnabledFirstChange = actions.onSetSortEnabledFirst,
-        onCustomOrderChange = actions.onSetCustomOrder,
-        onResetCustomOrder = actions.onResetCustomOrder,
-    )
 
     ModuleShortcutSheet(
         show = showShortcutDialog.value,
@@ -597,6 +614,7 @@ private fun ModuleList(
     actions: ModuleActions,
     onModuleAddShortcut: (Module, ShortcutType) -> Unit,
     onModuleLongPress: (Module) -> Unit,
+    reorderEnabled: Boolean = false,
     closeSearch: () -> Unit? = {},
 ) {
     if (displayModules.isEmpty() && emptyTitle != null) {
@@ -609,10 +627,10 @@ private fun ModuleList(
     }
 
     val loadingDialog = rememberLoadingDialog()
-    val spliced = ModuleCardConfig.splicedCardGroup
+    val spliced = ModuleCardConfig.splicedCardGroup && !reorderEnabled
     var expandedModuleId by rememberSaveable { mutableStateOf<String?>(null) }
 
-    val itemCard: @Composable (Module) -> Unit = { module ->
+    val itemCard: @Composable (Module, Modifier?) -> Unit = { module, dragHandleModifier ->
         val scope = rememberCoroutineScope()
         val moduleUpdateInfo = updateInfoMap[module.id] ?: ModuleUpdateInfo.Empty
 
@@ -653,43 +671,86 @@ private fun ModuleList(
             },
             onExecuteAction = { actions.onExecuteModuleAction(module) },
             onLongPress = { onModuleLongPress(module) },
-            closeSearch = { closeSearch() }
+            closeSearch = { closeSearch() },
+            dragHandleModifier = dragHandleModifier,
         )
     }
 
     val isWideScreen = LocalConfiguration.current.screenWidthDp >= 600
+    val gridState = rememberLazyStaggeredGridState()
+    val haptic = LocalHapticFeedback.current
+
+    val listReorderState = rememberReorderableLazyListState(listState) { from, to ->
+        actions.onMoveModule(from.index, to.index)
+    }
+    val gridReorderState = rememberReorderableLazyStaggeredGridState(gridState) { from, to ->
+        actions.onMoveModule(from.index, to.index)
+    }
+
+    var wasWide by remember { mutableStateOf(isWideScreen) }
+    LaunchedEffect(isWideScreen) {
+        if (wasWide != isWideScreen) {
+            wasWide = isWideScreen
+            if (reorderEnabled) actions.onCommitCustomOrder()
+            if (isWideScreen) {
+                gridState.scrollToItem(listState.firstVisibleItemIndex)
+            } else {
+                listState.scrollToItem(gridState.firstVisibleItemIndex)
+            }
+        }
+    }
 
     if (isWideScreen) {
-        // Wide screens get two independent columns; cards keep their order and folding one does
-        // not shift the other.
-        TwoColumnGrid(
-            items = displayModules,
-            key = { module -> module.id },
+        LazyVerticalStaggeredGrid(
+            columns = StaggeredGridCells.Fixed(2),
+            state = gridState,
             modifier = modifier,
-            verticalSpacing = 16.dp,
-            horizontalSpacing = 16.dp,
             contentPadding = PaddingValues(
                 start = 16.dp,
                 top = 16.dp,
                 end = 16.dp,
                 bottom = 16.dp + bottomInnerPadding + 56.dp + 16.dp,
             ),
-        ) { module -> itemCard(module) }
+            horizontalArrangement = Arrangement.spacedBy(16.dp),
+            verticalItemSpacing = 16.dp,
+        ) {
+            items(
+                items = displayModules,
+                key = { module -> module.id },
+                contentType = { "module" },
+            ) { module ->
+                ReorderableItem(gridReorderState, key = module.id, enabled = reorderEnabled) {
+                    itemCard(module, moduleDragHandle(reorderEnabled, haptic, actions))
+                }
+            }
+        }
         return
     }
 
     LazyColumn(
         state = listState,
         modifier = modifier,
-        contentPadding = PaddingValues(bottom = 16.dp + bottomInnerPadding + 56.dp + 16.dp),
+        contentPadding = PaddingValues(
+            top = 8.dp,
+            bottom = 8.dp + 16.dp + bottomInnerPadding + 56.dp + 16.dp,
+        ),
     ) {
-        item { Spacer(Modifier.height(8.dp)) }
         if (spliced) {
             splicedLazyColumnGroup(
                 items = displayModules,
                 key = { _, module -> module.id },
                 contentType = { _, _ -> "module" },
-            ) { _, module -> itemCard(module) }
+                animatePlacement = true,
+            ) { _, module ->
+                ReorderableItem(
+                    listReorderState,
+                    key = module.id,
+                    enabled = reorderEnabled,
+                    animateItemModifier = Modifier,
+                ) {
+                    itemCard(module, moduleDragHandle(reorderEnabled, haptic, actions))
+                }
+            }
         } else {
             itemsIndexed(
                 items = displayModules,
@@ -697,12 +758,26 @@ private fun ModuleList(
                 contentType = { _, _ -> "module" },
             ) { _, module ->
                 Box(Modifier.padding(horizontal = 16.dp, vertical = 8.dp)) {
-                    itemCard(module)
+                    ReorderableItem(listReorderState, key = module.id, enabled = reorderEnabled) {
+                        itemCard(module, moduleDragHandle(reorderEnabled, haptic, actions))
+                    }
                 }
             }
         }
-        item { Spacer(Modifier.height(8.dp)) }
     }
+}
+
+private fun ReorderableCollectionItemScope.moduleDragHandle(
+    enabled: Boolean,
+    haptic: HapticFeedback,
+    actions: ModuleActions,
+): Modifier? = if (enabled) {
+    Modifier.draggableHandle(
+        onDragStarted = { haptic.performHapticFeedback(HapticFeedbackType.LongPress) },
+        onDragStopped = actions.onCommitCustomOrder,
+    )
+} else {
+    null
 }
 
 @Composable

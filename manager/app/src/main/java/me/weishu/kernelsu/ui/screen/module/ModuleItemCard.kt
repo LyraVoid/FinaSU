@@ -6,6 +6,7 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
@@ -13,18 +14,23 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.Wysiwyg
 import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material.icons.outlined.Download
 import androidx.compose.material.icons.outlined.Restore
 import androidx.compose.material.icons.outlined.Terminal
+import androidx.compose.material.icons.rounded.DragHandle
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.res.stringResource
@@ -71,6 +77,7 @@ fun ModuleItemCard(
     onExecuteAction: () -> Unit,
     onLongPress: () -> Unit,
     closeSearch: () -> Unit,
+    dragHandleModifier: Modifier? = null,
 ) {
     val iconOnly = buttonStyle == ModuleButtonStyle.IconOnly
     val zygiskBlocked = module.zygiskRequired && !zygiskAvailable && !module.remove
@@ -107,6 +114,7 @@ fun ModuleItemCard(
             onOpenWebUi = onOpenWebUi,
             onExecuteAction = onExecuteAction,
             closeSearch = closeSearch,
+            dragHandleModifier = dragHandleModifier,
         )
     }
 }
@@ -129,6 +137,7 @@ private fun ModuleCardContent(
     onOpenWebUi: () -> Unit,
     onExecuteAction: () -> Unit,
     closeSearch: () -> Unit,
+    dragHandleModifier: Modifier? = null,
 ) {
     val haptics = LocalHapticFeedback.current
     val textDecoration = if (module.remove) TextDecoration.LineThrough else null
@@ -245,6 +254,23 @@ private fun ModuleCardContent(
                     onCheckChanged(it)
                 },
             )
+            if (dragHandleModifier != null) {
+                Box(
+                    contentAlignment = Alignment.Center,
+                    modifier = Modifier
+                        .padding(start = 8.dp)
+                        .size(40.dp)
+                        .clip(CircleShape)
+                        .then(dragHandleModifier),
+                ) {
+                    Icon(
+                        imageVector = Icons.Rounded.DragHandle,
+                        contentDescription = stringResource(R.string.module_sort_drag_to_reorder),
+                        tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                        modifier = Modifier.size(24.dp),
+                    )
+                }
+            }
         }
 
         if (preinitWarning != null && module.enabled && !module.remove) {

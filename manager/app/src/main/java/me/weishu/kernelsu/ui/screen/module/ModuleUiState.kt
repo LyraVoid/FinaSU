@@ -3,6 +3,7 @@ package me.weishu.kernelsu.ui.screen.module
 import android.net.Uri
 import androidx.compose.runtime.Immutable
 import me.weishu.kernelsu.data.model.Module
+import me.weishu.kernelsu.data.model.ModuleNameOrder
 import me.weishu.kernelsu.data.model.ModuleSortGroup
 import me.weishu.kernelsu.data.model.ModuleSortPriorityGroups
 import me.weishu.kernelsu.data.model.ModuleUpdateInfo
@@ -54,7 +55,9 @@ data class ModuleUiState(
     val searchResults: List<Module> = emptyList(),
     val sortGroups: Set<ModuleSortGroup> = ModuleSortPriorityGroups.toSet(),
     val sortEnabledFirst: Boolean = false,
+    val sortNameOrder: ModuleNameOrder = ModuleNameOrder.Default,
     val customOrder: List<String> = emptyList(),
+    val customOrderEnabled: Boolean = false,
     val checkModuleUpdate: Boolean = true,
     val isSafeMode: Boolean = false,
     val magiskInstalled: Boolean = false,
@@ -79,7 +82,10 @@ data class ModuleActions(
     val onOpenKernelModules: () -> Unit,
     val onSetSortGroup: (ModuleSortGroup, Boolean) -> Unit,
     val onSetSortEnabledFirst: (Boolean) -> Unit,
-    val onSetCustomOrder: (List<String>) -> Unit,
+    val onSetSortNameOrder: (ModuleNameOrder) -> Unit,
+    val onSetCustomOrderEnabled: (Boolean) -> Unit,
+    val onMoveModule: (Int, Int) -> Unit,
+    val onCommitCustomOrder: () -> Unit,
     val onResetCustomOrder: () -> Unit,
     val onOpenWebUi: (Module) -> Unit,
     val onToggleModule: (Module) -> Unit,

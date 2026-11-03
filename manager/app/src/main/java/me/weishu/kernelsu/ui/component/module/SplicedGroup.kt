@@ -26,6 +26,7 @@ fun <T> LazyListScope.splicedLazyColumnGroup(
     items: List<T>,
     key: ((index: Int, item: T) -> Any)? = null,
     contentType: (index: Int, item: T) -> Any? = { _, _ -> null },
+    animatePlacement: Boolean = false,
     itemContent: @Composable LazyItemScope.(index: Int, item: T) -> Unit,
 ) {
     val isAtLeastTiramisu = Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU
@@ -61,6 +62,7 @@ fun <T> LazyListScope.splicedLazyColumnGroup(
         FolkWallpaperSurface(
             role = WallpaperSurfaceRole.Group,
             modifier = Modifier
+                .then(if (animatePlacement) Modifier.animateItem() else Modifier)
                 .padding(horizontal = 16.dp)
                 .padding(top = if (isFirst) 0.dp else 2.dp),
             shape = shape,

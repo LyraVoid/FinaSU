@@ -151,8 +151,17 @@ fun ModulePager(
             onSetSortEnabledFirst = { enabled ->
                 viewModel.setSortEnabledFirst(enabled)
             },
-            onSetCustomOrder = { ids ->
-                viewModel.setCustomOrder(ids)
+            onSetSortNameOrder = { order ->
+                viewModel.setSortNameOrder(order)
+            },
+            onSetCustomOrderEnabled = { enabled ->
+                viewModel.setCustomOrderEnabled(enabled)
+            },
+            onMoveModule = { from, to ->
+                viewModel.moveModule(from, to)
+            },
+            onCommitCustomOrder = {
+                viewModel.commitCustomOrder()
             },
             onResetCustomOrder = {
                 viewModel.resetCustomOrder()

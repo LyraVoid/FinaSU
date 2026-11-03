@@ -91,7 +91,7 @@
     <string name="module_sort_enabled_first">Enabled first</string>
     <string name="module_sort">Sort order</string>
     <string name="module_sort_priority">Sort priority</string>
-    <string name="module_sort_group_metamodule">Meta modules</string>
+    <string name="module_sort_group_metamodule">Metamodule</string>
     <string name="module_sort_group_metamodule_summary">The module the others attach to.</string>
     <string name="module_sort_group_zygisk">Zygisk modules</string>
     <string name="module_sort_group_zygisk_summary">Provides or loads the Zygisk runtime.</string>
@@ -101,11 +101,18 @@
     <string name="module_sort_group_webui_summary">Ships a screen of its own.</string>
     <string name="module_sort_group_action">Modules with an action</string>
     <string name="module_sort_group_action_summary">Runs a script on demand.</string>
+    <!-- Sort menu labels for the kinds a reader already knows by name. -->
+    <string name="module_sort_kind_zygisk" translatable="false">Zygisk</string>
+    <string name="module_sort_kind_lsposed" translatable="false">LSPosed</string>
+    <string name="module_sort_kind_webui" translatable="false">WebUI</string>
+    <string name="module_sort_kind_action" translatable="false">Action</string>
     <string name="module_sort_custom_order">Custom order</string>
     <string name="module_sort_custom_order_summary">Drag modules into the order you want them shown.</string>
     <string name="module_sort_reset_custom_order">Reset custom order</string>
     <string name="module_sort_reset_custom_order_summary">Return to the priority order.</string>
     <string name="module_sort_drag_to_reorder">Drag to reorder</string>
+    <string name="module_sort_name_asc">A → Z</string>
+    <string name="module_sort_name_desc">Z → A</string>
     <string name="module_repos">Repos</string>
     <string name="module_repo_source">Repository source</string>
     <string name="module_repo_source_official">Built-in index</string>

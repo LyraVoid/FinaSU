@@ -16,6 +16,7 @@ webkit = "1.17.0"
 parcelablelist = "2.0.1"
 material3 = "1.5.0-alpha28"
 materialKolor = "5.0.1"
+reorderable = "3.1.0"
 ndk = "29.0.14206865"
 libsu = "6.0.0"
 apksign = "1.4"
@@ -73,6 +74,8 @@ kotlinx-coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-c
 kotlinx-coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "kotlinx-coroutines" }
 
 androidx-navigationevent-compose = { module = "androidx.navigationevent:navigationevent-compose", version.ref = "navigationevent" }
+
+reorderable = { module = "sh.calvin.reorderable:reorderable", version.ref = "reorderable" }
 
 commonmark = { module = "org.commonmark:commonmark", version.ref = "commonmark" }
 commonmark-ext-gfm-tables = { module = "org.commonmark:commonmark-ext-gfm-tables", version.ref = "commonmark" }

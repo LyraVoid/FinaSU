@@ -24,11 +24,12 @@ import kotlinx.coroutines.withTimeoutOrNull
 import me.weishu.kernelsu.Natives
 import me.weishu.kernelsu.R
 import me.weishu.kernelsu.data.model.Module
+import me.weishu.kernelsu.data.model.ModuleNameOrder
 import me.weishu.kernelsu.data.model.ModuleSortFacts
 import me.weishu.kernelsu.data.model.ModuleSortGroup
 import me.weishu.kernelsu.data.model.ModuleUpdateInfo
-import me.weishu.kernelsu.data.model.customOrderComparator
 import me.weishu.kernelsu.data.model.moduleSortComparator
+import me.weishu.kernelsu.data.model.moved
 import me.weishu.kernelsu.modulebanner.ApmBannerSlot
 import me.weishu.kernelsu.modulebanner.ModuleBannerCache
 import me.weishu.kernelsu.data.model.reconcileCustomOrder
@@ -101,12 +102,15 @@ class ModuleViewModel(
     }
 
     fun initializePreferences() {
+        val enabled = settingsRepo.moduleSortCustomOrderEnabled
         _uiState.update {
             it.copy(
                 checkModuleUpdate = settingsRepo.checkModuleUpdate,
                 sortGroups = settingsRepo.moduleSortGroups,
                 sortEnabledFirst = settingsRepo.moduleSortEnabledFirst,
+                sortNameOrder = settingsRepo.moduleSortNameOrder,
                 customOrder = settingsRepo.moduleSortCustomOrder,
+                customOrderEnabled = enabled,
             )
         }
         updateModuleList()
@@ -129,23 +133,55 @@ class ModuleViewModel(
         updateModuleList()
     }
 
-    /**
-     * Stores a manual order. Ids for modules that are not installed are dropped and modules missing
-     * from [ids] are appended in their current order, so the stored order always covers the list.
-     */
-    fun setCustomOrder(ids: List<String>) {
-        val modules = _uiState.value.modules
-        val installed = modules.mapTo(HashSet()) { it.id }
-        val wanted = ids.filter { it in installed }
-        val newValue = reconcileCustomOrder(wanted, modules.map { it.id })
-        settingsRepo.moduleSortCustomOrder = newValue
-        _uiState.update { it.copy(customOrder = newValue) }
+    fun setSortNameOrder(order: ModuleNameOrder) {
+        val newValue = if (_uiState.value.sortNameOrder == order) ModuleNameOrder.Default else order
+        settingsRepo.moduleSortNameOrder = newValue
+        _uiState.update { it.copy(sortNameOrder = newValue) }
+        updateModuleList()
+    }
+
+    fun setCustomOrderEnabled(enabled: Boolean) {
+        val state = _uiState.value
+        if (enabled) {
+            val order = state.customOrder.ifEmpty { state.moduleList.map { it.id } }
+            if (order != state.customOrder) {
+                settingsRepo.moduleSortCustomOrder = order
+                _uiState.update { it.copy(customOrder = order) }
+            }
+        }
+        settingsRepo.moduleSortCustomOrderEnabled = enabled
+        _uiState.update { it.copy(customOrderEnabled = enabled) }
+        updateModuleList()
+    }
+
+    fun moveModule(from: Int, to: Int) {
+        val state = _uiState.value
+        if (!state.customOrderEnabled) return
+
+        val reordered = state.moduleList.moved(from, to)
+        if (reordered === state.moduleList) return
+
+        _uiState.update {
+            it.copy(moduleList = reordered, customOrder = reordered.map(Module::id))
+        }
+    }
+
+    fun commitCustomOrder() {
+        val state = _uiState.value
+        if (!state.customOrderEnabled) return
+
+        val reconciled = reconcileCustomOrder(state.customOrder, state.modules.map { it.id })
+        if (reconciled != state.customOrder) {
+            _uiState.update { it.copy(customOrder = reconciled) }
+        }
+        settingsRepo.moduleSortCustomOrder = reconciled
         updateModuleList()
     }
 
     fun resetCustomOrder() {
         settingsRepo.moduleSortCustomOrder = emptyList()
-        _uiState.update { it.copy(customOrder = emptyList()) }
+        settingsRepo.moduleSortCustomOrderEnabled = false
+        _uiState.update { it.copy(customOrder = emptyList(), customOrderEnabled = false) }
         updateModuleList()
     }
 
@@ -249,13 +285,14 @@ class ModuleViewModel(
     )
 
     private fun moduleComparator(state: ModuleUiState): Comparator<Module> {
-        if (state.customOrder.isNotEmpty()) {
-            return compareBy<Module, ModuleSortFacts>(
-                customOrderComparator(collator, state.customOrder),
-            ) { it.toSortFacts() }
-        }
         return compareBy<Module, ModuleSortFacts>(
-            moduleSortComparator(collator, state.sortGroups, state.sortEnabledFirst),
+            moduleSortComparator(
+                collator,
+                state.sortGroups,
+                state.sortEnabledFirst,
+                state.sortNameOrder,
+                manualOrder = state.customOrder,
+            ),
         ) { it.toSortFacts() }
     }
 

@@ -38,6 +38,26 @@ val ModuleSortPriorityGroups: List<ModuleSortGroup> = listOf(
     ModuleSortGroup.ActionScript,
 )
 
+enum class ModuleNameOrder(val value: String) {
+    Default("id"),
+    Ascending("name_asc"),
+    Descending("name_desc"),
+    ;
+
+    companion object {
+        fun fromValue(stored: String?): ModuleNameOrder =
+            entries.firstOrNull { it.value == stored } ?: Default
+    }
+}
+
+object ModuleNameOrderStore {
+    const val Key = "module_sort_name_order"
+
+    fun encode(order: ModuleNameOrder): String = order.value
+
+    fun decode(stored: String?): ModuleNameOrder = ModuleNameOrder.fromValue(stored)
+}
+
 /** Whether [id] looks like a module that carries the Zygisk runtime. */
 fun isZygiskModule(id: String): Boolean = id.contains("zygisk", ignoreCase = true)
 
@@ -89,27 +109,32 @@ fun ModuleSortFacts.sortGroup(): ModuleSortGroup? = when {
     else -> null
 }
 
-/**
- * Orders the list by the ticked groups in [priorities], then, when [enabledFirst] is on, by whether
- * a module is switched on, then by id in the reader's own alphabet. A group that was not ticked
- * does not disappear; its modules fall in with everything else below the ticked ones, still in the
- * alphabet among themselves.
- *
- * The enabled-first step ranks within a group, so a switched-off module of a highly ranked kind
- * still precedes a switched-on module of a lower one.
- */
 fun moduleSortComparator(
     collator: Collator,
     priorities: Set<ModuleSortGroup> = ModuleSortPriorityGroups.toSet(),
     enabledFirst: Boolean = false,
+    nameOrder: ModuleNameOrder = ModuleNameOrder.Default,
+    manualOrder: List<String> = emptyList(),
 ): Comparator<ModuleSortFacts> {
     val ranking = ModuleSortPriorityGroups.filter { it in priorities }
-    return compareBy<ModuleSortFacts> { facts ->
+    val positions = manualOrder.withIndex().associate { it.value to it.index }
+    val byGroup = compareBy<ModuleSortFacts> { facts ->
         val index = facts.sortGroup()?.let(ranking::indexOf) ?: -1
         index.takeIf { it >= 0 } ?: ranking.size
     }.thenBy { facts -> facts.sortRank() }
         .thenBy { facts -> enabledFirst && !facts.enabled }
-        .thenBy(collator) { it.id }
+        .thenBy { facts -> positions[facts.id] ?: Int.MAX_VALUE }
+
+    return when (nameOrder) {
+        ModuleNameOrder.Default -> byGroup.thenBy(collator) { it.id }
+        ModuleNameOrder.Ascending -> byGroup
+            .thenBy(collator) { it.name.ifBlank { it.id } }
+            .thenBy(collator) { it.id }
+
+        ModuleNameOrder.Descending -> byGroup
+            .thenByDescending(collator) { it.name.ifBlank { it.id } }
+            .thenBy(collator) { it.id }
+    }
 }
 
 /**
@@ -119,19 +144,6 @@ fun moduleSortComparator(
  */
 private fun ModuleSortFacts.sortRank(): Int =
     if (sortGroup() == ModuleSortGroup.Zygisk && !isZygiskProvider(id)) 1 else 0
-
-/**
- * Orders by [order] first, then by id for anything the order does not mention. Ids absent from the
- * order sort to the end, so an order written before a module was installed still reads stably.
- */
-fun customOrderComparator(
-    collator: Collator,
-    order: List<String>,
-): Comparator<ModuleSortFacts> {
-    val positions = order.withIndex().associate { it.value to it.index }
-    return compareBy<ModuleSortFacts> { positions[it.id] ?: Int.MAX_VALUE }
-        .thenBy(collator) { it.id }
-}
 
 /**
  * Keeps the relative order of [order], drops ids no longer installed, and appends ids not yet in
@@ -146,6 +158,11 @@ fun reconcileCustomOrder(order: List<String>, moduleIds: List<String>): List<Str
     val kept = order.filter { it in installed }
     val keptIds = kept.toHashSet()
     return kept + moduleIds.filter { it !in keptIds }
+}
+
+fun <T> List<T>.moved(from: Int, to: Int): List<T> {
+    if (from == to || from !in indices || to !in indices) return this
+    return toMutableList().apply { add(to, removeAt(from)) }
 }
 
 /**

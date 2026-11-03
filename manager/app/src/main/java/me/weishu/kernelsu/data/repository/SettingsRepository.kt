@@ -8,6 +8,7 @@ import me.weishu.kernelsu.data.model.NomountStatus
 import me.weishu.kernelsu.data.model.SuiStatus
 import me.weishu.kernelsu.data.model.SuiApp
 import me.weishu.kernelsu.data.model.ModuleSortGroup
+import me.weishu.kernelsu.data.model.ModuleNameOrder
 import me.weishu.kernelsu.data.modulestore.StoreSourceKind
 
 interface SettingsRepository {
@@ -46,7 +47,9 @@ interface SettingsRepository {
     var layoutVariant: String
     var moduleSortGroups: Set<ModuleSortGroup>
     var moduleSortEnabledFirst: Boolean
+    var moduleSortNameOrder: ModuleNameOrder
     var moduleSortCustomOrder: List<String>
+    var moduleSortCustomOrderEnabled: Boolean
     var superuserShowSystemApps: Boolean
     var superuserShowOnlyPrimaryUserApps: Boolean
     var superuserSortOption: Int

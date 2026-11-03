@@ -5,6 +5,7 @@ import java.util.Locale
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNull
+import org.junit.Assert.assertSame
 import org.junit.Assert.assertTrue
 import org.junit.Test
 
@@ -32,8 +33,10 @@ class ModuleSortTest {
         modules: List<ModuleSortFacts>,
         priorities: Set<ModuleSortGroup> = ModuleSortPriorityGroups.toSet(),
         enabledFirst: Boolean = false,
+        nameOrder: ModuleNameOrder = ModuleNameOrder.Default,
+        manualOrder: List<String> = emptyList(),
     ): List<String> = modules
-        .sortedWith(moduleSortComparator(collator, priorities, enabledFirst))
+        .sortedWith(moduleSortComparator(collator, priorities, enabledFirst, nameOrder, manualOrder))
         .map { it.id }
 
     @Test
@@ -154,17 +157,53 @@ class ModuleSortTest {
     }
 
     @Test
-    fun `custom order overrides enabled first`() {
+    fun `the manual order decides the places inside a kind`() {
         val modules = listOf(
-            facts("aaa_disabled", enabled = false),
-            facts("zzz_enabled", enabled = true),
+            facts("aaa_plain"),
+            facts("bbb_plain"),
+            facts("ccc_plain"),
         )
 
-        // The custom order has no enabled-first step, so a disabled module named first stays first.
-        val ordered = modules
-            .sortedWith(customOrderComparator(collator, listOf("aaa_disabled", "zzz_enabled")))
-            .map { it.id }
-        assertEquals(listOf("aaa_disabled", "zzz_enabled"), ordered)
+        assertEquals(
+            listOf("ccc_plain", "aaa_plain", "bbb_plain"),
+            sorted(modules, priorities = emptySet(), manualOrder = listOf("ccc_plain", "aaa_plain", "bbb_plain")),
+        )
+    }
+
+    @Test
+    fun `a ticked kind still outranks the manual order`() {
+        val modules = listOf(
+            facts("zzz_meta", meta = true),
+            facts("aaa_web", webUi = true),
+        )
+
+        assertEquals(
+            listOf("zzz_meta", "aaa_web"),
+            sorted(
+                modules,
+                priorities = setOf(ModuleSortGroup.MetaModule),
+                manualOrder = listOf("aaa_web", "zzz_meta"),
+            ),
+        )
+    }
+
+    @Test
+    fun `modules the manual order does not mention follow the name order`() {
+        val modules = listOf(
+            facts("aaa_plain", name = "Zeta"),
+            facts("bbb_plain", name = "Alpha"),
+            facts("ccc_plain", name = "Mid"),
+        )
+
+        assertEquals(
+            listOf("ccc_plain", "bbb_plain", "aaa_plain"),
+            sorted(
+                modules,
+                priorities = emptySet(),
+                nameOrder = ModuleNameOrder.Ascending,
+                manualOrder = listOf("ccc_plain"),
+            ),
+        )
     }
 
     @Test
@@ -202,13 +241,6 @@ class ModuleSortTest {
     }
 
     @Test
-    fun `custom order comparator puts listed ids first and the rest by id`() {
-        val modules = listOf(facts("a"), facts("b"), facts("c"))
-        val ordered = modules.sortedWith(customOrderComparator(collator, listOf("c", "a"))).map { it.id }
-        assertEquals(listOf("c", "a", "b"), ordered)
-    }
-
-    @Test
     fun `custom order store round trips and drops blanks`() {
         assertEquals(
             listOf("alpha", "beta"),
@@ -238,5 +270,78 @@ class ModuleSortTest {
             listOf("b", "a"),
             reconcileCustomOrder(order = listOf("b", "a"), moduleIds = emptyList()),
         )
+    }
+
+    @Test
+    fun `name order reads the name a reader sees instead of the id`() {
+        val modules = listOf(
+            facts("zzz_fix", name = "Alpha"),
+            facts("aaa_fix", name = "Beta"),
+        )
+
+        assertEquals(listOf("aaa_fix", "zzz_fix"), sorted(modules))
+        assertEquals(
+            listOf("zzz_fix", "aaa_fix"),
+            sorted(modules, nameOrder = ModuleNameOrder.Ascending),
+        )
+        assertEquals(
+            listOf("aaa_fix", "zzz_fix"),
+            sorted(modules, nameOrder = ModuleNameOrder.Descending),
+        )
+    }
+
+    @Test
+    fun `name order never lifts a module out of its group`() {
+        val modules = listOf(
+            facts("aaa_web", name = "Zeta", webUi = true),
+            facts("zzz_plain", name = "Alpha"),
+        )
+
+        assertEquals(
+            listOf("aaa_web", "zzz_plain"),
+            sorted(modules, nameOrder = ModuleNameOrder.Ascending),
+        )
+    }
+
+    @Test
+    fun `name order falls back to the id when two modules share a name`() {
+        val modules = listOf(
+            facts("bbb", name = "Same"),
+            facts("aaa", name = "Same"),
+        )
+
+        assertEquals(
+            listOf("aaa", "bbb"),
+            sorted(modules, nameOrder = ModuleNameOrder.Ascending),
+        )
+        assertEquals(
+            listOf("aaa", "bbb"),
+            sorted(modules, nameOrder = ModuleNameOrder.Descending),
+        )
+    }
+
+    @Test
+    fun `name order store falls back to the default`() {
+        assertEquals(
+            ModuleNameOrder.Ascending,
+            ModuleNameOrderStore.decode(ModuleNameOrderStore.encode(ModuleNameOrder.Ascending)),
+        )
+        assertEquals(ModuleNameOrder.Default, ModuleNameOrderStore.decode(null))
+        assertEquals(ModuleNameOrder.Default, ModuleNameOrderStore.decode("size_desc"))
+    }
+
+    @Test
+    fun `moved takes an item out and puts it back at the target`() {
+        assertEquals(listOf("b", "c", "a"), listOf("a", "b", "c").moved(0, 2))
+        assertEquals(listOf("c", "a", "b"), listOf("a", "b", "c").moved(2, 0))
+    }
+
+    @Test
+    fun `moved leaves the list alone when the drag goes nowhere`() {
+        val items = listOf("a", "b", "c")
+        assertSame(items, items.moved(1, 1))
+        assertSame(items, items.moved(-1, 2))
+        assertSame(items, items.moved(0, 3))
+        assertSame(items, items.moved(3, 0))
     }
 }
