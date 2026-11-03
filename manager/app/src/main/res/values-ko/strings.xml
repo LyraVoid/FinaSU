@@ -682,7 +682,6 @@
     <string name="sort_by_package_name">패키지 이름</string>
     <string name="sort_by_install_time">설치 시간</string>
     <string name="sort_by_update_time">업데이트 시간</string>
-    <string name="sort_reverse">반대로</string>
     <string name="profile_flags_desc_no_new_privs">이 루트 프로필의 컨텍스트 내에서 KernelSU를 통한 추가 권한 상승을 방지합니다.</string>
     <string name="module_shortcut_copy_scheme">URL 스키마 복사</string>
     <string name="module_shortcut_scheme_copied">URL 스키마가 복사되었습니다</string>

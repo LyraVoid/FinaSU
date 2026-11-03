@@ -682,7 +682,6 @@
     <string name="sort_by_package_name">Nombre del paquete</string>
     <string name="sort_by_install_time">Hora de instalación</string>
     <string name="sort_by_update_time">Hora de actualización</string>
-    <string name="sort_reverse">Invertir</string>
     <string name="profile_flags_desc_no_new_privs">Impide una mayor escalada de privilegios mediante KernelSU dentro del contexto de este perfil root.</string>
     <string name="module_shortcut_copy_scheme">Copiar esquema de URL</string>
     <string name="module_shortcut_scheme_copied">Esquema de URL copiado</string>

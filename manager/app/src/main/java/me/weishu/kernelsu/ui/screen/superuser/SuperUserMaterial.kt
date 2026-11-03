@@ -178,26 +178,29 @@ fun SuperUserPagerMaterial(
                             Spacer(Modifier.height(MenuDefaults.GroupSpacing))
 
                             DropdownMenuGroup(shapes = MenuDefaults.groupShape(index = 1, count = 2)) {
-                                CheckableDropdownMenuItem(
-                                    text = { Text(stringResource(R.string.sort_reverse)) },
-                                    checked = sortConfig.reversed,
-                                    checkedLeadingIcon = {
-                                        Icon(
-                                            Icons.Filled.Check,
-                                            modifier = Modifier.size(MenuDefaults.LeadingIconSize),
-                                            contentDescription = null,
+                                listOf(false to R.string.sort_asc, true to R.string.sort_desc)
+                                    .onEachIndexed { index, (reversed, resId) ->
+                                        SelectableDropdownMenuItem(
+                                            text = { Text(stringResource(resId)) },
+                                            selected = sortConfig.reversed == reversed,
+                                            selectedLeadingIcon = {
+                                                Icon(
+                                                    Icons.Filled.Check,
+                                                    contentDescription = null,
+                                                    modifier = Modifier.size(MenuDefaults.LeadingIconSize),
+                                                )
+                                            },
+                                            onClick = {
+                                                haptic.performHapticFeedback(HapticFeedbackType.VirtualKey)
+                                                actions.onUpdateSortConfig(sortConfig.copy(reversed = reversed))
+                                                showSortMenu = false
+                                            },
+                                            shapes = MenuDefaults.itemShape(
+                                                index = index,
+                                                count = 2
+                                            ),
                                         )
-                                    },
-                                    onCheckedChange = {
-                                        haptic.performHapticFeedback(HapticFeedbackType.VirtualKey)
-                                        actions.onUpdateSortConfig(sortConfig.toggleReversed())
-                                        showSortMenu = false
-                                    },
-                                    shapes = MenuDefaults.itemShape(
-                                        index = 0,
-                                        count = 1
-                                    ),
-                                )
+                                    }
                             }
                         }
                     }

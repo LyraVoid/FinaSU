@@ -684,7 +684,6 @@
     <string name="sort_by_package_name">Paket adı</string>
     <string name="sort_by_install_time">Kurulum zamanı</string>
     <string name="sort_by_update_time">Güncelleme zamanı</string>
-    <string name="sort_reverse">Ters çevir</string>
     <string name="profile_flags_desc_no_new_privs">Bu root profili bağlamında KernelSU aracılığıyla daha fazla ayrıcalık yükseltmesini engeller.</string>
     <string name="module_shortcut_copy_scheme">URL şemasını kopyala</string>
     <string name="module_shortcut_scheme_copied">URL şeması kopyalandı</string>

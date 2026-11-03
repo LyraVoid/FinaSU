@@ -684,7 +684,6 @@
     <string name="sort_by_package_name">اسم الحزمة</string>
     <string name="sort_by_install_time">وقت التثبيت</string>
     <string name="sort_by_update_time">وقت التحديث</string>
-    <string name="sort_reverse">عكسي</string>
     <string name="profile_flags_desc_no_new_privs">يمنع المزيد من تصعيد الصلاحيات عبر KernelSU من داخل سياق ملف تعريف الروت هذا.</string>
     <string name="module_shortcut_copy_scheme">نسخ مخطط URL</string>
     <string name="module_shortcut_scheme_copied">تم نسخ مخطط URL</string>

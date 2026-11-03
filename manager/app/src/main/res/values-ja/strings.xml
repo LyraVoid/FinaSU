@@ -682,7 +682,6 @@
     <string name="sort_by_package_name">パッケージ名</string>
     <string name="sort_by_install_time">インストール日時</string>
     <string name="sort_by_update_time">更新日時</string>
-    <string name="sort_reverse">逆順</string>
     <string name="profile_flags_desc_no_new_privs">この root プロファイルのコンテキスト内で、KernelSU を介したさらなる権限昇格を防止します。</string>
     <string name="module_shortcut_copy_scheme">URL スキームをコピー</string>
     <string name="module_shortcut_scheme_copied">URL スキームをコピーしました</string>

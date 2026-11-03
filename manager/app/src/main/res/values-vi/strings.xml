@@ -682,7 +682,6 @@
     <string name="sort_by_package_name">Tên gói</string>
     <string name="sort_by_install_time">Thời gian cài đặt</string>
     <string name="sort_by_update_time">Thời gian cập nhật</string>
-    <string name="sort_reverse">Đảo ngược</string>
     <string name="profile_flags_desc_no_new_privs">Ngăn chặn việc leo thang đặc quyền thông qua KernelSU từ bên trong phạm vi Hồ sơ người dùng Root này.</string>
     <string name="module_shortcut_copy_scheme">Sao chép URL Scheme</string>
     <string name="module_shortcut_scheme_copied">Đã sao chép URL Scheme</string>

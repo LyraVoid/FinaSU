@@ -682,7 +682,6 @@
     <string name="sort_by_package_name">Nama paket</string>
     <string name="sort_by_install_time">Waktu pemasangan</string>
     <string name="sort_by_update_time">Waktu pembaruan</string>
-    <string name="sort_reverse">Terbalik</string>
     <string name="profile_flags_desc_no_new_privs">Mencegah peningkatan hak akses lebih lanjut melalui KernelSU dalam konteks profil root ini</string>
     <string name="module_shortcut_copy_scheme">Salin skema URL</string>
     <string name="module_shortcut_scheme_copied">Skema URL disalin</string>

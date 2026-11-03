@@ -691,7 +691,6 @@
     <string name="sort_by_package_name">包名喵</string>
     <string name="sort_by_install_time">安装时间喵</string>
     <string name="sort_by_update_time">更新时间喵</string>
-    <string name="sort_reverse">倒序喵</string>
     <string name="profile_flags_desc_no_new_privs">不许从这个 Root Profile 的上下文里通过 KernelSU 再往上提权喵</string>
     <string name="module_shortcut_copy_scheme">复制 URL Scheme 喵</string>
     <string name="module_shortcut_scheme_copied">URL Scheme 复制好啦喵</string>

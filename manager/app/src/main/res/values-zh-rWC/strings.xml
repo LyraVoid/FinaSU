@@ -691,7 +691,6 @@
     <string name="sort_by_package_name">包名</string>
     <string name="sort_by_install_time">炼化之时</string>
     <string name="sort_by_update_time">更新之时</string>
-    <string name="sort_reverse">倒序</string>
     <string name="profile_flags_desc_no_new_privs">禁于此 Root Profile 之境中借 KernelSU 再提权位</string>
     <string name="module_shortcut_copy_scheme">誊录 URL 令式</string>
     <string name="module_shortcut_scheme_copied">URL 令式已誊</string>

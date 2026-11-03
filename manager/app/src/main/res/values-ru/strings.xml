@@ -684,7 +684,6 @@
     <string name="sort_by_package_name">Имя пакета</string>
     <string name="sort_by_install_time">Время установки</string>
     <string name="sort_by_update_time">Время обновления</string>
-    <string name="sort_reverse">Обратный порядок</string>
     <string name="profile_flags_desc_no_new_privs">Предотвращает дальнейшее повышение привилегий через KernelSU в контексте этого root-профиля.</string>
     <string name="module_shortcut_copy_scheme">Копировать URL-схему</string>
     <string name="module_shortcut_scheme_copied">URL-схема скопирована</string>

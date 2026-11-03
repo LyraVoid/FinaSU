@@ -691,7 +691,6 @@
     <string name="sort_by_package_name">招牌号</string>
     <string name="sort_by_install_time">上灶时辰</string>
     <string name="sort_by_update_time">换新时辰</string>
-    <string name="sort_reverse">倒着排</string>
     <string name="profile_flags_desc_no_new_privs">别让这道 Root Profile 里的菜再借 KernelSU 往上爬权</string>
     <string name="module_shortcut_copy_scheme">抄下 URL Scheme</string>
     <string name="module_shortcut_scheme_copied">URL Scheme 抄好了</string>

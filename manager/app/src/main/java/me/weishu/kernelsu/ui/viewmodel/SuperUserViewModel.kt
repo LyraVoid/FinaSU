@@ -51,7 +51,6 @@ data class AppSortConfig(
     fun toInt(): Int = sortType.ordinal * 2 + if (reversed) 1 else 0
 
     fun withType(type: AppSortType): AppSortConfig = copy(sortType = type)
-    fun toggleReversed(): AppSortConfig = copy(reversed = !reversed)
 
     companion object {
         fun fromInt(value: Int): AppSortConfig = AppSortConfig(

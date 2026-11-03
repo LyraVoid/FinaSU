@@ -71,7 +71,7 @@ internal fun ModuleSortMenu(
         DropdownMenuGroup(shapes = MenuDefaults.groupShape(index = 1, count = 2)) {
             val orderCount = 2 + 1 + if (showReset) 1 else 0
             CheckableItem(
-                text = stringResource(AppR.string.module_sort_name_asc),
+                text = stringResource(AppR.string.sort_asc),
                 checked = nameOrder == ModuleNameOrder.Ascending,
                 shapeIndex = 0,
                 shapeCount = orderCount,
@@ -80,7 +80,7 @@ internal fun ModuleSortMenu(
                 onNameOrderChange(ModuleNameOrder.Ascending)
             }
             CheckableItem(
-                text = stringResource(AppR.string.module_sort_name_desc),
+                text = stringResource(AppR.string.sort_desc),
                 checked = nameOrder == ModuleNameOrder.Descending,
                 shapeIndex = 1,
                 shapeCount = orderCount,

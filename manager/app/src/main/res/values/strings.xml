@@ -111,8 +111,8 @@
     <string name="module_sort_reset_custom_order">Reset custom order</string>
     <string name="module_sort_reset_custom_order_summary">Return to the priority order.</string>
     <string name="module_sort_drag_to_reorder">Drag to reorder</string>
-    <string name="module_sort_name_asc">A → Z</string>
-    <string name="module_sort_name_desc">Z → A</string>
+    <string name="sort_asc">A → Z</string>
+    <string name="sort_desc">Z → A</string>
     <string name="module_repos">Repos</string>
     <string name="module_repo_source">Repository source</string>
     <string name="module_repo_source_official">Built-in index</string>
@@ -728,7 +728,6 @@
     <string name="sort_by_package_name">Package name</string>
     <string name="sort_by_install_time">Install time</string>
     <string name="sort_by_update_time">Update time</string>
-    <string name="sort_reverse">Reverse</string>
     <string name="profile_flags_desc_no_new_privs">Prevent further privilege escalation via KernelSU from within the context of this root profile</string>
     <string name="module_shortcut_copy_scheme">Copy URL scheme</string>
     <string name="module_shortcut_scheme_copied">URL scheme copied</string>
