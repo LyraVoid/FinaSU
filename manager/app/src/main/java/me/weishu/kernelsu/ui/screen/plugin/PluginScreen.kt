@@ -4,6 +4,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -44,37 +45,39 @@ fun PluginPager(
         onPauseOrDispose { viewModel.markNeedRefresh() }
     }
 
-    val actions = PluginActions(
-        onRefresh = { viewModel.refresh() },
-        onToggleEnabled = viewModel::setEnabled,
-        onOpenLog = viewModel::loadLog,
-        onDismissLog = viewModel::dismissLog,
-        onInstallZip = { uri ->
-            scope.launch {
-                val path = withContext(Dispatchers.IO) { stagePluginPackage(context, uri) }
-                if (path == null) {
-                    viewModel.reportError("cannot read the selected package")
-                } else {
-                    viewModel.install(path)
+    val actions = remember(viewModel, scope, context, navigator) {
+        PluginActions(
+            onRefresh = { viewModel.refresh() },
+            onToggleEnabled = viewModel::setEnabled,
+            onOpenLog = viewModel::loadLog,
+            onDismissLog = viewModel::dismissLog,
+            onInstallZip = { uri ->
+                scope.launch {
+                    val path = withContext(Dispatchers.IO) { stagePluginPackage(context, uri) }
+                    if (path == null) {
+                        viewModel.reportError("cannot read the selected package")
+                    } else {
+                        viewModel.install(path)
+                    }
                 }
-            }
-        },
-        onOpenStore = {
-            viewModel.markNeedRefresh()
-            navigator.push(Route.PluginStore)
-        },
-        onRequestUninstall = viewModel::requestUninstall,
-        onConfirmUninstall = viewModel::confirmUninstall,
-        onDismissUninstall = viewModel::dismissUninstall,
-        onOpenConfig = viewModel::openConfig,
-        onChangeConfigValue = viewModel::updateConfigValue,
-        onResetConfigValue = viewModel::resetConfigValue,
-        onSaveConfig = viewModel::saveConfig,
-        onDismissConfig = viewModel::dismissConfig,
-        onRun = viewModel::runCallback,
-        onNoticeShown = viewModel::clearNotice,
-        onErrorShown = viewModel::clearError,
-    )
+            },
+            onOpenStore = {
+                viewModel.markNeedRefresh()
+                navigator.push(Route.PluginStore)
+            },
+            onRequestUninstall = viewModel::requestUninstall,
+            onConfirmUninstall = viewModel::confirmUninstall,
+            onDismissUninstall = viewModel::dismissUninstall,
+            onOpenConfig = viewModel::openConfig,
+            onChangeConfigValue = viewModel::updateConfigValue,
+            onResetConfigValue = viewModel::resetConfigValue,
+            onSaveConfig = viewModel::saveConfig,
+            onDismissConfig = viewModel::dismissConfig,
+            onRun = viewModel::runCallback,
+            onNoticeShown = viewModel::clearNotice,
+            onErrorShown = viewModel::clearError,
+        )
+    }
 
     PluginPagerMaterial(
         uiState = uiState,

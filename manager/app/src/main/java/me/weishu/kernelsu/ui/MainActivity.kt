@@ -340,10 +340,12 @@ open class MainActivity : FragmentActivity() {
                         rememberSaveableStateHolderNavEntryDecorator<NavKey>()
                     val containerTransformDecorator =
                         rememberNavContainerTransformDecorator(navOriginState)
-                    val entryDecorators = listOf(
+                    val entryDecorators = remember(
                         saveableStateHolderDecorator,
                         containerTransformDecorator,
-                    )
+                    ) {
+                        listOf(saveableStateHolderDecorator, containerTransformDecorator)
+                    }
                     val layoutDirection = LocalLayoutDirection.current
                     val wallpaperActive = LocalFolkWallpaperTokens.current != null
                     val transition = remember(layoutDirection, navOriginState, wallpaperActive) {
@@ -360,11 +362,13 @@ open class MainActivity : FragmentActivity() {
                                 wallpaperActive,
                             )
                         }
-                    val mainScreenEntry = @Composable {
-                        MainScreen(
-                            initialPage = selectedMainPage,
-                            onPageChanged = viewModel::setSelectedMainPage,
-                        )
+                    val mainScreenEntry = remember(viewModel) {
+                        @Composable {
+                            MainScreen(
+                                initialPage = viewModel.selectedMainPage.value,
+                                onPageChanged = viewModel::setSelectedMainPage,
+                            )
+                        }
                     }
 
                     val navDisplay = @Composable {
@@ -630,7 +634,6 @@ fun MainScreen(
     val enableNavigationBadge = LocalEnableNavigationBadge.current
     val badgeEnabled = enableNavigationBadge && isFullFeatured
     val moduleViewModel = viewModel<ModuleViewModel>()
-    val moduleUiState by moduleViewModel.uiState.collectAsStateWithLifecycle()
     val pluginViewModel = viewModel<PluginViewModel>()
 
     LaunchedEffect(isFullFeatured) {
@@ -677,28 +680,41 @@ fun MainScreen(
         superuserCount = if (isFullFeatured) withContext(Dispatchers.IO) { getSuperuserCount() } else 0
     }
 
-    val moduleEnabledCount = moduleUiState.modules.count { it.enabled }
+    val moduleEnabledCount by remember(moduleViewModel) {
+        moduleViewModel.uiState
+            .map { state -> state.modules.count { it.enabled } }
+            .distinctUntilChanged()
+    }.collectAsStateWithLifecycle(0)
+    val moduleUpdatableCount by remember(moduleViewModel) {
+        moduleViewModel.uiState
+            .map { state -> state.updateInfo.count { it.value.downloadUrl.isNotBlank() } }
+            .distinctUntilChanged()
+    }.collectAsStateWithLifecycle(0)
     val pluginEnabledCount by remember(pluginViewModel) {
         pluginViewModel.uiState
             .map { state -> state.plugins.count { it.enabled } }
             .distinctUntilChanged()
     }.collectAsStateWithLifecycle(0)
-    val homeMetamodule = remember(moduleUiState.modules) {
-        moduleUiState.modules.firstOrNull { it.metamodule && !it.remove }?.let { module ->
-            HomeMetamodule(
-                id = module.id,
-                name = module.name.ifBlank { module.id },
-                version = module.version,
-            )
-        }
-    }
+    val homeMetamodule by remember(moduleViewModel) {
+        moduleViewModel.uiState
+            .map { state ->
+                state.modules.firstOrNull { it.metamodule && !it.remove }?.let { module ->
+                    HomeMetamodule(
+                        id = module.id,
+                        name = module.name.ifBlank { module.id },
+                        version = module.version,
+                    )
+                }
+            }
+            .distinctUntilChanged()
+    }.collectAsStateWithLifecycle(null)
 
     val navigationBadge = if (badgeEnabled) {
         NavigationBadgeState(
             superuserCount = superuserCount,
             pluginEnabledCount = pluginEnabledCount,
             moduleEnabledCount = moduleEnabledCount,
-            moduleUpdatableCount = moduleUiState.updateInfo.count { it.value.downloadUrl.isNotBlank() },
+            moduleUpdatableCount = moduleUpdatableCount,
         )
     } else {
         NavigationBadgeState()

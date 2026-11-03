@@ -88,27 +88,29 @@ fun HomePager(
         onPauseOrDispose { }
     }
 
-    val actions = HomeActions(
-        onInstallClick = { navigator.push(Route.Install) },
-        onOpenUrl = uriHandler::openUri,
-        onJailbreakClick = {
-            loadingDialog.showLoading()
-            context.startService(Intent(context, MagicaService::class.java))
-            // Manager will be force-stopped and restarted by late-load on success.
-            // If that doesn't happen within timeout, jailbreak likely failed.
-            scope.launch(Dispatchers.IO) {
-                delay(30_000.milliseconds)
-                withContext(Dispatchers.Main) {
-                    loadingDialog.hide()
-                    Toast.makeText(context, R.string.jailbreak_timeout, Toast.LENGTH_LONG).show()
+    val actions = remember(navigator, uriHandler, context, scope, mainPagerState, loadingDialog) {
+        HomeActions(
+            onInstallClick = { navigator.push(Route.Install) },
+            onOpenUrl = uriHandler::openUri,
+            onJailbreakClick = {
+                loadingDialog.showLoading()
+                context.startService(Intent(context, MagicaService::class.java))
+                // Manager will be force-stopped and restarted by late-load on success.
+                // If that doesn't happen within timeout, jailbreak likely failed.
+                scope.launch(Dispatchers.IO) {
+                    delay(30_000.milliseconds)
+                    withContext(Dispatchers.Main) {
+                        loadingDialog.hide()
+                        Toast.makeText(context, R.string.jailbreak_timeout, Toast.LENGTH_LONG).show()
+                    }
                 }
-            }
-        },
-        onOpenSuperUser = { mainPagerState.animateToDestination(BottomBarDestination.SuperUser) },
-        onOpenModule = { mainPagerState.animateToDestination(BottomBarDestination.Module) },
-        onRetryRoot = { CapabilityRepository.refresh() },
-        onSusfs = { navigator.push(Route.Susfs) },
-    )
+            },
+            onOpenSuperUser = { mainPagerState.animateToDestination(BottomBarDestination.SuperUser) },
+            onOpenModule = { mainPagerState.animateToDestination(BottomBarDestination.Module) },
+            onRetryRoot = { CapabilityRepository.refresh() },
+            onSusfs = { navigator.push(Route.Susfs) },
+        )
+    }
 
     val state = remember(uiState, metamodule) {
         uiState.copy(mount = uiState.mount.copy(metamodule = metamodule))

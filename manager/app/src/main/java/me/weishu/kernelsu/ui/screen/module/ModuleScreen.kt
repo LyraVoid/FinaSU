@@ -94,99 +94,103 @@ fun ModulePager(
         onPauseOrDispose {}
     }
 
-    val actions = ModuleActions(
-        onRefresh = {
-            viewModel.fetchModuleList(checkUpdate = true)
-        },
-        onSearchStatusChange = {
-            viewModel.updateSearchStatus(it)
-        },
-        onSearchTextChange = { text ->
-            viewModel.updateSearchText(text)
-        },
-        onClearSearch = {
-            viewModel.updateSearchText("")
-        },
-        onRequestUpdateConfirmation = { module, updateInfo ->
-            viewModel.requestUpdateConfirmation(module, updateInfo)
-        },
-        onRequestUninstallConfirmation = { module ->
-            viewModel.requestUninstallConfirmation(module)
-        },
-        onDismissConfirmRequest = {
-            viewModel.dismissConfirmRequest()
-        },
-        onConfirmUpdate = { request ->
-            scope.launch {
-                download(
-                    url = request.downloadUrl,
-                    fileName = request.fileName,
-                    expected = if (request.expectedSize != null && request.expectedSha256 != null)
-                        me.weishu.kernelsu.data.modulestore.ExpectedFile(request.expectedSize, request.expectedSha256) else null,
-                    onDownloaded = { uri ->
-                        if (lifecycleOwner.lifecycle.currentState.isAtLeast(Lifecycle.State.RESUMED)) {
-                            navigator.push(Route.Flash(FlashIt.FlashModules(listOf(uri))))
-                            viewModel.markNeedRefresh()
-                        }
-                    },
-                    onDownloading = {
-                        viewModel.emitEffect(
-                            ModuleEffect.Toast(
-                                resource.getString(R.string.module_downloading).format(request.module.name)
+    val actions = remember(
+        viewModel, scope, navigator, lifecycleOwner, resource, webUILauncher, context, authenticator,
+    ) {
+        ModuleActions(
+            onRefresh = {
+                viewModel.fetchModuleList(checkUpdate = true)
+            },
+            onSearchStatusChange = {
+                viewModel.updateSearchStatus(it)
+            },
+            onSearchTextChange = { text ->
+                viewModel.updateSearchText(text)
+            },
+            onClearSearch = {
+                viewModel.updateSearchText("")
+            },
+            onRequestUpdateConfirmation = { module, updateInfo ->
+                viewModel.requestUpdateConfirmation(module, updateInfo)
+            },
+            onRequestUninstallConfirmation = { module ->
+                viewModel.requestUninstallConfirmation(module)
+            },
+            onDismissConfirmRequest = {
+                viewModel.dismissConfirmRequest()
+            },
+            onConfirmUpdate = { request ->
+                scope.launch {
+                    download(
+                        url = request.downloadUrl,
+                        fileName = request.fileName,
+                        expected = if (request.expectedSize != null && request.expectedSha256 != null)
+                            me.weishu.kernelsu.data.modulestore.ExpectedFile(request.expectedSize, request.expectedSha256) else null,
+                        onDownloaded = { uri ->
+                            if (lifecycleOwner.lifecycle.currentState.isAtLeast(Lifecycle.State.RESUMED)) {
+                                navigator.push(Route.Flash(FlashIt.FlashModules(listOf(uri))))
+                                viewModel.markNeedRefresh()
+                            }
+                        },
+                        onDownloading = {
+                            viewModel.emitEffect(
+                                ModuleEffect.Toast(
+                                    resource.getString(R.string.module_downloading).format(request.module.name)
+                                )
                             )
-                        )
-                    },
-                )
-            }
-            viewModel.dismissConfirmRequest()
-        },
-        onOpenRepo = { navigator.push(Route.ModuleRepo) },
-        onOpenKernelModules = { navigator.push(Route.KernelModules) },
-        onSetSortGroup = { group, selected ->
-            viewModel.setSortGroup(group, selected)
-        },
-        onSetSortEnabledFirst = { enabled ->
-            viewModel.setSortEnabledFirst(enabled)
-        },
-        onSetCustomOrder = { ids ->
-            viewModel.setCustomOrder(ids)
-        },
-        onResetCustomOrder = {
-            viewModel.resetCustomOrder()
-        },
-        onOpenWebUi = { module ->
-            webUILauncher.launch(
-                Intent(context, WebUIActivity::class.java)
-                    .setData(
-                        Shortcut.buildShortcutUri(module.id, ShortcutType.WebUI)
+                        },
                     )
-            )
-        },
-        onToggleModule = { module ->
-            scope.launch {
-                if (module.enabled && !authenticator.require(SecurityTarget.MODULE_DISABLE)) return@launch
-                viewModel.toggleModule(module)
-            }
-        },
-        onUninstallModule = { module ->
-            scope.launch {
-                if (authenticator.require(SecurityTarget.MODULE_UNINSTALL)) viewModel.uninstallModule(module)
-            }
-        },
-        onUndoUninstallModule = { module ->
-            viewModel.undoUninstallModule(module)
-        },
-        onOpenFlash = { uris ->
-            if (uris.isNotEmpty()) {
-                navigator.push(Route.Flash(FlashIt.FlashModules(uris)))
+                }
+                viewModel.dismissConfirmRequest()
+            },
+            onOpenRepo = { navigator.push(Route.ModuleRepo) },
+            onOpenKernelModules = { navigator.push(Route.KernelModules) },
+            onSetSortGroup = { group, selected ->
+                viewModel.setSortGroup(group, selected)
+            },
+            onSetSortEnabledFirst = { enabled ->
+                viewModel.setSortEnabledFirst(enabled)
+            },
+            onSetCustomOrder = { ids ->
+                viewModel.setCustomOrder(ids)
+            },
+            onResetCustomOrder = {
+                viewModel.resetCustomOrder()
+            },
+            onOpenWebUi = { module ->
+                webUILauncher.launch(
+                    Intent(context, WebUIActivity::class.java)
+                        .setData(
+                            Shortcut.buildShortcutUri(module.id, ShortcutType.WebUI)
+                        )
+                )
+            },
+            onToggleModule = { module ->
+                scope.launch {
+                    if (module.enabled && !authenticator.require(SecurityTarget.MODULE_DISABLE)) return@launch
+                    viewModel.toggleModule(module)
+                }
+            },
+            onUninstallModule = { module ->
+                scope.launch {
+                    if (authenticator.require(SecurityTarget.MODULE_UNINSTALL)) viewModel.uninstallModule(module)
+                }
+            },
+            onUndoUninstallModule = { module ->
+                viewModel.undoUninstallModule(module)
+            },
+            onOpenFlash = { uris ->
+                if (uris.isNotEmpty()) {
+                    navigator.push(Route.Flash(FlashIt.FlashModules(uris)))
+                    viewModel.markNeedRefresh()
+                }
+            },
+            onExecuteModuleAction = { module ->
+                navigator.push(Route.ExecuteModuleAction(module.id))
                 viewModel.markNeedRefresh()
-            }
-        },
-        onExecuteModuleAction = { module ->
-            navigator.push(Route.ExecuteModuleAction(module.id))
-            viewModel.markNeedRefresh()
-        },
-    )
+            },
+        )
+    }
 
     ModulePagerMaterial(
         uiState = rawUiState,
