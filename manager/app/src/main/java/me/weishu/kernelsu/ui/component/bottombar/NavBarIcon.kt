@@ -3,7 +3,6 @@ package me.weishu.kernelsu.ui.component.bottombar
 import android.graphics.Bitmap
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.size
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -61,10 +60,10 @@ fun NavBarIcon(
         }
     }
 
-    Icon(
-        imageVector = if (isSelected) destination.iconSelected else destination.iconNotSelected,
-        contentDescription = stringResource(destination.label),
+    MorphIcon(
+        vector = destination.iconNotSelected,
+        selected = isSelected,
         tint = tint,
-        modifier = modifier,
+        modifier = modifier.size(24.dp),
     )
 }
