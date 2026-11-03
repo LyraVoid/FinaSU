@@ -92,6 +92,7 @@ private fun JSONObject.toPlugin(): Plugin = Plugin(
     author = optString("author"),
     version = optString("version"),
     description = optString("description"),
+    descriptions = optJSONObject("descriptions").toStringMap(),
     license = optString("license"),
     enabled = optBoolean("enabled"),
     entry = optString("entry"),
@@ -99,6 +100,7 @@ private fun JSONObject.toPlugin(): Plugin = Plugin(
         PluginQuickAction(
             function = it.optString("function"),
             label = it.optString("label"),
+            labels = it.optJSONObject("labels").toStringMap(),
         )
     },
     config = optJSONArray("config").toConfigFields(),
@@ -114,6 +116,7 @@ private fun JSONArray?.toConfigFields(): List<PluginConfigField> {
         PluginConfigField(
             key = field.optString("key"),
             label = field.optString("label"),
+            labels = field.optJSONObject("labels").toStringMap(),
             type = field.optString("type"),
             default = if (field.isNull("default")) null else field.opt("default")?.toString(),
             options = field.optJSONArray("options").toStringList(),
@@ -124,4 +127,10 @@ private fun JSONArray?.toConfigFields(): List<PluginConfigField> {
 private fun JSONArray?.toStringList(): List<String> {
     if (this == null) return emptyList()
     return (0 until length()).map { index -> optString(index) }
+}
+
+private fun JSONObject?.toStringMap(): Map<String, String> {
+    if (this == null) return emptyMap()
+    return keys().asSequence().associateWith { key -> optString(key) }
+        .filterValues { it.isNotBlank() }
 }

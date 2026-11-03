@@ -7,6 +7,7 @@ import androidx.compose.runtime.Immutable
 data class PluginConfigField(
     val key: String,
     val label: String,
+    val labels: Map<String, String> = emptyMap(),
     val type: String,
     val default: String?,
     val options: List<String>,
@@ -17,6 +18,7 @@ data class PluginConfigField(
 data class PluginQuickAction(
     val function: String,
     val label: String,
+    val labels: Map<String, String> = emptyMap(),
 )
 
 /** An installed plugin as reported by the manager daemon. */
@@ -27,6 +29,7 @@ data class Plugin(
     val author: String,
     val version: String,
     val description: String,
+    val descriptions: Map<String, String> = emptyMap(),
     val license: String,
     val enabled: Boolean,
     val entry: String,
