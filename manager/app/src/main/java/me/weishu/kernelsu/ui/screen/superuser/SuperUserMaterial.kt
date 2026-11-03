@@ -5,6 +5,7 @@ import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.shrinkVertically
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -74,6 +75,7 @@ import me.weishu.kernelsu.ui.component.material.rememberSearchAppBarScrollBehavi
 import me.weishu.kernelsu.ui.component.material.SegmentedItem
 import me.weishu.kernelsu.ui.component.material.SegmentedListItem
 import me.weishu.kernelsu.ui.component.statustag.StatusTag
+import me.weishu.kernelsu.ui.navigation3.navOrigin
 import me.weishu.kernelsu.ui.util.ownerNameForUid
 import me.weishu.kernelsu.ui.viewmodel.AppSortType
 
@@ -454,16 +456,23 @@ private fun SimpleAppItem(
     matched: Boolean = false,
     onNavigate: () -> Unit,
 ) {
+    val containerColor = if (matched) {
+        colorScheme.secondaryContainer
+    } else {
+        colorScheme.surfaceColorAtElevation(3.dp)
+    }
+    val interactionSource = remember { MutableInteractionSource() }
     ListItem(
         onClick = onNavigate,
-        modifier = Modifier.padding(horizontal = 4.dp),
-        colors = ListItemDefaults.colors(
-            containerColor = if (matched) {
-                colorScheme.secondaryContainer
-            } else {
-                colorScheme.surfaceColorAtElevation(3.dp)
-            }
-        ),
+        modifier = Modifier
+            .padding(horizontal = 4.dp)
+            .navOrigin(
+                cornerRadius = 12.dp,
+                color = containerColor,
+                interactionSource = interactionSource,
+            ),
+        colors = ListItemDefaults.colors(containerColor = containerColor),
+        interactionSource = interactionSource,
         content = { Text(app.label, overflow = TextOverflow.Ellipsis, maxLines = 1) },
         supportingContent = { Text(app.displayIdentifier, overflow = TextOverflow.Ellipsis, maxLines = 1) },
         leadingContent = {
