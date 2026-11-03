@@ -325,18 +325,18 @@ fun install() {
 fun listModules(): String {
     val shell = getRootShell()
 
-    val out = shell.newJob()
-        .add("${getKsuDaemonPath()} module list").to(ArrayList(), null).exec().out
-    return out.joinToString("\n").ifBlank { "[]" }
+    val result = shell.newJob()
+        .add("${getKsuDaemonPath()} module list").to(ArrayList(), null).exec()
+    // A daemon that has not answered yet (cold start, late load, a just re-granted root shell) must
+    // not look like "no modules installed": report the failure so the caller can retry instead of
+    // rendering an empty list.
+    check(result.code == 0) {
+        "module list failed: code=${result.code} err=${result.err.joinToString(" ")}"
+    }
+    return result.out.joinToString("\n").ifBlank { "[]" }
 }
 
-fun getModuleCount(): Int {
-    val result = listModules()
-    runCatching {
-        val array = JSONArray(result)
-        return array.length()
-    }.getOrElse { return 0 }
-}
+fun getModuleCount(): Int = runCatching { JSONArray(listModules()).length() }.getOrDefault(0)
 
 fun getSuperuserCount(): Int {
     return Natives.getSuperuserCount()
