@@ -1202,8 +1202,36 @@ pub fn list_modules() -> Result<()> {
     Ok(())
 }
 
-/// Get all managed features from active modules
-/// Modules declare managed features via config system (manage.<feature>=true)
+/// Declarations from `module.prop` and the module config, merged.
+fn declared_managed_features(
+    prop_value: Option<&str>,
+    config: &HashMap<String, String>,
+) -> Vec<String> {
+    let mut declared: Vec<String> = Vec::new();
+
+    if let Some(list) = prop_value {
+        declared.extend(
+            list.split(',')
+                .map(str::trim)
+                .filter(|name| !name.is_empty())
+                .map(ToString::to_string),
+        );
+    }
+
+    declared.extend(config.iter().filter_map(|(key, value)| {
+        if key.starts_with("manage.") && crate::module_config::parse_bool_config(value) {
+            key.strip_prefix("manage.").map(ToString::to_string)
+        } else {
+            None
+        }
+    }));
+
+    declared.sort_unstable();
+    declared.dedup();
+    declared
+}
+
+/// Get all managed features declared by active modules.
 /// Returns: HashMap<ModuleId, Vec<ManagedFeature>>
 pub fn get_managed_features() -> Result<HashMap<String, Vec<String>>> {
     let mut managed_features_map: HashMap<String, Vec<String>> = HashMap::new();
@@ -1218,34 +1246,84 @@ pub fn get_managed_features() -> Result<HashMap<String, Vec<String>>> {
             return Ok(());
         };
 
-        // Read module config
+        // Read module.prop first: a broken config must not hide its declaration.
+        let prop_value = read_module_prop(module_path)
+            .ok()
+            .and_then(|prop| prop.get("managedFeatures").cloned());
+
         let config = match crate::module_config::merge_configs(module_id) {
             Ok(c) => c,
             Err(e) => {
                 warn!("Failed to merge configs for module '{module_id}': {e}");
-                return Ok(()); // Skip this module
+                HashMap::new()
             }
         };
 
-        // Extract manage.* config entries
-        let mut feature_list = Vec::new();
-        for (key, value) in &config {
-            if key.starts_with("manage.") {
-                // Parse feature name
-                if let Some(feature_name) = key.strip_prefix("manage.")
-                    && crate::module_config::parse_bool_config(value)
-                {
-                    feature_list.push(feature_name.to_string());
-                }
-            }
-        }
-
-        if !feature_list.is_empty() {
-            managed_features_map.insert(module_id.to_string(), feature_list);
+        let declared = declared_managed_features(prop_value.as_deref(), &config);
+        if !declared.is_empty() {
+            managed_features_map.insert(module_id.to_string(), declared);
         }
 
         Ok(())
     })?;
 
     Ok(managed_features_map)
+}
+
+#[cfg(test)]
+mod tests {
+    use super::declared_managed_features;
+    use std::collections::HashMap;
+
+    fn config(entries: &[(&str, &str)]) -> HashMap<String, String> {
+        entries
+            .iter()
+            .map(|(key, value)| ((*key).to_owned(), (*value).to_owned()))
+            .collect()
+    }
+
+    #[test]
+    fn prop_declaration_alone_marks_the_feature() {
+        assert_eq!(
+            declared_managed_features(Some("kernel_umount"), &config(&[])),
+            vec!["kernel_umount".to_owned()]
+        );
+    }
+
+    #[test]
+    fn config_declaration_alone_marks_the_feature() {
+        assert_eq!(
+            declared_managed_features(None, &config(&[("manage.kernel_umount", "true")])),
+            vec!["kernel_umount".to_owned()]
+        );
+    }
+
+    #[test]
+    fn both_sources_merge_without_duplicates() {
+        assert_eq!(
+            declared_managed_features(
+                Some(" kernel_umount , su_compat ,, "),
+                &config(&[("manage.kernel_umount", "true"), ("manage.sulog", "1")])
+            ),
+            vec![
+                "kernel_umount".to_owned(),
+                "su_compat".to_owned(),
+                "sulog".to_owned()
+            ]
+        );
+    }
+
+    #[test]
+    fn false_or_unrelated_config_entries_do_not_declare() {
+        assert_eq!(
+            declared_managed_features(
+                None,
+                &config(&[
+                    ("manage.kernel_umount", "false"),
+                    ("override.description", "x"),
+                ])
+            ),
+            Vec::<String>::new()
+        );
+    }
 }

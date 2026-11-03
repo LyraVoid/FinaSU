@@ -2,7 +2,7 @@ use crate::sulog;
 use anyhow::{Context, Result, bail};
 use const_format::concatcp;
 use serde::{Deserialize, Serialize, de::DeserializeOwned};
-use std::collections::{BTreeMap, HashMap, HashSet};
+use std::collections::{BTreeMap, HashMap};
 use std::fs::{self, File, OpenOptions};
 use std::io::{Read, Write};
 use std::os::unix::fs::OpenOptionsExt;
@@ -182,20 +182,32 @@ fn write_json<T: Serialize>(path: &str, value: &T) -> Result<()> {
     result
 }
 
-fn managed_feature_ids() -> Result<HashSet<u32>> {
-    Ok(crate::module::get_managed_features()?
-        .values()
-        .flatten()
-        .filter_map(|name| parse_feature_id(name).ok())
-        .map(|feature| feature as u32)
-        .collect())
+/// Feature id → declaring module ids, both sorted and deduplicated.
+fn managed_feature_owners() -> Result<BTreeMap<u32, Vec<String>>> {
+    let mut owners: BTreeMap<u32, Vec<String>> = BTreeMap::new();
+    for (module_id, features) in crate::module::get_managed_features()? {
+        for name in features {
+            match parse_feature_id(&name) {
+                Ok(feature) => owners
+                    .entry(feature as u32)
+                    .or_default()
+                    .push(module_id.clone()),
+                Err(_) => log::warn!("Module '{module_id}' declares unknown feature '{name}'"),
+            }
+        }
+    }
+    for modules in owners.values_mut() {
+        modules.sort_unstable();
+        modules.dedup();
+    }
+    Ok(owners)
 }
 
-fn current_feature_values(managed: &HashSet<u32>) -> BTreeMap<u32, u64> {
+fn current_feature_values(managed: &BTreeMap<u32, Vec<String>>) -> BTreeMap<u32, u64> {
     let mut values = BTreeMap::new();
     for feature in FeatureId::ALL {
         let id = feature as u32;
-        if feature.has_dedicated_manager() || managed.contains(&id) {
+        if feature.has_dedicated_manager() || managed.contains_key(&id) {
             continue;
         }
         if let Ok(state) = crate::ksucalls::get_feature(id)
@@ -233,7 +245,7 @@ fn changed_features(
 
 pub fn capture_baseline() {
     let result = (|| -> Result<()> {
-        let managed = managed_feature_ids()?;
+        let managed = managed_feature_owners()?;
         let snapshot = FeatureSnapshot {
             boot_id: current_boot_id()?,
             values: current_feature_values(&managed),
@@ -260,7 +272,7 @@ pub fn detect_external_changes(stage: &str) {
         if snapshot.boot_id != boot_id {
             return Ok(());
         }
-        let managed = managed_feature_ids()?;
+        let managed = managed_feature_owners()?;
         let actual = current_feature_values(&managed);
         let changes = changed_features(&snapshot.values, &actual);
         if !changes.is_empty() {
@@ -333,10 +345,22 @@ pub fn external_changes() -> Result<()> {
 pub fn apply_config(features: &HashMap<u32, u64>) {
     log::info!("Applying feature configuration to kernel...");
 
+    let managed = managed_feature_owners().unwrap_or_default();
+    let caller_module = std::env::var("KSU_MODULE").unwrap_or_default();
+
     let mut applied = 0;
     for (&id, &value) in features {
         if FeatureId::from_u32(id).is_some_and(FeatureId::has_dedicated_manager) {
             log::info!("Skip feature {id}: dedicated configuration is applied separately");
+            continue;
+        }
+        if let Some(modules) = managed.get(&id)
+            && !modules.iter().any(|module| module == &caller_module)
+        {
+            log::info!(
+                "Skip feature {id}: declared by module(s) {}",
+                modules.join(", ")
+            );
             continue;
         }
         if crate::ksucalls::get_feature(id).is_ok_and(|state| state.forced) {
@@ -437,36 +461,25 @@ pub fn set_feature(id: &str, value: u64) -> Result<()> {
         bail!("Feature '{}' is forced by boot config", feature_id.name());
     }
 
-    // Check if this feature is managed by any module
-    if let Ok(managed_features_map) = crate::module::get_managed_features() {
-        // Find which modules manage this feature
-        let managing_modules: Vec<&String> = managed_features_map
-            .iter()
-            .filter(|(_, features)| features.iter().any(|f| f == feature_id.name()))
-            .map(|(module_id, _)| module_id)
-            .collect();
+    // Check if this feature is declared by any module
+    if let Ok(owners) = managed_feature_owners()
+        && let Some(managing_modules) = owners.get(&(feature_id as u32))
+    {
+        // Feature is managed, check if caller is an authorized module
+        let caller_module = std::env::var("KSU_MODULE").unwrap_or_default();
 
-        if !managing_modules.is_empty() {
-            // Feature is managed, check if caller is an authorized module
-            let caller_module = std::env::var("KSU_MODULE").unwrap_or_default();
-
-            if caller_module.is_empty() || !managing_modules.contains(&&caller_module) {
-                bail!(
-                    "Feature '{}' is managed by module(s): {}. Direct modification is not allowed.",
-                    feature_id.name(),
-                    managing_modules
-                        .iter()
-                        .map(|s| s.as_str())
-                        .collect::<Vec<_>>()
-                        .join(", ")
-                );
-            }
-
-            log::info!(
-                "Module '{caller_module}' is setting managed feature '{}'",
-                feature_id.name()
+        if caller_module.is_empty() || !managing_modules.iter().any(|m| m == &caller_module) {
+            bail!(
+                "Feature '{}' is managed by module(s): {}. Direct modification is not allowed.",
+                feature_id.name(),
+                managing_modules.join(", ")
             );
         }
+
+        log::info!(
+            "Module '{caller_module}' is setting managed feature '{}'",
+            feature_id.name()
+        );
     }
 
     set_kernel_feature(feature_id, value)?;
@@ -485,19 +498,9 @@ pub fn list_features() {
     println!("Available Features:");
     println!("{}", "=".repeat(80));
 
-    // Get managed features from modules
-    let managed_features_map = crate::module::get_managed_features().unwrap_or_default();
-
-    // Build a reverse map: feature_name -> Vec<module_id>
-    let mut feature_to_modules: HashMap<String, Vec<String>> = HashMap::new();
-    for (module_id, feature_list) in &managed_features_map {
-        for feature_name in feature_list {
-            feature_to_modules
-                .entry(feature_name.clone())
-                .or_default()
-                .push(module_id.clone());
-        }
-    }
+    // Declaring modules per feature, sorted for stable output
+    let managed_by_feature: BTreeMap<u32, Vec<String>> =
+        managed_feature_owners().unwrap_or_default();
 
     let all_features = [
         FeatureId::SuCompat,
@@ -523,7 +526,7 @@ pub fn list_features() {
             "DISABLED".to_string()
         };
 
-        let managed_by = feature_to_modules.get(feature_id.name());
+        let managed_by = managed_by_feature.get(&id);
         let managed_mark = if state.forced {
             " [FORCED]"
         } else if managed_by.is_some() {
@@ -569,6 +572,7 @@ pub fn save_config() -> Result<()> {
     // Preserve persisted values while boot config temporarily overrides them.
     let mut features = load_binary_config()?;
     features.remove(&(FeatureId::UtsView as u32));
+    let owners = managed_feature_owners().unwrap_or_default();
 
     let all_features = [
         FeatureId::SuCompat,
@@ -583,6 +587,11 @@ pub fn save_config() -> Result<()> {
 
     for feature_id in &all_features {
         let id = *feature_id as u32;
+        // Never turn a module's runtime value into the user's intent.
+        if owners.contains_key(&id) {
+            log::info!("Keep feature {}: declared by module(s)", feature_id.name());
+            continue;
+        }
         if let Ok(state) = crate::ksucalls::get_feature(id)
             && state.supported
             && !state.forced
@@ -607,11 +616,9 @@ pub fn check_feature(id: &str) -> Result<()> {
         return Ok(());
     }
 
-    // Check if this feature is managed by any module
-    let managed_features_map = crate::module::get_managed_features().unwrap_or_default();
-    let is_managed = managed_features_map
-        .values()
-        .any(|features| features.iter().any(|f| f == feature_id.name()));
+    // Check if this feature is declared by any module
+    let is_managed =
+        managed_feature_owners().is_ok_and(|owners| owners.contains_key(&(feature_id as u32)));
 
     if is_managed {
         println!("managed");
@@ -640,67 +647,45 @@ pub fn init_forced_features() {
 pub fn init_features() -> Result<()> {
     log::info!("Initializing features from config...");
 
-    let mut features = load_binary_config()?;
-    if features.remove(&(FeatureId::UtsView as u32)).is_some() {
+    let mut persisted = load_binary_config()?;
+    if persisted.remove(&(FeatureId::UtsView as u32)).is_some() {
         log::info!("Removed UTS View from the generic feature config");
     }
 
-    // Get managed features from active modules and skip them during init
-    if let Ok(managed_features_map) = crate::module::get_managed_features() {
-        if !managed_features_map.is_empty() {
-            log::info!(
-                "Found {} modules managing features",
-                managed_features_map.len()
-            );
-
-            // Build a set of all managed feature IDs to skip
-            for (module_id, feature_list) in &managed_features_map {
-                log::info!(
-                    "Module '{module_id}' manages {} feature(s)",
-                    feature_list.len()
-                );
-
-                for feature_name in feature_list {
-                    if let Ok(feature_id) = parse_feature_id(feature_name) {
-                        let feature_id_u32 = feature_id as u32;
-                        if crate::ksucalls::get_feature(feature_id_u32)
-                            .is_ok_and(|state| state.forced)
-                        {
-                            continue;
-                        }
-                        // Remove managed features from config, let modules control them
-                        if features.remove(&feature_id_u32).is_some() {
-                            log::info!(
-                                "  - Skipping managed feature '{feature_name}' (controlled by module: {module_id})",
-                            );
-                        } else {
-                            log::info!(
-                                "  - Feature '{feature_name}' is managed by module '{module_id}', skipping",
-                            );
-                        }
-                    } else {
-                        log::warn!(
-                            "  - Unknown managed feature '{feature_name}' from module '{module_id}', ignoring",
-                        );
-                    }
-                }
-            }
-        }
-    } else {
-        log::warn!(
-            "Failed to get managed features from modules, continuing with normal initialization"
-        );
+    // A declared feature belongs to its module: skip the write, keep the
+    // persisted value for the day that module goes away.
+    let owners = managed_feature_owners()?;
+    if !owners.is_empty() {
+        log::info!("Found {} feature(s) declared by modules", owners.len());
     }
 
-    if features.is_empty() {
+    let mut to_apply = persisted.clone();
+    for (id, modules) in &owners {
+        let name = FeatureId::from_u32(*id).map_or("unknown", FeatureId::name);
+        if modules.len() > 1 {
+            log::warn!(
+                "Feature '{name}' is declared by multiple modules ({}); FinaSU will not write or check it",
+                modules.join(", ")
+            );
+        } else {
+            log::info!(
+                "  - '{name}' is managed by module '{}', skipping",
+                modules[0]
+            );
+        }
+        to_apply.remove(id);
+    }
+
+    if persisted.is_empty() {
         log::info!("No features to apply, skipping initialization");
         return Ok(());
     }
 
-    apply_config(&features);
+    if !to_apply.is_empty() {
+        apply_config(&to_apply);
+    }
 
-    // Save the configuration (excluding managed features)
-    save_binary_config(&features)?;
+    save_binary_config(&persisted)?;
     log::info!("Saved feature configuration to file");
 
     Ok(())
