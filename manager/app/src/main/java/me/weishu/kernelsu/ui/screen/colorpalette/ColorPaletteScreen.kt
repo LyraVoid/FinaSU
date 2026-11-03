@@ -1,6 +1,7 @@
 package me.weishu.kernelsu.ui.screen.colorpalette
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.compose.dropUnlessResumed
@@ -15,6 +16,7 @@ import me.weishu.kernelsu.ui.viewmodel.SettingsViewModel
 fun ColorPaletteScreen() {
     val navigator = LocalNavigator.current
     val viewModel = viewModel<SettingsViewModel>()
+    LaunchedEffect(Unit) { viewModel.ensureLoaded() }
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val currentPaletteStyle = try {
         PaletteStyle.valueOf(uiState.colorStyle)

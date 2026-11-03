@@ -1,13 +1,14 @@
 package me.weishu.kernelsu.ui.component.bottombar
 
+import android.os.SystemClock
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
@@ -15,17 +16,16 @@ import androidx.compose.ui.input.nestedscroll.NestedScrollSource
 import androidx.compose.ui.unit.Velocity
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LifecycleEventEffect
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import kotlin.math.abs
 
-/**
- * Visibility state for the floating bottom bar.
- *
- * Mirrors FolkPatch: an optional three second auto-hide timer plus an optional
- * hide-while-scrolling-down behavior. Both are driven by [FloatingBarConfig] and default to on.
- */
 @Stable
-class FloatingBarVisibilityState internal constructor() {
+class FloatingBarVisibilityState internal constructor(
+    private val scope: CoroutineScope,
+) {
 
     /** Whether the content is currently being scrolled downwards. */
     var isScrollingDown by mutableStateOf(false)
@@ -35,9 +35,9 @@ class FloatingBarVisibilityState internal constructor() {
     var visible by mutableStateOf(true)
         private set
 
-    /** Bumped on every interaction so the auto-hide timer restarts from scratch. */
-    var autoHideKey by mutableIntStateOf(0)
-        private set
+    private var hideJob: Job? = null
+    private var hideAtUptime = 0L
+    private var autoHideArmed = false
 
     private var scrollOffset by mutableFloatStateOf(0f)
     private var previousScrollOffset by mutableFloatStateOf(0f)
@@ -68,7 +68,7 @@ class FloatingBarVisibilityState internal constructor() {
     /** The user touched the bar or scrolled the content: show the bar and re-arm the timer. */
     fun onUserInteraction() {
         visible = true
-        autoHideKey++
+        armAutoHide()
     }
 
     /** Force a fully visible idle state, e.g. when the app returns to the foreground. */
@@ -84,6 +84,32 @@ class FloatingBarVisibilityState internal constructor() {
         visible = false
     }
 
+    internal fun applyConfig(enabled: Boolean, autoHide: Boolean) {
+        val armed = enabled && autoHide
+        if (armed == autoHideArmed) return
+        autoHideArmed = armed
+        if (armed) {
+            armAutoHide()
+        } else {
+            hideJob?.cancel()
+            hideJob = null
+        }
+    }
+
+    private fun armAutoHide() {
+        if (!autoHideArmed) return
+        hideAtUptime = SystemClock.uptimeMillis() + AUTO_HIDE_DELAY_MS
+        if (hideJob?.isActive == true) return
+        hideJob = scope.launch {
+            while (true) {
+                val remaining = hideAtUptime - SystemClock.uptimeMillis()
+                if (remaining <= 0L) break
+                delay(remaining)
+            }
+            hide()
+        }
+    }
+
     private companion object {
         const val THRESHOLD = 50f
     }
@@ -95,13 +121,9 @@ fun rememberFloatingBarVisibilityState(
     autoHide: Boolean,
     swipeHide: Boolean,
 ): FloatingBarVisibilityState {
-    val state = remember { FloatingBarVisibilityState() }
-    LaunchedEffect(enabled, autoHide, state.autoHideKey) {
-        if (enabled && autoHide && state.visible) {
-            delay(AUTO_HIDE_DELAY_MS)
-            state.hide()
-        }
-    }
+    val scope = rememberCoroutineScope()
+    val state = remember(scope) { FloatingBarVisibilityState(scope) }
+    SideEffect { state.applyConfig(enabled = enabled, autoHide = autoHide) }
     LifecycleEventEffect(Lifecycle.Event.ON_RESUME) {
         if (enabled && (autoHide || swipeHide)) {
             state.reset()

@@ -15,6 +15,7 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberTopAppBarState
 import androidx.activity.compose.LocalActivity
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -48,6 +49,7 @@ fun CategorySettingsScreen(categoryKey: String) {
     val viewModel = viewModel<SettingsViewModel>()
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val actions = rememberSettingsActions(navigator, viewModel)
+    LaunchedEffect(Unit) { viewModel.ensureLoaded() }
     // A pushed theme or wallpaper screen can change theme-owned settings; re-read them on return.
     var initialResumeHandled by rememberSaveable { mutableStateOf(false) }
     val activity = LocalActivity.current

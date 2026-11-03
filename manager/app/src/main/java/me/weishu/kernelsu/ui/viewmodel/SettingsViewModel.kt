@@ -6,6 +6,7 @@ import android.widget.Toast
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -33,8 +34,11 @@ class SettingsViewModel(
     private val _uiState = MutableStateFlow(SettingsUiState())
     val uiState: StateFlow<SettingsUiState> = _uiState.asStateFlow()
     private var refreshGeneration = 0
+    private var initialized = false
 
-    init {
+    fun ensureLoaded() {
+        if (initialized) return
+        initialized = true
         refresh()
     }
 
@@ -64,6 +68,11 @@ class SettingsViewModel(
             val colorStyle = repo.colorStyle
             val colorSpec = repo.colorSpec
             val isLkmMode = repo.isLkmMode()
+
+            val folkMountJob = async { repo.getFolkMountStatus() }
+            val nomountJob = async { repo.getNomountStatus() }
+            val folkZygiskJob = async { repo.getFolkZygiskStatus() }
+            val suiJob = async { repo.getSuiStatus() }
 
             // Async loading for natives/features
             val suCompatStatus = repo.getSuCompatStatus()
@@ -110,10 +119,10 @@ class SettingsViewModel(
             val kernelFullVersionAvailable = Natives.isManager && !Natives.getFullVersion().isNullOrBlank()
             val hookTypeAvailable = Natives.isManager
 
-            val folkMountResult = repo.getFolkMountStatus()
-            val nomountResult = repo.getNomountStatus()
-            val folkZygiskResult = repo.getFolkZygiskStatus()
-            val suiResult = repo.getSuiStatus()
+            val folkMountResult = folkMountJob.await()
+            val nomountResult = nomountJob.await()
+            val folkZygiskResult = folkZygiskJob.await()
+            val suiResult = suiJob.await()
 
             // The home card's SUSFS row switch only makes sense when the kernel reports SUSFS.
             val susfsDetected = try {
