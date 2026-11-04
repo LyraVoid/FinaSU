@@ -51,6 +51,10 @@ class ModuleSortTest {
             facts("zygisk_xposed_fork", name = "Sample hooker", webUi = true).sortGroup(),
         )
         assertEquals(
+            ModuleSortGroup.LSPosed,
+            facts("zygisk_vector", name = "Vector", webUi = true).sortGroup(),
+        )
+        assertEquals(
             ModuleSortGroup.Zygisk,
             facts("zygisknext", name = "Zygisk Next", webUi = true).sortGroup(),
         )
@@ -69,6 +73,8 @@ class ModuleSortTest {
         assertTrue(isLSPosedModule("zygisk_xposed_fork", "任意名字"))
         assertTrue(isLSPosedModule("com.example.xposedplugin", "whatever"))
         assertTrue(isLSPosedModule("some_module", "Hooked through LSPosed"))
+        assertTrue(isLSPosedModule("zygisk_vector", "Vector"))
+        assertTrue(isLSPosedModule("zygisk_vector", "Vector fork"))
         assertFalse(isLSPosedModule("zygisknext", "Zygisk Next"))
         assertFalse(isLSPosedModule("webui_module", "Web UI"))
     }

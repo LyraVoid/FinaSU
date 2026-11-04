@@ -61,12 +61,12 @@ object ModuleNameOrderStore {
 /** Whether [id] looks like a module that carries the Zygisk runtime. */
 fun isZygiskModule(id: String): Boolean = id.contains("zygisk", ignoreCase = true)
 
-/** Whether [id] or [name] looks like a module built on the Xposed framework. */
-fun isLSPosedModule(id: String, name: String): Boolean =
-    id.contains("lsposed", ignoreCase = true) ||
-        name.contains("lsposed", ignoreCase = true) ||
-        id.contains("xposed", ignoreCase = true) ||
-        name.contains("xposed", ignoreCase = true)
+private val XposedFrameworkNames = listOf("lsposed", "xposed", "vector")
+
+/** Whether [id] or [name] looks like a module built on an Xposed-compatible framework. */
+fun isLSPosedModule(id: String, name: String): Boolean = XposedFrameworkNames.any { framework ->
+    id.contains(framework, ignoreCase = true) || name.contains(framework, ignoreCase = true)
+}
 
 /**
  * The module ids that carry the Zygisk runtime, the same set the daemon recognises. Sharing an id
