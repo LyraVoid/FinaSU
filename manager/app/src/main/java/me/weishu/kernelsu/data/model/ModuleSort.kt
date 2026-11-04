@@ -61,8 +61,12 @@ object ModuleNameOrderStore {
 /** Whether [id] looks like a module that carries the Zygisk runtime. */
 fun isZygiskModule(id: String): Boolean = id.contains("zygisk", ignoreCase = true)
 
-/** Whether [name] looks like a module built on the Xposed framework. */
-fun isLSPosedModule(name: String): Boolean = name.contains("LSPosed", ignoreCase = true)
+/** Whether [id] or [name] looks like a module built on the Xposed framework. */
+fun isLSPosedModule(id: String, name: String): Boolean =
+    id.contains("lsposed", ignoreCase = true) ||
+        name.contains("lsposed", ignoreCase = true) ||
+        id.contains("xposed", ignoreCase = true) ||
+        name.contains("xposed", ignoreCase = true)
 
 /**
  * The module ids that carry the Zygisk runtime, the same set the daemon recognises. Sharing an id
@@ -102,8 +106,8 @@ data class ModuleSortFacts(
 /** Which group [this] belongs to, or `null` when no group claims it. */
 fun ModuleSortFacts.sortGroup(): ModuleSortGroup? = when {
     metaModule -> ModuleSortGroup.MetaModule
+    isLSPosedModule(id, name) -> ModuleSortGroup.LSPosed
     isZygiskModule(id) -> ModuleSortGroup.Zygisk
-    isLSPosedModule(name) -> ModuleSortGroup.LSPosed
     hasWebUi -> ModuleSortGroup.WebUi
     hasActionScript -> ModuleSortGroup.ActionScript
     else -> null
