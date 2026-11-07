@@ -35,8 +35,9 @@ class ModuleSortTest {
         enabledFirst: Boolean = false,
         nameOrder: ModuleNameOrder = ModuleNameOrder.Default,
         manualOrder: List<String> = emptyList(),
+        editing: Boolean = false,
     ): List<String> = modules
-        .sortedWith(moduleSortComparator(collator, priorities, enabledFirst, nameOrder, manualOrder))
+        .sortedWith(moduleSortComparator(collator, priorities, enabledFirst, nameOrder, manualOrder, editing))
         .map { it.id }
 
     @Test
@@ -221,24 +222,41 @@ class ModuleSortTest {
     }
 
     @Test
-    fun `a ticked kind still outranks the manual order`() {
+    fun `manual order overrides group provider and enabled priorities`() {
         val modules = listOf(
-            facts("zzz_meta", meta = true),
+            facts("zzz_meta", meta = true, enabled = true),
             facts("aaa_web", webUi = true),
+            facts("zygisksu"),
+            facts("zygisk_user", enabled = false),
         )
 
         assertEquals(
-            listOf("zzz_meta", "aaa_web"),
+            listOf("zygisk_user", "aaa_web", "zygisksu", "zzz_meta"),
             sorted(
                 modules,
-                priorities = setOf(ModuleSortGroup.MetaModule),
-                manualOrder = listOf("aaa_web", "zzz_meta"),
+                enabledFirst = true,
+                manualOrder = listOf("zygisk_user", "aaa_web", "zygisksu", "zzz_meta"),
+                editing = true,
             ),
         )
     }
 
     @Test
-    fun `modules the manual order does not mention follow the name order`() {
+    fun `display rules apply without changing the manual order`() {
+        val modules = listOf(
+            facts("web", name = "Zeta", webUi = true),
+            facts("plain", name = "Alpha"),
+            facts("other", name = "Beta"),
+        )
+        val manual = listOf("plain", "other", "web")
+        assertEquals(listOf("plain", "other", "web"), sorted(modules, manualOrder = manual, editing = true))
+        assertEquals(listOf("web", "plain", "other"), sorted(modules, manualOrder = manual))
+        assertEquals(listOf("web", "other", "plain"), sorted(modules, manualOrder = manual, nameOrder = ModuleNameOrder.Descending))
+        assertEquals(listOf("plain", "other", "web"), sorted(modules, priorities = emptySet(), manualOrder = manual))
+    }
+
+    @Test
+    fun `name order overrides manual order for display`() {
         val modules = listOf(
             facts("aaa_plain", name = "Zeta"),
             facts("bbb_plain", name = "Alpha"),
@@ -246,7 +264,7 @@ class ModuleSortTest {
         )
 
         assertEquals(
-            listOf("ccc_plain", "bbb_plain", "aaa_plain"),
+            listOf("bbb_plain", "ccc_plain", "aaa_plain"),
             sorted(
                 modules,
                 priorities = emptySet(),

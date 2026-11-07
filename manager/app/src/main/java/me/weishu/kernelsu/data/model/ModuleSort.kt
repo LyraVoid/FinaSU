@@ -119,24 +119,29 @@ fun moduleSortComparator(
     enabledFirst: Boolean = false,
     nameOrder: ModuleNameOrder = ModuleNameOrder.Default,
     manualOrder: List<String> = emptyList(),
+    editing: Boolean = false,
 ): Comparator<ModuleSortFacts> {
     val ranking = ModuleSortPriorityGroups.filter { it in priorities }
     val positions = manualOrder.withIndex().associate { it.value to it.index }
+    val byManual = compareBy<ModuleSortFacts> { facts -> positions[facts.id] ?: Int.MAX_VALUE }
+    if (editing) return byManual.thenBy(collator) { it.id }
+
     val byGroup = compareBy<ModuleSortFacts> { facts ->
         val index = facts.sortGroup()?.let(ranking::indexOf) ?: -1
         index.takeIf { it >= 0 } ?: ranking.size
     }.thenBy { facts -> facts.sortRank() }
         .thenBy { facts -> enabledFirst && !facts.enabled }
-        .thenBy { facts -> positions[facts.id] ?: Int.MAX_VALUE }
 
     return when (nameOrder) {
-        ModuleNameOrder.Default -> byGroup.thenBy(collator) { it.id }
+        ModuleNameOrder.Default -> byGroup.then(byManual).thenBy(collator) { it.id }
         ModuleNameOrder.Ascending -> byGroup
             .thenBy(collator) { it.name.ifBlank { it.id } }
+            .then(byManual)
             .thenBy(collator) { it.id }
 
         ModuleNameOrder.Descending -> byGroup
             .thenByDescending(collator) { it.name.ifBlank { it.id } }
+            .then(byManual)
             .thenBy(collator) { it.id }
     }
 }

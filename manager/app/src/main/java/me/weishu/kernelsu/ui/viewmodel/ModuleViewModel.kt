@@ -251,23 +251,20 @@ class ModuleViewModel(
 
     private fun updateModuleList(resort: Boolean = true) {
         viewModelScope.launch(Dispatchers.IO) {
-            val state = _uiState.value
-            val searchText = state.searchStatus.searchText
-            val shorted = if (resort || state.moduleList.isEmpty()) {
-                state.modules.sortedWith(moduleComparator(state))
-            } else {
-                // Order-preserving reload: keep order, refresh data, drop removed, append new (no re-sort on toggle/uninstall)
-                val byId = state.modules.associateBy { it.id }
-                val existingIds = state.moduleList.mapTo(HashSet()) { it.id }
-                state.moduleList.mapNotNull { byId[it.id] } + state.modules.filter { it.id !in existingIds }
-            }
-            val searchResults = filterModules(shorted, searchText)
-
-            _uiState.update {
-                it.copy(
+            _uiState.update { state ->
+                val searchText = state.searchStatus.searchText
+                val shorted = if (resort || state.moduleList.isEmpty()) {
+                    state.modules.sortedWith(moduleComparator(state))
+                } else {
+                    val byId = state.modules.associateBy { it.id }
+                    val existingIds = state.moduleList.mapTo(HashSet()) { it.id }
+                    state.moduleList.mapNotNull { byId[it.id] } + state.modules.filter { it.id !in existingIds }
+                }
+                val searchResults = filterModules(shorted, searchText)
+                state.copy(
                     moduleList = shorted,
                     searchResults = searchResults,
-                    searchStatus = it.searchStatus.copy(
+                    searchStatus = state.searchStatus.copy(
                         resultStatus = searchResultStatusFor(searchText, searchResults.isEmpty())
                     )
                 )
@@ -292,6 +289,7 @@ class ModuleViewModel(
                 state.sortEnabledFirst,
                 state.sortNameOrder,
                 manualOrder = state.customOrder,
+                editing = state.customOrderEnabled,
             ),
         ) { it.toSortFacts() }
     }
