@@ -239,6 +239,7 @@
     <string name="action">动手</string>
     <string name="open">翻开</string>
     <string name="close">关上</string>
+    <string name="external_link_open_failed">这链接翻不开嘞</string>
     <string name="enable_web_debugging">WebView 调试</string>
     <string name="enable_web_debugging_summary">能给 WebUI 挑错，用得着再开</string>
     <string name="direct_install">直接上灶（推荐）</string>

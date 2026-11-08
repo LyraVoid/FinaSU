@@ -239,6 +239,7 @@
     <string name="action">Akcja</string>
     <string name="open">Otwórz</string>
     <string name="close">Zamknij</string>
+    <string name="external_link_open_failed">Nie można otworzyć linku</string>
     <string name="enable_web_debugging">Debugowanie WebView</string>
     <string name="enable_web_debugging_summary">Może być użyte do debugowania WebUI. Włącz tylko w razie potrzeby.</string>
     <string name="direct_install">Instalacja bezpośrednia (zalecane)</string>

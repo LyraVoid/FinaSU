@@ -239,6 +239,7 @@
     <string name="action">Действие</string>
     <string name="open">Открыть</string>
     <string name="close">Закрыть</string>
+    <string name="external_link_open_failed">Не удалось открыть ссылку</string>
     <string name="enable_web_debugging">Отладка WebView</string>
     <string name="enable_web_debugging_summary">Используется для отладки WebUI. Пожалуйста, включайте только при необходимости.</string>
     <string name="direct_install">Прямая установка (Рекомендуется)</string>

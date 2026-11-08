@@ -239,6 +239,7 @@
     <string name="action">Khởi chạy</string>
     <string name="open">Mở</string>
     <string name="close">Đóng</string>
+    <string name="external_link_open_failed">Không thể mở liên kết</string>
     <string name="enable_web_debugging">Gỡ lỗi WebView</string>
     <string name="enable_web_debugging_summary">Có thể sử dụng để gỡ lỗi WebUI. Vui lòng chỉ bật khi cần thiết.</string>
     <string name="direct_install">Cài đặt trực tiếp (Khuyến nghị)</string>

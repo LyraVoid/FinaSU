@@ -239,6 +239,7 @@
     <string name="action">アクション</string>
     <string name="open">開く</string>
     <string name="close">閉じる</string>
+    <string name="external_link_open_failed">リンクを開けません</string>
     <string name="enable_web_debugging">WebView デバッグ</string>
     <string name="enable_web_debugging_summary">WebUI のデバッグに使用できます。必要な場合にのみ有効にしてください。</string>
     <string name="direct_install">直接インストール (推奨)</string>

@@ -239,6 +239,7 @@
     <string name="action">Aksi</string>
     <string name="open">Buka</string>
     <string name="close">Tutup</string>
+    <string name="external_link_open_failed">Tidak dapat membuka tautan</string>
     <string name="enable_web_debugging">Debugging WebView</string>
     <string name="enable_web_debugging_summary">Dapat digunakan untuk mendebug WebUI. Harap aktifkan hanya saat diperlukan.</string>
     <string name="direct_install">Pasang langsung (Disarankan)</string>

@@ -239,6 +239,7 @@
     <string name="action">执行</string>
     <string name="open">开启</string>
     <string name="close">关闭</string>
+    <string name="external_link_open_failed">此魔法链接无法开启</string>
     <string name="enable_web_debugging">WebView 调试</string>
     <string name="enable_web_debugging_summary">可用于调试 WebUI，请仅在需要时点亮</string>
     <string name="direct_install">直接结下（推荐）</string>

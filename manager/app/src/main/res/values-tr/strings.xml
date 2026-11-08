@@ -239,6 +239,7 @@
     <string name="action">Aksiyon</string>
     <string name="open">Aç</string>
     <string name="close">Kapat</string>
+    <string name="external_link_open_failed">Bağlantı açılamadı</string>
     <string name="enable_web_debugging">WebView hata ayıklaması</string>
     <string name="enable_web_debugging_summary">Web kullanıcı arayüzünde hata ayıklamak için kullanılabilir, lütfen yalnızca gerektiğinde etkinleştirin.</string>
     <string name="direct_install">Doğrudan kur (Tavsiye edilen)</string>

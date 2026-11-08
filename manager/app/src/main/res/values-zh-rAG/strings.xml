@@ -239,6 +239,7 @@
     <string name="action">执行喵</string>
     <string name="open">打开喵</string>
     <string name="close">关闭喵</string>
+    <string name="external_link_open_failed">呜喵…链接打不开啦</string>
     <string name="enable_web_debugging">WebView 调试喵</string>
     <string name="enable_web_debugging_summary">能用来调试 WebUI 喵，要用的时候再开哦</string>
     <string name="direct_install">直接安装（人家推荐哒）喵</string>

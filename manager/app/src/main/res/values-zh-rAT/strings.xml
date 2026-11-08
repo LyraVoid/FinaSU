@@ -239,6 +239,7 @@
     <string name="action">施行</string>
     <string name="open">开启</string>
     <string name="close">封印</string>
+    <string name="external_link_open_failed">未能启此链接焉</string>
     <string name="enable_web_debugging">WebView 试炼</string>
     <string name="enable_web_debugging_summary">可试炼 WebUI，唯需时唤醒。</string>
     <string name="direct_install">直接蒙恩（荐）</string>

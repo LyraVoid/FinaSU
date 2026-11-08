@@ -239,6 +239,7 @@
     <string name="action">액션</string>
     <string name="open">열기</string>
     <string name="close">닫기</string>
+    <string name="external_link_open_failed">링크를 열 수 없습니다</string>
     <string name="enable_web_debugging">WebView 디버깅</string>
     <string name="enable_web_debugging_summary">WebUI 디버깅에 사용 가능, 필요한 경우에만 활성화하세요.</string>
     <string name="direct_install">직접 설치 (권장)</string>

@@ -7,6 +7,7 @@ import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.os.SystemClock
+import android.widget.Toast
 import androidx.activity.SystemBarStyle
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -60,8 +61,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalLayoutDirection
+import androidx.compose.ui.platform.LocalUriHandler
+import androidx.compose.ui.platform.UriHandler
 import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.LayoutDirection
@@ -93,6 +97,7 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
 import me.weishu.kernelsu.Natives
+import me.weishu.kernelsu.R
 import me.weishu.kernelsu.ksuApp
 import me.weishu.kernelsu.ui.component.security.AuthenticationHost
 import me.weishu.kernelsu.ui.component.security.AppLockGate
@@ -282,6 +287,8 @@ open class MainActivity : FragmentActivity() {
             val density = remember(systemDensity, uiState.pageScale) {
                 Density(systemDensity.density * uiState.pageScale, systemDensity.fontScale)
             }
+            val context = LocalContext.current
+            val uriHandler = LocalUriHandler.current
 
             val capability by CapabilityRepository.state.collectAsStateWithLifecycle()
             val authenticationSession = rememberAuthenticationSession(this@MainActivity, ksuApp.securityRepository)
@@ -299,6 +306,15 @@ open class MainActivity : FragmentActivity() {
             }
 
             CompositionLocalProvider(
+                LocalUriHandler provides object : UriHandler {
+                    override fun openUri(uri: String) {
+                        try {
+                            uriHandler.openUri(uri)
+                        } catch (_: IllegalArgumentException) {
+                            Toast.makeText(context, R.string.external_link_open_failed, Toast.LENGTH_SHORT).show()
+                        }
+                    }
+                },
                 LocalNavigator provides navigator,
                 LocalNavOriginState provides navOriginState,
                 LocalDensity provides density,
