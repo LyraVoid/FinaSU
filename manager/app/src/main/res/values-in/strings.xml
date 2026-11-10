@@ -30,8 +30,8 @@
     <string name="home_version">Versi</string>
     <string name="home_running_mode">Mode berjalan</string>
     <string name="home_hook_type">Jenis hook</string>
-    <string name="home_hook_type_tracepoint">Tracepoint</string>
-    <string name="home_hook_type_susfs_inline">SUSFS Inline</string>
+    <string name="home_hook_type_tracepoint">Tracepoint Syscall Redirect</string>
+    <string name="home_hook_type_susfs_inline">SUSFS Inline Syscall Redirect</string>
     <string name="home_hook_type_unknown">Versi lama / tidak diketahui</string>
     <string name="home_hook_type_failed">%1$s (tidak normal)</string>
     <string name="home_running_status">Status berjalan</string>

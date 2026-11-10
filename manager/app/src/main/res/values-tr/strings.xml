@@ -30,8 +30,8 @@
     <string name="home_version">Sürüm</string>
     <string name="home_running_mode">Çalışma modu</string>
     <string name="home_hook_type">Hook tipi</string>
-    <string name="home_hook_type_tracepoint">Tracepoint</string>
-    <string name="home_hook_type_susfs_inline">SUSFS Inline</string>
+    <string name="home_hook_type_tracepoint">Tracepoint Syscall Redirect</string>
+    <string name="home_hook_type_susfs_inline">SUSFS Inline Syscall Redirect</string>
     <string name="home_hook_type_unknown">Eski sürüm / bilinmiyor</string>
     <string name="home_hook_type_failed">%1$s (anormal)</string>
     <string name="home_running_status">Çalışma durumu</string>

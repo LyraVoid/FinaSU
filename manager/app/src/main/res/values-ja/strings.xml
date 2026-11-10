@@ -30,8 +30,8 @@
     <string name="home_version">バージョン</string>
     <string name="home_running_mode">動作モード</string>
     <string name="home_hook_type">フックタイプ</string>
-    <string name="home_hook_type_tracepoint">Tracepoint</string>
-    <string name="home_hook_type_susfs_inline">SUSFS Inline</string>
+    <string name="home_hook_type_tracepoint">Tracepoint Syscall Redirect</string>
+    <string name="home_hook_type_susfs_inline">SUSFS Inline Syscall Redirect</string>
     <string name="home_hook_type_unknown">旧版 / 不明</string>
     <string name="home_hook_type_failed">%1$s（異常）</string>
     <string name="home_running_status">動作状態</string>

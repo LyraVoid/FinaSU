@@ -30,8 +30,8 @@
     <string name="home_version">الإصدار</string>
     <string name="home_running_mode">وضع التشغيل</string>
     <string name="home_hook_type">نوع الهوك</string>
-    <string name="home_hook_type_tracepoint">Tracepoint</string>
-    <string name="home_hook_type_susfs_inline">SUSFS Inline</string>
+    <string name="home_hook_type_tracepoint">Tracepoint Syscall Redirect</string>
+    <string name="home_hook_type_susfs_inline">SUSFS Inline Syscall Redirect</string>
     <string name="home_hook_type_unknown">قديم / غير معروف</string>
     <string name="home_hook_type_failed">%1$s (غير طبيعي)</string>
     <string name="home_running_status">حالة التشغيل</string>

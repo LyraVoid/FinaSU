@@ -30,8 +30,8 @@
     <string name="home_version">Wersja</string>
     <string name="home_running_mode">Tryb pracy</string>
     <string name="home_hook_type">Hook</string>
-    <string name="home_hook_type_tracepoint">Tracepoint</string>
-    <string name="home_hook_type_susfs_inline">SUSFS Inline</string>
+    <string name="home_hook_type_tracepoint">Tracepoint Syscall Redirect</string>
+    <string name="home_hook_type_susfs_inline">SUSFS Inline Syscall Redirect</string>
     <string name="home_hook_type_unknown">Starsza wersja / nieznany</string>
     <string name="home_hook_type_failed">%1$s (nieprawidłowy)</string>
     <string name="home_running_status">Stan działania</string>

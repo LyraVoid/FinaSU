@@ -30,8 +30,8 @@
     <string name="home_version">Phiên bản</string>
     <string name="home_running_mode">Chế độ chạy</string>
     <string name="home_hook_type">Chế độ Hook</string>
-    <string name="home_hook_type_tracepoint">Tracepoint</string>
-    <string name="home_hook_type_susfs_inline">SUSFS Inline</string>
+    <string name="home_hook_type_tracepoint">Tracepoint Syscall Redirect</string>
+    <string name="home_hook_type_susfs_inline">SUSFS Inline Syscall Redirect</string>
     <string name="home_hook_type_unknown">Bản cũ / không rõ</string>
     <string name="home_hook_type_failed">%1$s (bất thường)</string>
     <string name="home_running_status">Trạng thái hoạt động</string>

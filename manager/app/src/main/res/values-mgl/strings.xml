@@ -30,8 +30,8 @@
     <string name="home_version">版本</string>
     <string name="home_running_mode">运转模式</string>
     <string name="home_hook_type">魔法契约</string>
-    <string name="home_hook_type_tracepoint">Tracepoint</string>
-    <string name="home_hook_type_susfs_inline">SUSFS Inline</string>
+    <string name="home_hook_type_tracepoint">Tracepoint Syscall Redirect</string>
+    <string name="home_hook_type_susfs_inline">SUSFS Inline Syscall Redirect</string>
     <string name="home_hook_type_unknown">旧版 / 未知</string>
     <string name="home_hook_type_failed">%1$s（异常）</string>
     <string name="home_running_status">运转状态</string>

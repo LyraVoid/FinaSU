@@ -30,8 +30,8 @@
     <string name="home_version">Версия</string>
     <string name="home_running_mode">Режим работы</string>
     <string name="home_hook_type">Тип хука</string>
-    <string name="home_hook_type_tracepoint">Tracepoint</string>
-    <string name="home_hook_type_susfs_inline">SUSFS Inline</string>
+    <string name="home_hook_type_tracepoint">Tracepoint Syscall Redirect</string>
+    <string name="home_hook_type_susfs_inline">SUSFS Inline Syscall Redirect</string>
     <string name="home_hook_type_unknown">Старая версия / неизвестно</string>
     <string name="home_hook_type_failed">%1$s (сбой)</string>
     <string name="home_running_status">Состояние</string>
