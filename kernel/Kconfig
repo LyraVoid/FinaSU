@@ -169,6 +169,17 @@ config KSU_SUSFS_SUS_MAP
 	  itself are not hidden. Only applies to zygote-spawned app processes
 	  that carry the TIF_PROC_UMOUNTED mark.
 
+config KSU_SUSFS_PRIORITY_UID_FILTER
+	bool "Enable to hide user-defined uids from the priority and ioprio syscalls"
+	depends on KSU_SUSFS
+	default y
+	help
+	  Hide user-defined app uids from getpriority, setpriority, ioprio_get
+	  and ioprio_set. Applies to every process with uid >= 10000. The uid
+	  list is pushed from user space; this option only enables the kernel
+	  side. Present from SUSFS v2.4.0, whose kernel patch references the
+	  helpers unconditionally.
+
 endmenu
 
 endmenu

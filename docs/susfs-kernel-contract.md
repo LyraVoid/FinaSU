@@ -45,6 +45,9 @@ and `security/selinux/hooks.c`. Keeping them exported is harmless.
 | `latest_granting = old + 1` in `handle_sepolicy()` | expected | must be removed |
 | `reset_avc_cache(seqno)` | expected | must be `reset_avc_cache(0)` |
 | `susfs_set_batch_sid()` after a policy reload | required | required |
+| `KSU_SUSFS_PRIORITY_UID_FILTER` in `kernel/Kconfig` | not needed | **required to link** |
+| `CMD_SUSFS_SET_PRIORITY_UID_FILTER` dispatch | not needed | required to configure it |
+| `susfs_parse_priority_app_strings()` from the throne tracker | not needed | recommended |
 
 The avd registration runs before the rule bitmap is modified, so the recorded
 `avd.allowed` is the pre-injection value:
@@ -77,6 +80,11 @@ still increments that value on reload, the reply carries a sequence number a sto
 never produces. 2.3.0 hid this by answering from `backup_sepolicy` and hardcoding
 `avd.seqno = 1`; 2.4.0 no longer goes through that path.
 
+`KSU_SUSFS_PRIORITY_UID_FILTER` is a build requirement, not just a feature switch. The
+2.4.0 `fs/susfs.c` defines `susfs_switch_to_ksu_domain()` and `susfs_restore_creds()`
+outside every `#ifdef`, and only the priority-filter code calls them. Without the option
+they are unused, and `-Werror=unused-function` fails the build on `fs/susfs.o`.
+
 ## Checking a new patch set
 
 1. Diff `kernel_patches/KernelSU/10_enable_susfs_for_ksu.patch` against the pinned
@@ -94,9 +102,15 @@ never produces. 2.3.0 hid this by answering from `backup_sepolicy` and hardcodin
 ## Known gaps in this tree
 
 - `scripts/check-susfs-upstream.sh` does not inspect the driver-side call sites.
+- Its Kconfig comparison is an exact set match, so the extra
+  `KSU_SUSFS_PRIORITY_UID_FILTER` option makes it fail against the pinned v2.3.0
+  upstream. The pin has to move to v2.4.0 before that check is meaningful again.
 - The 2.4.0 registration tables have no rollback interface. A malformed policy batch
   that is discarded after applying earlier commands can leave stale entries, and a
   later policy reload can reuse type values recorded by an earlier policy.
+- The priority uid filter is configurable but not refreshed on app install/uninstall;
+  2.4.0's driver-side patch calls `susfs_parse_priority_app_strings()` from the throne
+  tracker, and this tree does not.
 
 The 2.4.0 call sites use weak symbol references so that the pinned 2.3.0 kernel keeps
 its original policy generation and cache reset behavior. Both registration symbols
