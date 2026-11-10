@@ -15,8 +15,8 @@ The contract has two directions:
 
 | Version | Upstream commit | Date | Note |
 | --- | --- | --- | --- |
-| v2.3.0 | `4a4cb1b` (current pin) | 2026-10-19 | SELinux hide lives in the driver |
-| v2.4.0 | `b74a5a2` | 2026-11-08 | refactor `8934afa` moved SELinux hide into `security/selinux` |
+| v2.3.0 | `4a4cb1b` | 2026-10-19 | SELinux hide lives in the driver |
+| v2.4.0 | `ec03d0c` (current pin) | 2026-11-09 | refactor `8934afa` moved SELinux hide into `security/selinux` |
 
 ## Symbols SUSFS expects from this tree
 
@@ -84,6 +84,8 @@ never produces. 2.3.0 hid this by answering from `backup_sepolicy` and hardcodin
 2.4.0 `fs/susfs.c` defines `susfs_switch_to_ksu_domain()` and `susfs_restore_creds()`
 outside every `#ifdef`, and only the priority-filter code calls them. Without the option
 they are unused, and `-Werror=unused-function` fails the build on `fs/susfs.o`.
+The kernel supports the priority UID filter, but ksud and Manager do not provide an
+interface for configuring it.
 
 ## Checking a new patch set
 
@@ -102,16 +104,10 @@ they are unused, and `-Werror=unused-function` fails the build on `fs/susfs.o`.
 ## Known gaps in this tree
 
 - `scripts/check-susfs-upstream.sh` does not inspect the driver-side call sites.
-- Its Kconfig comparison is an exact set match, so the extra
-  `KSU_SUSFS_PRIORITY_UID_FILTER` option makes it fail against the pinned v2.3.0
-  upstream. The pin has to move to v2.4.0 before that check is meaningful again.
 - The 2.4.0 registration tables have no rollback interface. A malformed policy batch
   that is discarded after applying earlier commands can leave stale entries, and a
   later policy reload can reuse type values recorded by an earlier policy.
-- The priority uid filter is configurable but not refreshed on app install/uninstall;
-  2.4.0's driver-side patch calls `susfs_parse_priority_app_strings()` from the throne
-  tracker, and this tree does not.
 
-The 2.4.0 call sites use weak symbol references so that the pinned 2.3.0 kernel keeps
+The 2.4.0 call sites use weak symbol references so that a 2.3.0 kernel keeps
 its original policy generation and cache reset behavior. Both registration symbols
 must exist for the 2.4.0 path to be enabled.
