@@ -1219,6 +1219,9 @@ pub fn set_mode(mode: &str) -> Result<()> {
             "invalid mount mode {mode:?}; expected one of: auto, builtin, metamodule, nomount, off"
         );
     };
+    if parsed == MountMode::Nomount {
+        crate::utils::ensure_dir_exists(defs::MODULE_DIR)?;
+    }
     // Asking for NoMount by hand is also the retry that the guards are waiting
     // for, so a record of a step that stopped an earlier boot must not outlive
     // the request.
