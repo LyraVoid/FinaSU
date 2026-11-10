@@ -46,7 +46,7 @@ and `security/selinux/hooks.c`. Keeping them exported is harmless.
 | `reset_avc_cache(seqno)` | expected | must be `reset_avc_cache(0)` |
 | `susfs_set_batch_sid()` after a policy reload | required | required |
 
-The two registration calls must run before the rule bitmap is modified, so the recorded
+The avd registration runs before the rule bitmap is modified, so the recorded
 `avd.allowed` is the pre-injection value:
 
 ```c
@@ -93,9 +93,11 @@ never produces. 2.3.0 hid this by answering from `backup_sepolicy` and hardcodin
 
 ## Known gaps in this tree
 
-- `kernel/selinux/sepolicy.c` has no SUSFS call sites, so the 2.4.0 tables stay empty.
-- `kernel/selinux/rules.c` still increments `latest_granting` and passes it to
-  `reset_avc_cache()`.
 - `scripts/check-susfs-upstream.sh` does not inspect the driver-side call sites.
-- `builtin-integration.md` marks the 2.4.0 rows as not applied; flip them once the call
-  sites above exist.
+- The 2.4.0 registration tables have no rollback interface. A malformed policy batch
+  that is discarded after applying earlier commands can leave stale entries, and a
+  later policy reload can reuse type values recorded by an earlier policy.
+
+The 2.4.0 call sites use weak symbol references so that the pinned 2.3.0 kernel keeps
+its original policy generation and cache reset behavior. Both registration symbols
+must exist for the 2.4.0 path to be enabled.
