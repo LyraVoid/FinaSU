@@ -787,6 +787,7 @@
     <string name="wallpaper_crop_message">把图裁裁配屏幕，还是原样使？</string>
     <string name="wallpaper_crop_confirm">裁</string>
     <string name="wallpaper_crop_direct">原样使</string>
+    <string name="surface_crop_reset_ratio">还原比例</string>
     <string name="wallpaper_saved">背景换好了</string>
     <string name="wallpaper_removed">背景撤了</string>
     <string name="wallpaper_save_failed">图没载进来</string>

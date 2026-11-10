@@ -787,6 +787,7 @@
     <string name="wallpaper_crop_message">要把图片裁一下适配屏幕，还是直接用原图呀喵？</string>
     <string name="wallpaper_crop_confirm">裁剪喵</string>
     <string name="wallpaper_crop_direct">直接用喵</string>
+    <string name="surface_crop_reset_ratio">恢复比例喵</string>
     <string name="wallpaper_saved">壁纸更新好啦喵</string>
     <string name="wallpaper_removed">壁纸移掉啦喵</string>
     <string name="wallpaper_save_failed">图片加载失败啦喵…</string>

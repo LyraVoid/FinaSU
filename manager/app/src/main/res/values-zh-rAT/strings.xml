@@ -787,6 +787,7 @@
     <string name="wallpaper_crop_message">裁切圣图以合圣屏，抑或径直施展？</string>
     <string name="wallpaper_crop_confirm">裁切</string>
     <string name="wallpaper_crop_direct">径直施展</string>
+    <string name="surface_crop_reset_ratio">复归原比</string>
     <string name="wallpaper_saved">圣光壁纸已更新</string>
     <string name="wallpaper_removed">圣光壁纸已移除</string>
     <string name="wallpaper_save_failed">圣图召唤未至</string>

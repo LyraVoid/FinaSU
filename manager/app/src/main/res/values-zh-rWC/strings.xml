@@ -787,6 +787,7 @@
     <string name="wallpaper_crop_message">将画卷裁炼以合屏，或径用之？</string>
     <string name="wallpaper_crop_confirm">裁炼</string>
     <string name="wallpaper_crop_direct">径用</string>
+    <string name="surface_crop_reset_ratio">归复原比</string>
     <string name="wallpaper_saved">画卷已易</string>
     <string name="wallpaper_removed">画卷已涤</string>
     <string name="wallpaper_save_failed">载入画卷败陨</string>

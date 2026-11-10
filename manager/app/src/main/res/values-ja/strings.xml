@@ -778,6 +778,7 @@
     <string name="wallpaper_crop_message">画面に合わせて画像を切り抜きますか、それともそのまま使用しますか？</string>
     <string name="wallpaper_crop_confirm">切り抜く</string>
     <string name="wallpaper_crop_direct">そのまま使用</string>
+    <string name="surface_crop_reset_ratio">比率をリセット</string>
     <string name="wallpaper_saved">壁紙を更新しました</string>
     <string name="wallpaper_removed">壁紙を削除しました</string>
     <string name="wallpaper_save_failed">画像の読み込みに失敗しました</string>

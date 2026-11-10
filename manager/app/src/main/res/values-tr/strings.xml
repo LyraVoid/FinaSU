@@ -780,6 +780,7 @@
     <string name="wallpaper_crop_message">Görsel ekrana sığacak şekilde kırpılsın mı, yoksa olduğu gibi mi kullanılsın?</string>
     <string name="wallpaper_crop_confirm">Kırp</string>
     <string name="wallpaper_crop_direct">Olduğu gibi kullan</string>
+    <string name="surface_crop_reset_ratio">Oranı sıfırla</string>
     <string name="wallpaper_saved">Duvar kağıdı güncellendi</string>
     <string name="wallpaper_removed">Duvar kağıdı kaldırıldı</string>
     <string name="wallpaper_save_failed">Görsel yüklenemedi</string>
