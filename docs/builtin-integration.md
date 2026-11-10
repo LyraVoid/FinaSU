@@ -168,9 +168,15 @@ whole; this tree already implements many of its hunks and its hook model differs
 | `kernel/Kconfig` SUSFS menu | Skip; the options are already here |
 | `kernel/Kbuild` / `kernel/Makefile` defines | Skip; handled by `CONFIG_KSU_SUSFS` and `kernel/extension/susfs.c` |
 | `kernel/selinux/rules.c` sid refresh and zygote rule | Skip; already applied |
+| `kernel/selinux/rules.c` `latest_granting` / `reset_avc_cache` (v2.4.0 and later) | **Not applied**; see `susfs-kernel-contract.md` |
+| `kernel/selinux/sepolicy.c` sus type and avd registration (v2.4.0 and later) | **Not applied**; see `susfs-kernel-contract.md` |
 | `kernel/selinux/selinux.c` / `.h` SID helpers | Skip; already applied |
 | `kernel/feature/selinux_hide.c` symbol visibility | Skip; already exported |
 | Hook-site rewrites (sucompat, setuid, adb_root, preinit, sulog, supercall) | Do not patch the driver; use the compatible entry points provided here |
+
+`susfs-kernel-contract.md` lists, per SUSFS version, which symbols this tree has to
+export and which call sites it has to provide. The table above covers the symbols; the
+call sites are the part that has no build-time symptom when missing.
 
 For SUSFS Inline, the kernel-side patch must contain the following direct calls. The
 build checks the kernel source selected by Kbuild.
