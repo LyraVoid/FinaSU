@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: GPL-2.0-only
-// Wire definitions for the SUSFS v2.3.0 control interface. Keep native C
-// alignment, including the trailing error sentinel.
+// Wire layout for the SUSFS control interface, audited for v2.3.0 and v2.4.0:
+// every command, buffer size and payload used in this file matches in both.
+// Keep native C alignment, including the trailing error sentinel.
 use anyhow::{Result, bail};
 
 #[repr(C)]
@@ -42,6 +43,8 @@ pub struct Uname {
 #[repr(C)]
 #[derive(Clone)]
 pub struct Kstat {
+    // Upstream types this bool or int; both align target_ino at offset 8, which
+    // arm64_layouts asserts, so i32 keeps the audited layout.
     pub is_static: i32,
     pub target_ino: libc::c_ulong,
     pub path: [u8; 256],
@@ -183,7 +186,7 @@ pub fn call<T>(command: u32, payload: &mut T) {
 
 pub fn checked(err: i32) -> Result<()> {
     if err != 0 {
-        bail!("SUSFS returned error {err}");
+        bail!("SUSFS returned error {err}; the peer may use a different payload layout");
     }
     Ok(())
 }

@@ -399,6 +399,9 @@ private fun SusfsOverview(state: SusfsUiState, config: JSONObject?, writable: Bo
         })) }, supportingContent = { Text(listOf(
             stringResource(R.string.susfs_provider_label, provider),
             listOf(status.version, status.variant).filter(String::isNotEmpty).joinToString(" · "),
+            if (status.protocol == "compatible" && !status.audited) {
+                stringResource(R.string.susfs_unaudited)
+            } else "",
         ).filter(String::isNotEmpty).joinToString("\n")) },
             leadingContent = { Icon(Icons.Rounded.VisibilityOff, null) }) }
         if (status.detected && status.management != "idle") item {

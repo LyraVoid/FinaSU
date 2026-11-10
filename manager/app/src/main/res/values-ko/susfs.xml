@@ -26,6 +26,7 @@
     <string name="susfs_readonly">알 수 없는 프로토콜 · 읽기 전용</string>
     <string name="susfs_root">루트를 일시적으로 사용할 수 없음 · 권한 부여 후 재시도하세요</string>
     <string name="susfs_compatible">호환되는 제어 프로토콜</string>
+    <string name="susfs_unaudited">검토되지 않은 버전 · 기능 탐지로 활성화됨</string>
     <string name="susfs_hide_mounts">SUSFS 마운트 숨기기</string>
     <string name="susfs_logging">SUSFS 로깅</string>
     <string name="susfs_avc">AVC 위조</string>

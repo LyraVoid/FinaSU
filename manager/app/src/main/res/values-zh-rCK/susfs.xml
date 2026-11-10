@@ -26,6 +26,7 @@
     <string name="susfs_readonly">不知道啥协议 · 只瞧不动</string>
     <string name="susfs_root">大厨权限眼下没有 · 给了权再试</string>
     <string name="susfs_compatible">控制协议对得上</string>
+    <string name="susfs_unaudited">没审过的版本 · 瞅着能力探出来就给开</string>
     <string name="susfs_hide_mounts">把 SUSFS 挂载收起来</string>
     <string name="susfs_logging">SUSFS 账本</string>
     <string name="susfs_avc">AVC 伪装</string>

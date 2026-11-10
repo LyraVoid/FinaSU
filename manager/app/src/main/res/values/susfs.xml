@@ -35,6 +35,7 @@
     <string name="susfs_readonly">Unknown protocol · read-only</string>
     <string name="susfs_root">Root temporarily unavailable · retry after authorization</string>
     <string name="susfs_compatible">Compatible control protocol</string>
+    <string name="susfs_unaudited">Unaudited version · enabled from capability probing</string>
     <string name="susfs_hide_mounts">Hide SUSFS mounts</string>
     <string name="susfs_logging">SUSFS logging</string>
     <string name="susfs_avc">AVC spoofing</string>

@@ -26,6 +26,7 @@
     <string name="susfs_readonly">未知协议 · 只读喵</string>
     <string name="susfs_root">Root 暂时用不了喵 · 授权后重试嘛</string>
     <string name="susfs_compatible">控制协议兼容喵</string>
+    <string name="susfs_unaudited">未审阅版本喵 · 按能力探测启用喵</string>
     <string name="susfs_hide_mounts">藏起 SUSFS 挂载喵</string>
     <string name="susfs_logging">SUSFS 日志喵</string>
     <string name="susfs_avc">AVC 伪装喵</string>

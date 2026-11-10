@@ -26,6 +26,7 @@
     <string name="susfs_readonly">Giao thức không xác định · chỉ đọc</string>
     <string name="susfs_root">Tạm thời không có quyền Root · thử lại sau khi cấp quyền</string>
     <string name="susfs_compatible">Giao thức điều khiển tương thích</string>
+    <string name="susfs_unaudited">Phiên bản chưa được thẩm định · bật theo khả năng phát hiện được</string>
     <string name="susfs_hide_mounts">Ẩn các mount của SUSFS</string>
     <string name="susfs_logging">Ghi nhật ký SUSFS</string>
     <string name="susfs_avc">Giả mạo AVC</string>

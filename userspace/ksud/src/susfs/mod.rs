@@ -68,6 +68,9 @@ pub struct Detection {
     pub version: String,
     pub variant: String,
     pub implementation: &'static str,
+    /// Whether the reported version is in the audited set. Annotation only:
+    /// it never decides writability, only what the UI says about it.
+    pub audited: bool,
     pub features: Vec<String>,
     pub proc_nodes: Vec<String>,
 }
@@ -178,12 +181,15 @@ fn classify(
         .filter(|s| !s.is_empty())
         .map(str::to_owned)
         .collect();
-    // GKI-LKM is upstream's clearer label for the same v2.3.0 wire layout since r18.4.
-    // Other revisions remain visible/read-only.
+    // Audited releases; other versions are annotated rather than rejected.
+    // A passing probe does not verify payload layout: only the per-write err
+    // reports whether a write was accepted.
+    let audited = matches!(version.1.as_deref(), Some("v2.3.0" | "v2.4.0"));
+    // GKI-LKM reports the same layout under a different variant string (r18.4).
+    // Writability needs all three queries, a known variant, and a clean token shape.
     let compatible = version.0 == 0
         && features.0 == 0
         && variant.0 == 0
-        && version.1.as_deref() == Some("v2.3.0")
         && matches!(variant.1.as_deref(), Some("GKI" | "NON-GKI" | "GKI-LKM"))
         && !tokens.is_empty()
         && tokens
@@ -207,6 +213,7 @@ fn classify(
         } else {
             "unknown"
         },
+        audited,
         features: tokens,
         proc_nodes: Vec::new(),
     }
@@ -219,6 +226,7 @@ pub fn detect() -> Detection {
             version: String::new(),
             variant: String::new(),
             implementation: "unknown",
+            audited: false,
             features: Vec::new(),
             proc_nodes: Vec::new(),
         };
@@ -650,28 +658,27 @@ mod tests {
         (0, Some(value.to_owned()))
     }
     #[test]
-    fn detection_requires_all_queries_and_audited_protocol() {
+    fn detection_requires_all_queries_and_protocol_shape() {
         let absent = (126, Some(String::new()));
         assert_eq!(classify(&absent, &absent, &absent).status, "not_detected");
         assert_eq!(
             classify(&response("v2.3.0"), &absent, &absent).status,
             "unknown_protocol"
         );
-        assert_eq!(
-            classify(
-                &response("v9.0.0"),
-                &response("CONFIG_KSU_SUSFS_SUS_PATH"),
-                &response("GKI")
-            )
-            .status,
-            "unknown_protocol"
+        let unaudited = classify(
+            &response("v9.0.0"),
+            &response("CONFIG_KSU_SUSFS_SUS_PATH"),
+            &response("GKI"),
         );
+        assert_eq!(unaudited.status, "compatible");
+        assert!(!unaudited.audited);
         let builtin = classify(
             &response("v2.3.0"),
             &response("CONFIG_KSU_SUSFS_SUS_PATH"),
             &response("GKI"),
         );
         assert_eq!(builtin.implementation, "builtin");
+        assert!(builtin.audited);
         let lkm = classify(
             &response("v2.3.0"),
             &response("SUSFS_LKM_MODULES\nCONFIG_KSU_SUSFS_SUS_PATH"),
@@ -693,12 +700,70 @@ mod tests {
     }
 
     #[test]
+    fn every_query_must_succeed_on_its_own() {
+        let features = response("CONFIG_KSU_SUSFS_SUS_PATH");
+        let failed = (1, Some(String::new()));
+        assert_eq!(
+            classify(&failed, &features, &response("GKI")).status,
+            "unknown_protocol"
+        );
+        assert_eq!(
+            classify(&response("v2.4.0"), &failed, &response("GKI")).status,
+            "unknown_protocol"
+        );
+        assert_eq!(
+            classify(&response("v2.4.0"), &features, &failed).status,
+            "unknown_protocol"
+        );
+        assert_eq!(
+            classify(&response("v2.4.0"), &response(""), &response("GKI")).status,
+            "unknown_protocol"
+        );
+    }
+
+    #[test]
+    fn audited_protocol_set_accepts_v2_3_0_and_v2_4_0() {
+        let features = response("CONFIG_KSU_SUSFS_SUS_PATH\nCONFIG_KSU_SUSFS_SUS_KSTAT");
+        let v240 = classify(&response("v2.4.0"), &features, &response("GKI"));
+        assert_eq!(v240.status, "compatible");
+        assert_eq!(v240.implementation, "builtin");
+        assert!(v240.audited);
+        assert!(!capabilities(&v240).supported.is_empty());
+        let v250 = classify(&response("v2.5.0"), &features, &response("GKI"));
+        assert_eq!(v250.status, "compatible");
+        assert!(!v250.audited);
+        assert_eq!(
+            classify(
+                &response("v2.4.0"),
+                &response("CONFIG_KSU_SUSFS_SUS_PATH\nSUS_PATH"),
+                &response("GKI")
+            )
+            .status,
+            "unknown_protocol"
+        );
+    }
+
+    #[test]
+    fn unaudited_version_keeps_the_lkm_implementation() {
+        let detection = classify(
+            &response("v2.5.0"),
+            &response("SUSFS_LKM_MODULES\nCONFIG_KSU_SUSFS_SUS_KSTAT"),
+            &response("GKI-LKM"),
+        );
+        assert_eq!(detection.status, "compatible");
+        assert!(!detection.audited);
+        assert_eq!(detection.implementation, "lkm");
+        assert!(detection.supports("CONFIG_KSU_SUSFS_SUS_KSTAT"));
+    }
+
+    #[test]
     fn capability_profile_tracks_provider_controls() {
         let builtin = Detection {
             status: "compatible",
             version: "v2.3.0".to_owned(),
             variant: "GKI".to_owned(),
             implementation: "builtin",
+            audited: true,
             features: vec![
                 "CONFIG_KSU_SUSFS_SUS_PATH".to_owned(),
                 "CONFIG_KSU_SUSFS_SUS_KSTAT".to_owned(),

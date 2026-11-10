@@ -26,6 +26,7 @@
     <string name="susfs_readonly">不明なプロトコル · 読み取り専用</string>
     <string name="susfs_root">root が一時的に利用不可 · 権限付与後に再試行してください</string>
     <string name="susfs_compatible">互換性のある制御プロトコル</string>
+    <string name="susfs_unaudited">未監査のバージョン · 機能検出に基づいて有効化</string>
     <string name="susfs_hide_mounts">SUSFS マウントを隠す</string>
     <string name="susfs_logging">SUSFS ログ</string>
     <string name="susfs_avc">AVC 偽装</string>

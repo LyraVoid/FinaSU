@@ -26,6 +26,7 @@
     <string name="susfs_readonly">Неизвестный протокол · только чтение</string>
     <string name="susfs_root">Root временно недоступен · повторите после авторизации</string>
     <string name="susfs_compatible">Совместимый протокол управления</string>
+    <string name="susfs_unaudited">Неаудированная версия · включена по результатам проверки возможностей</string>
     <string name="susfs_hide_mounts">Скрыть монтирования SUSFS</string>
     <string name="susfs_logging">Журналирование SUSFS</string>
     <string name="susfs_avc">Подмена AVC</string>

@@ -26,6 +26,7 @@
     <string name="susfs_readonly">未知通訊協定 · 唯讀</string>
     <string name="susfs_root">Root 暫時無法使用 · 請於授權後重試</string>
     <string name="susfs_compatible">相容的控制通訊協定</string>
+    <string name="susfs_unaudited">未審閱版本 · 已按能力探測啟用</string>
     <string name="susfs_hide_mounts">隱藏 SUSFS 掛載</string>
     <string name="susfs_logging">SUSFS 日誌</string>
     <string name="susfs_avc">AVC 偽裝</string>

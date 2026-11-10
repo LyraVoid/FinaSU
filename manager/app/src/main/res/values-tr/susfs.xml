@@ -26,6 +26,7 @@
     <string name="susfs_readonly">Bilinmeyen protokol · salt okunur</string>
     <string name="susfs_root">Root geçici olarak kullanılamıyor · yetkilendirmeden sonra yeniden deneyin</string>
     <string name="susfs_compatible">Uyumlu kontrol protokolü</string>
+    <string name="susfs_unaudited">Denetlenmemiş sürüm · yetenek algılamasıyla etkinleştirildi</string>
     <string name="susfs_hide_mounts">SUSFS bağlamalarını gizle</string>
     <string name="susfs_logging">SUSFS günlükleme</string>
     <string name="susfs_avc">AVC taklidi</string>

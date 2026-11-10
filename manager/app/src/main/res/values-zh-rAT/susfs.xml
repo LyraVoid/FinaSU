@@ -26,6 +26,7 @@
     <string name="susfs_readonly">不可知之圣契 · 唯读</string>
     <string name="susfs_root">Root 暂不可用 · 圣授后再祈</string>
     <string name="susfs_compatible">相合之掌理圣契</string>
+    <string name="susfs_unaudited">未经勘定之版本焉 · 依能力探知而启焉</string>
     <string name="susfs_hide_mounts">隐匿 SUSFS 圣引</string>
     <string name="susfs_logging">SUSFS 神谕日志</string>
     <string name="susfs_avc">AVC 幻化</string>

@@ -26,6 +26,7 @@
     <string name="susfs_readonly">Protocolo desconhecido · somente leitura</string>
     <string name="susfs_root">Root temporariamente indisponível · tente novamente após a autorização</string>
     <string name="susfs_compatible">Protocolo de controle compatível</string>
+    <string name="susfs_unaudited">Versão não auditada · habilitada pela detecção de recursos</string>
     <string name="susfs_hide_mounts">Ocultar montagens do SUSFS</string>
     <string name="susfs_logging">Registro do SUSFS</string>
     <string name="susfs_avc">Falsificação do AVC</string>

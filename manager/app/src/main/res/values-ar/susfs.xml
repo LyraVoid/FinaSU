@@ -26,6 +26,7 @@
     <string name="susfs_readonly">بروتوكول غير معروف · للقراءة فقط</string>
     <string name="susfs_root">الجذر غير متاح مؤقتًا · أعد المحاولة بعد التفويض</string>
     <string name="susfs_compatible">بروتوكول تحكّم متوافق</string>
+    <string name="susfs_unaudited">إصدار لم تتم مراجعته · مُفعَّل بناءً على فحص الإمكانات</string>
     <string name="susfs_hide_mounts">إخفاء عمليات تركيب SUSFS</string>
     <string name="susfs_logging">تسجيل SUSFS</string>
     <string name="susfs_avc">تزييف AVC</string>

@@ -58,6 +58,16 @@ class SusfsStatusTest {
         assertEquals("skipped", SusfsStatus.parse(base.format("skipped")).management)
     }
 
+    @Test fun `audited is an annotation and never gates writes`() {
+        val base = """{"detection":{"status":"compatible","version":"%s","variant":"GKI","implementation":"builtin"%s,"features":["CONFIG_KSU_SUSFS_SUS_PATH"],"proc_nodes":[]},"automatic":false,"config_error":null,"management":"saved","ownership":{"mode":"builtin","pending":null}}"""
+        assertTrue("old ksud omits the flag", SusfsStatus.parse(base.format("v2.4.0", "")).audited)
+        assertTrue(SusfsStatus.parse(base.format("v2.4.0", ""","audited":true""")).audited)
+        val unaudited = SusfsStatus.parse(base.format("v2.5.0", ""","audited":false"""))
+        assertFalse(unaudited.audited)
+        assertTrue(unaudited.writable)
+        assertTrue(unaudited.supports("SUS_PATH"))
+    }
+
     @Test fun `capability profile drives verified controls`() {
         val status = SusfsStatus.parse("""
             {

@@ -26,6 +26,7 @@
     <string name="susfs_readonly">Nieznany protokół · tylko do odczytu</string>
     <string name="susfs_root">Root tymczasowo niedostępny · ponów po autoryzacji</string>
     <string name="susfs_compatible">Zgodny protokół sterowania</string>
+    <string name="susfs_unaudited">Wersja nieaudytowana · włączona na podstawie wykrytych funkcji</string>
     <string name="susfs_hide_mounts">Ukryj punkty montowania SUSFS</string>
     <string name="susfs_logging">Dziennik SUSFS</string>
     <string name="susfs_avc">Fałszowanie AVC</string>

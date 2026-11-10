@@ -26,6 +26,7 @@
     <string name="susfs_readonly">Protokol tidak dikenal · hanya baca</string>
     <string name="susfs_root">Root sementara tidak tersedia · coba lagi setelah otorisasi</string>
     <string name="susfs_compatible">Protokol kontrol yang kompatibel</string>
+    <string name="susfs_unaudited">Versi belum diaudit · diaktifkan dari pemeriksaan kemampuan</string>
     <string name="susfs_hide_mounts">Sembunyikan mount SUSFS</string>
     <string name="susfs_logging">Log SUSFS</string>
     <string name="susfs_avc">Pemalsuan AVC</string>

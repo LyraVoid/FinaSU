@@ -26,6 +26,7 @@
     <string name="susfs_readonly">未知协议 · 只读</string>
     <string name="susfs_root">OP 暂不可用 · 授权后重试</string>
     <string name="susfs_compatible">控制协议兼容</string>
+    <string name="susfs_unaudited">未審閱版本 · 已按能力探測啟用</string>
     <string name="susfs_hide_mounts">藏起 SUSFS 挂载</string>
     <string name="susfs_logging">SUSFS 日志</string>
     <string name="susfs_avc">AVC 伪装</string>

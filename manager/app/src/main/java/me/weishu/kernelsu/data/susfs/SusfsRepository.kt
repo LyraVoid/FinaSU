@@ -32,6 +32,7 @@ data class SusfsStatus(
     val version: String = "",
     val implementation: String = "unknown",
     val variant: String = "",
+    val audited: Boolean = true,
     val features: List<String> = emptyList(),
     val procNodes: List<String> = emptyList(),
     val management: String = "saved",
@@ -93,6 +94,8 @@ data class SusfsStatus(
                 version = detection.getString("version"),
                 implementation = implementation,
                 variant = detection.getString("variant"),
+                // Absent in older status responses; only an explicit false warns.
+                audited = detection.optBoolean("audited", true),
                 features = features, procNodes = procNodes,
                 management = json.getString("management"), automatic = json.getBoolean("automatic"),
                 configured = json.optBoolean("configured", true),

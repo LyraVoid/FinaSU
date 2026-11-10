@@ -91,9 +91,10 @@ fn proc_write(detection: &Detection, node: &str, command: &str) -> Result<()> {
     Ok(())
 }
 
+// An unavailable enable is a failed write; an unavailable disable is skipped.
 fn unavailable(enabled: bool, detail: String) -> Result<Outcome> {
     if enabled {
-        bail!("{detail}");
+        bail!("{detail}; the peer may use a different payload layout");
     }
     Ok(Outcome::Skipped(detail))
 }
@@ -104,7 +105,7 @@ fn toggle_command(command: u32, enabled: bool, unavailable_detail: &str) -> Resu
     match payload.err {
         0 => Ok(Outcome::Applied),
         126 => unavailable(enabled, unavailable_detail.to_owned()),
-        err => bail!("SUSFS returned error {err}"),
+        err => abi::checked(err).map(|()| Outcome::Applied),
     }
 }
 
@@ -782,6 +783,7 @@ mod tests {
             version: "v2.3.0".to_owned(),
             variant: "GKI".to_owned(),
             implementation: "builtin",
+            audited: true,
             features: vec!["CONFIG_KSU_SUSFS_SUS_KSTAT".to_owned()],
             proc_nodes: vec!["susfs_kstat".to_owned()],
         };
@@ -795,11 +797,46 @@ mod tests {
     }
 
     #[test]
+    fn apply_classifies_and_persists_failures_and_skips() {
+        let mut config = Config::default();
+        config.settings.logging = Some(true);
+        config.settings.hide_mounts = Some(true);
+        let persisted = RefCell::new(State::default());
+        let report = apply_with_state(
+            &config,
+            Stage::Deferred,
+            State::default(),
+            |state| {
+                *persisted.borrow_mut() = state.clone();
+                Ok(())
+            },
+            |key, _, _, _| match key {
+                "logging" => {
+                    bail!("SUSFS returned error -22; the peer may use a different payload layout")
+                }
+                "hide_mounts" => Ok(Outcome::Skipped(
+                    "Capability unavailable: CONFIG_KSU_SUSFS_SUS_MOUNT".to_owned(),
+                )),
+                _ => Ok(Outcome::Applied),
+            },
+        )
+        .unwrap();
+        assert_eq!(report.status, "failed");
+        assert!(report.failures["logging"].contains("payload layout"));
+        assert!(report.skipped.contains_key("hide_mounts"));
+        let state = persisted.borrow();
+        assert!(state.failures.contains_key("logging"));
+        assert!(state.skipped.contains_key("hide_mounts"));
+        assert!(state.uncertain.is_empty());
+    }
+
+    #[test]
     fn disabling_an_unavailable_control_is_skipped_not_failed() {
         assert_eq!(
             unavailable(false, "Capability unavailable".to_owned()).unwrap(),
             Outcome::Skipped("Capability unavailable".to_owned())
         );
-        assert!(unavailable(true, "Capability unavailable".to_owned()).is_err());
+        let error = unavailable(true, "Capability unavailable".to_owned()).unwrap_err();
+        assert!(error.to_string().contains("payload layout"));
     }
 }

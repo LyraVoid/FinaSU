@@ -26,6 +26,7 @@
     <string name="susfs_readonly">未知令式 · 唯读</string>
     <string name="susfs_root">Root 暂不可用 · 授权后再试</string>
     <string name="susfs_compatible">控制令式相容</string>
+    <string name="susfs_unaudited">未勘之版本 · 依能力探得而启</string>
     <string name="susfs_hide_mounts">隐遁 SUSFS 悬挂</string>
     <string name="susfs_logging">SUSFS 仙录</string>
     <string name="susfs_avc">AVC 伪装</string>
