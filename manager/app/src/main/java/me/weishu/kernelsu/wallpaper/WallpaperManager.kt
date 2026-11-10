@@ -2,7 +2,7 @@ package me.weishu.kernelsu.wallpaper
 
 import android.content.Context
 import android.graphics.Bitmap
-import android.graphics.BitmapFactory
+import android.graphics.ImageDecoder
 import android.net.Uri
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.graphics.toArgb
@@ -19,6 +19,7 @@ import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
 import java.io.File
 import java.util.UUID
+import kotlin.math.roundToInt
 import java.util.concurrent.ConcurrentHashMap
 
 /**
@@ -385,22 +386,28 @@ object WallpaperManager {
         else -> ""
     }
 
-    /** Decodes [file] with power-of-two downsampling so neither side exceeds [maxDimension]. */
+    /**
+     * Decodes [file] scaled so its longest side is at most [maxDimension].
+     *
+     * Exact rather than a power-of-two sample step, which halved a 3120px picture to 1560px for
+     * the panel to stretch back up. [ImageDecoder] also honours the EXIF orientation.
+     */
     fun decodeSampled(file: File, maxDimension: Int): Bitmap? {
         if (!file.exists() || file.length() == 0L) return null
         return try {
-            val bounds = BitmapFactory.Options().apply { inJustDecodeBounds = true }
-            BitmapFactory.decodeFile(file.absolutePath, bounds)
-            if (bounds.outWidth <= 0 || bounds.outHeight <= 0) return null
-            var sample = 1
-            while (bounds.outWidth / sample > maxDimension || bounds.outHeight / sample > maxDimension) {
-                sample *= 2
+            ImageDecoder.decodeBitmap(ImageDecoder.createSource(file)) { decoder, info, _ ->
+                val width = info.size.width
+                val height = info.size.height
+                val longest = if (width > height) width else height
+                if (maxDimension > 0 && longest > maxDimension) {
+                    val ratio = maxDimension.toFloat() / longest
+                    decoder.setTargetSize(
+                        (width * ratio).roundToInt().coerceAtLeast(1),
+                        (height * ratio).roundToInt().coerceAtLeast(1),
+                    )
+                }
+                decoder.allocator = ImageDecoder.ALLOCATOR_SOFTWARE
             }
-            val options = BitmapFactory.Options().apply {
-                inSampleSize = sample
-                inPreferredConfig = Bitmap.Config.ARGB_8888
-            }
-            BitmapFactory.decodeFile(file.absolutePath, options)
         } catch (_: Throwable) {
             null
         }

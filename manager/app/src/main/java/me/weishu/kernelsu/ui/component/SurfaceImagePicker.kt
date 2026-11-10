@@ -4,6 +4,7 @@ import android.net.Uri
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import me.weishu.kernelsu.wallpaper.surface.SurfaceId
+import me.weishu.kernelsu.wallpaper.surface.SurfaceRegistry
 import me.weishu.kernelsu.wallpaper.surface.surfaceAspect
 
 /**
@@ -14,6 +15,9 @@ import me.weishu.kernelsu.wallpaper.surface.surfaceAspect
  * dialog lets the user crop the picture to the card's exact bounds or use it as is. It is a thin
  * wrapper over [ImageCropPickerHost], so surfaces get the same in-app crop the avatar and the
  * wallpaper use. [onPicked] receives the final image; the caller must keep [request] set until then.
+ *
+ * Only a surface that paints the picture at its own ratio gets a free crop frame; the rest crop to
+ * their bounds, so a framed ratio they cannot show would be cut again.
  */
 @Composable
 fun SurfaceImagePickerHost(
@@ -26,6 +30,7 @@ fun SurfaceImagePickerHost(
         trigger = id?.value,
         aspect = remember(id) { id?.let { surfaceAspect(it) } ?: 1f },
         onDismissRequest = onDismissRequest,
+        freeRatio = id == SurfaceRegistry.GRID_WORK_CARD,
         onPicked = { uri -> id?.let { onPicked(it, uri) } },
     )
 }
