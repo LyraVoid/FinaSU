@@ -778,7 +778,6 @@
     <string name="wallpaper_crop_message">将图片裁剪以适配星幕，或直接使用？</string>
     <string name="wallpaper_crop_confirm">裁剪</string>
     <string name="wallpaper_crop_direct">直接使用</string>
-    <string name="surface_crop_reset_ratio">比例归正</string>
     <string name="wallpaper_saved">星幻壁纸已更新</string>
     <string name="wallpaper_removed">星幻壁纸已移除</string>
     <string name="wallpaper_save_failed">图片加载变身失败</string>

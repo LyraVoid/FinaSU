@@ -778,7 +778,6 @@
     <string name="wallpaper_crop_message">Cắt hình ảnh cho vừa màn hình, hay dùng nguyên bản?</string>
     <string name="wallpaper_crop_confirm">Cắt</string>
     <string name="wallpaper_crop_direct">Dùng nguyên bản</string>
-    <string name="surface_crop_reset_ratio">Đặt lại tỷ lệ</string>
     <string name="wallpaper_saved">Đã cập nhật hình nền</string>
     <string name="wallpaper_removed">Đã xoá hình nền</string>
     <string name="wallpaper_save_failed">Tải hình ảnh thất bại</string>

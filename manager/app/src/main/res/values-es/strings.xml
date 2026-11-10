@@ -778,7 +778,6 @@
     <string name="wallpaper_crop_message">¿Recortar la imagen para ajustarla a la pantalla o usarla tal cual?</string>
     <string name="wallpaper_crop_confirm">Recortar</string>
     <string name="wallpaper_crop_direct">Usar tal cual</string>
-    <string name="surface_crop_reset_ratio">Restablecer proporción</string>
     <string name="wallpaper_saved">Fondo de pantalla actualizado</string>
     <string name="wallpaper_removed">Fondo de pantalla eliminado</string>
     <string name="wallpaper_save_failed">Error al cargar la imagen</string>

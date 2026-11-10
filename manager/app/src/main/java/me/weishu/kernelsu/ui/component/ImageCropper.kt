@@ -7,16 +7,13 @@ import android.net.Uri
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectTransformGestures
-import androidx.compose.foundation.gestures.detectVerticalDragGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -27,12 +24,10 @@ import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clipToBounds
-import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
@@ -48,7 +43,6 @@ import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import androidx.core.graphics.scale
 import java.io.File
-import kotlin.math.abs
 import kotlin.math.max
 import kotlin.math.roundToInt
 import kotlinx.coroutines.CancellationException
@@ -57,24 +51,11 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import me.weishu.kernelsu.R
 
-/**
- * Upper bound for the exported crop and for the source it is taken from. The old 1600/2048 pair
- * sat below the long side of a 1080x2400 panel, so a picked wallpaper was decoded at half size and
- * scaled back up to fill the screen.
- */
+// Above the long side of a phone panel: the old 1600/2048 pair decoded a wallpaper at half size.
 private const val MAX_CROP_SIDE = 2560
 private const val MAX_SOURCE_SIDE = 4096
 
-/** The shortest the crop frame may be dragged down to, so the edge handles stay usable. */
-private val MinCropWindowHeight = 96.dp
-
-/**
- * A single transformed preview; the same geometry maps the frame back to source pixels.
- *
- * [freeRatio] lets the top and bottom edges be dragged, because the target paints the picture at
- * its own ratio. Targets that crop to their bounds must leave it off: a framed ratio they cannot
- * show would silently be cut again.
- */
+/** A single transformed preview; the same geometry maps the frame back to source pixels. */
 @Composable
 fun SurfaceCropDialog(
     source: Uri,
@@ -82,7 +63,6 @@ fun SurfaceCropDialog(
     onDismiss: () -> Unit,
     onCropped: (Uri) -> Unit,
     lossless: Boolean = false,
-    freeRatio: Boolean = false,
 ) {
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
@@ -90,7 +70,6 @@ fun SurfaceCropDialog(
     var loading by remember(source) { mutableStateOf(true) }
     var saving by remember(source) { mutableStateOf(false) }
     var failed by remember(source) { mutableStateOf(false) }
-    var cropAspect by remember(source, aspect) { mutableFloatStateOf(aspect) }
 
     LaunchedEffect(source) {
         bitmap = withContext(Dispatchers.IO) { decodeSource(context, source) }
@@ -109,10 +88,7 @@ fun SurfaceCropDialog(
             } else if (image != null) {
                 SurfaceCropEditor(
                     bitmap = image,
-                    aspect = cropAspect,
-                    defaultAspect = aspect,
-                    onAspectChange = { cropAspect = it },
-                    freeRatio = freeRatio,
+                    aspect = aspect,
                     saving = saving,
                     failed = failed,
                     onCancel = onDismiss,
@@ -148,9 +124,6 @@ fun SurfaceCropDialog(
 private fun SurfaceCropEditor(
     bitmap: Bitmap,
     aspect: Float,
-    defaultAspect: Float,
-    onAspectChange: (Float) -> Unit,
-    freeRatio: Boolean,
     saving: Boolean,
     failed: Boolean,
     onCancel: () -> Unit,
@@ -166,22 +139,8 @@ private fun SurfaceCropEditor(
         val geometry = remember(bitmap, aspect, areaWidth, areaHeight) {
             CropGeometry(bitmap.width, bitmap.height, areaWidth, areaHeight, aspect)
         }
-        // Zoom and pan belong to the picture, not to the frame: stretching the frame keeps the
-        // framing the user already picked.
-        var zoom by remember(bitmap) { mutableFloatStateOf(1f) }
-        var offset by remember(bitmap) { mutableStateOf(Offset.Zero) }
-        LaunchedEffect(geometry) {
-            offset = Offset(geometry.clampX(offset.x, zoom), geometry.clampY(offset.y, zoom))
-        }
-        val minWindowHeight = with(density) { MinCropWindowHeight.toPx() }
-        // Rebuilt on every drag step, so read it through rememberUpdatedState.
-        val stretchWindow by rememberUpdatedState<(Float) -> Unit>(
-            { deltaPx ->
-                val limit = geometry.displayHeight.coerceAtLeast(minWindowHeight)
-                val height = (geometry.windowHeight + deltaPx).coerceIn(minWindowHeight, limit)
-                onAspectChange(geometry.windowWidth / height)
-            }
-        )
+        var zoom by remember(geometry) { mutableFloatStateOf(1f) }
+        var offset by remember(geometry) { mutableStateOf(Offset.Zero) }
 
         Canvas(
             Modifier.fillMaxSize().padding(bottom = buttonBarHeight).clipToBounds()
@@ -215,52 +174,6 @@ private fun SurfaceCropEditor(
             drawRect(scrim, Offset(0f, top), Size(left, height))
             drawRect(scrim, Offset(left + width, top), Size((size.width - left - width).coerceAtLeast(0f), height))
             drawRect(Color.White, Offset(left, top), Size(width, height), style = Stroke(2.dp.toPx()))
-            if (freeRatio) {
-                val grabberWidth = 44.dp.toPx()
-                val grabberHeight = 4.dp.toPx()
-                val grabberRadius = CornerRadius(grabberHeight / 2f, grabberHeight / 2f)
-                val grabberX = left + (width - grabberWidth) / 2f
-                drawRoundRect(
-                    Color.White.copy(alpha = 0.85f),
-                    Offset(grabberX, top + grabberHeight * 2f),
-                    Size(grabberWidth, grabberHeight),
-                    grabberRadius,
-                )
-                drawRoundRect(
-                    Color.White.copy(alpha = 0.85f),
-                    Offset(grabberX, top + height - grabberHeight * 3f),
-                    Size(grabberWidth, grabberHeight),
-                    grabberRadius,
-                )
-            }
-        }
-        if (freeRatio) {
-            val frameLeft = with(density) { geometry.windowLeft.toDp() }
-            val frameTop = with(density) { geometry.windowTop.toDp() }
-            val frameWidth = with(density) { geometry.windowWidth.toDp() }
-            val frameHeight = with(density) { geometry.windowHeight.toDp() }
-            val handleHeight = 32.dp
-            // Dragging the top edge up (or the bottom edge down) takes more of the picture.
-            Box(
-                Modifier
-                    .offset(x = frameLeft, y = frameTop - handleHeight / 2)
-                    .size(frameWidth, handleHeight)
-                    .pointerInput(saving) {
-                        if (!saving) {
-                            detectVerticalDragGestures { _, dy -> stretchWindow(-dy) }
-                        }
-                    }
-            )
-            Box(
-                Modifier
-                    .offset(x = frameLeft, y = frameTop + frameHeight - handleHeight / 2)
-                    .size(frameWidth, handleHeight)
-                    .pointerInput(saving) {
-                        if (!saving) {
-                            detectVerticalDragGestures { _, dy -> stretchWindow(dy) }
-                        }
-                    }
-            )
         }
         Row(
             Modifier.align(Alignment.BottomCenter).fillMaxWidth()
@@ -271,23 +184,9 @@ private fun SurfaceCropEditor(
             TextButton(onClick = onCancel, enabled = !saving) {
                 Text(stringResource(android.R.string.cancel), color = Color.White)
             }
-            if (saving) {
-                CircularProgressIndicator()
-            } else {
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    if (failed) {
-                        Text(stringResource(R.string.wallpaper_save_failed), color = Color.White)
-                    }
-                    // The ratio is dragged, not typed, so resetting is the only control it needs.
-                    if (freeRatio) {
-                        TextButton(
-                            enabled = abs(aspect - defaultAspect) > 0.001f,
-                            onClick = { onAspectChange(defaultAspect) },
-                        ) {
-                            Text(stringResource(R.string.surface_crop_reset_ratio), color = Color.White)
-                        }
-                    }
-                }
+            if (saving) CircularProgressIndicator()
+            if (failed) {
+                Text(stringResource(R.string.wallpaper_save_failed), color = Color.White, modifier = Modifier.weight(1f))
             }
             TextButton(
                 enabled = !saving,

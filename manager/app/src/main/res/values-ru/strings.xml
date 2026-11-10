@@ -780,7 +780,6 @@
     <string name="wallpaper_crop_message">Обрезать изображение по размеру экрана или использовать как есть?</string>
     <string name="wallpaper_crop_confirm">Обрезать</string>
     <string name="wallpaper_crop_direct">Использовать как есть</string>
-    <string name="surface_crop_reset_ratio">Сбросить пропорции</string>
     <string name="wallpaper_saved">Обои обновлены</string>
     <string name="wallpaper_removed">Обои удалены</string>
     <string name="wallpaper_save_failed">Не удалось загрузить изображение</string>

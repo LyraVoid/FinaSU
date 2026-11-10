@@ -33,7 +33,6 @@ fun ImageCropPickerHost(
     onDismissRequest: () -> Unit,
     onPicked: (Uri) -> Unit,
     lossless: Boolean = false,
-    freeRatio: Boolean = false,
 ) {
     var picked by rememberSaveable(trigger) { mutableStateOf<Uri?>(null) }
     var cropping by rememberSaveable(trigger) { mutableStateOf(false) }
@@ -61,7 +60,6 @@ fun ImageCropPickerHost(
             onDismiss = { cropping = false },
             onCropped = onPicked,
             lossless = lossless,
-            freeRatio = freeRatio,
         )
         return
     }
