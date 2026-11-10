@@ -107,10 +107,16 @@ interface for configuring it.
 - The 2.4.0 registration tables have no rollback interface. A malformed policy batch
   that is discarded after applying earlier commands can leave stale entries, and a
   later policy reload can reuse type values recorded by an earlier policy.
-- An ARM64 6.6.127 built-in kernel with the 2.3.0 patch fails to link because the
-  unresolved weak registration references produce GOT/PLT entries. The fallback is
-  not verified to work on that toolchain.
 
-The 2.4.0 call sites use weak symbol references to select the original policy generation
-and cache reset behavior when registration symbols are absent. Both registration
-symbols must exist for the 2.4.0 path to be enabled.
+The 2.4.0 call sites are selected at build time. `kernel/Kbuild` probes
+`$(srctree)/fs/susfs.c` for `susfs_add_sus_type` and defines
+`KSU_SUSFS_HAS_TYPE_REGISTRATION` when the patch set provides the registration entry
+points. Patch sets without them compile the previous policy generation and cache reset
+behavior instead. Nothing is referenced at run time, so no weak symbols are involved.
+
+Verified on a built-in ARM64 6.6.127 kernel at both ends:
+
+| Patch set | Result |
+| --- | --- |
+| v2.4.0 | links; `System.map` defines both registration entries, `nm -u vmlinux` clean |
+| v2.3.0 | links; the calls are compiled out, `sepolicy.o` holds no reference to them |

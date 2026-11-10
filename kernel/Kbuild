@@ -111,6 +111,15 @@ endif
 
 ccflags-y += -I$(KSU_KERNEL_DIR) -I$(KSU_KERNEL_DIR)/include
 
+ifeq ($(CONFIG_KSU_SUSFS),y)
+# SUSFS v2.4.0 makes the driver register the types and allow rules it injects.
+# Earlier patch sets have no such entry points, so the call sites are compiled out.
+SUSFS_REGISTRATION_PROBE := $(shell grep -q 'susfs_add_sus_type' $(srctree)/fs/susfs.c 2>/dev/null; echo $$?)
+ifeq ($(SUSFS_REGISTRATION_PROBE),0)
+ccflags-y += -DKSU_SUSFS_HAS_TYPE_REGISTRATION=1
+endif
+endif
+
 ifdef CONFIG_KSU_HOOK_SUSFS_INLINE
 ifneq ($(CONFIG_KSU_SUSFS),y)
 $(error SUSFS Inline requires CONFIG_KSU_SUSFS=y)
