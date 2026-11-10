@@ -48,6 +48,8 @@ private fun getKsuDaemonPath(): String {
     return ksuApp.applicationInfo.nativeLibraryDir + File.separator + "libksud.so"
 }
 
+private fun String.shellQuote(): String = "'" + replace("'", "'\\''") + "'"
+
 /**
  * Adds the granted bit when the kernel cannot know about it.
  *
@@ -473,6 +475,8 @@ suspend fun flashModuleBatch(
     }
 }
 
+private val MODULE_ID_REGEX = Regex("^[a-zA-Z][a-zA-Z0-9._-]+$")
+
 private fun moduleNeedsReboot(zip: File): Boolean {
     val id = runCatching {
         ZipFile(zip).use { archive ->
@@ -482,7 +486,7 @@ private fun moduleNeedsReboot(zip: File): Boolean {
             }
         }
     }.getOrNull()
-    if (id == null || id.length !in 2..64 || !Regex("^[a-zA-Z][a-zA-Z0-9._-]+$").matches(id)) return true
+    if (id == null || id.length !in 2..64 || !MODULE_ID_REGEX.matches(id)) return true
     val dir = "/data/adb/modules/$id"
     return runCatching {
         !ShellUtils.fastCmdResult(getRootShell(), "[ -d $dir ] && [ ! -e $dir/update ]")
@@ -492,6 +496,10 @@ private fun moduleNeedsReboot(zip: File): Boolean {
 fun runModuleAction(
     moduleId: String, onStdout: (String) -> Unit, onStderr: (String) -> Unit
 ): Boolean {
+    if (!MODULE_ID_REGEX.matches(moduleId)) {
+        Log.e(TAG, "runModuleAction: rejecting invalid module id: $moduleId")
+        return false
+    }
     val stdoutCallback: CallbackList<String?> = object : CallbackList<String?>() {
         override fun onAddElement(s: String?) {
             onStdout(s ?: "")
@@ -505,7 +513,7 @@ fun runModuleAction(
     }
 
     val result = withNewRootShell(true) {
-        newJob().add("${getKsuDaemonPath()} module action $moduleId")
+        newJob().add("${getKsuDaemonPath()} module action '${moduleId}'")
             .to(stdoutCallback, stderrCallback).exec()
     }
 
@@ -831,7 +839,7 @@ fun isSepolicyValid(rules: String?): Boolean {
     }
     val shell = getRootShell()
     val result =
-        shell.newJob().add("${getKsuDaemonPath()} sepolicy check '$rules'").to(ArrayList(), null)
+        shell.newJob().add("${getKsuDaemonPath()} sepolicy check ${rules.shellQuote()}").to(ArrayList(), null)
             .exec()
     return result.isSuccess
 }
@@ -839,7 +847,7 @@ fun isSepolicyValid(rules: String?): Boolean {
 fun getSepolicy(pkg: String): String {
     val shell = getRootShell()
     val result =
-        shell.newJob().add("${getKsuDaemonPath()} profile get-sepolicy $pkg").to(ArrayList(), null)
+        shell.newJob().add("${getKsuDaemonPath()} profile get-sepolicy ${pkg.shellQuote()}").to(ArrayList(), null)
             .exec()
     Log.i(TAG, "code: ${result.code}, out: ${result.out}, err: ${result.err}")
     return result.out.joinToString("\n")
@@ -847,7 +855,7 @@ fun getSepolicy(pkg: String): String {
 
 fun setSepolicy(pkg: String, rules: String): Boolean {
     val shell = getRootShell()
-    val result = shell.newJob().add("${getKsuDaemonPath()} profile set-sepolicy $pkg '$rules'")
+    val result = shell.newJob().add("${getKsuDaemonPath()} profile set-sepolicy ${pkg.shellQuote()} ${rules.shellQuote()}")
         .to(ArrayList(), null).exec()
     Log.i(TAG, "set sepolicy result: ${result.code}")
     return result.isSuccess
@@ -861,21 +869,20 @@ fun listAppProfileTemplates(): List<String> {
 
 fun getAppProfileTemplate(id: String): String {
     val shell = getRootShell()
-    return shell.newJob().add("${getKsuDaemonPath()} profile get-template '${id}'")
+    return shell.newJob().add("${getKsuDaemonPath()} profile get-template ${id.shellQuote()}")
         .to(ArrayList(), null).exec().out.joinToString("\n")
 }
 
 fun setAppProfileTemplate(id: String, template: String): Boolean {
     val shell = getRootShell()
-    val escapedTemplate = template.replace("'", "'\\''")
-    val cmd = """${getKsuDaemonPath()} profile set-template "$id" '$escapedTemplate'"""
+    val cmd = """${getKsuDaemonPath()} profile set-template ${id.shellQuote()} ${template.shellQuote()}"""
     return shell.newJob().add(cmd)
         .to(ArrayList(), null).exec().isSuccess
 }
 
 fun deleteAppProfileTemplate(id: String): Boolean {
     val shell = getRootShell()
-    return shell.newJob().add("${getKsuDaemonPath()} profile delete-template '${id}'")
+    return shell.newJob().add("${getKsuDaemonPath()} profile delete-template ${id.shellQuote()}")
         .to(ArrayList(), null).exec().isSuccess
 }
 
