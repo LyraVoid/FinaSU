@@ -34,7 +34,7 @@ static void ksu_track_throne_tw_func(struct callback_head *cb)
     if (current->flags & PF_EXITING)
         return;
     track_throne(false);
-#if defined(CONFIG_KSU_SUSFS) && defined(CONFIG_KSU_SUSFS_PRIORITY_UID_FILTER) && \
+#if defined(CONFIG_KSU_SUSFS) && defined(CONFIG_KSU_SUSFS_PRIORITY_UID_FILTER) &&                                      \
     defined(CMD_SUSFS_SET_PRIORITY_UID_FILTER)
     susfs_parse_priority_app_strings();
 #endif
