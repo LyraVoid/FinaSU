@@ -5,7 +5,7 @@ set -eu
 SELF_DIR=$(cd "$(dirname "$0")" && pwd)
 ROOT=$(dirname "$SELF_DIR")
 
-EXPECTED_COMMIT=4a4cb1be85a4694372d3efb9420de69982eac29a
+EXPECTED_COMMIT=ec03d0c73b821afa1d5037d6d493216f59744fcb
 DEFAULT_KMI=android15-6.6
 
 usage() {
@@ -216,8 +216,11 @@ runtime/ksud_integration.c:11
 runtime/ksud_integration.c:2
 runtime/ksud_integration.c:3
 runtime/ksud_integration.c:5
-selinux/rules.c:1
+selinux/rules.c:2
+selinux/rules.c:3
+selinux/rules.c:4
 selinux/selinux.c:1
+selinux/sepolicy.c:2
 sulog/event.c:10
 sulog/event.c:7
 sulog/event.c:9
