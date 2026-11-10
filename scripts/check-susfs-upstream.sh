@@ -209,6 +209,7 @@ hook/setuid_hook.c:1
 hook/setuid_hook.c:2
 hook/setuid_hook.h:reversed
 include/ksu.h:1
+manager/pkg_observer.c:1
 preinit/preinit.c:2
 preinit/preinit.h:2
 runtime/ksud.h:1

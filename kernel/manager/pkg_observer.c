@@ -8,6 +8,10 @@
 #include <linux/rculist.h>
 #include <linux/task_work.h>
 #include <linux/version.h>
+#ifdef CONFIG_KSU_SUSFS
+#include <linux/susfs.h>
+#include <linux/susfs_def.h>
+#endif
 #include "klog.h" // IWYU pragma: keep
 #include "manager/throne_tracker.h"
 
@@ -30,6 +34,10 @@ static void ksu_track_throne_tw_func(struct callback_head *cb)
     if (current->flags & PF_EXITING)
         return;
     track_throne(false);
+#if defined(CONFIG_KSU_SUSFS) && defined(CONFIG_KSU_SUSFS_PRIORITY_UID_FILTER) && \
+    defined(CMD_SUSFS_SET_PRIORITY_UID_FILTER)
+    susfs_parse_priority_app_strings();
+#endif
 }
 
 // Never scan from the fsnotify handler: fsnotify_mark_srcu and the rename's dir
