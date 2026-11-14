@@ -2,6 +2,22 @@
 <resources>
     <string name="fpt_import_title">确认导入主题</string>
     <string name="fpt_resources">资源：%1$d 项</string>
+    <string name="fpt_parts">导入内容</string>
+    <string name="fpt_select_all">全选</string>
+    <string name="fpt_select_none">全不选</string>
+    <string name="fpt_part_colors">颜色</string>
+    <string name="fpt_part_interface">暗色与布局</string>
+    <string name="fpt_part_main_background">主背景</string>
+    <string name="fpt_part_page_backgrounds">页面背景</string>
+    <string name="fpt_part_surfaces">卡片与页面插槽</string>
+    <string name="fpt_part_font">字体</string>
+    <string name="fpt_part_home_layout">首页布局</string>
+    <string name="fpt_part_nav_icons">底栏图标</string>
+    <string name="fpt_part_music">音乐</string>
+    <string name="fpt_part_sound">音效</string>
+    <string name="fpt_part_language">界面语言</string>
+    <string name="fpt_part_replace_note">会替换当前设置</string>
+    <string name="fpt_part_language_note">最后应用，会重建页面</string>
     <string name="fpt_compatibility">缺失的设置保留默认值或当前值。未知字段及不支持的资源会保留以供再次导出。启动音和振动仍为设备设置。</string>
     <string name="fpt_type_value">设备类型：%1$s</string>
     <string name="fpt_name">名称</string>

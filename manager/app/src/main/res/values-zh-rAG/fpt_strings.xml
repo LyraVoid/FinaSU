@@ -2,6 +2,22 @@
 <resources>
     <string name="fpt_import_title">确认导入主题喵</string>
     <string name="fpt_resources">资源喵：%1$d 项</string>
+    <string name="fpt_parts">导入内容喵</string>
+    <string name="fpt_select_all">全都要喵</string>
+    <string name="fpt_select_none">全都不要喵</string>
+    <string name="fpt_part_colors">颜色喵</string>
+    <string name="fpt_part_interface">暗色和布局喵</string>
+    <string name="fpt_part_main_background">主背景喵</string>
+    <string name="fpt_part_page_backgrounds">页面背景喵</string>
+    <string name="fpt_part_surfaces">卡片和页面插槽喵</string>
+    <string name="fpt_part_font">字体喵</string>
+    <string name="fpt_part_home_layout">首页布局喵</string>
+    <string name="fpt_part_nav_icons">底栏图标喵</string>
+    <string name="fpt_part_music">音乐喵</string>
+    <string name="fpt_part_sound">音效喵</string>
+    <string name="fpt_part_language">界面语言喵</string>
+    <string name="fpt_part_replace_note">会换掉现在的设置喵</string>
+    <string name="fpt_part_language_note">最后才应用，页面会重来喵</string>
     <string name="fpt_compatibility">缺失的设置会保留默认值或者当前值喵。未知字段和用不了的资源都会留着，方便下次再导出。启动音和振动还是跟着设备设置走哦</string>
     <string name="fpt_type_value">设备类型喵：%1$s</string>
     <string name="fpt_name">名称喵</string>

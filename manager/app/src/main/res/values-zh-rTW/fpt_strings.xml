@@ -2,6 +2,22 @@
 <resources>
     <string name="fpt_import_title">確認匯入主題</string>
     <string name="fpt_resources">資源：%1$d 項</string>
+    <string name="fpt_parts">匯入內容</string>
+    <string name="fpt_select_all">全選</string>
+    <string name="fpt_select_none">全不選</string>
+    <string name="fpt_part_colors">顏色</string>
+    <string name="fpt_part_interface">暗色與版面</string>
+    <string name="fpt_part_main_background">主背景</string>
+    <string name="fpt_part_page_backgrounds">頁面背景</string>
+    <string name="fpt_part_surfaces">卡片與頁面插槽</string>
+    <string name="fpt_part_font">字型</string>
+    <string name="fpt_part_home_layout">首頁版面</string>
+    <string name="fpt_part_nav_icons">底欄圖示</string>
+    <string name="fpt_part_music">音樂</string>
+    <string name="fpt_part_sound">音效</string>
+    <string name="fpt_part_language">介面語言</string>
+    <string name="fpt_part_replace_note">會取代目前設定</string>
+    <string name="fpt_part_language_note">最後套用，會重建頁面</string>
     <string name="fpt_compatibility">缺少的設定保留預設值或目前值。未知欄位及不支援的資源會保留以供再次匯出。啟動音和震動仍為裝置設定。</string>
     <string name="fpt_type_value">裝置類型：%1$s</string>
     <string name="fpt_name">名稱</string>

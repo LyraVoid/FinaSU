@@ -2,6 +2,22 @@
 <resources>
     <string name="fpt_import_title">Confirmar importación de tema</string>
     <string name="fpt_resources">Recursos: %1$d</string>
+    <string name="fpt_parts">Contenido</string>
+    <string name="fpt_select_all">Todo</string>
+    <string name="fpt_select_none">Nada</string>
+    <string name="fpt_part_colors">Colores</string>
+    <string name="fpt_part_interface">Modo oscuro y diseño</string>
+    <string name="fpt_part_main_background">Fondo principal</string>
+    <string name="fpt_part_page_backgrounds">Fondos de página</string>
+    <string name="fpt_part_surfaces">Tarjetas y ranuras de página</string>
+    <string name="fpt_part_font">Fuente</string>
+    <string name="fpt_part_home_layout">Diseño de inicio</string>
+    <string name="fpt_part_nav_icons">Iconos de la barra inferior</string>
+    <string name="fpt_part_music">Música</string>
+    <string name="fpt_part_sound">Efectos de sonido</string>
+    <string name="fpt_part_language">Idioma de la app</string>
+    <string name="fpt_part_replace_note">Reemplaza tu ajuste actual</string>
+    <string name="fpt_part_language_note">Se aplica al final y reinicia la página</string>
     <string name="fpt_compatibility">Los ajustes faltantes conservan los valores predeterminados o actuales. Los campos desconocidos y los recursos no compatibles se conservan para la exportación. El sonido de inicio y la vibración siguen siendo ajustes del dispositivo.</string>
     <string name="fpt_type_value">Tipo de dispositivo: %1$s</string>
     <string name="fpt_name">Nombre</string>

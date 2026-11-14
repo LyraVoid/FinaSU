@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.selection.selectableGroup
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
@@ -32,6 +33,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Checkbox
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -57,6 +59,8 @@ import me.weishu.kernelsu.ui.component.security.LocalAppAuthenticator
 import me.weishu.kernelsu.wallpaper.PreparedTheme
 import me.weishu.kernelsu.wallpaper.ThemeImportService
 import me.weishu.kernelsu.wallpaper.ThemeMetadata
+import me.weishu.kernelsu.wallpaper.ThemePart
+import me.weishu.kernelsu.wallpaper.ThemeSelection
 
 /** Shared picker/store entry point; prepared resources belong to this UI lifetime. */
 @Composable
@@ -78,12 +82,12 @@ fun rememberThemeImportRequest(onResult: (Result<Unit>) -> Unit): (Uri) -> Unit 
             theme = theme,
             busy = busy,
             onDismiss = { if (!busy) { pending = null; theme.close() } },
-            onApply = {
+            onApply = { selection ->
                 if (!busy) scope.launch {
                     busy = true
                     try {
                         if (!authenticator.require(SecurityTarget.THEME_IMPORT)) return@launch
-                        val result = ThemeImportService.apply(context.applicationContext, theme)
+                        val result = ThemeImportService.apply(context.applicationContext, theme, selection)
                         onResult(result)
                         if (result.isSuccess && Build.VERSION.SDK_INT < 33) (context as? Activity)?.recreate()
                     } finally {
@@ -116,7 +120,14 @@ fun rememberThemeImportRequest(onResult: (Result<Unit>) -> Unit): (Uri) -> Unit 
 }
 
 @Composable
-private fun ThemeImportDialog(theme: PreparedTheme, busy: Boolean, onDismiss: () -> Unit, onApply: () -> Unit) {
+private fun ThemeImportDialog(
+    theme: PreparedTheme,
+    busy: Boolean,
+    onDismiss: () -> Unit,
+    onApply: (ThemeSelection) -> Unit,
+) {
+    var selected by remember(theme) { mutableStateOf(theme.available) }
+    val allSelected = selected.size == theme.available.size
     AlertDialog(
         onDismissRequest = onDismiss,
         title = { Text(stringResource(R.string.fpt_import_title)) },
@@ -131,12 +142,85 @@ private fun ThemeImportDialog(theme: PreparedTheme, busy: Boolean, onDismiss: ()
                 Text(stringResource(R.string.fpt_resources, theme.resourceCount),
                     style = MaterialTheme.typography.labelMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant)
+                if (theme.available.isNotEmpty()) {
+                    Column(Modifier.selectableGroup(), verticalArrangement = Arrangement.spacedBy(2.dp)) {
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Text(stringResource(R.string.fpt_parts),
+                                modifier = Modifier.weight(1f),
+                                style = MaterialTheme.typography.titleSmall)
+                            TextButton(onClick = {
+                                selected = if (allSelected) emptySet() else theme.available
+                            }) {
+                                Text(stringResource(if (allSelected) R.string.fpt_select_none else R.string.fpt_select_all))
+                            }
+                        }
+                        ThemePartOrder.filter { it in theme.available }.forEach { part ->
+                            ThemePartRow(part, part in selected) { checked ->
+                                selected = if (checked) selected + part else selected - part
+                            }
+                        }
+                    }
+                }
             }
         },
-        confirmButton = { TextButton(onClick = onApply, enabled = !busy) { Text(stringResource(R.string.theme_store_apply)) } },
+        confirmButton = {
+            TextButton(onClick = { onApply(ThemeSelection(selected)) },
+                enabled = !busy && selected.isNotEmpty()) {
+                Text(stringResource(R.string.theme_store_apply))
+            }
+        },
         dismissButton = { TextButton(onClick = onDismiss, enabled = !busy) { Text(stringResource(R.string.theme_store_cancel)) } },
     )
 }
+
+private val ThemePartOrder = listOf(
+    ThemePart.COLORS, ThemePart.INTERFACE, ThemePart.MAIN_BACKGROUND, ThemePart.PAGE_BACKGROUNDS,
+    ThemePart.SURFACES, ThemePart.FONT, ThemePart.HOME_LAYOUT, ThemePart.NAV_ICONS, ThemePart.MUSIC,
+    ThemePart.SOUND, ThemePart.LANGUAGE,
+)
+
+@Composable
+private fun ThemePartRow(part: ThemePart, checked: Boolean, onChange: (Boolean) -> Unit) {
+    Row(
+        Modifier.fillMaxWidth()
+            .clip(ContinuousCornerShape(12.dp))
+            .selectable(selected = checked, role = Role.Checkbox) { onChange(!checked) }
+            .padding(vertical = 6.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(12.dp),
+    ) {
+        Column(Modifier.weight(1f)) {
+            Text(stringResource(part.labelRes), style = MaterialTheme.typography.bodyLarge)
+            part.noteRes?.let {
+                Text(stringResource(it), style = MaterialTheme.typography.labelSmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant)
+            }
+        }
+        Checkbox(checked = checked, onCheckedChange = null)
+    }
+}
+
+private val ThemePart.labelRes: Int
+    get() = when (this) {
+        ThemePart.MAIN_BACKGROUND -> R.string.fpt_part_main_background
+        ThemePart.PAGE_BACKGROUNDS -> R.string.fpt_part_page_backgrounds
+        ThemePart.SURFACES -> R.string.fpt_part_surfaces
+        ThemePart.FONT -> R.string.fpt_part_font
+        ThemePart.HOME_LAYOUT -> R.string.fpt_part_home_layout
+        ThemePart.NAV_ICONS -> R.string.fpt_part_nav_icons
+        ThemePart.MUSIC -> R.string.fpt_part_music
+        ThemePart.SOUND -> R.string.fpt_part_sound
+        ThemePart.COLORS -> R.string.fpt_part_colors
+        ThemePart.INTERFACE -> R.string.fpt_part_interface
+        ThemePart.LANGUAGE -> R.string.fpt_part_language
+    }
+
+private val ThemePart.noteRes: Int?
+    get() = when (this) {
+        ThemePart.FONT, ThemePart.HOME_LAYOUT -> R.string.fpt_part_replace_note
+        ThemePart.LANGUAGE -> R.string.fpt_part_language_note
+        else -> null
+    }
 
 @Composable
 fun ThemeMetadataSummary(metadata: ThemeMetadata, modifier: Modifier = Modifier) {

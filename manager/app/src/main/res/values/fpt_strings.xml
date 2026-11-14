@@ -2,6 +2,22 @@
 <resources>
     <string name="fpt_import_title">Confirm theme import</string>
     <string name="fpt_resources">Resources: %1$d</string>
+    <string name="fpt_parts">Include</string>
+    <string name="fpt_select_all">All</string>
+    <string name="fpt_select_none">None</string>
+    <string name="fpt_part_colors">Colors</string>
+    <string name="fpt_part_interface">Dark mode and layout</string>
+    <string name="fpt_part_main_background">Main background</string>
+    <string name="fpt_part_page_backgrounds">Page backgrounds</string>
+    <string name="fpt_part_surfaces">Cards and page slots</string>
+    <string name="fpt_part_font">Font</string>
+    <string name="fpt_part_home_layout">Home layout</string>
+    <string name="fpt_part_nav_icons">Bottom bar icons</string>
+    <string name="fpt_part_music">Music</string>
+    <string name="fpt_part_sound">Sound effects</string>
+    <string name="fpt_part_language">App language</string>
+    <string name="fpt_part_replace_note">Replaces your current setting</string>
+    <string name="fpt_part_language_note">Applies last and restarts the page</string>
     <string name="fpt_compatibility">Missing settings keep defaults or current values. Unknown fields and unsupported resources are retained for export. Startup sound and vibration remain device settings.</string>
     <string name="fpt_type_value">Device type: %1$s</string>
     <string name="fpt_name">Name</string>

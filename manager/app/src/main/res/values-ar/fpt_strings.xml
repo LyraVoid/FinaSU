@@ -2,6 +2,22 @@
 <resources>
     <string name="fpt_import_title">تأكيد استيراد المظهر</string>
     <string name="fpt_resources">الموارد: %1$d</string>
+    <string name="fpt_parts">المحتوى</string>
+    <string name="fpt_select_all">الكل</string>
+    <string name="fpt_select_none">لا شيء</string>
+    <string name="fpt_part_colors">الألوان</string>
+    <string name="fpt_part_interface">الوضع الداكن والتخطيط</string>
+    <string name="fpt_part_main_background">الخلفية الرئيسية</string>
+    <string name="fpt_part_page_backgrounds">خلفيات الصفحات</string>
+    <string name="fpt_part_surfaces">البطاقات ومواضع الصفحات</string>
+    <string name="fpt_part_font">الخط</string>
+    <string name="fpt_part_home_layout">تخطيط الرئيسية</string>
+    <string name="fpt_part_nav_icons">أيقونات الشريط السفلي</string>
+    <string name="fpt_part_music">الموسيقى</string>
+    <string name="fpt_part_sound">المؤثرات الصوتية</string>
+    <string name="fpt_part_language">لغة التطبيق</string>
+    <string name="fpt_part_replace_note">يستبدل الإعداد الحالي</string>
+    <string name="fpt_part_language_note">يُطبَّق أخيرًا ويعيد تحميل الصفحة</string>
     <string name="fpt_compatibility">تحتفظ الإعدادات المفقودة بالقيم الافتراضية أو الحالية. تُحفظ الحقول غير المعروفة والموارد غير المدعومة لإعادة التصدير. يبقى صوت بدء التشغيل والاهتزاز من إعدادات الجهاز.</string>
     <string name="fpt_type_value">نوع الجهاز: %1$s</string>
     <string name="fpt_name">الاسم</string>

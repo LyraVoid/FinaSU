@@ -2,6 +2,22 @@
 <resources>
     <string name="fpt_import_title">Konfirmasi impor tema</string>
     <string name="fpt_resources">Sumber daya: %1$d</string>
+    <string name="fpt_parts">Konten</string>
+    <string name="fpt_select_all">Semua</string>
+    <string name="fpt_select_none">Tidak ada</string>
+    <string name="fpt_part_colors">Warna</string>
+    <string name="fpt_part_interface">Mode gelap dan tata letak</string>
+    <string name="fpt_part_main_background">Latar utama</string>
+    <string name="fpt_part_page_backgrounds">Latar halaman</string>
+    <string name="fpt_part_surfaces">Kartu dan slot halaman</string>
+    <string name="fpt_part_font">Font</string>
+    <string name="fpt_part_home_layout">Tata letak beranda</string>
+    <string name="fpt_part_nav_icons">Ikon bilah bawah</string>
+    <string name="fpt_part_music">Musik</string>
+    <string name="fpt_part_sound">Efek suara</string>
+    <string name="fpt_part_language">Bahasa aplikasi</string>
+    <string name="fpt_part_replace_note">Mengganti pengaturan saat ini</string>
+    <string name="fpt_part_language_note">Diterapkan terakhir dan memuat ulang halaman</string>
     <string name="fpt_compatibility">Setelan yang tidak ada akan mempertahankan nilai bawaan atau nilai saat ini. Kolom yang tidak dikenal dan sumber daya yang tidak didukung tetap disimpan untuk ekspor. Suara mulai dan getaran tetap menjadi setelan perangkat.</string>
     <string name="fpt_type_value">Jenis perangkat: %1$s</string>
     <string name="fpt_name">Nama</string>

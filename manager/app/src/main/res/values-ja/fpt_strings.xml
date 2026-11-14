@@ -2,6 +2,22 @@
 <resources>
     <string name="fpt_import_title">テーマのインポートを確認</string>
     <string name="fpt_resources">リソース: %1$d</string>
+    <string name="fpt_parts">取り込む内容</string>
+    <string name="fpt_select_all">すべて</string>
+    <string name="fpt_select_none">なし</string>
+    <string name="fpt_part_colors">カラー</string>
+    <string name="fpt_part_interface">ダークモードとレイアウト</string>
+    <string name="fpt_part_main_background">メイン背景</string>
+    <string name="fpt_part_page_backgrounds">ページ背景</string>
+    <string name="fpt_part_surfaces">カードとページスロット</string>
+    <string name="fpt_part_font">フォント</string>
+    <string name="fpt_part_home_layout">ホームレイアウト</string>
+    <string name="fpt_part_nav_icons">下部バーのアイコン</string>
+    <string name="fpt_part_music">音楽</string>
+    <string name="fpt_part_sound">効果音</string>
+    <string name="fpt_part_language">アプリの言語</string>
+    <string name="fpt_part_replace_note">現在の設定を置き換えます</string>
+    <string name="fpt_part_language_note">最後に適用され、画面が再読み込みされます</string>
     <string name="fpt_compatibility">不足している設定はデフォルト値または現在の値を維持します。不明なフィールドと未対応のリソースは再エクスポート用に保持されます。起動音と振動はデバイス設定のままです。</string>
     <string name="fpt_type_value">デバイスの種類: %1$s</string>
     <string name="fpt_name">名前</string>

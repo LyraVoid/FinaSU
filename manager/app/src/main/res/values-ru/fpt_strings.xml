@@ -2,6 +2,22 @@
 <resources>
     <string name="fpt_import_title">Подтвердить импорт темы</string>
     <string name="fpt_resources">Ресурсы: %1$d</string>
+    <string name="fpt_parts">Содержимое</string>
+    <string name="fpt_select_all">Всё</string>
+    <string name="fpt_select_none">Ничего</string>
+    <string name="fpt_part_colors">Цвета</string>
+    <string name="fpt_part_interface">Тёмная тема и макет</string>
+    <string name="fpt_part_main_background">Основной фон</string>
+    <string name="fpt_part_page_backgrounds">Фоны страниц</string>
+    <string name="fpt_part_surfaces">Карточки и слоты страниц</string>
+    <string name="fpt_part_font">Шрифт</string>
+    <string name="fpt_part_home_layout">Макет главного экрана</string>
+    <string name="fpt_part_nav_icons">Значки нижней панели</string>
+    <string name="fpt_part_music">Музыка</string>
+    <string name="fpt_part_sound">Звуковые эффекты</string>
+    <string name="fpt_part_language">Язык приложения</string>
+    <string name="fpt_part_replace_note">Заменит текущую настройку</string>
+    <string name="fpt_part_language_note">Применяется последним и перезагружает страницу</string>
     <string name="fpt_compatibility">Отсутствующие настройки сохраняют значения по умолчанию или текущие. Неизвестные поля и неподдерживаемые ресурсы сохраняются для экспорта. Звук запуска и вибрация остаются настройками устройства.</string>
     <string name="fpt_type_value">Тип устройства: %1$s</string>
     <string name="fpt_name">Название</string>

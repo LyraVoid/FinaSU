@@ -2,6 +2,22 @@
 <resources>
     <string name="fpt_import_title">Xác nhận nhập chủ đề</string>
     <string name="fpt_resources">Tài nguyên: %1$d</string>
+    <string name="fpt_parts">Nội dung</string>
+    <string name="fpt_select_all">Tất cả</string>
+    <string name="fpt_select_none">Không có</string>
+    <string name="fpt_part_colors">Màu sắc</string>
+    <string name="fpt_part_interface">Chế độ tối và bố cục</string>
+    <string name="fpt_part_main_background">Nền chính</string>
+    <string name="fpt_part_page_backgrounds">Nền trang</string>
+    <string name="fpt_part_surfaces">Thẻ và vị trí trang</string>
+    <string name="fpt_part_font">Phông chữ</string>
+    <string name="fpt_part_home_layout">Bố cục trang chủ</string>
+    <string name="fpt_part_nav_icons">Biểu tượng thanh dưới</string>
+    <string name="fpt_part_music">Nhạc</string>
+    <string name="fpt_part_sound">Hiệu ứng âm thanh</string>
+    <string name="fpt_part_language">Ngôn ngữ ứng dụng</string>
+    <string name="fpt_part_replace_note">Thay thế cài đặt hiện tại</string>
+    <string name="fpt_part_language_note">Áp dụng sau cùng và tải lại trang</string>
     <string name="fpt_compatibility">Cài đặt còn thiếu sẽ giữ giá trị mặc định hoặc giá trị hiện tại. Các trường không nhận dạng và tài nguyên không được hỗ trợ vẫn được giữ lại để xuất. Âm thanh khởi động và rung vẫn là cài đặt của thiết bị.</string>
     <string name="fpt_type_value">Loại thiết bị: %1$s</string>
     <string name="fpt_name">Tên</string>

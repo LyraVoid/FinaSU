@@ -2,6 +2,22 @@
 <resources>
     <string name="fpt_import_title">Tema içe aktarımını onayla</string>
     <string name="fpt_resources">Kaynaklar: %1$d</string>
+    <string name="fpt_parts">İçerik</string>
+    <string name="fpt_select_all">Tümü</string>
+    <string name="fpt_select_none">Hiçbiri</string>
+    <string name="fpt_part_colors">Renkler</string>
+    <string name="fpt_part_interface">Koyu mod ve düzen</string>
+    <string name="fpt_part_main_background">Ana arka plan</string>
+    <string name="fpt_part_page_backgrounds">Sayfa arka planları</string>
+    <string name="fpt_part_surfaces">Kartlar ve sayfa yuvaları</string>
+    <string name="fpt_part_font">Yazı tipi</string>
+    <string name="fpt_part_home_layout">Ana ekran düzeni</string>
+    <string name="fpt_part_nav_icons">Alt çubuk simgeleri</string>
+    <string name="fpt_part_music">Müzik</string>
+    <string name="fpt_part_sound">Ses efektleri</string>
+    <string name="fpt_part_language">Uygulama dili</string>
+    <string name="fpt_part_replace_note">Mevcut ayarın yerini alır</string>
+    <string name="fpt_part_language_note">En son uygulanır ve sayfayı yeniden yükler</string>
     <string name="fpt_compatibility">Eksik ayarlar varsayılanları veya geçerli değerleri korur. Bilinmeyen alanlar ve desteklenmeyen kaynaklar dışa aktarma için saklanır. Başlangıç sesi ve titreşim cihaz ayarı olarak kalır.</string>
     <string name="fpt_type_value">Cihaz türü: %1$s</string>
     <string name="fpt_name">Ad</string>

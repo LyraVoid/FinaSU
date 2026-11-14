@@ -39,38 +39,47 @@ internal object ThemeSettingsMapping {
     }
 
     fun write(json: JSONObject, repo: SettingsRepository = SettingsRepositoryImpl()) {
-        val mode = ColorMode.fromValue(repo.themeMode)
+        writeColors(json, repo)
+        writeInterface(json, repo)
+        writeLanguage(json)
+    }
+
+    fun writeColors(json: JSONObject, repo: SettingsRepository = SettingsRepositoryImpl()) {
         val color = colors.entries.firstOrNull { it.value == repo.keyColor }?.key
         json.put("customColor", color ?: "indigo")
         // Arbitrary FinaSU seeds have no FP catalog token. Keep the exact value in an extension.
         json.put(KEY_COLOR, repo.keyColor)
-        json.put("nightModeEnabled", mode.isDark)
-        json.put("nightModeFollowSys", mode.isSystem)
         json.put("useSystemDynamicColor", repo.useSystemDynamicColor)
         json.put("colorGenerationMode", repo.colorGenerationMode)
         json.put("colorStandard", if (repo.colorSpec == "SPEC_2025") "M3E_2025" else "MD3_2021")
         json.put("colorStyle", styles.entries.firstOrNull { it.value.name == repo.colorStyle }?.key ?: "TONAL_SPOT")
         json.put("colorContrast", repo.colorContrast)
+    }
+
+    fun writeInterface(json: JSONObject, repo: SettingsRepository = SettingsRepositoryImpl()) {
+        val mode = ColorMode.fromValue(repo.themeMode)
+        json.put("nightModeEnabled", mode.isDark)
+        json.put("nightModeFollowSys", mode.isSystem)
         json.put("statsTopLayout", repo.statsTopLayout)
         json.put("isListWorkingCardModeHidden", repo.listWorkingCardModeHidden)
+    }
+
+    fun writeLanguage(json: JSONObject) {
         json.put("appLanguage", if (Build.VERSION.SDK_INT >= 33)
             ksuApp.getSystemService(LocaleManager::class.java).applicationLocales.toLanguageTags()
             else ksuApp.getSharedPreferences("settings", 0).getString("fpt_app_language", ""))
     }
 
     fun apply(json: JSONObject, repo: SettingsRepository = SettingsRepositoryImpl()) {
+        applyColors(json, repo)
+        applyInterface(json, repo)
+    }
+
+    fun applyColors(json: JSONObject, repo: SettingsRepository = SettingsRepositoryImpl()) {
         if (json.has("customColor")) colors[json.optString("customColor")]?.let { repo.keyColor = it }
         when {
             json.has(KEY_COLOR) -> repo.keyColor = json.getInt(KEY_COLOR)
             json.has(LEGACY_KEY_COLOR) -> repo.keyColor = json.getInt(LEGACY_KEY_COLOR)
-        }
-        if (json.has("nightModeEnabled") || json.has("nightModeFollowSys")) {
-            val current = ColorMode.fromValue(repo.themeMode)
-            repo.themeMode = when {
-                json.optBoolean("nightModeFollowSys", current.isSystem) -> ColorMode.SYSTEM.value
-                json.optBoolean("nightModeEnabled", current.isDark) -> ColorMode.DARK.value
-                else -> ColorMode.LIGHT.value
-            }
         }
         if (json.has("useSystemDynamicColor")) repo.useSystemDynamicColor = json.getBoolean("useSystemDynamicColor")
         if (json.has("colorGenerationMode")) repo.colorGenerationMode = json.getString("colorGenerationMode")
@@ -80,6 +89,17 @@ internal object ThemeSettingsMapping {
         }
         if (json.has("colorStyle")) styles[json.getString("colorStyle")]?.let { repo.colorStyle = it.name }
         if (json.has("colorContrast")) repo.colorContrast = json.getString("colorContrast")
+    }
+
+    fun applyInterface(json: JSONObject, repo: SettingsRepository = SettingsRepositoryImpl()) {
+        if (json.has("nightModeEnabled") || json.has("nightModeFollowSys")) {
+            val current = ColorMode.fromValue(repo.themeMode)
+            repo.themeMode = when {
+                json.optBoolean("nightModeFollowSys", current.isSystem) -> ColorMode.SYSTEM.value
+                json.optBoolean("nightModeEnabled", current.isDark) -> ColorMode.DARK.value
+                else -> ColorMode.LIGHT.value
+            }
+        }
         if (json.has("statsTopLayout")) repo.statsTopLayout = json.getString("statsTopLayout")
         if (json.has("isListWorkingCardModeHidden")) repo.listWorkingCardModeHidden = json.getBoolean("isListWorkingCardModeHidden")
     }

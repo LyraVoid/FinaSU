@@ -16,6 +16,7 @@ internal interface ThemedAsset {
 
 /** Exact archive entry names are owned by the group, for example musicFilename. */
 internal interface ThemedAssetGroup {
+    val part: ThemePart
     fun writeConfig(json: JSONObject)
     fun currentFiles(context: Context): Map<String, File>
     suspend fun apply(context: Context, json: JSONObject, imported: Map<String, File>)

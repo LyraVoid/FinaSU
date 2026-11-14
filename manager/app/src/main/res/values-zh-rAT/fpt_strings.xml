@@ -2,6 +2,22 @@
 <resources>
     <string name="fpt_import_title">神谕确认唤醒圣光主题</string>
     <string name="fpt_resources">圣物：%1$d 项</string>
+    <string name="fpt_parts">圣选之内容</string>
+    <string name="fpt_select_all">尽纳</string>
+    <string name="fpt_select_none">尽舍</string>
+    <string name="fpt_part_colors">圣彩</string>
+    <string name="fpt_part_interface">暗夜与圣阵</string>
+    <string name="fpt_part_main_background">主圣壁</string>
+    <string name="fpt_part_page_backgrounds">诸页圣壁</string>
+    <string name="fpt_part_surfaces">圣卡与页位</string>
+    <string name="fpt_part_font">圣字</string>
+    <string name="fpt_part_home_layout">首页圣阵</string>
+    <string name="fpt_part_nav_icons">底栏圣像</string>
+    <string name="fpt_part_music">圣音</string>
+    <string name="fpt_part_sound">圣响</string>
+    <string name="fpt_part_language">圣言之语</string>
+    <string name="fpt_part_replace_note">将更替当前圣设</string>
+    <string name="fpt_part_language_note">终末施行，圣页将重铸</string>
     <string name="fpt_compatibility">缺失之设定将留天意默认或当前之值。未知之字段与不蒙神恩之圣物将留存以供再封印。启圣之音与圣颤仍属圣器之设。</string>
     <string name="fpt_type_value">圣器圣类：%1$s</string>
     <string name="fpt_name">圣名</string>

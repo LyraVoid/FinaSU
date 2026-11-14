@@ -8,6 +8,8 @@ import org.json.JSONObject
 import java.io.File
 
 internal object NavIconsAsset : ThemedAssetGroup {
+    override val part = ThemePart.NAV_ICONS
+
     private fun entryName(destination: BottomBarDestination) = "nav_icon_${destination.themeKey}.png"
 
     override fun writeConfig(json: JSONObject) {

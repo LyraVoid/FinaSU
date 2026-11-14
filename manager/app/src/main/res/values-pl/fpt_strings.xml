@@ -2,6 +2,22 @@
 <resources>
     <string name="fpt_import_title">Potwierdź import motywu</string>
     <string name="fpt_resources">Zasoby: %1$d</string>
+    <string name="fpt_parts">Zawartość</string>
+    <string name="fpt_select_all">Wszystko</string>
+    <string name="fpt_select_none">Nic</string>
+    <string name="fpt_part_colors">Kolory</string>
+    <string name="fpt_part_interface">Tryb ciemny i układ</string>
+    <string name="fpt_part_main_background">Główne tło</string>
+    <string name="fpt_part_page_backgrounds">Tła stron</string>
+    <string name="fpt_part_surfaces">Karty i sloty stron</string>
+    <string name="fpt_part_font">Czcionka</string>
+    <string name="fpt_part_home_layout">Układ ekranu głównego</string>
+    <string name="fpt_part_nav_icons">Ikony dolnego paska</string>
+    <string name="fpt_part_music">Muzyka</string>
+    <string name="fpt_part_sound">Efekty dźwiękowe</string>
+    <string name="fpt_part_language">Język aplikacji</string>
+    <string name="fpt_part_replace_note">Zastępuje bieżące ustawienie</string>
+    <string name="fpt_part_language_note">Stosowane na końcu i przeładowuje stronę</string>
     <string name="fpt_compatibility">Brakujące ustawienia zachowają wartości domyślne lub bieżące. Nieznane pola i nieobsługiwane zasoby zostaną zachowane na potrzeby eksportu. Dźwięk uruchamiania i wibracje pozostają ustawieniami urządzenia.</string>
     <string name="fpt_type_value">Typ urządzenia: %1$s</string>
     <string name="fpt_name">Nazwa</string>

@@ -34,16 +34,34 @@ object FolkThemeIO {
         return prepared.use { ThemeImportService.apply(context, it).isSuccess }
     }
 
-    internal suspend fun applyAssets(context: Context, json: JSONObject, imported: Map<String, File>) {
+    internal suspend fun applyAssets(
+        context: Context,
+        json: JSONObject,
+        imported: Map<String, File>,
+        selection: ThemeSelection = ThemeSelection.All,
+    ): Set<ThemePart> {
+        val applied = linkedSetOf<ThemePart>()
         assets.forEach { asset ->
+            val part = themePartOf(asset.base)
+            if (part !in selection) return@forEach
             asset.apply(context, json, ThemeResourcePolicy.select(asset.base, imported))
+            applied += part
         }
         // Page import helpers enable the feature for interactive picks. Theme switches are
         // independent of the files, so restore them after all page resources have been copied.
-        WallpaperConfig.updateEnabled(json.optBoolean("isBackgroundEnabled", false))
-        WallpaperConfig.updateMultiBackgroundEnabled(json.optBoolean("isMultiBackgroundEnabled", false))
-        groups.forEach { it.apply(context, json, imported) }
+        if (ThemePart.MAIN_BACKGROUND in selection) {
+            WallpaperConfig.updateEnabled(json.optBoolean("isBackgroundEnabled", false))
+        }
+        if (ThemePart.PAGE_BACKGROUNDS in selection) {
+            WallpaperConfig.updateMultiBackgroundEnabled(json.optBoolean("isMultiBackgroundEnabled", false))
+        }
+        groups.forEach { group ->
+            if (group.part !in selection) return@forEach
+            group.apply(context, json, imported)
+            applied += group.part
+        }
         WallpaperConfig.save(context)
+        return applied
     }
 
     suspend fun resetTheme(context: Context): Boolean {

@@ -12,6 +12,8 @@ import java.io.File
 
 /** FP's JSON filename is also its ZIP entry name; these assets therefore use the group API. */
 internal object MusicThemeAsset : ThemedAssetGroup {
+    override val part = ThemePart.MUSIC
+
     override fun writeConfig(json: JSONObject) {
         json.put("isMusicEnabled", MusicConfig.isMusicEnabled)
         json.put("musicFilename", MusicConfig.musicFilename ?: "")
@@ -49,6 +51,8 @@ internal object MusicThemeAsset : ThemedAssetGroup {
 }
 
 internal object SoundThemeAsset : ThemedAssetGroup {
+    override val part = ThemePart.SOUND
+
     private val presetEntry: String
         get() = "sound_effect_preset_${SoundEffectConfig.presetName}.wav"
 

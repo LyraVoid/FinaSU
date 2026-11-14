@@ -2,6 +2,22 @@
 <resources>
     <string name="fpt_import_title">确认导入星幻主题</string>
     <string name="fpt_resources">资源：%1$d 项</string>
+    <string name="fpt_parts">星幻内容</string>
+    <string name="fpt_select_all">全都要</string>
+    <string name="fpt_select_none">都不要</string>
+    <string name="fpt_part_colors">星辉配色</string>
+    <string name="fpt_part_interface">暗夜与布局</string>
+    <string name="fpt_part_main_background">主星壁</string>
+    <string name="fpt_part_page_backgrounds">页面星壁</string>
+    <string name="fpt_part_surfaces">卡片与星槽</string>
+    <string name="fpt_part_font">星文字体</string>
+    <string name="fpt_part_home_layout">首页星阵</string>
+    <string name="fpt_part_nav_icons">底栏星标</string>
+    <string name="fpt_part_music">星律</string>
+    <string name="fpt_part_sound">星音</string>
+    <string name="fpt_part_language">星语</string>
+    <string name="fpt_part_replace_note">会替换当前的星之设定</string>
+    <string name="fpt_part_language_note">最后施展，会让星页重生</string>
     <string name="fpt_compatibility">缺失的魔法设定将保留默认值或当前值。未知字段与不受支持的资源会保留，以便再次导出。觉醒音律与震动仍为法器设定。</string>
     <string name="fpt_type_value">法器类型：%1$s</string>
     <string name="fpt_name">名称</string>

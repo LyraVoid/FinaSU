@@ -2,6 +2,22 @@
 <resources>
     <string name="fpt_import_title">确认引入道韵卷宗</string>
     <string name="fpt_resources">灵材：%1$d 项</string>
+    <string name="fpt_parts">引入之灵材</string>
+    <string name="fpt_select_all">尽取</string>
+    <string name="fpt_select_none">尽弃</string>
+    <string name="fpt_part_colors">灵色</string>
+    <string name="fpt_part_interface">幽冥与阵局</string>
+    <string name="fpt_part_main_background">主灵壁</string>
+    <string name="fpt_part_page_backgrounds">诸页灵壁</string>
+    <string name="fpt_part_surfaces">灵卡与页窍</string>
+    <string name="fpt_part_font">灵文</string>
+    <string name="fpt_part_home_layout">洞府阵局</string>
+    <string name="fpt_part_nav_icons">底栏灵标</string>
+    <string name="fpt_part_music">灵律</string>
+    <string name="fpt_part_sound">灵响</string>
+    <string name="fpt_part_language">界语</string>
+    <string name="fpt_part_replace_note">将易当前灵设</string>
+    <string name="fpt_part_language_note">末后施展，灵页将重塑</string>
     <string name="fpt_compatibility">缺失之设保留默认或现值。未知字段与不受承之灵材皆留以再拓印。开境仙音与律动仍循仙器之设。</string>
     <string name="fpt_type_value">仙器品阶：%1$s</string>
     <string name="fpt_name">名讳</string>

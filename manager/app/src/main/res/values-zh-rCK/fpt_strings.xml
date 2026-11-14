@@ -2,6 +2,22 @@
 <resources>
     <string name="fpt_import_title">确认引进门面</string>
     <string name="fpt_resources">家伙什：%1$d 样</string>
+    <string name="fpt_parts">引进内容</string>
+    <string name="fpt_select_all">全要</string>
+    <string name="fpt_select_none">都不要</string>
+    <string name="fpt_part_colors">颜色</string>
+    <string name="fpt_part_interface">暗色和摆法</string>
+    <string name="fpt_part_main_background">主背景</string>
+    <string name="fpt_part_page_backgrounds">页面背景</string>
+    <string name="fpt_part_surfaces">卡片和页位</string>
+    <string name="fpt_part_font">字体</string>
+    <string name="fpt_part_home_layout">首页摆法</string>
+    <string name="fpt_part_nav_icons">底栏图标</string>
+    <string name="fpt_part_music">音乐</string>
+    <string name="fpt_part_sound">动静</string>
+    <string name="fpt_part_language">界面话</string>
+    <string name="fpt_part_replace_note">会换掉眼下的设置</string>
+    <string name="fpt_part_language_note">最后才弄，页面会重来</string>
     <string name="fpt_compatibility">缺的设置就按照旧的或眼下的值来。不认识的字段、撑不住的家什都留着，好再送出去。开张动静和颤悠还是照灶具的来。</string>
     <string name="fpt_type_value">灶具门类：%1$s</string>
     <string name="fpt_name">名儿</string>
