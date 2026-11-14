@@ -7,9 +7,12 @@
 
     <style name="Theme.KernelSU.Starting" parent="Theme.SplashScreen">
         <item name="windowSplashScreenBackground">@android:color/background_dark</item>
-        <item name="windowSplashScreenIconBackgroundColor">@color/ic_splash_background</item>
-        <item name="windowSplashScreenAnimatedIcon">@mipmap/ic_launcher_foreground_default</item>
+        <item name="windowSplashScreenIconBackgroundColor">@android:color/transparent</item>
+        <item name="windowSplashScreenAnimatedIcon">@mipmap/ic_launcher_splash_default</item>
         <item name="postSplashScreenTheme">@style/Theme.KernelSU</item>
+        <item name="android:windowSplashScreenBackground">@android:color/background_dark</item>
+        <item name="android:windowSplashScreenIconBackgroundColor">@android:color/transparent</item>
+        <item name="android:windowSplashScreenAnimatedIcon">@mipmap/ic_launcher_splash_default</item>
     </style>
 
     <style name="Theme.KernelSU.WebUI" parent="Theme.KernelSU" />
