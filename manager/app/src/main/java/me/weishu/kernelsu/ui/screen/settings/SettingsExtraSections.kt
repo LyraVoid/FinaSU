@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.MenuOpen
+import androidx.compose.material.icons.rounded.Animation
 import androidx.compose.material.icons.rounded.Apps
 import androidx.compose.material.icons.rounded.AspectRatio
 import androidx.compose.material.icons.rounded.BlurCircular
@@ -60,6 +61,8 @@ import me.weishu.kernelsu.ui.component.bottombar.BottomBarDestination
 import me.weishu.kernelsu.ui.component.bottombar.BottomBarIconConfig
 import me.weishu.kernelsu.ui.component.bottombar.FloatingBarConfig
 import me.weishu.kernelsu.ui.component.bottombar.NavBarVisibilityConfig
+import me.weishu.kernelsu.ui.component.bottombar.NavIconAnimation
+import me.weishu.kernelsu.ui.component.bottombar.NavIconAnimationConfig
 import me.weishu.kernelsu.ui.component.bottombar.NavMode
 import me.weishu.kernelsu.ui.component.bottombar.NavModeConfig
 import me.weishu.kernelsu.ui.component.material.FolkIconButton
@@ -232,6 +235,13 @@ private fun NavModeSection() {
         stringResource(R.string.settings_nav_mode_rail),
         stringResource(R.string.settings_nav_mode_floating),
     )
+    val iconAnimationRevision by NavIconAnimationConfig.revision.collectAsState()
+    val iconAnimation = remember(iconAnimationRevision) { NavIconAnimationConfig.animation }
+    val iconAnimations = NavIconAnimation.entries
+    val iconAnimationLabels = listOf(
+        stringResource(R.string.settings_nav_icon_animation_morph),
+        stringResource(R.string.settings_nav_icon_animation_fade),
+    )
     val styles = FloatingBarConfig.Style.entries
     val styleLabels = listOf(
         stringResource(R.string.settings_floating_bar_style_standard),
@@ -249,6 +259,16 @@ private fun NavModeSection() {
                     items = navModeLabels,
                     selectedIndex = navModes.indexOf(navMode).coerceAtLeast(0),
                     onItemSelected = { NavModeConfig.mode = navModes[it] },
+                )
+            }
+            add {
+                SegmentedDropdownItem(
+                    icon = Icons.Rounded.Animation,
+                    title = stringResource(R.string.settings_nav_icon_animation),
+                    summary = stringResource(R.string.settings_nav_icon_animation_summary),
+                    items = iconAnimationLabels,
+                    selectedIndex = iconAnimations.indexOf(iconAnimation).coerceAtLeast(0),
+                    onItemSelected = { NavIconAnimationConfig.animation = iconAnimations[it] },
                 )
             }
             if (navMode == NavMode.Floating) {
