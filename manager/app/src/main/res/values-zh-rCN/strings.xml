@@ -749,6 +749,10 @@
     <string name="settings_navbar_glass_border_summary">在导航栏周围启用微妙的边框描边</string>
     <string name="settings_nav_mode">导航栏模式</string>
     <string name="settings_nav_mode_summary">选择导航栏的显示方式</string>
+    <string name="settings_nav_icon_animation">图标动画</string>
+    <string name="settings_nav_icon_animation_summary">选择选中图标的切换动画</string>
+    <string name="settings_nav_icon_animation_morph">形变</string>
+    <string name="settings_nav_icon_animation_fade">渐变</string>
     <string name="settings_nav_mode_auto">自动传统导航栏</string>
     <string name="settings_nav_mode_bottom">始终底部导航栏</string>
     <string name="settings_nav_mode_rail">始终侧边导航栏</string>
