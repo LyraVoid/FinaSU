@@ -46,6 +46,7 @@ import me.weishu.kernelsu.media.MusicManager
 import me.weishu.kernelsu.data.HomeMetrics
 import me.weishu.kernelsu.data.model.HomeLayoutStyle
 import me.weishu.kernelsu.ui.component.material.ExpressiveScaffold
+import me.weishu.kernelsu.ui.component.material.PreviewTopBarNavigation
 import me.weishu.kernelsu.ui.component.material.expressiveTopAppBarColors
 import me.weishu.kernelsu.ui.component.rebootlistpopup.RebootListPopup
 import me.weishu.kernelsu.ui.navigation3.LocalNavOriginState
@@ -146,6 +147,7 @@ private fun TopBar(state: HomeUiState, actions: HomeActions) {
     var installBounds by remember { mutableStateOf(Rect.Zero) }
     TopAppBar(
         title = { me.weishu.kernelsu.ui.component.HomeTitleImage() },
+        navigationIcon = { PreviewTopBarNavigation() },
         actions = {
             if (state.susfs.detected) {
                 IconButton(onClick = actions.onSusfs) {

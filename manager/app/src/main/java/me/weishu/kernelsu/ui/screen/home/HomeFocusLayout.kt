@@ -46,10 +46,11 @@ internal fun FocusHomeContent(
     metrics: HomeMetrics,
 ) {
     val fullFeatured = useFullFeaturedLayout()
-    val focusStyle = SurfaceStore.config(SurfaceRegistry.FOCUS)
+    val focusStyle = previewSurface(SurfaceRegistry.FOCUS, SurfaceStore.config(SurfaceRegistry.FOCUS))
+    @Composable
     fun focusBackground(id: SurfaceId): SurfaceConfig? {
         if (!focusStyle.enabled) return null
-        val card = SurfaceStore.config(id)
+        val card = previewSurface(id, SurfaceStore.config(id))
         return if (card.hasImage) focusStyle.copy(imageUri = card.imageUri) else null
     }
     var optionsSurface by remember { mutableStateOf<SurfaceId?>(null) }

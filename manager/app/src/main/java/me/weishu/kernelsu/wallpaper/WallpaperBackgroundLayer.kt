@@ -26,6 +26,7 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import me.weishu.kernelsu.ui.theme.LocalThemePreview
 import me.weishu.kernelsu.ui.theme.isInDarkTheme
 import java.io.File
 
@@ -37,19 +38,32 @@ import java.io.File
  */
 @Composable
 fun WallpaperBackgroundLayer(modifier: Modifier = Modifier) {
+    val snapshot = LocalThemePreview.current
+    val preview = snapshot?.wallpapers?.getOrNull(LocalWallpaperPage.current)
+    val previewVideo = snapshot?.videoBackground
+    if (snapshot != null && preview == null && previewVideo == null) return
     // The master switch gates every mode, video included: with it off nothing is painted, even if a
     // per-page image or a video is still remembered, matching the manager-wide background toggle.
-    if (!WallpaperConfig.enabled) return
+    if (snapshot == null && !WallpaperConfig.enabled) return
     val media = me.weishu.kernelsu.media.VisualMediaConfig
-    val video = media.file(androidx.compose.ui.platform.LocalContext.current, true)
-    if (media.videoEnabled && video != null) {
-        VideoBackgroundLayer(video, LocalWallpaperDim.current ?: WallpaperConfig.effectiveDim(isInDarkTheme()), modifier)
+    val video = previewVideo ?: if (preview == null) {
+        media.file(androidx.compose.ui.platform.LocalContext.current, true)
+    } else {
+        null
+    }
+    if ((previewVideo != null || preview == null && media.videoEnabled) && video != null) {
+        val dim = preview?.dim
+            ?: LocalWallpaperDim.current
+            ?: WallpaperConfig.effectiveDim(isInDarkTheme())
+        VideoBackgroundLayer(video, dim, modifier)
         return
     }
-    val uri = WallpaperConfig.pageUri(LocalWallpaperPage.current) ?: return
-    val blurRadius = WallpaperConfig.blur
-    val scrim = (LocalWallpaperDim.current ?: WallpaperConfig.effectiveDim(isInDarkTheme()))
-        .coerceIn(0f, 1f)
+    val uri = preview?.let { Uri.fromFile(it.file).toString() }
+        ?: WallpaperConfig.pageUri(LocalWallpaperPage.current) ?: return
+    val blurRadius = preview?.blur ?: WallpaperConfig.blur
+    val scrim = (preview?.dim
+        ?: LocalWallpaperDim.current
+        ?: WallpaperConfig.effectiveDim(isInDarkTheme())).coerceIn(0f, 1f)
     val path = remember(uri) { Uri.parse(uri).path }
     val file = remember(path) { path?.let { File(it) } }
     val animatedFile = file?.takeIf { isAnimatedImageFile(it) }

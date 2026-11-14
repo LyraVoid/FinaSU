@@ -21,11 +21,14 @@ import androidx.core.net.toUri
 import java.io.File
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import me.weishu.kernelsu.ui.theme.LocalThemePreview
 import me.weishu.kernelsu.ui.theme.isInDarkTheme
 import me.weishu.kernelsu.wallpaper.AnimatedFileImage
 import me.weishu.kernelsu.wallpaper.WallpaperManager
 import me.weishu.kernelsu.wallpaper.isAnimatedImageFile
 import me.weishu.kernelsu.wallpaper.surface.SurfaceConfig
+import me.weishu.kernelsu.wallpaper.surface.SurfaceId
+import me.weishu.kernelsu.wallpaper.surface.SurfaceRegistry
 
 /**
  * A surface photo plus the information a card needs to pick its palette.
@@ -56,6 +59,12 @@ private val PhotoForegroundDark = Color(0xFF141218)
  * so a replaced image of the same path re-decodes. Shared by the card's palette decision and the
  * painter so both agree on [SurfacePhoto.ready].
  */
+/** Swaps only the photo for the package being previewed; all surface values already come from it. */
+@Composable
+internal fun previewSurface(id: SurfaceId, surface: SurfaceConfig): SurfaceConfig {
+    return LocalThemePreview.current?.surfaces?.get(id) ?: surface
+}
+
 @Composable
 internal fun rememberSurfacePhoto(uri: String?): SurfacePhoto {
     if (uri.isNullOrEmpty()) return SurfacePhoto.None

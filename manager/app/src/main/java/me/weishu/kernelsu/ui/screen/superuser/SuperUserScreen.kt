@@ -15,6 +15,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import me.weishu.kernelsu.ui.component.SearchStatus
 import me.weishu.kernelsu.ui.navigation3.Navigator
 import me.weishu.kernelsu.ui.navigation3.Route
+import me.weishu.kernelsu.ui.theme.LocalThemePreview
 import me.weishu.kernelsu.ui.viewmodel.SuperUserViewModel
 
 @Composable
@@ -24,12 +25,13 @@ fun SuperUserPager(
     isCurrentPage: Boolean = true,
 ) {
     val viewModel = viewModel<SuperUserViewModel>()
+    val previewing = LocalThemePreview.current != null
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val latestIsCurrentPage by rememberUpdatedState(isCurrentPage)
     val initialResumeHandled = rememberSaveable { mutableStateOf(false) }
 
-    LaunchedEffect(isCurrentPage) {
-        if (isCurrentPage) {
+    LaunchedEffect(isCurrentPage, previewing) {
+        if (!previewing && isCurrentPage) {
             val state = viewModel.uiState.value
             if (!state.hasLoaded && !state.isRefreshing) {
                 viewModel.initializePreferences()
@@ -41,7 +43,7 @@ fun SuperUserPager(
     }
 
     LifecycleResumeEffect(Unit) {
-        if (initialResumeHandled.value && latestIsCurrentPage) {
+        if (!previewing && initialResumeHandled.value && latestIsCurrentPage) {
             val state = viewModel.uiState.value
             if (!state.isRefreshing) {
                 if (!state.hasLoaded) {

@@ -68,8 +68,7 @@ internal fun FloatingBar(
     val glassInnerGlow = remember(revision) { FloatingBarConfig.glassInnerGlow }
     val glassBorder = remember(revision) { FloatingBarConfig.glassBorder }
     val wallpaperActive = LocalFolkWallpaperTokens.current != null
-    val visibilityRevision by NavBarVisibilityConfig.revision.collectAsStateWithLifecycle()
-    val destinations = remember(visibilityRevision) { NavBarVisibilityConfig.visibleDestinations() }
+    val destinations = mainPagerState.destinations
     val selectedIndex = mainPagerState.selectedPage
     // Outside wallpaper mode the pill's fill is derived from the page, so it does not carry the raised
     // neutral's own lift and a tonal tint on top would only pull it back toward the canvas it was

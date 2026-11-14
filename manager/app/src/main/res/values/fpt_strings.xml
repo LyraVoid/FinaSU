@@ -24,4 +24,6 @@
     <string name="fpt_version">Version</string>
     <string name="fpt_author">Author</string>
     <string name="fpt_description">Description</string>
+    <string name="theme_preview_action">Preview</string>
+    <string name="theme_preview_back">Return to theme import</string>
 </resources>

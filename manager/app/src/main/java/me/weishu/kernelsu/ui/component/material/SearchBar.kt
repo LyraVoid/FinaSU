@@ -275,7 +275,11 @@ fun SearchAppBar(
                 LargeFlexibleTopAppBar(
                     title = title,
                     colors = expressiveTopAppBarColors(),
-                    navigationIcon = { if (navigationIcon != null) navigationIcon() },
+                    navigationIcon = {
+                        PreviewTopBarNavigation {
+                            if (navigationIcon != null) navigationIcon()
+                        }
+                    },
                     actions = appBarActions,
                     windowInsets = WindowInsets.safeDrawing.only(WindowInsetsSides.Top + WindowInsetsSides.Horizontal),
                     scrollBehavior = scrollBehavior
@@ -284,7 +288,11 @@ fun SearchAppBar(
                 TopAppBar(
                     title = title,
                     colors = expressiveTopAppBarColors(),
-                    navigationIcon = { if (navigationIcon != null) navigationIcon() },
+                    navigationIcon = {
+                        PreviewTopBarNavigation {
+                            if (navigationIcon != null) navigationIcon()
+                        }
+                    },
                     actions = appBarActions,
                     windowInsets = WindowInsets.safeDrawing.only(WindowInsetsSides.Top + WindowInsetsSides.Horizontal),
                 )

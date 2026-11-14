@@ -21,12 +21,14 @@ import me.weishu.kernelsu.R
 import me.weishu.kernelsu.ui.component.WarningLevel
 import me.weishu.kernelsu.ui.component.dialog.rememberConfirmDialog
 import me.weishu.kernelsu.ui.theme.FolkType
+import me.weishu.kernelsu.ui.theme.LocalThemePreview
 
 @Composable
 internal fun HomeWarnings(
     state: HomeUiState,
     actions: HomeActions,
 ) {
+    val previewing = LocalThemePreview.current != null
     if (state.checkUpdateEnabled) {
         UpdateCard(state = state, actions = actions)
     }
@@ -55,7 +57,7 @@ internal fun HomeWarnings(
             onClick = actions::openManagerReleases,
         )
     }
-    if (state.showLkmUpdate) {
+    if (state.showLkmUpdate && !previewing) {
         WarningCard(
             message = stringResource(R.string.home_lkm_update_available),
             level = WarningLevel.Notice,

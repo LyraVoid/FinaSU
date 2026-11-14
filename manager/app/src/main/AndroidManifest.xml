@@ -123,6 +123,11 @@
         </activity>
 
         <activity
+            android:name=".ui.themepreview.ThemePreviewActivity"
+            android:exported="false"
+            android:theme="@style/Theme.KernelSU" />
+
+        <activity
             android:name=".ui.GeometryLauncherActivity"
             android:exported="false"
             android:theme="@style/Theme.KernelSU.Starting.Geometry"

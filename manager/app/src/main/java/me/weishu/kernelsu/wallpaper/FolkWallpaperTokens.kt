@@ -4,6 +4,7 @@ import androidx.compose.material3.ColorScheme
 import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.compositeOver
 
 /**
  * Which wallpaper surface role a component is drawing.
@@ -66,10 +67,15 @@ data class FolkWallpaperTokens(
     /**
      * Fill for a small control drawn on the chrome platform.
      *
-     * It keeps the caller's own tone, one step above the bar, but takes the platform's alpha, so the
-     * chip fades together with the bar it sits on instead of cutting a solid hole into the wallpaper.
+     * It keeps the caller's own tone but adds a short, polarity-aware veil while the platform is
+     * transparent. Without that veil, a light tonal fill over a light wallpaper disappears entirely.
      */
-    fun chromeControlFill(tint: Color): Color = tint.copy(alpha = chrome.alpha)
+    fun chromeControlFill(tint: Color): Color {
+        val progress = ((chrome.alpha - CHROME_ALPHA_FLOOR) / (1f - CHROME_ALPHA_FLOOR))
+            .coerceIn(0f, 1f)
+        val veil = chrome.contentColor.copy(alpha = CHROME_CONTROL_VEIL_ALPHA * (1f - progress))
+        return veil.compositeOver(tint.copy(alpha = chrome.alpha))
+    }
 }
 
 /**
@@ -85,6 +91,9 @@ val LocalFolkWallpaperTokens = compositionLocalOf<FolkWallpaperTokens?> { null }
  * content, so they hold a small platform of their own.
  */
 private const val CHROME_ALPHA_FLOOR = 0.10f
+
+/** Keeps a small control visible where a light tonal fill would otherwise vanish into the image. */
+private const val CHROME_CONTROL_VEIL_ALPHA = 0.12f
 
 /**
  * How much of the pair's content colour a supporting line keeps.

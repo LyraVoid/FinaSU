@@ -56,6 +56,7 @@ import android.os.Build
 import me.weishu.kernelsu.R
 import me.weishu.kernelsu.data.security.SecurityTarget
 import me.weishu.kernelsu.ui.component.security.LocalAppAuthenticator
+import me.weishu.kernelsu.ui.themepreview.ThemePreviewActivity
 import me.weishu.kernelsu.wallpaper.PreparedTheme
 import me.weishu.kernelsu.wallpaper.ThemeImportService
 import me.weishu.kernelsu.wallpaper.ThemeMetadata
@@ -82,6 +83,7 @@ fun rememberThemeImportRequest(onResult: (Result<Unit>) -> Unit): (Uri) -> Unit 
             theme = theme,
             busy = busy,
             onDismiss = { if (!busy) { pending = null; theme.close() } },
+            onPreview = { selection -> ThemePreviewActivity.start(context, theme.directory, selection) },
             onApply = { selection ->
                 if (!busy) scope.launch {
                     busy = true
@@ -124,6 +126,7 @@ private fun ThemeImportDialog(
     theme: PreparedTheme,
     busy: Boolean,
     onDismiss: () -> Unit,
+    onPreview: (ThemeSelection) -> Unit,
     onApply: (ThemeSelection) -> Unit,
 ) {
     var selected by remember(theme) { mutableStateOf(theme.available) }
@@ -169,7 +172,16 @@ private fun ThemeImportDialog(
                 Text(stringResource(R.string.theme_store_apply))
             }
         },
-        dismissButton = { TextButton(onClick = onDismiss, enabled = !busy) { Text(stringResource(R.string.theme_store_cancel)) } },
+        dismissButton = {
+            Row {
+                TextButton(onClick = onDismiss, enabled = !busy) {
+                    Text(stringResource(R.string.theme_store_cancel))
+                }
+                TextButton(onClick = { onPreview(ThemeSelection(selected)) }, enabled = !busy) {
+                    Text(stringResource(R.string.theme_preview_action))
+                }
+            }
+        },
     )
 }
 

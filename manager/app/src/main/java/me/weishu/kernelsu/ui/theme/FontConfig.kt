@@ -233,4 +233,12 @@ object FontConfig {
         cachedFontFamily = null
         cachedMode = null
     }
+
+    /** Loads a font from an arbitrary file, for previews that must not install it. */
+    fun fontFamilyFromFile(file: File): FontFamily = try {
+        FontFamily(Typeface.createFromFile(file))
+    } catch (e: Exception) {
+        Log.e(TAG, "Failed to load font file", e)
+        FontFamily.Default
+    }
 }

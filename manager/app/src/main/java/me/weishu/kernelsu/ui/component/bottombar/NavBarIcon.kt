@@ -1,6 +1,7 @@
 package me.weishu.kernelsu.ui.component.bottombar
 
 import android.graphics.Bitmap
+import android.net.Uri
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.MaterialTheme
@@ -17,6 +18,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import me.weishu.kernelsu.ui.theme.LocalThemePreview
 
 /**
  * Renders a bottom navigation destination icon. Prefers the user-picked custom icon (when custom
@@ -33,12 +35,13 @@ fun NavBarIcon(
         MaterialTheme.colorScheme.onSurfaceVariant
     },
 ) {
+    val previewIcons = LocalThemePreview.current?.navIcons
     val revision by BottomBarIconConfig.revision.collectAsState()
-    val customUri = remember(revision, destination.name) {
-        if (BottomBarIconConfig.isEnabled) {
-            BottomBarIconConfig.getCustomIconUri(destination.name)
-        } else {
-            null
+    val customUri = remember(revision, destination, previewIcons) {
+        when {
+            previewIcons != null -> previewIcons[destination]?.let { Uri.fromFile(it).toString() }
+            BottomBarIconConfig.isEnabled -> BottomBarIconConfig.getCustomIconUri(destination.name)
+            else -> null
         }
     }
 

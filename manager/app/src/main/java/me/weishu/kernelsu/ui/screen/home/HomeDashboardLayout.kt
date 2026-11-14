@@ -61,7 +61,7 @@ internal fun DashboardHomeContent(
         DashboardHeroCard(
             state = state,
             actions = actions,
-            surface = SurfaceStore.config(SurfaceRegistry.DASHBOARD_HERO),
+            surface = previewSurface(SurfaceRegistry.DASHBOARD_HERO, SurfaceStore.config(SurfaceRegistry.DASHBOARD_HERO)),
         )
         if (fullFeatured) {
             CountCardPair(

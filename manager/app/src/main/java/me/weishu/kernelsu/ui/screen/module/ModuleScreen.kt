@@ -30,6 +30,7 @@ import me.weishu.kernelsu.ui.component.security.LocalAppAuthenticator
 import me.weishu.kernelsu.ui.navigation3.LocalNavigator
 import me.weishu.kernelsu.ui.navigation3.Route
 import me.weishu.kernelsu.ui.screen.flash.FlashIt
+import me.weishu.kernelsu.ui.theme.LocalThemePreview
 import me.weishu.kernelsu.ui.util.download
 import me.weishu.kernelsu.ui.util.module.Shortcut
 import me.weishu.kernelsu.ui.viewmodel.ModuleViewModel
@@ -47,6 +48,7 @@ fun ModulePager(
     val viewModel = viewModel<ModuleViewModel>()
     val scope = rememberCoroutineScope()
     val authenticator = LocalAppAuthenticator.current
+    val previewing = LocalThemePreview.current != null
     val rawUiState by viewModel.uiState.collectAsStateWithLifecycle()
 
     val webUILauncher = rememberLauncherForActivityResult(
@@ -61,8 +63,8 @@ fun ModulePager(
     val initialResumeHandled = rememberSaveable { mutableStateOf(false) }
 
     var hasActivated by rememberSaveable { mutableStateOf(false) }
-    LaunchedEffect(isCurrentPage) {
-        if (isCurrentPage) {
+    LaunchedEffect(isCurrentPage, previewing) {
+        if (!previewing && isCurrentPage) {
             if (!hasActivated) {
                 hasActivated = true
                 viewModel.refreshEnvironmentState()
@@ -81,7 +83,7 @@ fun ModulePager(
     }
 
     LifecycleResumeEffect(Unit) {
-        if (initialResumeHandled.value && latestIsCurrentPage) {
+        if (!previewing && initialResumeHandled.value && latestIsCurrentPage) {
             val state = viewModel.uiState.value
             if (!state.isRefreshing) {
                 viewModel.fetchModuleList(

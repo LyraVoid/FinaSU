@@ -2,6 +2,8 @@ package me.weishu.kernelsu.wallpaper
 
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.compositeOver
+import androidx.compose.ui.graphics.luminance
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Test
@@ -21,17 +23,30 @@ class WallpaperChromeControlTest {
         val half = resolveFolkWallpaperTokens(scheme, 0.5f).chromeControlFill(tint)
         val solid = resolveFolkWallpaperTokens(scheme, 1f).chromeControlFill(tint)
 
-        assertEquals(0.10f, clear.alpha, 0.005f)
-        assertEquals(0.55f, half.alpha, 0.005f)
+        assertEquals(0.208f, clear.alpha, 0.005f)
+        assertEquals(0.577f, half.alpha, 0.005f)
         assertEquals(1f, solid.alpha, 0.005f)
         assertTrue(clear.alpha < half.alpha)
         assertTrue(half.alpha < solid.alpha)
     }
 
     @Test
-    fun controlFillKeepsTheRequestedTone() {
-        val fill = resolveFolkWallpaperTokens(scheme, 0.4f).chromeControlFill(tint)
+    fun fullyOpaqueControlFillKeepsTheRequestedTone() {
+        val fill = resolveFolkWallpaperTokens(scheme, 1f).chromeControlFill(tint)
 
-        assertEquals(tint, fill.copy(alpha = 1f))
+        assertEquals(tint, fill)
+    }
+
+    @Test
+    fun clearControlFillStaysVisibleOnLightAndDarkWallpapers() {
+        val lightFill = resolveFolkWallpaperTokens(scheme, 0f).chromeControlFill(tint)
+            .compositeOver(Color.White)
+        val darkFill = resolveFolkWallpaperTokens(
+            androidx.compose.material3.darkColorScheme(),
+            0f,
+        ).chromeControlFill(tint).compositeOver(Color.Black)
+
+        assertTrue(lightFill.luminance() < 0.90f)
+        assertTrue(darkFill.luminance() > 0.01f)
     }
 }

@@ -14,10 +14,8 @@ import androidx.compose.material3.ShortNavigationBarItem
 import androidx.compose.material3.ShortNavigationBarItemDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import me.weishu.kernelsu.ui.util.useFullFeaturedLayout
 import me.weishu.kernelsu.ui.LocalMainPagerState
 import me.weishu.kernelsu.ui.component.MorphDigits
@@ -30,8 +28,7 @@ fun BottomBarMaterial(navigationBadge: NavigationBadgeState) {
     if (!fullFeatured) return
 
     val mainPagerState = LocalMainPagerState.current
-    val visibilityRevision = NavBarVisibilityConfig.revision.collectAsStateWithLifecycle().value
-    val destinations = remember(visibilityRevision) { NavBarVisibilityConfig.visibleDestinations() }
+    val destinations = mainPagerState.destinations
 
     val barStyle = BottomBarControl.style(BottomBarLayout.Docked)
     WallpaperChromeZone(edge = ChromeEdge.Bottom, material = barStyle.scrim) {

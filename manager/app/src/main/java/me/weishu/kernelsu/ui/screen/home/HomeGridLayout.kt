@@ -125,7 +125,7 @@ private fun GridStatusCard(
     val notInstalled = !ksuActive && state.kernelVersion.isGKI()
     val hookFailed = state.kernelHook.failed
 
-    val workCardSurface = WallpaperConfig.workCardSurface
+    val workCardSurface = previewSurface(SurfaceRegistry.GRID_WORK_CARD, WallpaperConfig.workCardSurface)
     val workCardPhoto = rememberSurfacePhoto(workCardSurface.imageUri.takeIf { workCardSurface.hasImage })
     val workCardStyle = HomeWorkCardControl.style(
         layout = HomeWorkCardLayout.Grid,

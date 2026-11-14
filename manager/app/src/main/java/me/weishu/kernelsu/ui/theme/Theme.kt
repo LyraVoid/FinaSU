@@ -95,10 +95,12 @@ object ThemeController {
 @Composable
 fun KernelSUTheme(
     appSettings: AppSettings = ThemeController.getAppSettings(),
+    preview: ThemePreviewSnapshot? = null,
     content: @Composable () -> Unit
 ) {
     MaterialKernelSUTheme(
         appSettings = appSettings,
+        preview = preview,
         content = content
     )
 }

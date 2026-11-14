@@ -38,6 +38,7 @@ private val DarkRippleAlpha = RippleAlpha(
 @Composable
 fun MaterialKernelSUTheme(
     appSettings: AppSettings,
+    preview: ThemePreviewSnapshot? = null,
     content: @Composable () -> Unit
 ) {
     val context = LocalContext.current
@@ -47,18 +48,23 @@ fun MaterialKernelSUTheme(
     val dynamicColor = appSettings.useSystemDynamicColor
 
     val wallpaperPage = LocalWallpaperPage.current
-    val videoActive = WallpaperConfig.enabled && me.weishu.kernelsu.media.VisualMediaConfig.let {
-        it.videoEnabled && it.file(context, true) != null
-    }
-    val wallpaperActive = WallpaperConfig.isPageActive(wallpaperPage, videoActive)
+    val previewWallpaper = preview?.wallpapers?.getOrNull(wallpaperPage)
+    val previewVideo = preview?.videoBackground
+    val previewBackground = previewVideo != null || previewWallpaper != null
+    val videoActive = preview == null && WallpaperConfig.enabled &&
+        me.weishu.kernelsu.media.VisualMediaConfig.let {
+            it.videoEnabled && it.file(context, true) != null
+        }
+    val wallpaperActive = if (preview != null) previewBackground else WallpaperConfig.isPageActive(wallpaperPage, videoActive)
     // The accent palette is derived from one fixed image, never from the page currently on screen:
     // a page swipe must not re-theme every component (`animateAsState` would then drag the whole
     // app through a color transition and make the swipe feel laggy). Only the background itself and
     // its content polarity follow the page.
     val seedPage = if (WallpaperConfig.multiBackgroundEnabled) WallpaperConfig.PAGE_HOME else wallpaperPage
-    val pageSeed = WallpaperConfig.pageSeed(seedPage)
+    val pageSeed = if (previewWallpaper != null) 0 else WallpaperConfig.pageSeed(seedPage)
     val wallpaperSeed = if (
-        WallpaperConfig.isActive && WallpaperConfig.useWallpaperColor && pageSeed != 0
+        preview == null && WallpaperConfig.isActive && WallpaperConfig.useWallpaperColor &&
+        pageSeed != 0
     ) {
         Color(pageSeed)
     } else {
@@ -83,8 +89,11 @@ fun MaterialKernelSUTheme(
     // In wallpaper mode the neutral roles follow the wallpaper's intrinsic brightness so text stays
     // legible; a dark theme never flips to light, readability there is left to the night dim. The
     // scrim is intentionally not an input here: dragging the day dim must never invert polarity.
-    val wallpaperDim = WallpaperConfig.effectiveDim(darkTheme)
-    val darkNeutral = useDarkNeutral(darkTheme, WallpaperConfig.pageLuminance(wallpaperPage))
+    val wallpaperDim = previewWallpaper?.dim ?: WallpaperConfig.effectiveDim(darkTheme)
+    val previewLuminance = remember(previewWallpaper?.file) {
+        previewWallpaper?.file?.let { me.weishu.kernelsu.wallpaper.WallpaperManager.computeLuminance(it) } ?: -1f
+    }
+    val darkNeutral = useDarkNeutral(darkTheme, if (preview != null) previewLuminance else WallpaperConfig.pageLuminance(wallpaperPage))
     val neutralScheme = rememberKernelSUColorScheme(
         seedColor = baseSeed,
         isDark = darkNeutral,
@@ -105,7 +114,7 @@ fun MaterialKernelSUTheme(
     // while the text inside it is still interpolating, leaving a transient low-contrast frame.
     val animatedColorScheme = adaptedColorScheme.animateAsState()
     val wallpaperTokens = if (wallpaperActive) {
-        resolveFolkWallpaperTokens(animatedColorScheme, WallpaperConfig.opacity)
+        resolveFolkWallpaperTokens(animatedColorScheme, previewWallpaper?.opacity ?: WallpaperConfig.opacity)
     } else {
         null
     }
@@ -127,9 +136,10 @@ fun MaterialKernelSUTheme(
         }
     }
 
-    val fontFamily = remember(FontConfig.fontMode, FontConfig.customFontFilename) {
+    val configuredFontFamily = remember(FontConfig.fontMode, FontConfig.customFontFilename) {
         FontConfig.getFontFamily(context)
     }
+    val fontFamily = preview?.fontFamily ?: configuredFontFamily
 
     MaterialExpressiveTheme(
         colorScheme = animatedColorScheme,
@@ -150,7 +160,7 @@ fun MaterialKernelSUTheme(
                 LocalWallpaperDim provides renderDim,
                 LocalFolkWallpaperTokens provides wallpaperTokens,
             ) {
-                MonetColorsProvider.UpdateCss(colorScheme)
+                if (preview == null) MonetColorsProvider.UpdateCss(colorScheme)
                 content()
             }
         }

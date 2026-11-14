@@ -14,10 +14,8 @@ import androidx.compose.material3.NavigationRailItem
 import androidx.compose.material3.NavigationRailItemDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import me.weishu.kernelsu.ui.util.useFullFeaturedLayout
 import me.weishu.kernelsu.ui.LocalMainPagerState
 import me.weishu.kernelsu.ui.component.material.ChromeEdge
@@ -40,8 +38,7 @@ fun NavigationRailMaterial(
     if (!useFullFeaturedLayout()) return
 
     val mainPagerState = LocalMainPagerState.current
-    val visibilityRevision = NavBarVisibilityConfig.revision.collectAsStateWithLifecycle().value
-    val destinations = remember(visibilityRevision) { NavBarVisibilityConfig.visibleDestinations() }
+    val destinations = mainPagerState.destinations
     val railStyle = BottomBarControl.style(BottomBarLayout.Rail)
     WallpaperChromeZone(
         edge = ChromeEdge.Start,

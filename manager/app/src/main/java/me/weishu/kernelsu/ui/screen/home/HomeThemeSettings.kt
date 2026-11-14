@@ -10,6 +10,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalContext
 import me.weishu.kernelsu.data.repository.SettingsRepositoryImpl
+import me.weishu.kernelsu.ui.theme.LocalThemePreview
 
 internal data class HomeThemeSettings(val statsTopLayout: String, val listWorkingCardModeHidden: Boolean)
 
@@ -17,6 +18,7 @@ internal data class HomeThemeSettings(val statsTopLayout: String, val listWorkin
 internal fun rememberHomeThemeSettings(): HomeThemeSettings {
     val context = LocalContext.current.applicationContext
     val repository = remember { SettingsRepositoryImpl() }
+    val preview = LocalThemePreview.current
     fun read() = HomeThemeSettings(repository.statsTopLayout, repository.listWorkingCardModeHidden)
     var settings by remember { mutableStateOf(read()) }
     DisposableEffect(context) {
@@ -27,5 +29,9 @@ internal fun rememberHomeThemeSettings(): HomeThemeSettings {
         preferences.registerOnSharedPreferenceChangeListener(listener)
         onDispose { preferences.unregisterOnSharedPreferenceChangeListener(listener) }
     }
-    return settings
+    return HomeThemeSettings(
+        statsTopLayout = preview?.statsTopLayout ?: settings.statsTopLayout,
+        listWorkingCardModeHidden = preview?.listWorkingCardModeHidden
+            ?: settings.listWorkingCardModeHidden,
+    )
 }

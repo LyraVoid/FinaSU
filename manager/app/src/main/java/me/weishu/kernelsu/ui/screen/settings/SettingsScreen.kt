@@ -24,6 +24,7 @@ import me.weishu.kernelsu.ui.component.dialog.ConfirmResult
 import me.weishu.kernelsu.ui.component.dialog.rememberConfirmDialog
 import me.weishu.kernelsu.ui.navigation3.Navigator
 import me.weishu.kernelsu.ui.navigation3.Route
+import me.weishu.kernelsu.ui.theme.LocalThemePreview
 import me.weishu.kernelsu.ui.viewmodel.SettingsViewModel
 
 @Composable
@@ -37,13 +38,14 @@ fun SettingPager(
     val latestIsCurrentPage by rememberUpdatedState(isCurrentPage)
     val initialResumeHandled = rememberSaveable { mutableStateOf(false) }
     val activity = LocalActivity.current
+    val previewing = LocalThemePreview.current != null
 
-    LaunchedEffect(isCurrentPage) {
-        if (isCurrentPage) viewModel.ensureLoaded()
+    LaunchedEffect(isCurrentPage, previewing) {
+        if (!previewing && isCurrentPage) viewModel.ensureLoaded()
     }
 
     LifecycleResumeEffect(Unit, activity ?: LocalLifecycleOwner.current) {
-        if (initialResumeHandled.value && latestIsCurrentPage) {
+        if (!previewing && initialResumeHandled.value && latestIsCurrentPage) {
             viewModel.refresh()
         }
         initialResumeHandled.value = true

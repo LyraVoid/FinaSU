@@ -33,6 +33,7 @@ import me.weishu.kernelsu.ui.component.bottombar.BottomBarDestination
 import me.weishu.kernelsu.ui.component.dialog.rememberLoadingDialog
 import me.weishu.kernelsu.ui.navigation3.Navigator
 import me.weishu.kernelsu.ui.navigation3.Route
+import me.weishu.kernelsu.ui.theme.LocalThemePreview
 import me.weishu.kernelsu.ui.util.CapabilityRepository
 import me.weishu.kernelsu.ui.viewmodel.HomeViewModel
 
@@ -49,6 +50,7 @@ fun HomePager(
     val viewModel = viewModel<HomeViewModel>()
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val mainPagerState = LocalMainPagerState.current
+    val previewing = LocalThemePreview.current != null
     val uriHandler = LocalUriHandler.current
     val context = LocalContext.current
     // The sampler runs only while this page is the one on screen and only for a layout that draws
@@ -66,8 +68,8 @@ fun HomePager(
     val activity = LocalActivity.current
 
     var hasActivated by rememberSaveable { mutableStateOf(false) }
-    LaunchedEffect(isCurrentPage) {
-        if (isCurrentPage) {
+    LaunchedEffect(isCurrentPage, previewing) {
+        if (!previewing && isCurrentPage) {
             // Returning to the home page re-reads the shared capability snapshot so the layout,
             // warnings and navigation agree again.
             CapabilityRepository.refresh()
@@ -80,7 +82,7 @@ fun HomePager(
     }
 
     LifecycleResumeEffect(Unit, activity ?: LocalLifecycleOwner.current) {
-        if (initialResumeHandled.value && latestIsCurrentPage) {
+        if (!previewing && initialResumeHandled.value && latestIsCurrentPage) {
             CapabilityRepository.refresh()
             viewModel.refresh()
         }

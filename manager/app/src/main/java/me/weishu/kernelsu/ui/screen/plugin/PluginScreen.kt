@@ -18,6 +18,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import me.weishu.kernelsu.ui.navigation3.LocalNavigator
 import me.weishu.kernelsu.ui.navigation3.Route
+import me.weishu.kernelsu.ui.theme.LocalThemePreview
 import me.weishu.kernelsu.ui.viewmodel.PluginViewModel
 
 @Composable
@@ -27,18 +28,19 @@ fun PluginPager(
 ) {
     val context = LocalContext.current
     val navigator = LocalNavigator.current
+    val previewing = LocalThemePreview.current != null
     val scope = rememberCoroutineScope()
     val viewModel = viewModel<PluginViewModel>()
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val latestIsCurrentPage by rememberUpdatedState(isCurrentPage)
     val initialResumeHandled = rememberSaveable { mutableStateOf(false) }
 
-    LaunchedEffect(isCurrentPage) {
-        if (isCurrentPage) viewModel.ensureLoaded()
+    LaunchedEffect(isCurrentPage, previewing) {
+        if (!previewing && isCurrentPage) viewModel.ensureLoaded()
     }
 
     LifecycleResumeEffect(Unit) {
-        if (initialResumeHandled.value && latestIsCurrentPage) {
+        if (!previewing && initialResumeHandled.value && latestIsCurrentPage) {
             viewModel.refresh(showIndicator = false)
         }
         initialResumeHandled.value = true
