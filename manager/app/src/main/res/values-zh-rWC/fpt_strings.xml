@@ -24,4 +24,6 @@
     <string name="fpt_version">篇次</string>
     <string name="fpt_author">炼制者</string>
     <string name="fpt_description">叙略</string>
+    <string name="theme_preview_action">预览道韵</string>
+    <string name="theme_preview_back">返回道韵卷宗</string>
 </resources>

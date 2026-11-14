@@ -24,4 +24,6 @@
     <string name="fpt_version">Sürüm</string>
     <string name="fpt_author">Yazar</string>
     <string name="fpt_description">Açıklama</string>
+    <string name="theme_preview_action">Önizle</string>
+    <string name="theme_preview_back">Tema içe aktarmaya dön</string>
 </resources>

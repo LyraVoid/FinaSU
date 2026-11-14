@@ -24,4 +24,6 @@
     <string name="fpt_version">Phiên bản</string>
     <string name="fpt_author">Tác giả</string>
     <string name="fpt_description">Mô tả</string>
+    <string name="theme_preview_action">Xem trước</string>
+    <string name="theme_preview_back">Quay lại nhập chủ đề</string>
 </resources>

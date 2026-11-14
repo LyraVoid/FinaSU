@@ -24,4 +24,6 @@
     <string name="fpt_version">バージョン</string>
     <string name="fpt_author">作者</string>
     <string name="fpt_description">説明</string>
+    <string name="theme_preview_action">プレビュー</string>
+    <string name="theme_preview_back">テーマのインポートに戻る</string>
 </resources>

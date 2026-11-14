@@ -24,4 +24,6 @@
     <string name="fpt_version">版本</string>
     <string name="fpt_author">作者</string>
     <string name="fpt_description">描述</string>
+    <string name="theme_preview_action">預覽</string>
+    <string name="theme_preview_back">返回主題匯入</string>
 </resources>

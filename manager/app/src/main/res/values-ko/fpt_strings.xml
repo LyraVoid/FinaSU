@@ -24,4 +24,6 @@
     <string name="fpt_version">버전</string>
     <string name="fpt_author">작성자</string>
     <string name="fpt_description">설명</string>
+    <string name="theme_preview_action">미리보기</string>
+    <string name="theme_preview_back">테마 가져오기로 돌아가기</string>
 </resources>

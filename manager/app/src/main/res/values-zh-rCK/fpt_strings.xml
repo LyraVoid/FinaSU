@@ -24,4 +24,6 @@
     <string name="fpt_version">版本</string>
     <string name="fpt_author">大厨</string>
     <string name="fpt_description">说明</string>
+    <string name="theme_preview_action">预览门面</string>
+    <string name="theme_preview_back">返回引进门面</string>
 </resources>

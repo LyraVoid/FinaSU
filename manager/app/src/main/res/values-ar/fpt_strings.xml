@@ -24,4 +24,6 @@
     <string name="fpt_version">الإصدار</string>
     <string name="fpt_author">المؤلف</string>
     <string name="fpt_description">الوصف</string>
+    <string name="theme_preview_action">معاينة</string>
+    <string name="theme_preview_back">العودة إلى استيراد المظهر</string>
 </resources>

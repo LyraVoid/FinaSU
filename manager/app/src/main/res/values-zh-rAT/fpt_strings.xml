@@ -24,4 +24,6 @@
     <string name="fpt_version">神恩等级</string>
     <string name="fpt_author">创造者</string>
     <string name="fpt_description">圣光描述</string>
+    <string name="theme_preview_action">预览圣光</string>
+    <string name="theme_preview_back">返回圣光导入</string>
 </resources>

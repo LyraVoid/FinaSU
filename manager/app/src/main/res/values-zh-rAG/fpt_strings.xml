@@ -24,4 +24,6 @@
     <string name="fpt_version">版本喵</string>
     <string name="fpt_author">作者喵</string>
     <string name="fpt_description">描述喵</string>
+    <string name="theme_preview_action">预览主题喵</string>
+    <string name="theme_preview_back">返回主题导入喵</string>
 </resources>

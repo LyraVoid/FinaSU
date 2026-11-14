@@ -24,4 +24,6 @@
     <string name="fpt_version">版本</string>
     <string name="fpt_author">缔造者</string>
     <string name="fpt_description">描述</string>
+    <string name="theme_preview_action">预览星幻</string>
+    <string name="theme_preview_back">返回星幻导入</string>
 </resources>

@@ -24,4 +24,6 @@
     <string name="fpt_version">Версия</string>
     <string name="fpt_author">Автор</string>
     <string name="fpt_description">Описание</string>
+    <string name="theme_preview_action">Предпросмотр</string>
+    <string name="theme_preview_back">Вернуться к импорту темы</string>
 </resources>

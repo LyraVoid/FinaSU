@@ -24,4 +24,6 @@
     <string name="fpt_version">Versi</string>
     <string name="fpt_author">Penulis</string>
     <string name="fpt_description">Deskripsi</string>
+    <string name="theme_preview_action">Pratinjau</string>
+    <string name="theme_preview_back">Kembali ke impor tema</string>
 </resources>
