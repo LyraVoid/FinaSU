@@ -36,6 +36,7 @@ fun FlashScreen(flashIt: FlashIt, onBackEnabledChange: (Boolean) -> Unit) {
     val logContent = remember { StringBuilder() }
     var showRebootAction by rememberSaveable { mutableStateOf(false) }
     var flashingStatus by rememberSaveable { mutableStateOf(FlashingStatus.FLASHING) }
+    var actionInProgress by rememberSaveable { mutableStateOf(false) }
     val anyKernel = flashIt as? FlashIt.FlashAnyKernel
     val currentSlotSuffix by produceState(initialValue = "", anyKernel) {
         value = if (anyKernel == null) "" else getSlotSuffix(false)
@@ -94,6 +95,7 @@ fun FlashScreen(flashIt: FlashIt, onBackEnabledChange: (Boolean) -> Unit) {
         flashingStatus = flashingStatus,
         showJailbreakWarning = needJailbreakWarning && !flashingEnabled,
         rebootLabelRes = if (softReboot) R.string.reboot_soft else R.string.reboot,
+        actionInProgress = actionInProgress,
     )
     val logFilePrefix = if (anyKernel != null) {
         val target = if (anyKernel.inactiveSlot) "inactive" else "current"
@@ -106,6 +108,7 @@ fun FlashScreen(flashIt: FlashIt, onBackEnabledChange: (Boolean) -> Unit) {
         onBack = dropUnlessResumed { if (backEnabled) navigator.pop() },
         onSaveLog = saveLog(logContent, scope, logFilePrefix) { showMessage(it) },
         onReboot = {
+            actionInProgress = true
             scope.launch {
                 if (!authenticator.require(SecurityTarget.REBOOT)) return@launch
                 withContext(Dispatchers.IO) {
@@ -113,6 +116,7 @@ fun FlashScreen(flashIt: FlashIt, onBackEnabledChange: (Boolean) -> Unit) {
                 }
             }
         },
+        onClose = dropUnlessResumed { navigator.pop() },
         onConfirmJailbreakWarning = { flashingEnabled = true },
         onDismissJailbreakWarning = dropUnlessResumed { navigator.pop() },
     )
