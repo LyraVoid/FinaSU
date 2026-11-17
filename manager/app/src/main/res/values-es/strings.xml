@@ -1125,4 +1125,17 @@
     <string name="install_anykernel_confirm_details">Archivo: %1$s\nTamaño: %2$s\nRanura de destino: %3$s</string>
     <string name="install_anykernel_confirm_note">El instalador sigue decidiendo qué particiones y ranuras se escriben. La instalación en una ranura sin usar requiere compatibilidad con SLOT_SELECT, que ksud valida antes de ejecutarse. La ranura activa no cambia automáticamente; tras reiniciar, el dispositivo podría seguir arrancando desde la ranura actual.</string>
     <string name="flash_log_saved">Registro guardado en %1$s</string>
+    <string name="susfs_priority_title">Bloqueo de detección del UID de aplicaciones</string>
+    <string name="susfs_priority_apps">Aplicaciones protegidas</string>
+    <string name="susfs_priority_result">Última operación</string>
+    <string name="susfs_priority_count">Aplicaciones guardadas: %1$d</string>
+    <string name="susfs_priority_stop">Dejar de gestionar</string>
+    <string name="susfs_priority_stop_hint">Dejará de enviarse esta lista. El filtro actual del kernel no se borrará.</string>
+    <string name="susfs_priority_hint">Bloquea las consultas de interfaces de prioridad que intentan detectar los UID de las aplicaciones seleccionadas.</string>
+    <string name="susfs_priority_unverified">Que el kernel acepte la operación no verifica cada aplicación ni el efecto real.</string>
+    <string name="susfs_priority_shared">Las aplicaciones que comparten un ID de aplicación, incluidos otros usuarios de Android, pueden verse afectadas a la vez. Aplicar una selección vacía borra el filtro.</string>
+    <string name="susfs_priority_search">Buscar aplicaciones o paquetes</string>
+    <string name="susfs_priority_missing">No instalada o no disponible temporalmente</string>
+    <string name="susfs_priority_load_error">No se pudo cargar la lista de aplicaciones.</string>
+    <string name="susfs_priority_empty">No hay aplicaciones coincidentes.</string>
 </resources>

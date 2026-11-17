@@ -1125,4 +1125,17 @@
     <string name="install_anykernel_confirm_details">파일: %1$s\n크기: %2$s\n대상 슬롯: %3$s</string>
     <string name="install_anykernel_confirm_note">실제로 기록되는 파티션과 슬롯은 설치 프로그램이 결정합니다. 사용하지 않는 슬롯에 설치하려면 SLOT_SELECT 지원이 필요하며 ksud가 실행 전에 검증합니다. 활성 슬롯은 자동으로 전환되지 않습니다. 재시작 후에도 현재 슬롯에서 부팅될 수 있습니다.</string>
     <string name="flash_log_saved">로그가 %1$s에 저장되었습니다</string>
+    <string name="susfs_priority_title">앱 UID 감지 차단</string>
+    <string name="susfs_priority_apps">보호할 앱</string>
+    <string name="susfs_priority_result">마지막 작업</string>
+    <string name="susfs_priority_count">저장된 앱: %1$d개</string>
+    <string name="susfs_priority_stop">관리 중지</string>
+    <string name="susfs_priority_stop_hint">이 목록 전송을 중지합니다. 커널의 현재 필터는 지워지지 않습니다.</string>
+    <string name="susfs_priority_hint">우선순위 인터페이스를 통한 선택 앱의 UID 감지를 차단합니다.</string>
+    <string name="susfs_priority_unverified">커널이 작업을 수락해도 모든 앱이나 실제 효과가 검증된 것은 아닙니다.</string>
+    <string name="susfs_priority_shared">같은 앱 ID를 공유하는 앱과 다른 Android 사용자가 함께 영향을 받을 수 있습니다. 빈 목록을 적용하면 필터가 지워집니다.</string>
+    <string name="susfs_priority_search">앱 또는 패키지 검색</string>
+    <string name="susfs_priority_missing">설치되지 않았거나 현재 읽을 수 없음</string>
+    <string name="susfs_priority_load_error">앱 목록을 불러오지 못했습니다.</string>
+    <string name="susfs_priority_empty">일치하는 앱이 없습니다.</string>
 </resources>

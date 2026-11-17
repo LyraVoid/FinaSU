@@ -1125,4 +1125,17 @@
     <string name="install_anykernel_confirm_details">文件：%1$s\n大小：%2$s\n目标槽：%3$s</string>
     <string name="install_anykernel_confirm_note">实际写入的分区和槽位仍由安装器决定。安装到未使用槽需要 SLOT_SELECT 支持，ksud 会在执行前检查。活动槽不会自动切换；重启后仍可能进入当前槽。</string>
     <string name="flash_log_saved">日志已存档到 %1$s</string>
+    <string name="susfs_priority_title">应用 UID 探测结界</string>
+    <string name="susfs_priority_apps">受到保护的应用</string>
+    <string name="susfs_priority_result">最近行动</string>
+    <string name="susfs_priority_count">已保存 %1$d 位伙伴应用</string>
+    <string name="susfs_priority_stop">结束看护</string>
+    <string name="susfs_priority_stop_hint">这份名单将不再出征；内核里现有的过滤结界不会被撤除。</string>
+    <string name="susfs_priority_hint">阻止优先级接口探知所选应用的真实 UID。</string>
+    <string name="susfs_priority_unverified">内核接下委托，不代表每位伙伴或实际效果都已确认。</string>
+    <string name="susfs_priority_shared">共享同一应用 ID 的伙伴，以及其他 Android 用户，可能一起受到影响；派出空名单会解除过滤。</string>
+    <string name="susfs_priority_search">搜索应用或包名</string>
+    <string name="susfs_priority_missing">尚未抵达或暂时无法联络</string>
+    <string name="susfs_priority_load_error">无法展开应用名册。</string>
+    <string name="susfs_priority_empty">没有找到符合条件的伙伴。</string>
 </resources>

@@ -1127,4 +1127,17 @@
     <string name="install_anykernel_confirm_details">Dosya: %1$s\nBoyut: %2$s\nHedef yuva: %3$s</string>
     <string name="install_anykernel_confirm_note">Hangi bölümlerin ve yuvaların yazılacağını yine yükleyici belirler. Kullanılmayan yuvaya kurulum, ksud tarafından çalıştırmadan önce doğrulanan SLOT_SELECT desteği gerektirir. Etkin yuva otomatik olarak değiştirilmez; yeniden başlatmadan sonra cihaz yine geçerli yuvadan açılabilir.</string>
     <string name="flash_log_saved">Günlük %1$s konumuna kaydedildi</string>
+    <string name="susfs_priority_title">Uygulama UID algılamasını engelleme</string>
+    <string name="susfs_priority_apps">Korunan uygulamalar</string>
+    <string name="susfs_priority_result">Son işlem</string>
+    <string name="susfs_priority_count">Kaydedilen uygulamalar: %1$d</string>
+    <string name="susfs_priority_stop">Yönetimi durdur</string>
+    <string name="susfs_priority_stop_hint">Bu liste gönderilmeyecek. Çekirdekteki mevcut filtre temizlenmez.</string>
+    <string name="susfs_priority_hint">Öncelik arayüzleri üzerinden seçili uygulamaların UID\'lerinin algılanmasını engeller.</string>
+    <string name="susfs_priority_unverified">Çekirdeğin işlemi kabul etmesi her uygulamanın veya gerçek etkinin doğrulandığı anlamına gelmez.</string>
+    <string name="susfs_priority_shared">Aynı uygulama kimliğini paylaşan uygulamalar ve diğer Android kullanıcıları birlikte etkilenebilir. Boş seçim uygulandığında filtre temizlenir.</string>
+    <string name="susfs_priority_search">Uygulama veya paket ara</string>
+    <string name="susfs_priority_missing">Yüklü değil veya geçici olarak kullanılamıyor</string>
+    <string name="susfs_priority_load_error">Uygulama listesi yüklenemedi.</string>
+    <string name="susfs_priority_empty">Eşleşen uygulama yok.</string>
 </resources>

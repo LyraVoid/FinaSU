@@ -193,6 +193,7 @@ pub fn convert(value: serde_json::Value) -> Result<Migration> {
                 avc_spoof: Some(legacy.avc_log_spoofing),
                 uname,
                 cmdline,
+                priority_uid_filter: None,
             },
             rules,
             lkm: Lkm::default(),

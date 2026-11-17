@@ -4,6 +4,21 @@ import org.junit.Assert.*
 import org.junit.Test
 
 class SusfsStatusTest {
+    @Test fun `priority capability preserves unknown and saved configuration`() {
+        val feature = listOf("CONFIG_KSU_SUSFS_PRIORITY_UID_FILTER")
+        val unsupported = SusfsStatus(protocol = "compatible", version = "v2.3.0")
+        assertEquals(SusfsCapabilityState.Unavailable, unsupported.priorityUidState)
+        assertFalse(unsupported.showPriorityUidFilter(false))
+        assertTrue(unsupported.showPriorityUidFilter(true))
+        val unknown = unsupported.copy(features = feature)
+        assertEquals(SusfsCapabilityState.Unknown, unknown.priorityUidState)
+        assertFalse(unknown.showPriorityUidFilter(false))
+        val available = unknown.copy(capabilities = SusfsCapabilities(priorityUidFilter = true))
+        assertEquals(SusfsCapabilityState.Available, available.priorityUidState)
+        assertTrue(available.showPriorityUidFilter(false))
+        assertEquals(SusfsCapabilityState.Unknown, available.copy(protocol = "unknown_protocol").priorityUidState)
+        assertEquals(SusfsCapabilityState.Unknown, available.copy(protocol = "root_unavailable").priorityUidState)
+    }
     @Test fun `version alone and unknown protocol never enable mutations`() {
         assertFalse(SusfsStatus(version = "v2.3.0").detected)
         val unknown = SusfsStatus(protocol = "unknown_protocol", version = "v9", features = listOf("CONFIG_KSU_SUSFS_SUS_PATH"))

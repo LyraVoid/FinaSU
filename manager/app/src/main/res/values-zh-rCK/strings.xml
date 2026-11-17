@@ -1125,4 +1125,17 @@
     <string name="install_anykernel_confirm_details">文件：%1$s\n大小：%2$s\n目标槽：%3$s</string>
     <string name="install_anykernel_confirm_note">实际往哪些分区和槽上菜仍由安装器决定。装到未使用槽需要 SLOT_SELECT 支持，ksud 会在开火前检查。活动槽不会自动切换；重启后也可能仍进当前槽。</string>
     <string name="flash_log_saved">日志已收进 %1$s</string>
+    <string name="susfs_priority_title">应用 UID 探测过滤</string>
+    <string name="susfs_priority_apps">受保护的应用</string>
+    <string name="susfs_priority_result">最近一单</string>
+    <string name="susfs_priority_count">已保存 %1$d 个应用</string>
+    <string name="susfs_priority_stop">收摊不管理</string>
+    <string name="susfs_priority_stop_hint">不再端出这份名单；锅里的过滤名单不会被倒掉。</string>
+    <string name="susfs_priority_hint">挡住优先级接口，别让它尝出所选应用的 UID。</string>
+    <string name="susfs_priority_unverified">内核肯接单，不代表每个应用和实际效果都验过。</string>
+    <string name="susfs_priority_shared">共用应用 ID 的应用，以及其他 Android 用户，可能一起中招；端上空名单会把过滤清掉。</string>
+    <string name="susfs_priority_search">搜应用或包名</string>
+    <string name="susfs_priority_missing">当前没装，或暂时读不到</string>
+    <string name="susfs_priority_load_error">应用菜单读取失败。</string>
+    <string name="susfs_priority_empty">没找到匹配的应用。</string>
 </resources>

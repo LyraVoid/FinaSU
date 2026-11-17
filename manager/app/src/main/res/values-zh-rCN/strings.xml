@@ -1129,4 +1129,17 @@
     <string name="guide_page_indicator">第 %1$d 页，共 %2$d 页</string>
     <string name="guide_about_entry_title">重新查看新手引导</string>
     <string name="guide_about_entry_summary">重新播放首次启动介绍</string>
+    <string name="susfs_priority_title">应用 UID 探测屏蔽</string>
+    <string name="susfs_priority_apps">受保护的应用</string>
+    <string name="susfs_priority_result">最近一次操作</string>
+    <string name="susfs_priority_count">已保存 %1$d 个应用</string>
+    <string name="susfs_priority_stop">停止管理</string>
+    <string name="susfs_priority_stop_hint">不再下发此名单，当前内核中的过滤名单不会被清空。</string>
+    <string name="susfs_priority_hint">屏蔽通过优先级接口对所选应用 UID 的探测。</string>
+    <string name="susfs_priority_unverified">内核接受配置，并不代表所有应用或实际效果都已验证。</string>
+    <string name="susfs_priority_shared">共享应用 ID 的应用以及其他 Android 用户可能同时受影响；下发空名单会清空过滤。</string>
+    <string name="susfs_priority_search">搜索应用或包名</string>
+    <string name="susfs_priority_missing">应用未安装或暂时无法读取</string>
+    <string name="susfs_priority_load_error">无法读取应用列表。</string>
+    <string name="susfs_priority_empty">没有匹配的应用。</string>
 </resources>

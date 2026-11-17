@@ -1125,4 +1125,17 @@
     <string name="install_anykernel_confirm_details">檔案：%1$s\n大小：%2$s\n目標槽位：%3$s</string>
     <string name="install_anykernel_confirm_note">實際寫入的分區與槽位仍由安裝器決定。安裝至未使用槽需要 SLOT_SELECT 支援，ksud 會在執行前檢查。使用中的槽位不會自動切換；重新啟動後仍可能進入目前槽位。</string>
     <string name="flash_log_saved">日誌已儲存至 %1$s</string>
+    <string name="susfs_priority_title">應用程式 UID 偵測封鎖</string>
+    <string name="susfs_priority_apps">受保護的應用程式</string>
+    <string name="susfs_priority_result">最近一次操作</string>
+    <string name="susfs_priority_count">已儲存 %1$d 個應用程式</string>
+    <string name="susfs_priority_stop">停止管理</string>
+    <string name="susfs_priority_stop_hint">不再傳送此清單；核心目前的過濾清單不會被清除。</string>
+    <string name="susfs_priority_hint">封鎖透過優先級介面偵測所選應用程式 UID 的查詢。</string>
+    <string name="susfs_priority_unverified">核心接受設定，不代表所有應用程式或實際效果都已驗證。</string>
+    <string name="susfs_priority_shared">共用應用程式 ID 的應用程式與其他 Android 使用者可能同時受到影響；套用空白清單會清除過濾條件。</string>
+    <string name="susfs_priority_search">搜尋應用程式或套件名稱</string>
+    <string name="susfs_priority_missing">未安裝或目前無法讀取</string>
+    <string name="susfs_priority_load_error">無法讀取應用程式清單。</string>
+    <string name="susfs_priority_empty">沒有符合的應用程式。</string>
 </resources>

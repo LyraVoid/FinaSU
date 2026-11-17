@@ -1136,4 +1136,17 @@
     <string name="guide_page_indicator">Page %1$d of %2$d</string>
     <string name="guide_about_entry_title">Show welcome guide again</string>
     <string name="guide_about_entry_summary">Replay the first-launch introduction</string>
+    <string name="susfs_priority_title">App UID detection blocking</string>
+    <string name="susfs_priority_apps">Protected apps</string>
+    <string name="susfs_priority_result">Last operation</string>
+    <string name="susfs_priority_count">%1$d apps saved</string>
+    <string name="susfs_priority_stop">Stop managing</string>
+    <string name="susfs_priority_stop_hint">Stop sending this list. The current kernel filter is not cleared.</string>
+    <string name="susfs_priority_hint">Blocks priority-interface queries from detecting the selected apps’ UIDs.</string>
+    <string name="susfs_priority_unverified">Kernel acceptance does not verify every app or the actual effect.</string>
+    <string name="susfs_priority_shared">Apps sharing an app ID, including other Android users, may be affected together. Applying an empty selection clears the filter.</string>
+    <string name="susfs_priority_search">Search apps or packages</string>
+    <string name="susfs_priority_missing">Not installed or currently unavailable</string>
+    <string name="susfs_priority_load_error">Could not load the app list.</string>
+    <string name="susfs_priority_empty">No matching apps.</string>
 </resources>

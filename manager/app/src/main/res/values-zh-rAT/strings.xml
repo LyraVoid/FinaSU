@@ -1125,4 +1125,17 @@
     <string name="install_anykernel_confirm_details">典籍：%1$s\n大小：%2$s\n目标圣槽：%3$s</string>
     <string name="install_anykernel_confirm_note">实际写入之分区与槽位仍由安装器决定。于未使用槽安装需 SLOT_SELECT 圣契，ksud 将在施行前勘验。活动槽不会自行切换；重启后仍可能归于当前槽。</string>
     <string name="flash_log_saved">日志已封存至 %1$s</string>
+    <string name="susfs_priority_title">应用 UID 探知之禁</string>
+    <string name="susfs_priority_apps">受护应用</string>
+    <string name="susfs_priority_result">最近法旨</string>
+    <string name="susfs_priority_count">已存 %1$d 个应用</string>
+    <string name="susfs_priority_stop">罢管</string>
+    <string name="susfs_priority_stop_hint">此后不再颁下此名录，内核现行过滤之册亦不因此清空。</string>
+    <string name="susfs_priority_hint">禁绝优先级法门探测所选应用之 UID。</string>
+    <string name="susfs_priority_unverified">内核纳旨，未必已验诸应用或实效。</string>
+    <string name="susfs_priority_shared">同享应用 ID 之应用，及诸 Android 用户，或同受影响；颁空册则清过滤。</string>
+    <string name="susfs_priority_search">搜应用或包名</string>
+    <string name="susfs_priority_missing">未安装或暂不可得</string>
+    <string name="susfs_priority_load_error">应用名录读取不得。</string>
+    <string name="susfs_priority_empty">未有相合之应用。</string>
 </resources>

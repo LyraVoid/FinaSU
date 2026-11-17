@@ -276,6 +276,8 @@ mod tests {
     }
     #[test]
     fn arm64_layouts() {
+        assert_eq!(std::mem::offset_of!(Text<65535>, err), 65536);
+        assert_eq!(size_of::<Text<65535>>(), 65540);
         assert_eq!(size_of::<Text<16>>(), 20);
         assert_eq!(std::mem::offset_of!(Text<8192>, err), 8192);
         assert_eq!(size_of::<Toggle>(), 8);

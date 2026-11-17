@@ -41,6 +41,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import me.weishu.kernelsu.Natives
 import me.weishu.kernelsu.R
+import me.weishu.kernelsu.data.susfs.SusfsCapabilityState
 import me.weishu.kernelsu.data.susfs.SusfsInputs
 import me.weishu.kernelsu.data.susfs.SusfsErrorKind
 import me.weishu.kernelsu.data.susfs.SusfsStatus
@@ -178,6 +179,7 @@ fun SusfsScreen() {
                             { export.launch("finasu-susfs.json") })
                         1 -> {
                             SusfsBasicPage(config, state.status, writable, vm)
+                            SusfsPriorityUidSection(config, state.status, writable, vm)
                             SusfsUnameSection(
                                 config,
                                 state.status,
@@ -491,6 +493,22 @@ private fun SusfsOverview(state: SusfsUiState, config: JSONObject?, writable: Bo
     }
     val staticFieldNames = susfsStaticFieldNames(status.capabilities.staticKstatFields)
     SegmentedColumn(title = stringResource(R.string.susfs_capabilities)) {
+        item(key = "capability:priority_uid_filter") {
+            val state = status.priorityUidState
+            SegmentedListItem(
+                headlineContent = { Text(stringResource(R.string.susfs_priority_title)) },
+                supportingContent = { Text(stringResource(when (state) {
+                    SusfsCapabilityState.Available -> R.string.susfs_available
+                    SusfsCapabilityState.Unavailable -> R.string.susfs_unavailable
+                    SusfsCapabilityState.Unknown -> R.string.susfs_state_unknown
+                })) },
+                leadingContent = { Icon(when (state) {
+                    SusfsCapabilityState.Available -> Icons.Rounded.CheckCircle
+                    SusfsCapabilityState.Unavailable -> Icons.Rounded.Block
+                    SusfsCapabilityState.Unknown -> Icons.Rounded.Info
+                }, null) },
+            )
+        }
         val capabilities = listOf(
             Triple(R.string.susfs_hide_mounts, status.capabilities.hideMounts, null),
             Triple(R.string.susfs_logging, status.capabilities.logging, null),

@@ -9,6 +9,16 @@ import me.weishu.kernelsu.ui.util.RootShell
 import org.json.JSONObject
 import java.util.concurrent.TimeUnit
 
+enum class SusfsCapabilityState { Available, Unavailable, Unknown }
+
+fun priorityUidCapability(protocol: String, features: List<String>, advertised: Boolean): SusfsCapabilityState = when {
+    protocol == "not_detected" -> SusfsCapabilityState.Unavailable
+    protocol != "compatible" -> SusfsCapabilityState.Unknown
+    "CONFIG_KSU_SUSFS_PRIORITY_UID_FILTER" !in features -> SusfsCapabilityState.Unavailable
+    advertised -> SusfsCapabilityState.Available
+    else -> SusfsCapabilityState.Unknown
+}
+
 data class SusfsCapabilities(
     val hideMounts: Boolean = false,
     val logging: Boolean = false,
@@ -25,6 +35,7 @@ data class SusfsCapabilities(
     val redirectUidSchemes: List<Int> = emptyList(),
     val hiddenModules: Boolean = false,
     val mountPrefixes: Boolean = false,
+    val priorityUidFilter: Boolean = false,
 )
 
 data class SusfsStatus(
@@ -51,6 +62,8 @@ data class SusfsStatus(
     val error: String? = null,
 ) {
     val detected get() = protocol == "compatible" || protocol == "unknown_protocol"
+    val priorityUidState get() = priorityUidCapability(protocol, features, capabilities.priorityUidFilter)
+    fun showPriorityUidFilter(hasSaved: Boolean) = hasSaved || priorityUidState == SusfsCapabilityState.Available
     val writable get() = protocol == "compatible" && error == null && ownership == "builtin" && pendingOwner == null
     val canImport get() = protocol == "compatible" && ownership == "builtin" && pendingOwner == null
     fun supports(feature: String) = protocol == "compatible" && "CONFIG_KSU_SUSFS_$feature" in features
@@ -104,6 +117,7 @@ data class SusfsStatus(
                 switchReady = ownershipValid && json.optBoolean("switch_ready", false),
                 staticKstatSupported = staticKstat,
                 capabilities = SusfsCapabilities(
+                    priorityUidFilter = "priority_uid_filter" in advertised,
                     hideMounts = enabled("hide_mounts",
                         protocol == "compatible" && "CONFIG_KSU_SUSFS_SUS_MOUNT" in features),
                     logging = enabled("logging",

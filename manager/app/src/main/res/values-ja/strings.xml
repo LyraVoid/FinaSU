@@ -1125,4 +1125,17 @@
     <string name="install_anykernel_confirm_details">ファイル：%1$s\nサイズ：%2$s\n対象スロット：%3$s</string>
     <string name="install_anykernel_confirm_note">実際に書き込まれるパーティションとスロットはインストーラーが決定します。未使用スロットへのインストールには SLOT_SELECT 対応が必要で、ksud が実行前に検証します。アクティブスロットは自動で切り替わりません。再起動後も現在のスロットから起動する場合があります。</string>
     <string name="flash_log_saved">ログを %1$s に保存しました</string>
+    <string name="susfs_priority_title">アプリ UID の検出ブロック</string>
+    <string name="susfs_priority_apps">保護するアプリ</string>
+    <string name="susfs_priority_result">前回の操作</string>
+    <string name="susfs_priority_count">保存済みのアプリ：%1$d 個</string>
+    <string name="susfs_priority_stop">管理を停止</string>
+    <string name="susfs_priority_stop_hint">この一覧の送信を停止します。カーネル内の現在のフィルターは消去されません。</string>
+    <string name="susfs_priority_hint">優先度インターフェースによる、選択したアプリの UID 検出をブロックします。</string>
+    <string name="susfs_priority_unverified">カーネルが操作を受け付けても、すべてのアプリや実際の効果が検証されたわけではありません。</string>
+    <string name="susfs_priority_shared">同じアプリ ID を共有するアプリや他の Android ユーザーも同時に影響を受ける場合があります。空の選択を適用するとフィルターが消去されます。</string>
+    <string name="susfs_priority_search">アプリまたはパッケージを検索</string>
+    <string name="susfs_priority_missing">未インストール、または現在読み取れません</string>
+    <string name="susfs_priority_load_error">アプリ一覧を読み込めませんでした。</string>
+    <string name="susfs_priority_empty">一致するアプリはありません。</string>
 </resources>

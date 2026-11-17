@@ -116,6 +116,8 @@ pub struct Settings {
     pub avc_spoof: Option<bool>,
     pub uname: Option<Uname>,
     pub cmdline: Option<String>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub priority_uid_filter: Option<Vec<String>>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -295,6 +297,22 @@ impl Config {
         {
             text(cmdline, 8192)?;
         }
+        if let Some(packages) = &self.settings.priority_uid_filter {
+            let mut seen = std::collections::HashSet::new();
+            if packages.iter().any(|name| {
+                name.is_empty()
+                    || name.len() > 255
+                    || name == "."
+                    || name == ".."
+                    || !name
+                        .bytes()
+                        .all(|c| c.is_ascii_alphanumeric() || c == b'.' || c == b'_')
+                    || !seen.insert(name)
+            }) || packages.iter().map(|name| name.len() + 1).sum::<usize>() > 65535
+            {
+                bail!("Invalid priority UID filter packages");
+            }
+        }
         let mut identities = std::collections::HashSet::new();
         for rule in &self.rules {
             let (kind, target) = match rule {
@@ -349,6 +367,29 @@ impl Config {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn priority_filter_preserves_legacy_defaults_and_validates_packages() {
+        let settings: Settings = serde_json::from_str(
+            r#"{"hide_mounts":null,"logging":null,"avc_spoof":null,"uname":null,"cmdline":null}"#,
+        )
+        .unwrap();
+        assert!(settings.priority_uid_filter.is_none());
+        let mut config = Config::default();
+        config.settings.priority_uid_filter = Some(vec![]);
+        assert!(config.validate().is_ok());
+        config.settings.priority_uid_filter = Some(vec!["com.example.app".into()]);
+        assert!(config.validate().is_ok());
+        config.settings.priority_uid_filter = Some(vec!["../invalid".into()]);
+        assert!(config.validate().is_err());
+        config.settings.priority_uid_filter =
+            Some(vec!["com.example.app".into(), "com.example.app".into()]);
+        assert!(config.validate().is_err());
+        config.settings.priority_uid_filter = Some(vec![String::new()]);
+        assert!(config.validate().is_err());
+        config.settings.priority_uid_filter = Some(vec!["a".repeat(256)]);
+        assert!(config.validate().is_err());
+    }
 
     #[test]
     fn ownership_switch_requires_a_distinct_known_boot() {

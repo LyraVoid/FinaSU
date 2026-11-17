@@ -1125,4 +1125,17 @@
     <string name="install_anykernel_confirm_details">Tệp: %1$s\nDung lượng: %2$s\nSlot đích: %3$s</string>
     <string name="install_anykernel_confirm_note">Trình cài đặt vẫn quyết định những phân vùng và slot nào sẽ được ghi. Cài đặt vào slot chưa sử dụng yêu cầu hỗ trợ SLOT_SELECT, được ksud xác thực trước khi chạy. Slot đang hoạt động không tự động chuyển; sau khi khởi động lại, thiết bị vẫn có thể khởi động từ slot hiện tại.</string>
     <string name="flash_log_saved">Nhật ký đã được lưu vào %1$s</string>
+    <string name="susfs_priority_title">Chặn phát hiện UID ứng dụng</string>
+    <string name="susfs_priority_apps">Ứng dụng được bảo vệ</string>
+    <string name="susfs_priority_result">Thao tác gần nhất</string>
+    <string name="susfs_priority_count">Đã lưu %1$d ứng dụng</string>
+    <string name="susfs_priority_stop">Ngừng quản lý</string>
+    <string name="susfs_priority_stop_hint">Danh sách này sẽ không còn được gửi. Bộ lọc hiện tại trong kernel sẽ không bị xóa.</string>
+    <string name="susfs_priority_hint">Chặn các truy vấn qua giao diện ưu tiên nhằm phát hiện UID của ứng dụng đã chọn.</string>
+    <string name="susfs_priority_unverified">Kernel chấp nhận thao tác không có nghĩa là mọi ứng dụng hoặc hiệu lực thực tế đã được xác minh.</string>
+    <string name="susfs_priority_shared">Các ứng dụng dùng chung ID ứng dụng, kể cả người dùng Android khác, có thể cùng bị ảnh hưởng. Áp dụng lựa chọn trống sẽ xóa bộ lọc.</string>
+    <string name="susfs_priority_search">Tìm ứng dụng hoặc gói</string>
+    <string name="susfs_priority_missing">Chưa cài đặt hoặc tạm thời không đọc được</string>
+    <string name="susfs_priority_load_error">Không thể tải danh sách ứng dụng.</string>
+    <string name="susfs_priority_empty">Không có ứng dụng phù hợp.</string>
 </resources>

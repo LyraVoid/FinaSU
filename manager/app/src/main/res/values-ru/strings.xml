@@ -1127,4 +1127,17 @@
     <string name="install_anykernel_confirm_details">Файл: %1$s\nРазмер: %2$s\nЦелевой слот: %3$s</string>
     <string name="install_anykernel_confirm_note">Установщик по-прежнему определяет, какие разделы и слоты будут записаны. Для установки в неиспользуемый слот требуется поддержка SLOT_SELECT, которую ksud проверяет перед запуском. Активный слот не переключается автоматически; после перезагрузки устройство всё ещё может загружаться с текущего слота.</string>
     <string name="flash_log_saved">Журнал сохранён в %1$s</string>
+    <string name="susfs_priority_title">Блокировка обнаружения UID приложений</string>
+    <string name="susfs_priority_apps">Защищаемые приложения</string>
+    <string name="susfs_priority_result">Последняя операция</string>
+    <string name="susfs_priority_count">Сохранено приложений: %1$d</string>
+    <string name="susfs_priority_stop">Прекратить управление</string>
+    <string name="susfs_priority_stop_hint">Отправка списка будет остановлена. Текущий фильтр в ядре не будет очищен.</string>
+    <string name="susfs_priority_hint">Блокирует запросы через интерфейсы приоритетов, позволяющие определить UID выбранных приложений.</string>
+    <string name="susfs_priority_unverified">Принятие операции ядром не означает проверку каждого приложения или фактического результата.</string>
+    <string name="susfs_priority_shared">Приложения с общим ID приложения, включая других пользователей Android, могут затрагиваться одновременно. Применение пустого списка очищает фильтр.</string>
+    <string name="susfs_priority_search">Поиск приложений или пакетов</string>
+    <string name="susfs_priority_missing">Не установлено или временно недоступно</string>
+    <string name="susfs_priority_load_error">Не удалось загрузить список приложений.</string>
+    <string name="susfs_priority_empty">Подходящих приложений нет.</string>
 </resources>

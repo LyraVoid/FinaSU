@@ -1127,4 +1127,17 @@
     <string name="install_anykernel_confirm_details">Arquivo: %1$s\nTamanho: %2$s\nSlot de destino: %3$s</string>
     <string name="install_anykernel_confirm_note">O instalador ainda determina quais partições e slots serão gravados. A instalação em um slot não utilizado requer suporte a SLOT_SELECT, que o ksud valida antes de executar. O slot ativo não é alternado automaticamente; após reiniciar, o dispositivo ainda pode inicializar pelo slot atual.</string>
     <string name="flash_log_saved">Log salvo em %1$s</string>
+    <string name="susfs_priority_title">Bloqueio da detecção de UID de aplicativos</string>
+    <string name="susfs_priority_apps">Aplicativos protegidos</string>
+    <string name="susfs_priority_result">Última operação</string>
+    <string name="susfs_priority_count">Aplicativos salvos: %1$d</string>
+    <string name="susfs_priority_stop">Parar de gerenciar</string>
+    <string name="susfs_priority_stop_hint">A lista deixará de ser enviada. O filtro atual do kernel não será apagado.</string>
+    <string name="susfs_priority_hint">Bloqueia consultas de interfaces de prioridade que tentam detectar os UIDs dos aplicativos selecionados.</string>
+    <string name="susfs_priority_unverified">O kernel aceitar a operação não verifica cada aplicativo nem o efeito real.</string>
+    <string name="susfs_priority_shared">Aplicativos que compartilham um ID de aplicativo, incluindo outros usuários do Android, podem ser afetados em conjunto. Aplicar uma seleção vazia limpa o filtro.</string>
+    <string name="susfs_priority_search">Pesquisar aplicativos ou pacotes</string>
+    <string name="susfs_priority_missing">Não instalado ou temporariamente indisponível</string>
+    <string name="susfs_priority_load_error">Não foi possível carregar a lista de aplicativos.</string>
+    <string name="susfs_priority_empty">Nenhum aplicativo correspondente.</string>
 </resources>

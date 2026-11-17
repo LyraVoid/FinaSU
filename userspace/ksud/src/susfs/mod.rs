@@ -116,6 +116,11 @@ fn capabilities(detection: &Detection) -> Capabilities {
         ),
         (static_supported, "static_kstat"),
         (redirect, "redirect"),
+        (
+            detection.supports("CONFIG_KSU_SUSFS_PRIORITY_UID_FILTER")
+                && detection.implementation == "builtin",
+            "priority_uid_filter",
+        ),
         (detection.proc("susfs_hide_modules"), "hidden_modules"),
         (detection.proc("susfs_hide_mounts"), "mount_prefixes"),
     ] {

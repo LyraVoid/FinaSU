@@ -1125,4 +1125,17 @@
     <string name="install_anykernel_confirm_details">File: %1$s\nUkuran: %2$s\nSlot tujuan: %3$s</string>
     <string name="install_anykernel_confirm_note">Pemasang tetap menentukan partisi dan slot yang ditulis. Pemasangan ke slot tidak digunakan memerlukan dukungan SLOT_SELECT, yang divalidasi ksud sebelum dijalankan. Slot aktif tidak beralih otomatis; setelah restart, perangkat mungkin masih melakukan boot dari slot saat ini.</string>
     <string name="flash_log_saved">Log disimpan ke %1$s</string>
+    <string name="susfs_priority_title">Pemblokiran deteksi UID aplikasi</string>
+    <string name="susfs_priority_apps">Aplikasi terlindungi</string>
+    <string name="susfs_priority_result">Operasi terakhir</string>
+    <string name="susfs_priority_count">Aplikasi tersimpan: %1$d</string>
+    <string name="susfs_priority_stop">Berhenti mengelola</string>
+    <string name="susfs_priority_stop_hint">Daftar ini akan berhenti dikirim. Filter kernel saat ini tidak dihapus.</string>
+    <string name="susfs_priority_hint">Memblokir kueri antarmuka prioritas agar tidak mendeteksi UID aplikasi yang dipilih.</string>
+    <string name="susfs_priority_unverified">Diterima kernel tidak berarti setiap aplikasi atau efek sebenarnya telah diverifikasi.</string>
+    <string name="susfs_priority_shared">Aplikasi yang berbagi ID aplikasi, termasuk pengguna Android lain, dapat terdampak bersamaan. Menerapkan pilihan kosong akan menghapus filter.</string>
+    <string name="susfs_priority_search">Cari aplikasi atau paket</string>
+    <string name="susfs_priority_missing">Tidak terpasang atau sementara tidak tersedia</string>
+    <string name="susfs_priority_load_error">Tidak dapat memuat daftar aplikasi.</string>
+    <string name="susfs_priority_empty">Tidak ada aplikasi yang cocok.</string>
 </resources>

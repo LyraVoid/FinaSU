@@ -1127,4 +1127,17 @@
     <string name="install_anykernel_confirm_details">الملف: %1$s\nالحجم: %2$s\nالفتحة المستهدفة: %3$s</string>
     <string name="install_anykernel_confirm_note">لا يزال المثبّت هو من يحدد الأقسام والفتحات التي ستُكتب. يتطلب التثبيت على فتحة غير مستخدمة دعم SLOT_SELECT، ويتحقق منه ksud قبل التشغيل. لا يتم تبديل الفتحة النشطة تلقائيًا؛ وقد يبدأ الجهاز من الفتحة الحالية بعد إعادة التشغيل.</string>
     <string name="flash_log_saved">تم حفظ السجل في %1$s</string>
+    <string name="susfs_priority_title">حظر اكتشاف UID للتطبيقات</string>
+    <string name="susfs_priority_apps">التطبيقات المحمية</string>
+    <string name="susfs_priority_result">آخر عملية</string>
+    <string name="susfs_priority_count">التطبيقات المحفوظة: %1$d</string>
+    <string name="susfs_priority_stop">إيقاف الإدارة</string>
+    <string name="susfs_priority_stop_hint">إيقاف إرسال هذه القائمة. لن تُمسح قائمة التصفية الحالية في النواة.</string>
+    <string name="susfs_priority_hint">يحظر استعلامات واجهات الأولوية التي تحاول اكتشاف UID للتطبيقات المحددة.</string>
+    <string name="susfs_priority_unverified">قبول النواة للعملية لا يعني التحقق من كل تطبيق أو من النتيجة الفعلية.</string>
+    <string name="susfs_priority_shared">قد تتأثر معًا التطبيقات التي تشترك في معرّف تطبيق واحد، بما فيها مستخدمو Android الآخرون. تؤدي القائمة الفارغة إلى مسح التصفية عند تطبيقها.</string>
+    <string name="susfs_priority_search">البحث عن تطبيقات أو حزم</string>
+    <string name="susfs_priority_missing">غير مثبّت أو غير متاح مؤقتًا</string>
+    <string name="susfs_priority_load_error">تعذّر تحميل قائمة التطبيقات.</string>
+    <string name="susfs_priority_empty">لا توجد تطبيقات مطابقة.</string>
 </resources>

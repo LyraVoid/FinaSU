@@ -1129,4 +1129,17 @@ Przed kontynuowaniem upewnij się, że bootloader jest odblokowany!</string>
     <string name="install_anykernel_confirm_details">Plik: %1$s\nRozmiar: %2$s\nSlot docelowy: %3$s</string>
     <string name="install_anykernel_confirm_note">Instalator nadal decyduje, które partycje i sloty zostaną zapisane. Instalacja na nieużywanym slocie wymaga obsługi SLOT_SELECT, którą ksud sprawdza przed uruchomieniem. Aktywny slot nie przełącza się automatycznie; po ponownym uruchomieniu urządzenie nadal może startować z bieżącego slotu.</string>
     <string name="flash_log_saved">Dziennik zapisano w %1$s</string>
+    <string name="susfs_priority_title">Blokowanie wykrywania UID aplikacji</string>
+    <string name="susfs_priority_apps">Chronione aplikacje</string>
+    <string name="susfs_priority_result">Ostatnia operacja</string>
+    <string name="susfs_priority_count">Zapisane aplikacje: %1$d</string>
+    <string name="susfs_priority_stop">Przestań zarządzać</string>
+    <string name="susfs_priority_stop_hint">Wysyłanie tej listy zostanie zatrzymane. Bieżący filtr w jądrze nie zostanie wyczyszczony.</string>
+    <string name="susfs_priority_hint">Blokuje wykrywanie UID wybranych aplikacji przez interfejsy priorytetów.</string>
+    <string name="susfs_priority_unverified">Zaakceptowanie operacji przez jądro nie potwierdza każdej aplikacji ani rzeczywistego efektu.</string>
+    <string name="susfs_priority_shared">Aplikacje współdzielące identyfikator aplikacji, w tym inni użytkownicy Androida, mogą zostać dotknięte jednocześnie. Zastosowanie pustego wyboru czyści filtr.</string>
+    <string name="susfs_priority_search">Szukaj aplikacji lub pakietów</string>
+    <string name="susfs_priority_missing">Nie zainstalowano lub chwilowo niedostępna</string>
+    <string name="susfs_priority_load_error">Nie można wczytać listy aplikacji.</string>
+    <string name="susfs_priority_empty">Brak pasujących aplikacji.</string>
 </resources>

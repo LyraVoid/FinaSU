@@ -385,7 +385,8 @@ pub fn summarize(
     } else if !state.kstat_pending.is_empty()
         || state.pending_reboot.iter().any(|k| desired.contains_key(k))
         || state.applied.iter().any(|(k, v)| {
-            !desired.contains_key(k) || (k.contains(':') && desired.get(k) != Some(v))
+            (k != "priority_uid_filter" && !desired.contains_key(k))
+                || (k.contains(':') && desired.get(k) != Some(v))
         })
     {
         "pending_reboot"

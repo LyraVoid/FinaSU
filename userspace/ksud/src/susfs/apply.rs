@@ -50,6 +50,12 @@ pub fn operations(config: &Config) -> Result<BTreeMap<String, String>> {
     if let Some(value) = &config.settings.cmdline {
         ops.insert("cmdline".to_owned(), value.clone());
     }
+    if let Some(value) = &config.settings.priority_uid_filter {
+        ops.insert(
+            "priority_uid_filter".to_owned(),
+            serde_json::to_string(value)?,
+        );
+    }
     for rule in &config.rules {
         let (kind, path) = match rule {
             Rule::Path { path, .. } => ("path", path),
@@ -181,6 +187,37 @@ fn setting(config: &Config, detection: &Detection, key: &str) -> Result<Outcome>
                 err: 126,
             };
             abi::call(0x0005_55b0, &mut payload);
+            abi::checked(payload.err).map(|()| Outcome::Applied)
+        }
+        "priority_uid_filter" => {
+            require(detection, "CONFIG_KSU_SUSFS_PRIORITY_UID_FILTER")?;
+            if detection.implementation != "builtin" {
+                bail!(
+                    "Capability unavailable: priority UID filter ABI is not audited for this provider"
+                );
+            }
+            let packages = config
+                .settings
+                .priority_uid_filter
+                .as_ref()
+                .ok_or_else(|| anyhow::anyhow!("Missing priority UID filter"))?;
+            let list = if packages.is_empty() {
+                ",".to_owned()
+            } else {
+                packages.join(",")
+            };
+            let mut payload = Box::<abi::Text<65535>>::new_uninit();
+            let mut payload = unsafe {
+                std::ptr::write_bytes(
+                    payload.as_mut_ptr().cast::<u8>(),
+                    0,
+                    std::mem::size_of::<abi::Text<65535>>(),
+                );
+                payload.assume_init()
+            };
+            payload.err = 126;
+            payload.text[..list.len()].copy_from_slice(list.as_bytes());
+            abi::call(0x0006_0030, payload.as_mut());
             abi::checked(payload.err).map(|()| Outcome::Applied)
         }
         _ if key.starts_with("module:") => proc_write(
@@ -342,6 +379,9 @@ fn apply_with_state(
     state
         .skipped
         .retain(|key, skipped| desired.get(key) == Some(&skipped.value));
+    state
+        .applied
+        .retain(|key, _| key != "priority_uid_filter" || desired.contains_key(key));
     for key in state
         .applied
         .keys()
@@ -520,6 +560,18 @@ const fn kstat_phase(phase: Stage, captured: bool, late: bool) -> Option<bool> {
 mod tests {
     use super::*;
     use std::cell::RefCell;
+
+    #[test]
+    fn priority_filter_unmanaged_and_empty_are_distinct() {
+        let mut config = Config::default();
+        assert!(
+            !operations(&config)
+                .unwrap()
+                .contains_key("priority_uid_filter")
+        );
+        config.settings.priority_uid_filter = Some(Vec::new());
+        assert_eq!(operations(&config).unwrap()["priority_uid_filter"], "[]");
+    }
 
     #[test]
     fn changing_kstat_kind_requires_reboot_before_writing() {
