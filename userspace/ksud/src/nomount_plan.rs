@@ -301,7 +301,7 @@ fn collect_rules_filtered(
                 .iter()
                 .find(|mark| fs.exists(&module.join(mark)).unwrap_or(false))
         {
-            plan.skipped.push((id.clone(), (*mark).to_string()));
+            plan.skipped.push((id, (*mark).to_string()));
             continue;
         }
         let start = plan.rules.len();

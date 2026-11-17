@@ -671,21 +671,18 @@ fn status() {
     } else {
         "selected"
     };
-    let targets = file
-        .as_ref()
-        .map(|config| {
-            config
-                .targets
-                .iter()
-                .map(|target| {
-                    serde_json::json!({
-                        "package": target.package,
-                        "uid": target.uid,
-                    })
+    let targets = file.as_ref().map_or_default(|config| {
+        config
+            .targets
+            .iter()
+            .map(|target| {
+                serde_json::json!({
+                    "package": target.package,
+                    "uid": target.uid,
                 })
-                .collect::<Vec<_>>()
-        })
-        .unwrap_or_default();
+            })
+            .collect::<Vec<_>>()
+    });
     let target_count = targets.len();
     let state = if !supported {
         "unsupported"

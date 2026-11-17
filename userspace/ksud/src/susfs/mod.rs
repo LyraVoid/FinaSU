@@ -534,7 +534,7 @@ pub fn run(command: Command) -> Result<()> {
                     "status": "saved",
                     "management": store::summary(&config)?,
                     "migrated": migration.is_some(),
-                    "warnings": migration.map(|value| value.warnings).unwrap_or_default(),
+                    "warnings": migration.map_or_default(|value| value.warnings),
                 })
             );
         }
@@ -549,7 +549,7 @@ pub fn run(command: Command) -> Result<()> {
                 serde_json::json!({
                     "config": config,
                     "migrated": migration.is_some(),
-                    "warnings": migration.map(|value| value.warnings).unwrap_or_default(),
+                    "warnings": migration.map_or_default(|value| value.warnings),
                 })
             );
         }
