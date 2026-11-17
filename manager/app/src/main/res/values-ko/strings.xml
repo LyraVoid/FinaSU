@@ -719,6 +719,10 @@
     <string name="settings_navbar_glass_border_summary">탐색 표시줄 주위에 은은한 테두리를 활성화합니다</string>
     <string name="settings_nav_mode">탐색 표시줄 모드</string>
     <string name="settings_nav_mode_summary">탐색 표시줄의 표시 방식을 선택합니다</string>
+    <string name="settings_nav_icon_animation">아이콘 애니메이션</string>
+    <string name="settings_nav_icon_animation_summary">선택한 아이콘의 전환 방식을 선택합니다</string>
+    <string name="settings_nav_icon_animation_morph">모프</string>
+    <string name="settings_nav_icon_animation_fade">페이드</string>
     <string name="settings_nav_mode_auto">자동 기존 방식</string>
     <string name="settings_nav_mode_bottom">항상 하단 표시줄</string>
     <string name="settings_nav_mode_rail">항상 측면 레일</string>

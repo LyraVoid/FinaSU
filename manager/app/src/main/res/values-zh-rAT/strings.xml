@@ -728,6 +728,10 @@
     <string name="settings_navbar_glass_border_summary">于圣图导航周遭唤醒微妙圣框描边</string>
     <string name="settings_nav_mode">圣图导航模式</string>
     <string name="settings_nav_mode_summary">遴选圣图导航之现出方式</string>
+    <string name="settings_nav_icon_animation">圣印动画</string>
+    <string name="settings_nav_icon_animation_summary">遴选选中圣印之更替方式</string>
+    <string name="settings_nav_icon_animation_morph">化形</string>
+    <string name="settings_nav_icon_animation_fade">淡隐</string>
     <string name="settings_nav_mode_auto">天意传统圣图导航</string>
     <string name="settings_nav_mode_bottom">恒久底端圣图导航</string>
     <string name="settings_nav_mode_rail">恒久侧方圣图导航</string>

@@ -723,6 +723,10 @@ Przed kontynuowaniem upewnij się, że bootloader jest odblokowany!</string>
     <string name="settings_navbar_glass_border_summary">Włącz subtelną obwódkę wokół paska nawigacji</string>
     <string name="settings_nav_mode">Tryb paska nawigacji</string>
     <string name="settings_nav_mode_summary">Wybierz sposób wyświetlania paska nawigacji</string>
+    <string name="settings_nav_icon_animation">Animacja ikony</string>
+    <string name="settings_nav_icon_animation_summary">Wybierz sposób zmiany wybranej ikony</string>
+    <string name="settings_nav_icon_animation_morph">Morfowanie</string>
+    <string name="settings_nav_icon_animation_fade">Zanikanie</string>
     <string name="settings_nav_mode_auto">Automatyczny tradycyjny</string>
     <string name="settings_nav_mode_bottom">Zawsze dolny pasek</string>
     <string name="settings_nav_mode_rail">Zawsze boczny pasek</string>

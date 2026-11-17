@@ -730,6 +730,10 @@
     <string name="settings_navbar_glass_border_summary">在導覽列周圍啟用細緻的邊框輪廓</string>
     <string name="settings_nav_mode">導覽列模式</string>
     <string name="settings_nav_mode_summary">選擇導覽列的顯示方式</string>
+    <string name="settings_nav_icon_animation">圖示動畫</string>
+    <string name="settings_nav_icon_animation_summary">選擇選中圖示的切換動畫</string>
+    <string name="settings_nav_icon_animation_morph">形變</string>
+    <string name="settings_nav_icon_animation_fade">漸變</string>
     <string name="settings_nav_mode_auto">自動傳統</string>
     <string name="settings_nav_mode_bottom">固定底部列</string>
     <string name="settings_nav_mode_rail">固定側邊列</string>

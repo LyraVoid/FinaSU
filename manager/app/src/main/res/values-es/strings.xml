@@ -719,6 +719,10 @@
     <string name="settings_navbar_glass_border_summary">Activar un sutil contorno alrededor de la barra de navegación</string>
     <string name="settings_nav_mode">Modo de la barra de navegación</string>
     <string name="settings_nav_mode_summary">Elige cómo se muestra la barra de navegación</string>
+    <string name="settings_nav_icon_animation">Animación del icono</string>
+    <string name="settings_nav_icon_animation_summary">Elige cómo cambia el icono seleccionado</string>
+    <string name="settings_nav_icon_animation_morph">Transformación</string>
+    <string name="settings_nav_icon_animation_fade">Fundido</string>
     <string name="settings_nav_mode_auto">Tradicional automático</string>
     <string name="settings_nav_mode_bottom">Siempre barra inferior</string>
     <string name="settings_nav_mode_rail">Siempre barra lateral</string>

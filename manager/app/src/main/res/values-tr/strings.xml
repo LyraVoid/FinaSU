@@ -721,6 +721,10 @@
     <string name="settings_navbar_glass_border_summary">Gezinme çubuğunun çevresinde hafif kenarlık çerçevesini etkinleştir</string>
     <string name="settings_nav_mode">Gezinme Çubuğu Modu</string>
     <string name="settings_nav_mode_summary">Gezinme çubuğunun nasıl görüntüleneceğini seçin</string>
+    <string name="settings_nav_icon_animation">Simge animasyonu</string>
+    <string name="settings_nav_icon_animation_summary">Seçili simgenin nasıl değişeceğini seçin</string>
+    <string name="settings_nav_icon_animation_morph">Dönüşüm</string>
+    <string name="settings_nav_icon_animation_fade">Solma</string>
     <string name="settings_nav_mode_auto">Otomatik Geleneksel</string>
     <string name="settings_nav_mode_bottom">Her Zaman Alt Çubuk</string>
     <string name="settings_nav_mode_rail">Her Zaman Yan Ray</string>

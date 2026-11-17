@@ -719,6 +719,10 @@
     <string name="settings_navbar_glass_border_summary">Aktifkan garis tepi halus di sekitar bilah navigasi</string>
     <string name="settings_nav_mode">Mode bilah navigasi</string>
     <string name="settings_nav_mode_summary">Pilih cara bilah navigasi ditampilkan</string>
+    <string name="settings_nav_icon_animation">Animasi ikon</string>
+    <string name="settings_nav_icon_animation_summary">Pilih cara ikon yang dipilih berubah</string>
+    <string name="settings_nav_icon_animation_morph">Morf</string>
+    <string name="settings_nav_icon_animation_fade">Pudar</string>
     <string name="settings_nav_mode_auto">Otomatis tradisional</string>
     <string name="settings_nav_mode_bottom">Selalu bilah bawah</string>
     <string name="settings_nav_mode_rail">Selalu bilah samping</string>

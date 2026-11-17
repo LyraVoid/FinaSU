@@ -719,6 +719,10 @@
     <string name="settings_navbar_glass_border_summary">Bật đường viền mờ xung quanh thanh điều hướng</string>
     <string name="settings_nav_mode">Chế độ thanh điều hướng</string>
     <string name="settings_nav_mode_summary">Chọn cách hiển thị thanh điều hướng</string>
+    <string name="settings_nav_icon_animation">Hiệu ứng biểu tượng</string>
+    <string name="settings_nav_icon_animation_summary">Chọn cách biểu tượng đã chọn thay đổi</string>
+    <string name="settings_nav_icon_animation_morph">Biến hình</string>
+    <string name="settings_nav_icon_animation_fade">Mờ dần</string>
     <string name="settings_nav_mode_auto">Tự động truyền thống</string>
     <string name="settings_nav_mode_bottom">Luôn dùng thanh dưới cùng</string>
     <string name="settings_nav_mode_rail">Luôn dùng thanh bên</string>

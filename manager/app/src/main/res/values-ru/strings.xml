@@ -721,6 +721,10 @@
     <string name="settings_navbar_glass_border_summary">Включить тонкую обводку вокруг панели навигации</string>
     <string name="settings_nav_mode">Режим панели навигации</string>
     <string name="settings_nav_mode_summary">Выберите способ отображения панели навигации</string>
+    <string name="settings_nav_icon_animation">Анимация значка</string>
+    <string name="settings_nav_icon_animation_summary">Выберите, как меняется выбранный значок</string>
+    <string name="settings_nav_icon_animation_morph">Морфинг</string>
+    <string name="settings_nav_icon_animation_fade">Затухание</string>
     <string name="settings_nav_mode_auto">Авто (традиционный)</string>
     <string name="settings_nav_mode_bottom">Всегда нижняя панель</string>
     <string name="settings_nav_mode_rail">Всегда боковая панель</string>

@@ -728,6 +728,10 @@
     <string name="settings_navbar_glass_border_summary">于导航仙阵周现琉璃细边</string>
     <string name="settings_nav_mode">导航仙阵模式</string>
     <string name="settings_nav_mode_summary">择导航仙阵之现出方式</string>
+    <string name="settings_nav_icon_animation">道印幻化</string>
+    <string name="settings_nav_icon_animation_summary">择选中道印之更替法</string>
+    <string name="settings_nav_icon_animation_morph">化形</string>
+    <string name="settings_nav_icon_animation_fade">隐没</string>
     <string name="settings_nav_mode_auto">天机自动传统</string>
     <string name="settings_nav_mode_bottom">永恒现于底部</string>
     <string name="settings_nav_mode_rail">永恒现于侧方</string>

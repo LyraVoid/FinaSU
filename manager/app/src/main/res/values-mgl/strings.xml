@@ -719,6 +719,10 @@
     <string name="settings_navbar_glass_border_summary">在星图导航四周施展微妙的边框描边</string>
     <string name="settings_nav_mode">星图导航模式</string>
     <string name="settings_nav_mode_summary">选择星图导航的现出方式</string>
+    <string name="settings_nav_icon_animation">图标动画</string>
+    <string name="settings_nav_icon_animation_summary">选择选中图标的切换方式</string>
+    <string name="settings_nav_icon_animation_morph">形变</string>
+    <string name="settings_nav_icon_animation_fade">渐变</string>
     <string name="settings_nav_mode_auto">魔法自动传统</string>
     <string name="settings_nav_mode_bottom">始终底部星图导航</string>
     <string name="settings_nav_mode_rail">始终侧边星图导航</string>

@@ -728,6 +728,10 @@
     <string name="settings_navbar_glass_border_summary">在导航栏周围描一圈淡淡的边框喵</string>
     <string name="settings_nav_mode">导航栏模式喵</string>
     <string name="settings_nav_mode_summary">挑一个导航栏的显示方式喵</string>
+    <string name="settings_nav_icon_animation">图标动画喵</string>
+    <string name="settings_nav_icon_animation_summary">挑一个选中图标怎么切换喵</string>
+    <string name="settings_nav_icon_animation_morph">形变喵</string>
+    <string name="settings_nav_icon_animation_fade">渐变喵</string>
     <string name="settings_nav_mode_auto">自动传统导航栏喵</string>
     <string name="settings_nav_mode_bottom">始终底部导航栏喵</string>
     <string name="settings_nav_mode_rail">始终侧边导航栏喵</string>

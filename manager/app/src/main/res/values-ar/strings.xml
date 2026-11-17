@@ -721,6 +721,10 @@
     <string name="settings_navbar_glass_border_summary">تفعيل حدود خارجية خفيفة حول شريط التنقل</string>
     <string name="settings_nav_mode">وضع شريط التنقل</string>
     <string name="settings_nav_mode_summary">اختر كيفية عرض شريط التنقل</string>
+    <string name="settings_nav_icon_animation">حركة الأيقونة</string>
+    <string name="settings_nav_icon_animation_summary">اختر كيفية تغيّر الأيقونة المحددة</string>
+    <string name="settings_nav_icon_animation_morph">تحوّل</string>
+    <string name="settings_nav_icon_animation_fade">تلاشٍ</string>
     <string name="settings_nav_mode_auto">تلقائي تقليدي</string>
     <string name="settings_nav_mode_bottom">شريط سفلي دائمًا</string>
     <string name="settings_nav_mode_rail">شريط جانبي دائمًا</string>

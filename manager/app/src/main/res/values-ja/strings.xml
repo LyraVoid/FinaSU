@@ -719,6 +719,10 @@
     <string name="settings_navbar_glass_border_summary">ナビゲーションバーの周囲に淡い枠線を有効にします</string>
     <string name="settings_nav_mode">ナビゲーションバーのモード</string>
     <string name="settings_nav_mode_summary">ナビゲーションバーの表示方法を選択します</string>
+    <string name="settings_nav_icon_animation">アイコンアニメーション</string>
+    <string name="settings_nav_icon_animation_summary">選択中のアイコンの切り替え方を選択</string>
+    <string name="settings_nav_icon_animation_morph">モーフ</string>
+    <string name="settings_nav_icon_animation_fade">フェード</string>
     <string name="settings_nav_mode_auto">自動 (従来型)</string>
     <string name="settings_nav_mode_bottom">常に下部バー</string>
     <string name="settings_nav_mode_rail">常にサイドレール</string>

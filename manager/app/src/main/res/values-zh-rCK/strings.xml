@@ -728,6 +728,10 @@
     <string name="settings_navbar_glass_border_summary">给导航栏描一圈细边</string>
     <string name="settings_nav_mode">导航栏模式</string>
     <string name="settings_nav_mode_summary">挑导航栏咋摆</string>
+    <string name="settings_nav_icon_animation">图标动画</string>
+    <string name="settings_nav_icon_animation_summary">挑一下选中图标咋换</string>
+    <string name="settings_nav_icon_animation_morph">变形</string>
+    <string name="settings_nav_icon_animation_fade">淡出</string>
     <string name="settings_nav_mode_auto">自动老派导航栏</string>
     <string name="settings_nav_mode_bottom">老蹲底下</string>
     <string name="settings_nav_mode_rail">老待在旁边</string>
