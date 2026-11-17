@@ -2,7 +2,6 @@ package me.weishu.kernelsu.ui.screen
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -163,7 +162,7 @@ private fun SusfsPriorityPicker(
         properties = DialogProperties(usePlatformDefaultWidth = false),
     ) {
         CompositionLocalProvider(LocalFolkWallpaperTokens provides null) {
-            BoxWithConstraints(
+            Box(
                 modifier = Modifier
                     .fillMaxSize()
                     .windowInsetsPadding(WindowInsets.safeDrawing)
