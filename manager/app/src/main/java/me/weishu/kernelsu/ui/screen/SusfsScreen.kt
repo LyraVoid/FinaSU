@@ -31,7 +31,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.LifecycleResumeEffect
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -55,8 +54,6 @@ import me.weishu.kernelsu.ui.viewmodel.SusfsUiState
 import me.weishu.kernelsu.ui.viewmodel.SusfsViewModel
 import org.json.JSONArray
 import org.json.JSONObject
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import me.weishu.kernelsu.wallpaper.LocalFolkWallpaperTokens
 
 @Composable
@@ -312,9 +309,6 @@ fun SusfsScreen() {
 @Composable
 private fun SusfsNavigation(selected: Int, onSelect: (Int) -> Unit) {
     val haptic = LocalHapticFeedback.current
-    // Same shape as BakaSU's SUSFS page: a Material3 scrollable tab row, so the indicator is the
-    // platform underline and the strip follows the theme's own container instead of a hand-rolled
-    // row. The container is the wallpaper group fill, which tracks the global opacity preference.
     PrimaryScrollableTabRow(
         selectedTabIndex = selected,
         containerColor = LocalFolkWallpaperTokens.current?.group?.fill
@@ -330,8 +324,6 @@ private fun SusfsNavigation(selected: Int, onSelect: (Int) -> Unit) {
                     haptic.performHapticFeedback(HapticFeedbackType.VirtualKey)
                     onSelect(index)
                 },
-                // Selected tab keeps the accent colour so the row reads at a glance even when the
-                // wallpaper behind it is busy.
                 selectedContentColor = MaterialTheme.colorScheme.primary,
                 unselectedContentColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.82f),
                 text = {
