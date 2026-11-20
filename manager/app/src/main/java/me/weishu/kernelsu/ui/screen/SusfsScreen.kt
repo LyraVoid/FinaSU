@@ -305,32 +305,35 @@ fun SusfsScreen() {
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun SusfsNavigation(selected: Int, onSelect: (Int) -> Unit) {
     val haptic = LocalHapticFeedback.current
-    val wallpaper = LocalFolkWallpaperTokens.current
-    Row(Modifier.fillMaxWidth().horizontalScroll(rememberScrollState()).padding(horizontal = 16.dp, vertical = 8.dp),
-        horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+    PrimaryScrollableTabRow(
+        selectedTabIndex = selected,
+        containerColor = LocalFolkWallpaperTokens.current?.group?.fill
+            ?: MaterialTheme.colorScheme.surfaceContainer,
+        contentColor = MaterialTheme.colorScheme.onSurface,
+        edgePadding = 0.dp,
+        modifier = Modifier.fillMaxWidth(),
+    ) {
         susfsPages.forEachIndexed { index, title ->
-            val source = remember { MutableInteractionSource() }
-            val requester = remember { BringIntoViewRequester() }
-            val pressed by source.collectIsPressedAsState()
-            val scale by animateFloatAsState(if (pressed) FolkMotion.PressedScale else 1f,
-                animationSpec = if (pressed) FolkMotion.PressDown else FolkMotion.PressScale, label = "susfsTabPress")
-            val active = selected == index
-            LaunchedEffect(active) { if (active) requester.bringIntoView() }
-            Box(Modifier.graphicsLayer { scaleX = scale; scaleY = scale }
-                .bringIntoViewRequester(requester)
-                .background(if (active) wallpaper?.raised?.fill ?: MaterialTheme.colorScheme.secondaryContainer
-                    else wallpaper?.group?.fill ?: MaterialTheme.colorScheme.surfaceContainerLow, FolkShape.CornerFull)
-                .selectable(active, interactionSource = source, indication = null, role = Role.Tab) {
+            Tab(
+                selected = selected == index,
+                onClick = {
                     haptic.performHapticFeedback(HapticFeedbackType.VirtualKey)
                     onSelect(index)
-                }.heightIn(min = 48.dp).padding(horizontal = 20.dp), contentAlignment = Alignment.Center) {
-                Text(stringResource(title), style = MaterialTheme.typography.labelLarge,
-                    color = if (active) wallpaper?.raised?.contentColor ?: MaterialTheme.colorScheme.onSecondaryContainer
-                        else wallpaper?.group?.supportingColor ?: MaterialTheme.colorScheme.onSurfaceVariant)
-            }
+                },
+                selectedContentColor = MaterialTheme.colorScheme.primary,
+                unselectedContentColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.82f),
+                text = {
+                    Text(
+                        text = stringResource(title),
+                        style = MaterialTheme.typography.titleSmall,
+                        maxLines = 1,
+                    )
+                },
+            )
         }
     }
 }
