@@ -408,7 +408,7 @@
     <string name="nomount_driver_kind_builtin">çekirdeğe yerleşik</string>
     <string name="nomount_driver_kind_module">çekirdek modülü</string>
     <string name="nomount_unavailable_no_asset">Bu paket %1$s için NoMount modülü içermiyor; Otomatik veya Yerleşik Folk Mount kullanın.</string>
-    <string name="nomount_unavailable_outdated">Çekirdek NoMount %1$s taşıyor ancak bu yapı API 22 veya daha yenisini gerektiriyor; çekirdeği güncelleyin.</string>
+    <string name="nomount_unavailable_outdated">Çekirdek NoMount %1$s taşıyor ancak bu yapı API 23 veya daha yenisini gerektiriyor; çekirdeği güncelleyin.</string>
     <string name="nomount_unavailable_not_loaded">Sürücü henüz yüklenmedi; yüklemek için yeniden başlatın veya bir kez enjekte edin.</string>
     <string name="nomount_unavailable_unknown_kmi">Çekirdek sürümü bir NoMount modülüyle eşleştirilemedi.</string>
     <string name="nomount_driver_unavailable">Sürücü kullanılamıyor (%1$s)</string>

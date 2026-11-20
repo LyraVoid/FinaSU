@@ -410,7 +410,7 @@ Przed kontynuowaniem upewnij się, że bootloader jest odblokowany!</string>
     <string name="nomount_driver_kind_builtin">wbudowany w jądro</string>
     <string name="nomount_driver_kind_module">moduł jądra</string>
     <string name="nomount_unavailable_no_asset">Ten pakiet nie zawiera modułu NoMount dla %1$s; użyj opcji Automatyczny lub Wbudowany Folk Mount.</string>
-    <string name="nomount_unavailable_outdated">Jądro zawiera NoMount %1$s, ale ta wersja wymaga API 22 lub nowszego; zaktualizuj jądro.</string>
+    <string name="nomount_unavailable_outdated">Jądro zawiera NoMount %1$s, ale ta wersja wymaga API 23 lub nowszego; zaktualizuj jądro.</string>
     <string name="nomount_unavailable_not_loaded">Sterownik nie został jeszcze wczytany; uruchom ponownie lub wykonaj wstrzyknięcie, aby go wczytać.</string>
     <string name="nomount_unavailable_unknown_kmi">Nie udało się dopasować wersji jądra do modułu NoMount.</string>
     <string name="nomount_driver_unavailable">Sterownik niedostępny (%1$s)</string>

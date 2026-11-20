@@ -12,7 +12,7 @@ copyright:
 
 # NoMount
 
-<Badge text="VFS Backend" type="info" /> <Badge text="Minimum API 22" type="warning" /> <Badge text="Inverted Default Visibility" type="danger" />
+<Badge text="VFS Backend" type="info" /> <Badge text="Minimum API 23" type="warning" /> <Badge text="Inverted Default Visibility" type="danger" />
 
 ==NoMount injects module files by redirecting kernel-side VFS lookup and directory traversal==, without creating traditional mounts. A process's mount table can therefore stay as it is, while the filesystem view is still rewritten by the kernel according to rules.
 

@@ -12,7 +12,7 @@ copyright:
 
 # NoMount
 
-<Badge text="VFS 后端" type="info" /> <Badge text="最低 API 22" type="warning" /> <Badge text="默认可见性相反" type="danger" />
+<Badge text="VFS 后端" type="info" /> <Badge text="最低 API 23" type="warning" /> <Badge text="默认可见性相反" type="danger" />
 
 ==NoMount 通过内核侧 VFS 查找与目录遍历重定向注入模块文件==，不建立传统挂载。因此进程的挂载表可以保持原样，但文件系统视图仍由内核按规则改写。
 

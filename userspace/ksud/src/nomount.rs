@@ -34,9 +34,8 @@ pub const BUFFER_SIZE: usize = PAGE_SIZE - PAYLOAD_HEADER_SIZE;
 
 const PAYLOAD_HEADER_SIZE: usize = 28;
 
-/// Oldest kernel API this backend accepts. The vendored module (v2.2.0)
-/// reports `22`; v21 uses an incompatible rule header.
-pub const MIN_API_VERSION: u32 = 22;
+/// Oldest kernel API supported by the listing protocol.
+pub const MIN_API_VERSION: u32 = 23;
 
 /// Base name of the module inside the embedded assets.
 pub const ASSET_SUFFIX: &str = "_nomount.ko";
@@ -237,6 +236,10 @@ impl PageBuffer {
         unsafe { std::ptr::read_volatile(std::ptr::addr_of!((*self.as_ptr()).data_size)) }
     }
 
+    pub fn cursor(&self) -> u32 {
+        unsafe { std::ptr::read_volatile(std::ptr::addr_of!((*self.as_ptr()).arg1)) }
+    }
+
     const fn as_ptr(&self) -> *const Payload {
         self.bytes.as_ptr().cast()
     }
@@ -408,22 +411,25 @@ impl<T: Transport> Driver<T> {
     /// command.
     pub fn list_rules(&self) -> Result<Vec<Rule>> {
         let mut rules = Vec::new();
+        let mut cursor = 0;
         loop {
             let mut page = PageBuffer::zeroed();
             page.as_mut().magic = MAGIC;
             page.as_mut().cmd = Command::GetList as u32;
-            page.as_mut().arg1 = u32::try_from(rules.len()).context("nomount: rule overflow")?;
+            page.as_mut().arg1 = cursor;
             self.transport.send(page.as_mut())?;
             let len = usize::try_from(page.data_size()).context("nomount: bad list length")?;
             if len == 0 {
                 return Ok(rules);
             }
             let batch = parse_list_records(&page.data(len)?)?;
-            let count = batch.len();
             rules.extend(batch);
-            if count == 0 {
+            let next = page.cursor();
+            if next == u32::MAX {
                 return Ok(rules);
             }
+            ensure!(next != cursor, "nomount: rule cursor did not advance");
+            cursor = next;
         }
     }
 
@@ -504,18 +510,19 @@ impl<T: Transport> Driver<T> {
     /// Returns an error when the reply is malformed.
     pub fn list_uids(&self) -> Result<Vec<u32>> {
         let mut uids = Vec::new();
+        let mut cursor = 0;
         loop {
             let mut page = PageBuffer::zeroed();
             page.as_mut().magic = MAGIC;
             page.as_mut().cmd = Command::GetUids as u32;
-            page.as_mut().arg1 = u32::try_from(uids.len()).context("nomount: uid overflow")?;
+            page.as_mut().arg1 = cursor;
             self.transport.send(page.as_mut())?;
             let len = usize::try_from(page.data_size()).context("nomount: bad uid length")?;
-            if len < 4 {
+            if len == 0 {
                 return Ok(uids);
             }
             let bytes = page.data(len)?;
-            let count = bytes.len() / 4;
+            ensure!(bytes.len() % 4 == 0, "nomount: malformed uid list");
             let mut index = 0;
             while index + 4 <= bytes.len() {
                 uids.push(u32::from_le_bytes([
@@ -526,9 +533,12 @@ impl<T: Transport> Driver<T> {
                 ]));
                 index += 4;
             }
-            if count == 0 {
+            let next = page.cursor();
+            if next == u32::MAX {
                 return Ok(uids);
             }
+            ensure!(next != cursor, "nomount: uid cursor did not advance");
+            cursor = next;
         }
     }
 

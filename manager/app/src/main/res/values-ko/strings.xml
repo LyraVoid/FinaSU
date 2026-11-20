@@ -406,7 +406,7 @@
     <string name="nomount_driver_kind_builtin">커널 내장</string>
     <string name="nomount_driver_kind_module">커널 모듈</string>
     <string name="nomount_unavailable_no_asset">이 패키지에는 %1$s용 NoMount 모듈이 포함되어 있지 않습니다. 자동 또는 내장 Folk Mount를 사용하세요.</string>
-    <string name="nomount_unavailable_outdated">커널에 NoMount %1$s이(가) 포함되어 있지만 이 빌드에는 API 22 이상이 필요합니다. 커널을 업데이트하세요.</string>
+    <string name="nomount_unavailable_outdated">커널에 NoMount %1$s이(가) 포함되어 있지만 이 빌드에는 API 23 이상이 필요합니다. 커널을 업데이트하세요.</string>
     <string name="nomount_unavailable_not_loaded">드라이버가 아직 로드되지 않았습니다. 재부팅하거나 한 번 주입하여 로드하세요.</string>
     <string name="nomount_unavailable_unknown_kmi">커널 버전을 NoMount 모듈과 일치시킬 수 없습니다.</string>
     <string name="nomount_driver_unavailable">드라이버 사용 불가 (%1$s)</string>

@@ -36,7 +36,7 @@ impl FakeKernel {
     fn new(mode: Mode) -> Self {
         Self {
             mode,
-            version: "22",
+            version: "23",
             state: RefCell::new(FakeState {
                 rules: Vec::new(),
                 uids: Vec::new(),
@@ -148,8 +148,9 @@ impl FakeKernel {
                 } else {
                     self.state.borrow().rules.clone()
                 };
-                let start = usize::try_from(payload.arg1)?;
+                let start = usize::try_from(payload.arg1 & ((1 << 20) - 1))?;
                 let mut cursor = 0_usize;
+                let mut written = 0;
                 for rule in rules.iter().skip(start) {
                     let record = kernel_record(rule);
                     if cursor + record.len() > BUFFER_SIZE {
@@ -157,9 +158,14 @@ impl FakeKernel {
                     }
                     payload.buffer[cursor..cursor + record.len()].copy_from_slice(&record);
                     cursor += record.len();
+                    written += 1;
                 }
                 payload.data_size = u32::try_from(cursor)?;
-                payload.arg1 = u32::try_from(start + rules.len().saturating_sub(start))?;
+                payload.arg1 = if start + written < rules.len() {
+                    (1 << 20) | u32::try_from(start + written)?
+                } else {
+                    u32::MAX
+                };
             }
             Command::AddRule => {
                 let len = usize::try_from(payload.data_size)?;
@@ -219,7 +225,11 @@ impl FakeKernel {
                     written += 1;
                 }
                 payload.data_size = u32::try_from(cursor)?;
-                payload.arg1 = u32::try_from(start + written)?;
+                payload.arg1 = if start + written < self.state.borrow().uids.len() {
+                    u32::try_from(start + written)?
+                } else {
+                    u32::MAX
+                };
             }
             // The kernel replies with "1\n" or "0\n".
             Command::BlockIsolatedUids => {
@@ -720,10 +730,10 @@ fn probe_reports_absent_outdated_and_ready() {
     let (absent, _kernel) = driver(Mode::Silent);
     assert_eq!(absent.probe().state, DriverState::Absent);
 
-    let outdated = driver_versioned(Mode::Ready, "21");
+    let outdated = driver_versioned(Mode::Ready, "22");
     let probe = outdated.probe();
     assert_eq!(probe.state, DriverState::Outdated);
-    assert_eq!(probe.version.as_deref(), Some("21"));
+    assert_eq!(probe.version.as_deref(), Some("22"));
     assert!(ensure_usable(&probe).is_err());
 
     let (refused, _kernel) = driver(Mode::ListingRefused);
@@ -732,7 +742,7 @@ fn probe_reports_absent_outdated_and_ready() {
     let (ready, _kernel) = driver(Mode::Ready);
     let probe = ready.probe();
     assert!(probe.ready());
-    assert_eq!(probe.version.as_deref(), Some("22"));
+    assert_eq!(probe.version.as_deref(), Some("23"));
     assert!(ensure_usable(&probe).is_ok());
 }
 
@@ -792,6 +802,15 @@ fn uid_exclusions_are_applied_and_listed() {
     // Every step must have reached the kernel, whatever the paging did.
     assert!(kernel.commands().contains(&Command::AddUid));
     assert!(kernel.commands().contains(&Command::DelUid));
+}
+
+#[test]
+fn list_uids_follows_multiple_pages() {
+    let (driver, kernel) = driver(Mode::Ready);
+    let uids: Vec<u32> = (1000..2200).collect();
+    kernel.state.borrow_mut().uids = uids.clone();
+    assert_eq!(driver.list_uids().unwrap(), uids);
+    assert_eq!(kernel.commands().len(), 2);
 }
 
 #[test]

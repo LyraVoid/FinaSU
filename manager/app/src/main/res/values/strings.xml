@@ -423,7 +423,7 @@
     <string name="nomount_driver_kind_builtin">kernel built-in</string>
     <string name="nomount_driver_kind_module">kernel module</string>
     <string name="nomount_unavailable_no_asset">This package ships no NoMount module for %1$s; use Automatic or Built-in Folk Mount.</string>
-    <string name="nomount_unavailable_outdated">The kernel carries NoMount %1$s but this build needs API 22 or newer; update the kernel.</string>
+    <string name="nomount_unavailable_outdated">The kernel carries NoMount %1$s but this build needs API 23 or newer; update the kernel.</string>
     <string name="nomount_unavailable_not_loaded">The driver is not loaded yet; reboot or inject once to load it.</string>
     <string name="nomount_unavailable_unknown_kmi">The kernel version could not be matched to a NoMount module.</string>
     <string name="nomount_driver_unavailable">Driver unavailable (%1$s)</string>

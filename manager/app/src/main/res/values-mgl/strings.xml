@@ -406,7 +406,7 @@
     <string name="nomount_driver_kind_builtin">心之契约内建</string>
     <string name="nomount_driver_kind_module">心之契约结晶</string>
     <string name="nomount_unavailable_no_asset">本安装包没有 %1$s 对应的 NoMount 魔法阵；请改用「自动」或「内建 Folk Mount」。</string>
-    <string name="nomount_unavailable_outdated">心之契约携带的是 NoMount %1$s，而本版本需要 API 22 及以上；请更新心之契约。</string>
+    <string name="nomount_unavailable_outdated">心之契约携带的是 NoMount %1$s，而本版本需要 API 23 及以上；请更新心之契约。</string>
     <string name="nomount_unavailable_not_loaded">驱动尚未加载；重新觉醒或注入一次即可唤醒。</string>
     <string name="nomount_unavailable_unknown_kmi">无法把当前心之契约版本匹配到 NoMount 魔法阵。</string>
     <string name="nomount_driver_unavailable">驱动不可用（%1$s）</string>

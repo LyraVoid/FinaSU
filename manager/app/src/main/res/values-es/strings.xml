@@ -406,7 +406,7 @@
     <string name="nomount_driver_kind_builtin">integrado en el kernel</string>
     <string name="nomount_driver_kind_module">módulo del kernel</string>
     <string name="nomount_unavailable_no_asset">Este paquete no incluye ningún módulo NoMount para %1$s; usa Folk Mount automático o integrado.</string>
-    <string name="nomount_unavailable_outdated">El kernel incluye NoMount %1$s, pero esta compilación requiere la API 22 o posterior; actualiza el kernel.</string>
+    <string name="nomount_unavailable_outdated">El kernel incluye NoMount %1$s, pero esta compilación requiere la API 23 o posterior; actualiza el kernel.</string>
     <string name="nomount_unavailable_not_loaded">El controlador aún no está cargado; reinicia o inyecta una vez para cargarlo.</string>
     <string name="nomount_unavailable_unknown_kmi">No se pudo emparejar la versión del kernel con un módulo NoMount.</string>
     <string name="nomount_driver_unavailable">Controlador no disponible (%1$s)</string>

@@ -12,14 +12,14 @@ Rust, so no upstream shell scripts or WebUI are imported.
 ## Pinned sources
 
 - NoMount: https://github.com/maxsteeel/nomount
-  commit `bf1847f98fed382369c43bfd652cd93774b9b8e3` (tag `v2.2.0`).
+  commit `dcd77d03e9912f397a586d7da81694d1628f170e` (tag `v2.3.1`).
   Imported from `kernel/src/` only:
 
   | upstream path | vendored path | sha256 |
   | --- | --- | --- |
-  | `kernel/src/nomount.c` | `kernel/src/nomount.c` | `25452d96684d066446fbd1b433f4fdeab1c5b0ade11701d9b46bb8dfb5acfc1b` |
-  | `kernel/src/nomount.h` | `kernel/src/nomount.h` | `8f15ffcb4b998d8a05219b793cf22c0e25a383296376fc49a331e07bc7c93766` |
-  | `kernel/src/Kconfig` | `kernel/src/Kconfig` | `1df7ad3589a282128f797f7a46b28aee315d080550aae26b681a898f11c7abc7` |
+  | `kernel/src/nomount.c` | `kernel/src/nomount.c` | `041c09ba94ab76ab67c25241bda563dd8cdbb6567e476c557909108088cf2813` |
+  | `kernel/src/nomount.h` | `kernel/src/nomount.h` | `a396b6469fc4912e9d93179ace982468dc466f8b2a83ce6e4b606857b015941c` |
+  | `kernel/src/Kconfig` | `kernel/src/Kconfig` | `68e1d5a393eed6026b071149d0998d1652a598dfbcd4e4cd98f23e178337dbca` |
   | `kernel/src/Makefile` | `kernel/src/Makefile` | `1191fe9ef8e2f3549419fd90a118fbe3d11fc02a04b6353bae0e81be27e03e62` |
   | `kernel/LICENSE` | `kernel/LICENSE` | `8177f97513213526df2cf6184d8ff986c675afb514d4e68a404010521b880643` |
   | `LICENSE` | `LICENSE` | `3972dc9744f6499f0f9b2dbf76696f2ae7ad8af9b23dde66d6af86c9dfb36986` |
@@ -28,14 +28,15 @@ All imported files are byte-identical to upstream. No copyright notice has been
 replaced or added inside them; FinaSU attribution is not applied to upstream
 files.
 
-## v2.2.0 integration boundary
+## v2.3.1 integration boundary
 
-The imported driver speaks protocol v22. Its rule-add and list headers are 24
+The imported driver speaks protocol v23. Its rule-add and list headers are 24
 bytes (`flags`, `uid`, `uid_end`, `deny_start`, `deny_end`, `v_len`, `r_len`)
 and its delete header is 18 bytes (the same UID fields followed by `v_len`).
-v21 and v22 headers are not compatible.
+v23 list pagination uses an opaque cursor and an all-ones completion marker;
+v22 uses an index instead.
 
-FinaSU's Rust control path accepts v22 and rejects older drivers. Existing
+FinaSU's Rust control path accepts v23 and rejects older drivers. Existing
 rules keep the protocol's default scope (`uid = uid_end = 0`, no denied range),
 and a single explicit UID is encoded with `uid_end = uid`. The Rust codec can
 parse and report range, denied-range, and opaque fields for diagnostics, but
@@ -112,7 +113,7 @@ matching `userspace/ksud/bin/aarch64/<kmi>_kernelsu.ko`. Output is staged as
 The upstream `kernel/src/Makefile` appends a commit count to
 `NOMOUNT_VERSION` only when the source tree's enclosing git repository has an
 origin URL containing `nomount`. Inside this repository that condition is
-false, so the built module reports the plain base version (`22` for v2.2.0).
+false, so the built module reports the plain base version (`23` for v2.3.1).
 FinaSU's driver check therefore compares against the base version, not a commit
 count.
 

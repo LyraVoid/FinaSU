@@ -406,7 +406,7 @@
     <string name="nomount_driver_kind_builtin">カーネル内蔵</string>
     <string name="nomount_driver_kind_module">カーネルモジュール</string>
     <string name="nomount_unavailable_no_asset">このパッケージには %1$s 用の NoMount モジュールが含まれていません。自動または内蔵 Folk Mount を使用してください。</string>
-    <string name="nomount_unavailable_outdated">カーネルには NoMount %1$s が含まれていますが、このビルドには API 22 以降が必要です。カーネルを更新してください。</string>
+    <string name="nomount_unavailable_outdated">カーネルには NoMount %1$s が含まれていますが、このビルドには API 23 以降が必要です。カーネルを更新してください。</string>
     <string name="nomount_unavailable_not_loaded">ドライバーがまだ読み込まれていません。再起動するか、一度注入して読み込んでください。</string>
     <string name="nomount_unavailable_unknown_kmi">カーネルのバージョンを NoMount モジュールに一致させられませんでした。</string>
     <string name="nomount_driver_unavailable">ドライバー利用不可 (%1$s)</string>

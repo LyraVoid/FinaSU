@@ -406,7 +406,7 @@
     <string name="nomount_driver_kind_builtin">基岩核心内建</string>
     <string name="nomount_driver_kind_module">基岩核心模组</string>
     <string name="nomount_unavailable_no_asset">本安装包没有 %1$s 对应的 NoMount 模组；请改用「自动」或「内建 Folk Mount」。</string>
-    <string name="nomount_unavailable_outdated">基岩核心携带 NoMount %1$s，但本版本需要 API 22 或更新；请更新基岩核心。</string>
+    <string name="nomount_unavailable_outdated">基岩核心携带 NoMount %1$s，但本版本需要 API 23 或更新；请更新基岩核心。</string>
     <string name="nomount_unavailable_not_loaded">驱动尚未加载；重生或注入一次即可加载。</string>
     <string name="nomount_unavailable_unknown_kmi">无法为当前基岩核心版本匹配到 NoMount 模组。</string>
     <string name="nomount_driver_unavailable">驱动不可用（%1$s）</string>

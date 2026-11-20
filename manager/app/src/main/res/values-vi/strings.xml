@@ -406,7 +406,7 @@
     <string name="nomount_driver_kind_builtin">tích hợp trong kernel</string>
     <string name="nomount_driver_kind_module">module kernel</string>
     <string name="nomount_unavailable_no_asset">Gói này không có module NoMount cho %1$s; hãy dùng Tự động hoặc Folk Mount tích hợp.</string>
-    <string name="nomount_unavailable_outdated">Kernel có NoMount %1$s nhưng bản dựng này cần API 22 trở lên; hãy cập nhật kernel.</string>
+    <string name="nomount_unavailable_outdated">Kernel có NoMount %1$s nhưng bản dựng này cần API 23 trở lên; hãy cập nhật kernel.</string>
     <string name="nomount_unavailable_not_loaded">Trình điều khiển chưa được tải; hãy khởi động lại hoặc chèn một lần để tải nó.</string>
     <string name="nomount_unavailable_unknown_kmi">Không thể khớp phiên bản kernel với một module NoMount.</string>
     <string name="nomount_driver_unavailable">Trình điều khiển không khả dụng (%1$s)</string>

@@ -663,7 +663,7 @@
     <string name="nomount_driver_kind_builtin">内核内建</string>
     <string name="nomount_driver_kind_module">内核模块</string>
     <string name="nomount_unavailable_no_asset">本安装包没有 %1$s 对应的 NoMount 模块；请改用「自动」或「内建 Folk Mount」。</string>
-    <string name="nomount_unavailable_outdated">内核提供的是 NoMount %1$s，本版本需要 API 22 及以上；请升级内核。</string>
+    <string name="nomount_unavailable_outdated">内核提供的是 NoMount %1$s，本版本需要 API 23 及以上；请升级内核。</string>
     <string name="nomount_unavailable_not_loaded">驱动尚未加载；重启或执行一次注入即可。</string>
     <string name="nomount_unavailable_unknown_kmi">无法把当前内核版本匹配到 NoMount 模块。</string>
     <string name="nomount_driver_unavailable">驱动不可用（%1$s）</string>

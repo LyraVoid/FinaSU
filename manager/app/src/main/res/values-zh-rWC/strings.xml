@@ -406,7 +406,7 @@
     <string name="nomount_driver_kind_builtin">道核内置</string>
     <string name="nomount_driver_kind_module">道核仙符</string>
     <string name="nomount_unavailable_no_asset">此装裹未携 %1$s 之 NoMount 符；请择「天机自动」或「内置 Folk Mount」。</string>
-    <string name="nomount_unavailable_outdated">道核所携为 NoMount %1$s，然此篇需 API 22 以上；宜更新道核。</string>
+    <string name="nomount_unavailable_outdated">道核所携为 NoMount %1$s，然此篇需 API 23 以上；宜更新道核。</string>
     <string name="nomount_unavailable_not_loaded">驱动尚未载入；重铸仙躯或行一次注入即可。</string>
     <string name="nomount_unavailable_unknown_kmi">未能为道核篇次求得相合之 NoMount 符。</string>
     <string name="nomount_driver_unavailable">驱动不可用（%1$s）</string>

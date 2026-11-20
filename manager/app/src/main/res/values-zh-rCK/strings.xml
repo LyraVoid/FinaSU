@@ -406,7 +406,7 @@
     <string name="nomount_driver_kind_builtin">秘酱料内建</string>
     <string name="nomount_driver_kind_module">秘酱料模块</string>
     <string name="nomount_unavailable_no_asset">这包货没配 %1$s 的 NoMount 模块；改用「随灶」或「内建 Folk Mount」。</string>
-    <string name="nomount_unavailable_outdated">秘酱料带的是 NoMount %1$s，这版得要 API 22 往上；把秘酱料换新。</string>
+    <string name="nomount_unavailable_outdated">秘酱料带的是 NoMount %1$s，这版得要 API 23 往上；把秘酱料换新。</string>
     <string name="nomount_unavailable_not_loaded">驱动还没上灶；重新开火或注入一回就带起来了。</string>
     <string name="nomount_unavailable_unknown_kmi">没给这秘酱料版本配上对口的 NoMount 模块。</string>
     <string name="nomount_driver_unavailable">驱动使不上（%1$s）</string>

@@ -408,7 +408,7 @@
     <string name="nomount_driver_kind_builtin">встроенный в ядро</string>
     <string name="nomount_driver_kind_module">модуль ядра</string>
     <string name="nomount_unavailable_no_asset">В этом пакете нет модуля NoMount для %1$s; используйте «Автоматически» или «Встроенный Folk Mount».</string>
-    <string name="nomount_unavailable_outdated">В ядре есть NoMount %1$s, но для этой сборки требуется API 22 или новее; обновите ядро.</string>
+    <string name="nomount_unavailable_outdated">В ядре есть NoMount %1$s, но для этой сборки требуется API 23 или новее; обновите ядро.</string>
     <string name="nomount_unavailable_not_loaded">Драйвер ещё не загружен; перезагрузитесь или выполните внедрение один раз, чтобы загрузить его.</string>
     <string name="nomount_unavailable_unknown_kmi">Не удалось сопоставить версию ядра с модулем NoMount.</string>
     <string name="nomount_driver_unavailable">Драйвер недоступен (%1$s)</string>

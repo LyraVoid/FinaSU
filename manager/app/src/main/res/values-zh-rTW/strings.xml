@@ -407,7 +407,7 @@
     <string name="nomount_driver_kind_builtin">核心內建</string>
     <string name="nomount_driver_kind_module">核心模組</string>
     <string name="nomount_unavailable_no_asset">本安裝套件沒有 %1$s 對應的 NoMount 模組；請改用「自動」或「內建 Folk Mount」。</string>
-    <string name="nomount_unavailable_outdated">核心搭載的是 NoMount %1$s，但本版本需要 API 22 以上；請更新核心。</string>
+    <string name="nomount_unavailable_outdated">核心搭載的是 NoMount %1$s，但本版本需要 API 23 以上；請更新核心。</string>
     <string name="nomount_unavailable_not_loaded">驅動程式尚未載入；請重新啟動或執行一次注入來載入。</string>
     <string name="nomount_unavailable_unknown_kmi">無法將目前的核心版本對應到 NoMount 模組。</string>
     <string name="nomount_driver_unavailable">驅動程式無法使用（%1$s）</string>

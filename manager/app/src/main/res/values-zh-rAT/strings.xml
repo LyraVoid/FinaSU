@@ -406,7 +406,7 @@
     <string name="nomount_driver_kind_builtin">灵魂之力内建</string>
     <string name="nomount_driver_kind_module">灵魂圣契</string>
     <string name="nomount_unavailable_no_asset">此安装包并无 %1$s 相应之 NoMount 圣光阵；请改以「天意自动」或「内建 Folk Mount」。</string>
-    <string name="nomount_unavailable_outdated">灵魂之力所携乃 NoMount %1$s，而此版需 API 22 及以上；请更新灵魂之力。</string>
+    <string name="nomount_unavailable_outdated">灵魂之力所携乃 NoMount %1$s，而此版需 API 23 及以上；请更新灵魂之力。</string>
     <string name="nomount_unavailable_not_loaded">驱动尚未降临；神翼再生，或行一次圣引，即可唤之。</string>
     <string name="nomount_unavailable_unknown_kmi">无法将当今灵魂之力配于 NoMount 圣光阵。</string>
     <string name="nomount_driver_unavailable">驱动不可用（%1$s）</string>

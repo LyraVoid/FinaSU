@@ -326,7 +326,7 @@ build_ksuinit() {
             # shellcheck disable=SC1091
             source .github/scripts/setup-rust-build.sh "$triple" "$ANDROID_API_LEVEL"
             export RUSTFLAGS="-C target-feature=+crt-static -C link-arg=-Wl,-z,max-page-size=16384 -C link-arg=-Wno-unused-command-line-argument -C link-arg=$builtins"
-            cargo build --package ksuinit --target="$triple" "--$KSUD_BUILD_TYPE"
+            cargo build --package ksuinit --target="$triple" --profile "$([[ $KSUD_BUILD_TYPE == debug ]] && echo dev || echo "$KSUD_BUILD_TYPE")"
         )
 
         src="target/$triple/$KSUD_BUILD_TYPE/ksuinit"
@@ -356,7 +356,7 @@ build_ksud() {
             export ANDROID_NDK_HOME="$ndk"
             # shellcheck disable=SC1091
             source .github/scripts/setup-rust-build.sh "$triple" "$ANDROID_API_LEVEL"
-            cargo build --target="$triple" "--$KSUD_BUILD_TYPE" --manifest-path ./userspace/ksud/Cargo.toml
+            cargo build --target="$triple" --profile "$([[ $KSUD_BUILD_TYPE == debug ]] && echo dev || echo "$KSUD_BUILD_TYPE")" --manifest-path ./userspace/ksud/Cargo.toml
         )
         log "ksud[$abi] -> target/$triple/$KSUD_BUILD_TYPE/ksud"
     done

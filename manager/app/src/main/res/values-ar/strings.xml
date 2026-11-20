@@ -408,7 +408,7 @@
     <string name="nomount_driver_kind_builtin">مدمج في النواة</string>
     <string name="nomount_driver_kind_module">وحدة نواة</string>
     <string name="nomount_unavailable_no_asset">لا تتضمن هذه الحزمة وحدة NoMount لـ %1$s؛ استخدم Folk Mount التلقائي أو المدمج.</string>
-    <string name="nomount_unavailable_outdated">تحمل النواة NoMount %1$s لكن هذا الإصدار يتطلب API 22 أو أحدث؛ حدِّث النواة.</string>
+    <string name="nomount_unavailable_outdated">تحمل النواة NoMount %1$s لكن هذا الإصدار يتطلب API 23 أو أحدث؛ حدِّث النواة.</string>
     <string name="nomount_unavailable_not_loaded">لم يُحمَّل المشغّل بعد؛ أعد التشغيل أو احقن مرة واحدة لتحميله.</string>
     <string name="nomount_unavailable_unknown_kmi">تعذّر مطابقة إصدار النواة مع وحدة NoMount.</string>
     <string name="nomount_driver_unavailable">المشغّل غير متاح (%1$s)</string>

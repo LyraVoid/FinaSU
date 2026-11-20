@@ -406,7 +406,7 @@
     <string name="nomount_driver_kind_builtin">bawaan kernel</string>
     <string name="nomount_driver_kind_module">modul kernel</string>
     <string name="nomount_unavailable_no_asset">Paket ini tidak menyertakan modul NoMount untuk %1$s; gunakan Otomatis atau Folk Mount bawaan.</string>
-    <string name="nomount_unavailable_outdated">Kernel membawa NoMount %1$s tetapi build ini memerlukan API 22 atau lebih baru; perbarui kernel.</string>
+    <string name="nomount_unavailable_outdated">Kernel membawa NoMount %1$s tetapi build ini memerlukan API 23 atau lebih baru; perbarui kernel.</string>
     <string name="nomount_unavailable_not_loaded">Driver belum dimuat; mulai ulang atau suntikkan sekali untuk memuatnya.</string>
     <string name="nomount_unavailable_unknown_kmi">Versi kernel tidak dapat dicocokkan dengan modul NoMount.</string>
     <string name="nomount_driver_unavailable">Driver tidak tersedia (%1$s)</string>
