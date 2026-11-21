@@ -33,4 +33,27 @@
     <string name="folkzygisk_failure_injection_unconfirmed">Último problema: a injeção completa no zygote não foi confirmada.</string>
     <string name="folkzygisk_failure_runtime_invalid">Último problema: o status de execução era inválido.</string>
     <string name="folkzygisk_failure_unknown">Último problema: motivo da falha de inicialização não reconhecido.</string>
+    <string name="fz_reset">Limpar proteção de inicialização</string>
+    <string name="fz_reset_hint">Limpa as falhas sem ativar ou iniciar o mecanismo.</string>
+    <string name="fz_install">Instalar mecanismo</string>
+    <string name="fz_install_hint">Instala os arquivos incluídos sem iniciar o mecanismo.</string>
+    <string name="fz_healthy">Injeção confirmada em todas as ABIs compatíveis. Nenhuma ação necessária.</string>
+    <string name="fz_check_abi">Confira os detalhes das ABIs e atualize manualmente.</string>
+    <string name="fz_external">Provedor externo tem prioridade</string>
+    <string name="fz_update">Os arquivos instalados diferem deste pacote</string>
+    <string name="fz_off_hint">Ative para tentar na próxima inicialização.</string>
+    <string name="fz_saved">Salvo. Nenhuma reinicialização imediata foi solicitada.</string>
+    <string name="fz_log_error">Não foi possível salvar o registro correspondente.</string>
+    <string name="fz_checked">Última verificação: %1$s</string>
+    <string name="fz_failures">Falhas de inicialização: %1$d · %2$s</string>
+    <string name="fz_abi">ABI de %1$s bits</string>
+    <string name="fz_pids">PID do daemon: %1$s · PID do Zygote: %2$s</string>
+    <string name="fz_asset">Arquivos incluídos no APK</string>
+    <string name="fz_match">Corresponde ao pacote atual</string>
+    <string name="fz_log_hint">Salva apenas linhas correspondentes do registro local.</string>
+    <string name="fz_copy">Copiar estado JSON</string>
+    <string name="fz_copy_hint">Copia somente os campos de diagnóstico.</string>
+    <string name="fz_update_failed">Falha ao atualizar o mecanismo.</string>
+    <string name="fz_no_modules">Nenhum módulo fornece uma biblioteca Zygisk.</string>
+    <string name="fz_module_bits">Arquiteturas: %1$s</string>
 </resources>

@@ -33,4 +33,27 @@
     <string name="folkzygisk_failure_injection_unconfirmed">Son sorun: zygote içine tam enjeksiyon doğrulanamadı.</string>
     <string name="folkzygisk_failure_runtime_invalid">Son sorun: çalışma zamanı durumu geçersizdi.</string>
     <string name="folkzygisk_failure_unknown">Son sorun: başlangıç hatasının nedeni tanınamadı.</string>
+    <string name="fz_reset">Başlatma korumasını sıfırla</string>
+    <string name="fz_reset_hint">Motoru etkinleştirmeden veya başlatmadan hata kaydını siler.</string>
+    <string name="fz_install">Motoru kur</string>
+    <string name="fz_install_hint">Paketteki dosyaları motoru başlatmadan kurar.</string>
+    <string name="fz_healthy">Desteklenen tüm ABI’lerde enjeksiyon doğrulandı. İşlem gerekmiyor.</string>
+    <string name="fz_check_abi">ABI ayrıntılarını kontrol edip elle yenileyin.</string>
+    <string name="fz_external">Harici sağlayıcı öncelikli</string>
+    <string name="fz_update">Kurulu dosyalar bu paketten farklı</string>
+    <string name="fz_off_hint">Sonraki açılışta denemek için etkinleştirin.</string>
+    <string name="fz_saved">Kaydedildi. Hemen yeniden başlatma istenmedi.</string>
+    <string name="fz_log_error">Eşleşen açılış günlüğü kaydedilemedi.</string>
+    <string name="fz_checked">Son kontrol: %1$s</string>
+    <string name="fz_failures">Başlatma hataları: %1$d · %2$s</string>
+    <string name="fz_abi">%1$s bit ABI</string>
+    <string name="fz_pids">Hizmet PID: %1$s · Zygote PID: %2$s</string>
+    <string name="fz_asset">APK içindeki dosyalar</string>
+    <string name="fz_match">Bu paketle eşleşiyor</string>
+    <string name="fz_log_hint">Yerel açılış günlüğündeki eşleşen satırları kaydeder.</string>
+    <string name="fz_copy">Durum JSON verisini kopyala</string>
+    <string name="fz_copy_hint">Yalnızca tanılama alanları kopyalanır.</string>
+    <string name="fz_update_failed">Motor güncellenemedi.</string>
+    <string name="fz_no_modules">Zygisk kitaplığı sağlayan modül yok.</string>
+    <string name="fz_module_bits">Mimari: %1$s</string>
 </resources>

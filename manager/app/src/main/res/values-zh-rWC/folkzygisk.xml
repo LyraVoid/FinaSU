@@ -33,4 +33,27 @@
     <string name="folkzygisk_failure_injection_unconfirmed">最近异象：尚未确认 zygote 完整注入。</string>
     <string name="folkzygisk_failure_runtime_invalid">最近异象：运行状态之录失效。</string>
     <string name="folkzygisk_failure_unknown">最近异象：无法辨明启道败陨之因。</string>
+    <string name="fz_reset">清除启道保护</string>
+    <string name="fz_reset_hint">清除失败记录，不启用或启道引擎。</string>
+    <string name="fz_install">安装引擎资源</string>
+    <string name="fz_install_hint">安装包内资源，不会立即启道引擎。</string>
+    <string name="fz_healthy">所有受支持的 ABI 均已确认注入，无需操作。</string>
+    <string name="fz_check_abi">请察下方 ABI 明细，再手动刷新确认。</string>
+    <string name="fz_external">外部提供者优先</string>
+    <string name="fz_update">已安装资源与当前包不同</string>
+    <string name="fz_off_hint">启用后会在下次启道时尝试注入。</string>
+    <string name="fz_saved">已保存，本次操作未要求立即重启。</string>
+    <string name="fz_log_error">未能保存匹配的启道日志。</string>
+    <string name="fz_checked">上次检查：%1$s</string>
+    <string name="fz_failures">启道失败：%1$d 次 · %2$s</string>
+    <string name="fz_abi">%1$s 位 ABI</string>
+    <string name="fz_pids">守护进程 PID：%1$s · Zygote PID：%2$s</string>
+    <string name="fz_asset">APK 内置资源</string>
+    <string name="fz_match">与当前包匹配</string>
+    <string name="fz_log_hint">仅保存本机启道日志中匹配的记录。</string>
+    <string name="fz_copy">复制状态 JSON</string>
+    <string name="fz_copy_hint">仅复制诊断字段。</string>
+    <string name="fz_update_failed">法门更易未成。</string>
+    <string name="fz_no_modules">未有模块呈 Zygisk 之库。</string>
+    <string name="fz_module_bits">所涉架构：%1$s</string>
 </resources>

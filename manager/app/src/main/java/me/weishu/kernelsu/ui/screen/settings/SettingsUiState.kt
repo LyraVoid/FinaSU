@@ -90,7 +90,6 @@ data class SettingsUiState(
     val isFolkZygiskLoading: Boolean = true,
     val folkZygiskReadError: Boolean = false,
     val isFolkZygiskWriting: Boolean = false,
-    val folkZygiskRebootPending: Boolean = false,
     /** Whether the kernel reports a usable SUSFS: gates the home card's SUSFS row switch. */
     val susfsDetected: Boolean = false,
     // Sui extension
@@ -148,8 +147,8 @@ data class SettingsScreenActions(
     val onSetAvcSpoofEnabled: (Boolean) -> Unit,
     val onSetFolkMountMode: (FolkMountMode) -> Unit,
     val onOpenNomount: () -> Unit,
+    val onOpenFolkZygisk: () -> Unit,
     val onSetFolkZygiskEnabled: (Boolean) -> Unit,
-    val onRecoverFolkZygisk: () -> Unit,
     val onSetSuiEnabled: (Boolean) -> Unit,
     val onRepairSui: () -> Unit,
     val onManageSuiPermissions: () -> Unit,

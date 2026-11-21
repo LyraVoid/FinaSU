@@ -110,8 +110,6 @@ interface SettingsRepository {
 
     suspend fun getFolkMountStatus(): Result<FolkMountStatus>
     suspend fun getFolkZygiskStatus(): Result<FolkZygiskStatus>
-    suspend fun setFolkZygiskEnabled(enabled: Boolean): Result<Unit>
-    suspend fun recoverFolkZygisk(): Result<Unit>
     suspend fun getSuiStatus(): Result<SuiStatus>
     suspend fun setSuiEnabled(enabled: Boolean): Result<Unit>
     suspend fun repairSui(): Result<Unit>

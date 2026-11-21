@@ -1,5 +1,7 @@
 package me.weishu.kernelsu.ui.viewmodel
 
+import me.weishu.kernelsu.ui.screen.builtinzygisk.FolkZygiskStore
+import me.weishu.kernelsu.ui.screen.builtinzygisk.PanelAction
 import android.system.OsConstants
 import android.util.Log
 import android.widget.Toast
@@ -36,6 +38,15 @@ class SettingsViewModel(
     private var refreshGeneration = 0
     private var initialized = false
 
+    init {
+        viewModelScope.launch {
+            FolkZygiskStore.state.collect { snapshot ->
+                _uiState.update { it.copy(folkZygiskStatus = snapshot.status, folkZygiskReadError = snapshot.readError,
+                    isFolkZygiskLoading = snapshot.checked == null, isFolkZygiskWriting = snapshot.busy) }
+            }
+        }
+    }
+
     fun ensureLoaded() {
         if (initialized) return
         initialized = true
@@ -45,7 +56,7 @@ class SettingsViewModel(
     fun refresh() {
         if (_uiState.value.isFolkZygiskWriting || _uiState.value.isKernelUmountWriting) return
         val generation = ++refreshGeneration
-        _uiState.update { it.copy(isFolkMountLoading = true, isFolkZygiskLoading = true) }
+        _uiState.update { it.copy(isFolkMountLoading = true) }
         viewModelScope.launch {
             val checkUpdate = repo.checkUpdate
             val checkModuleUpdate = repo.checkModuleUpdate
@@ -71,7 +82,7 @@ class SettingsViewModel(
 
             val folkMountJob = async { repo.getFolkMountStatus() }
             val nomountJob = async { repo.getNomountStatus() }
-            val folkZygiskJob = async { repo.getFolkZygiskStatus() }
+            launch { FolkZygiskStore.refresh() }
             val suiJob = async { repo.getSuiStatus() }
 
             // Async loading for natives/features
@@ -121,7 +132,6 @@ class SettingsViewModel(
 
             val folkMountResult = folkMountJob.await()
             val nomountResult = nomountJob.await()
-            val folkZygiskResult = folkZygiskJob.await()
             val suiResult = suiJob.await()
 
             // The home card's SUSFS row switch only makes sense when the kernel reports SUSFS.
@@ -204,9 +214,6 @@ class SettingsViewModel(
                     nomountStatus = nomountResult.getOrNull(),
                     nomountReadError = nomountResult.isFailure,
                     isNomountLoading = false,
-                    folkZygiskStatus = folkZygiskResult.getOrNull(),
-                    folkZygiskReadError = folkZygiskResult.isFailure,
-                    isFolkZygiskLoading = false,
                     suiStatus = suiResult.getOrNull(),
                     suiReadError = suiResult.isFailure,
                     isSuiLoading = false,
@@ -217,51 +224,9 @@ class SettingsViewModel(
     }
 
     fun setFolkZygiskEnabled(enabled: Boolean) {
-        if (_uiState.value.isFolkZygiskWriting || _uiState.value.isFolkZygiskLoading) return
-        ++refreshGeneration
-        _uiState.update { it.copy(isFolkZygiskWriting = true) }
         viewModelScope.launch {
-            val result = repo.setFolkZygiskEnabled(enabled)
-            val status = repo.getFolkZygiskStatus()
-            _uiState.update {
-                it.copy(isFolkZygiskWriting = false, folkZygiskStatus = status.getOrNull(),
-                    folkZygiskReadError = status.isFailure,
-                    folkZygiskRebootPending = it.folkZygiskRebootPending || result.isSuccess)
-            }
-            val message = if (result.isSuccess) {
-                ksuApp.getString(R.string.folkzygisk_reboot_required)
-            } else {
-                result.exceptionOrNull()?.message
-                    ?.takeIf { it.isNotBlank() }
-                    ?: ksuApp.getString(R.string.folkzygisk_write_failed)
-            }
-            Toast.makeText(ksuApp, message, Toast.LENGTH_LONG).show()
-        }
-    }
-
-    fun recoverFolkZygisk() {
-        if (_uiState.value.isFolkZygiskWriting || _uiState.value.isFolkZygiskLoading) return
-        ++refreshGeneration
-        _uiState.update { it.copy(isFolkZygiskWriting = true) }
-        viewModelScope.launch {
-            val result = repo.recoverFolkZygisk()
-            val status = repo.getFolkZygiskStatus()
-            _uiState.update {
-                it.copy(
-                    isFolkZygiskWriting = false,
-                    folkZygiskStatus = status.getOrNull(),
-                    folkZygiskReadError = status.isFailure,
-                    folkZygiskRebootPending = it.folkZygiskRebootPending || result.isSuccess,
-                )
-            }
-            val message = if (result.isSuccess) {
-                ksuApp.getString(R.string.folkzygisk_recovery_restart_required)
-            } else {
-                result.exceptionOrNull()?.message
-                    ?.takeIf { it.isNotBlank() }
-                    ?: ksuApp.getString(R.string.folkzygisk_write_failed)
-            }
-            Toast.makeText(ksuApp, message, Toast.LENGTH_LONG).show()
+            FolkZygiskStore.refresh(if (enabled) PanelAction.Enable else PanelAction.Disable)
+            FolkZygiskStore.state.value.message?.let { Toast.makeText(ksuApp, it, Toast.LENGTH_LONG).show() }
         }
     }
 

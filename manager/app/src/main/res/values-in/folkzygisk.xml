@@ -33,4 +33,27 @@
     <string name="folkzygisk_failure_injection_unconfirmed">Masalah terakhir: injeksi zygote yang lengkap tidak dapat dikonfirmasi.</string>
     <string name="folkzygisk_failure_runtime_invalid">Masalah terakhir: status runtime tidak valid.</string>
     <string name="folkzygisk_failure_unknown">Masalah terakhir: penyebab kegagalan awal tidak dikenali.</string>
+    <string name="fz_reset">Hapus perlindungan mulai</string>
+    <string name="fz_reset_hint">Menghapus catatan kegagalan tanpa mengaktifkan atau menjalankan mesin.</string>
+    <string name="fz_install">Pasang mesin</string>
+    <string name="fz_install_hint">Memasang berkas bawaan tanpa menjalankan mesin.</string>
+    <string name="fz_healthy">Injeksi terkonfirmasi pada semua ABI yang didukung. Tidak perlu tindakan.</string>
+    <string name="fz_check_abi">Periksa rincian ABI lalu segarkan secara manual.</string>
+    <string name="fz_external">Penyedia eksternal diprioritaskan</string>
+    <string name="fz_update">Berkas terpasang berbeda dari paket ini</string>
+    <string name="fz_off_hint">Aktifkan untuk mencoba pada boot berikutnya.</string>
+    <string name="fz_saved">Tersimpan. Tidak diminta mulai ulang segera.</string>
+    <string name="fz_log_error">Log boot yang cocok tidak dapat disimpan.</string>
+    <string name="fz_checked">Terakhir diperiksa: %1$s</string>
+    <string name="fz_failures">Kegagalan mulai: %1$d · %2$s</string>
+    <string name="fz_abi">ABI %1$s bit</string>
+    <string name="fz_pids">PID daemon: %1$s · PID Zygote: %2$s</string>
+    <string name="fz_asset">Berkas bawaan APK</string>
+    <string name="fz_match">Cocok dengan paket ini</string>
+    <string name="fz_log_hint">Menyimpan baris yang cocok dari log boot lokal.</string>
+    <string name="fz_copy">Salin status JSON</string>
+    <string name="fz_copy_hint">Hanya menyalin bidang diagnostik.</string>
+    <string name="fz_update_failed">Pembaruan mesin gagal.</string>
+    <string name="fz_no_modules">Tidak ada modul yang menyediakan pustaka Zygisk.</string>
+    <string name="fz_module_bits">Arsitektur: %1$s</string>
 </resources>

@@ -33,4 +33,27 @@
     <string name="folkzygisk_failure_injection_unconfirmed">最近問題：未確認完成 zygote 注入。</string>
     <string name="folkzygisk_failure_runtime_invalid">最近問題：執行狀態資料無效。</string>
     <string name="folkzygisk_failure_unknown">最近問題：無法辨識啟動失敗原因。</string>
+    <string name="fz_reset">清除啟動保護</string>
+    <string name="fz_reset_hint">清除失敗記錄，不啟用或啟動引擎。</string>
+    <string name="fz_install">安裝引擎資源</string>
+    <string name="fz_install_hint">安裝套件內的資源，不立即啟動引擎。</string>
+    <string name="fz_healthy">所有支援的 ABI 均已確認注入，無需操作。</string>
+    <string name="fz_check_abi">請查看下方 ABI 詳情，再手動重新整理。</string>
+    <string name="fz_external">外部提供者優先</string>
+    <string name="fz_update">已安裝資源與目前套件不同</string>
+    <string name="fz_off_hint">啟用後將於下次啟動時嘗試注入。</string>
+    <string name="fz_saved">已儲存，本次操作未要求立即重新啟動。</string>
+    <string name="fz_log_error">無法儲存相符的啟動記錄。</string>
+    <string name="fz_checked">上次檢查：%1$s</string>
+    <string name="fz_failures">啟動失敗：%1$d 次 · %2$s</string>
+    <string name="fz_abi">%1$s 位元 ABI</string>
+    <string name="fz_pids">常駐程式 PID：%1$s · Zygote PID：%2$s</string>
+    <string name="fz_asset">APK 內建資源</string>
+    <string name="fz_match">與目前套件相符</string>
+    <string name="fz_log_hint">僅儲存本機啟動記錄中相符的項目。</string>
+    <string name="fz_copy">複製狀態 JSON</string>
+    <string name="fz_copy_hint">僅複製診斷欄位。</string>
+    <string name="fz_update_failed">未能更新引擎。</string>
+    <string name="fz_no_modules">沒有模組提供 Zygisk 程式庫。</string>
+    <string name="fz_module_bits">架構：%1$s</string>
 </resources>

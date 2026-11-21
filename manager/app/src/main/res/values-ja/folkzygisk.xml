@@ -33,4 +33,27 @@
     <string name="folkzygisk_failure_injection_unconfirmed">最後の問題: zygote への完全な注入を確認できませんでした。</string>
     <string name="folkzygisk_failure_runtime_invalid">最後の問題: 実行状態が無効です。</string>
     <string name="folkzygisk_failure_unknown">最後の問題: 起動失敗の原因を特定できませんでした。</string>
+    <string name="fz_reset">起動保護を解除</string>
+    <string name="fz_reset_hint">失敗記録を消去します。エンジンは有効化も起動もしません。</string>
+    <string name="fz_install">エンジンをインストール</string>
+    <string name="fz_install_hint">同梱の資産を配置します。今は起動しません。</string>
+    <string name="fz_healthy">対応する全 ABI で注入を確認しました。操作は不要です。</string>
+    <string name="fz_check_abi">ABI の詳細を確認し、手動で更新してください。</string>
+    <string name="fz_external">外部プロバイダを優先</string>
+    <string name="fz_update">インストール済みの資産がパッケージと異なります</string>
+    <string name="fz_off_hint">有効にすると次回起動時に試行します。</string>
+    <string name="fz_saved">保存しました。直ちに再起動する必要はありません。</string>
+    <string name="fz_log_error">該当する起動ログを保存できませんでした。</string>
+    <string name="fz_checked">最終確認：%1$s</string>
+    <string name="fz_failures">起動失敗：%1$d 回 · %2$s</string>
+    <string name="fz_abi">%1$s ビット ABI</string>
+    <string name="fz_pids">デーモン PID：%1$s · Zygote PID：%2$s</string>
+    <string name="fz_asset">APK 同梱資産</string>
+    <string name="fz_match">現在のパッケージと一致</string>
+    <string name="fz_log_hint">端末の起動ログから該当行だけを保存します。</string>
+    <string name="fz_copy">状態 JSON をコピー</string>
+    <string name="fz_copy_hint">診断項目のみコピーします。</string>
+    <string name="fz_update_failed">エンジンを更新できませんでした。</string>
+    <string name="fz_no_modules">Zygisk ライブラリを提供するモジュールはありません。</string>
+    <string name="fz_module_bits">アーキテクチャ：%1$s</string>
 </resources>

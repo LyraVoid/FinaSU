@@ -33,4 +33,27 @@
     <string name="folkzygisk_failure_injection_unconfirmed">마지막 문제: zygote 전체 주입을 확인하지 못했습니다.</string>
     <string name="folkzygisk_failure_runtime_invalid">마지막 문제: 런타임 상태가 유효하지 않습니다.</string>
     <string name="folkzygisk_failure_unknown">마지막 문제: 시작 실패 원인을 인식할 수 없습니다.</string>
+    <string name="fz_reset">시작 보호 해제</string>
+    <string name="fz_reset_hint">실패 기록만 지우며 엔진을 켜거나 시작하지 않습니다.</string>
+    <string name="fz_install">엔진 설치</string>
+    <string name="fz_install_hint">포함된 파일을 설치합니다. 엔진을 시작하지 않습니다.</string>
+    <string name="fz_healthy">지원하는 모든 ABI에서 주입을 확인했습니다. 조치가 필요 없습니다.</string>
+    <string name="fz_check_abi">아래 ABI 정보를 확인하고 직접 새로고침하세요.</string>
+    <string name="fz_external">외부 제공자 우선</string>
+    <string name="fz_update">설치된 파일이 현재 패키지와 다릅니다</string>
+    <string name="fz_off_hint">켜면 다음 부팅 때 시도합니다.</string>
+    <string name="fz_saved">저장했습니다. 즉시 재시작할 필요는 없습니다.</string>
+    <string name="fz_log_error">해당 부팅 로그를 저장하지 못했습니다.</string>
+    <string name="fz_checked">마지막 확인: %1$s</string>
+    <string name="fz_failures">시작 실패: %1$d회 · %2$s</string>
+    <string name="fz_abi">%1$s비트 ABI</string>
+    <string name="fz_pids">데몬 PID: %1$s · Zygote PID: %2$s</string>
+    <string name="fz_asset">APK 내장 파일</string>
+    <string name="fz_match">현재 패키지와 일치</string>
+    <string name="fz_log_hint">기기의 부팅 로그에서 관련 줄만 저장합니다.</string>
+    <string name="fz_copy">상태 JSON 복사</string>
+    <string name="fz_copy_hint">진단 필드만 복사합니다.</string>
+    <string name="fz_update_failed">엔진 업데이트에 실패했습니다.</string>
+    <string name="fz_no_modules">Zygisk 라이브러리를 제공하는 모듈이 없습니다.</string>
+    <string name="fz_module_bits">아키텍처: %1$s</string>
 </resources>

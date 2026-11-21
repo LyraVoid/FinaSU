@@ -405,6 +405,7 @@ open class MainActivity : FragmentActivity() {
                                 entry<Route.Nomount> {
                                     me.weishu.kernelsu.ui.screen.nomount.NomountScreen()
                                 }
+                                entry<Route.FolkZygisk> { me.weishu.kernelsu.ui.screen.builtinzygisk.FolkZygiskPanelScreen() }
                                 entry<Route.UmountPaths> {
                                     me.weishu.kernelsu.ui.screen.umount.UmountPathsScreen()
                                 }

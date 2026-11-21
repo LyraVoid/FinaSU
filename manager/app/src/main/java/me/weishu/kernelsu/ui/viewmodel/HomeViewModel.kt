@@ -1,5 +1,7 @@
 package me.weishu.kernelsu.ui.viewmodel
 
+import me.weishu.kernelsu.ui.screen.builtinzygisk.FolkZygiskStore
+import me.weishu.kernelsu.ui.screen.builtinzygisk.Phase
 import android.os.Build
 import android.system.Os
 import androidx.lifecycle.ViewModel
@@ -59,10 +61,22 @@ class HomeViewModel(
     private var refreshToken = 0L
     private val susfsRepository = me.weishu.kernelsu.data.susfs.SusfsRepository()
     private var susfsToken = 0L
-    private var zygiskToken = 0L
     private var mountToken = 0L
 
     init {
+        viewModelScope.launch {
+            FolkZygiskStore.state.collect { snapshot ->
+                val panel = snapshot.panel
+                val provider = when {
+                    panel == null -> null
+                    panel.providing -> ksuApp.getString(R.string.folkzygisk_builtin_active) + " · " + ksuApp.getString(panel.phase.title)
+                    panel.phase == Phase.External -> snapshot.status?.externalProviders?.firstOrNull()?.let { getModuleDisplayName(it) ?: it }
+                    panel.phase == Phase.Disabled -> null
+                    else -> ksuApp.getString(panel.phase.title)
+                }
+                _uiState.update { it.copy(zygiskProvider = provider) }
+            }
+        }
         viewModelScope.launch {
             kotlinx.coroutines.flow.combine(
                 me.weishu.kernelsu.ui.util.RootShell.status,
@@ -70,7 +84,6 @@ class HomeViewModel(
             ) { status, generation -> status to generation }.collect { (status, _) ->
                 if (status == RootShellStatus.Ready) {
                     refreshSusfs()
-                    refreshZygisk()
                     refreshMount()
                     // Self-check of the Sui management channel; the settings entry repeats it.
                     android.util.Log.i("SuiManagement", "self-check starting")
@@ -96,7 +109,6 @@ class HomeViewModel(
                     }
                 } else {
                     susfsToken++
-                    zygiskToken++
                     mountToken++
                     _uiState.update {
                         it.copy(
@@ -157,7 +169,6 @@ class HomeViewModel(
 
     fun refresh() {
         refreshSusfs()
-        refreshZygisk()
         refreshMount()
         // Guard against overlapping refreshes: a slower, older build must not overwrite a newer
         // snapshot (or clobber the capability collector's root update).
@@ -198,24 +209,7 @@ class HomeViewModel(
         }
     }
 
-    /**
-     * Resolves the active Zygisk implementation for the home card: any active external provider
-     * wins and is named by its module name; otherwise the built-in engine when it is enabled and
-     * installed. Null hides the row.
-     */
-    fun refreshZygisk() {
-        val request = ++zygiskToken
-        viewModelScope.launch {
-            val provider = try {
-                resolveZygiskProvider()
-            } catch (e: kotlinx.coroutines.CancellationException) {
-                throw e
-            } catch (e: Exception) {
-                null
-            }
-            if (request == zygiskToken) _uiState.update { it.copy(zygiskProvider = provider) }
-        }
-    }
+    fun refreshZygisk() { viewModelScope.launch { FolkZygiskStore.refresh() } }
 
     /**
      * Resolves the provider that actually mounted modules this boot. A read failure, or a record
@@ -239,22 +233,6 @@ class HomeViewModel(
                 }
             }
         }
-    }
-
-    private suspend fun resolveZygiskProvider(): String? {
-        val status = settingsRepo.getFolkZygiskStatus().getOrNull() ?: return null
-        // No provider means the home card has no Zygisk row to name, the same test the settings
-        // group uses to decide whether its switch exists.
-        if (!status.providesImplementation()) return null
-        val injecting = status.injectionState == "injected" ||
-            status.injectionState == "partial" ||
-            status.injectionState == "starting"
-        // The built-in engine only steps aside at boot, so while it is the one injecting it stays
-        // the effective implementation even after an external provider module is installed.
-        if (status.enabled && injecting) return ksuApp.getString(R.string.folkzygisk_builtin_active)
-        status.externalProviders.firstOrNull()?.let { return getModuleDisplayName(it) ?: it }
-        if (status.enabled && status.engineAvailable) return ksuApp.getString(R.string.folkzygisk_builtin_active)
-        return null
     }
 
     private fun buildState(): HomeUiState {

@@ -67,7 +67,7 @@ private fun ksudFailure(result: com.topjohnwu.superuser.Shell.Result, fallback: 
         ?: "$fallback (exit ${result.code})"
 }
 
-private fun requireKsud(result: com.topjohnwu.superuser.Shell.Result, fallback: String) {
+internal fun requireKsud(result: com.topjohnwu.superuser.Shell.Result, fallback: String) {
     check(result.isSuccess) { ksudFailure(result, fallback) }
 }
 
@@ -412,35 +412,6 @@ class SettingsRepositoryImpl : SettingsRepository {
                 FolkZygiskStatus.fromJson(JSONObject(payload.single()))
             }
         }
-
-    override suspend fun setFolkZygiskEnabled(enabled: Boolean): Result<Unit> =
-        withContext(Dispatchers.IO) {
-            runCatching {
-                if (enabled) {
-                    val status = getFolkZygiskStatus().getOrThrow()
-                    if (!status.engineAvailable) {
-                        requireKsud(
-                            execKsudResult("zygisk install-engine"),
-                            "Engine installation failed",
-                        )
-                    }
-                }
-                val command = if (enabled) "enable" else "disable"
-                requireKsud(
-                    execKsudResult("zygisk $command"),
-                    "FolkZygisk configuration failed",
-                )
-            }
-        }
-
-    override suspend fun recoverFolkZygisk(): Result<Unit> = withContext(Dispatchers.IO) {
-        runCatching {
-            requireKsud(
-                execKsudResult("zygisk recover"),
-                "FolkZygisk recovery failed",
-            )
-        }
-    }
 
     override suspend fun getSuiStatus(): Result<SuiStatus> = withContext(Dispatchers.IO) {
         runCatching {

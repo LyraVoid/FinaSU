@@ -1,0 +1,16 @@
+{
+  "schema_version": 1,
+  "enabled": true,
+  "engine_available": false,
+  "enable_blockers": [],
+  "external_providers": [],
+  "injection_state": "unverified",
+  "reboot_required": null,
+  "runtime": null,
+  "startup_failures": 0,
+  "startup_blocked": false,
+  "startup_generation": 122,
+  "engine": {
+    "can_install": true
+  }
+}

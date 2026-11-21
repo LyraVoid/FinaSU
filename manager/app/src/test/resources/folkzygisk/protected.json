@@ -1,0 +1,14 @@
+{
+  "schema_version": 1,
+  "enabled": true,
+  "engine_available": true,
+  "enable_blockers": [],
+  "external_providers": [],
+  "injection_state": "unverified",
+  "reboot_required": null,
+  "runtime": null,
+  "startup_failures": 3,
+  "startup_blocked": true,
+  "startup_generation": 122,
+  "startup_failure_code": "engine_update_failed"
+}

@@ -33,4 +33,27 @@
     <string name="folkzygisk_failure_injection_unconfirmed">Last issue: complete zygote injection was not confirmed.</string>
     <string name="folkzygisk_failure_runtime_invalid">Last issue: the runtime status was invalid.</string>
     <string name="folkzygisk_failure_unknown">Last issue: startup failure reason not recognized.</string>
+    <string name="fz_reset">Clear startup protection</string>
+    <string name="fz_reset_hint">Clear the failure record without enabling or starting the engine.</string>
+    <string name="fz_install">Install engine assets</string>
+    <string name="fz_install_hint">Install the bundled assets without starting the engine.</string>
+    <string name="fz_healthy">All supported ABIs confirmed injection. No action needed.</string>
+    <string name="fz_check_abi">Check the ABI details below, then refresh manually.</string>
+    <string name="fz_external">External provider has priority</string>
+    <string name="fz_update">Installed assets differ from this package</string>
+    <string name="fz_off_hint">Enable to try on the next boot.</string>
+    <string name="fz_saved">Saved; no immediate restart requested.</string>
+    <string name="fz_log_error">No matching boot log could be saved.</string>
+    <string name="fz_checked">Last checked: %1$s</string>
+    <string name="fz_failures">Startup failures: %1$d · %2$s</string>
+    <string name="fz_abi">%1$s-bit ABI</string>
+    <string name="fz_pids">Daemon PID: %1$s · Zygote PID: %2$s</string>
+    <string name="fz_asset">Bundled APK assets</string>
+    <string name="fz_match">Matches this package</string>
+    <string name="fz_log_hint">Save matching lines from the local boot log.</string>
+    <string name="fz_copy">Copy status JSON</string>
+    <string name="fz_copy_hint">Only diagnostic fields are copied.</string>
+    <string name="fz_update_failed">Engine update failed.</string>
+    <string name="fz_no_modules">No module provides a Zygisk library.</string>
+    <string name="fz_module_bits">Architectures: %1$s</string>
 </resources>

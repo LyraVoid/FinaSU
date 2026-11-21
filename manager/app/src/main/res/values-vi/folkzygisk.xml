@@ -33,4 +33,27 @@
     <string name="folkzygisk_failure_injection_unconfirmed">Sự cố gần nhất: chưa xác nhận việc tiêm đầy đủ vào zygote.</string>
     <string name="folkzygisk_failure_runtime_invalid">Sự cố gần nhất: trạng thái runtime không hợp lệ.</string>
     <string name="folkzygisk_failure_unknown">Sự cố gần nhất: không nhận dạng được nguyên nhân lỗi khởi động.</string>
+    <string name="fz_reset">Xóa bảo vệ khởi động</string>
+    <string name="fz_reset_hint">Xóa lịch sử lỗi mà không bật hay chạy bộ máy.</string>
+    <string name="fz_install">Cài bộ máy</string>
+    <string name="fz_install_hint">Cài tài nguyên đi kèm mà không khởi chạy.</string>
+    <string name="fz_healthy">Đã xác nhận chèn trên mọi ABI được hỗ trợ. Không cần thao tác.</string>
+    <string name="fz_check_abi">Xem chi tiết ABI rồi làm mới thủ công.</string>
+    <string name="fz_external">Ưu tiên nhà cung cấp bên ngoài</string>
+    <string name="fz_update">Tài nguyên đã cài khác với gói hiện tại</string>
+    <string name="fz_off_hint">Bật để thử vào lần khởi động sau.</string>
+    <string name="fz_saved">Đã lưu. Không yêu cầu khởi động lại ngay.</string>
+    <string name="fz_log_error">Không lưu được nhật ký khởi động phù hợp.</string>
+    <string name="fz_checked">Kiểm tra lần cuối: %1$s</string>
+    <string name="fz_failures">Số lần khởi động lỗi: %1$d · %2$s</string>
+    <string name="fz_abi">ABI %1$s bit</string>
+    <string name="fz_pids">PID tiến trình nền: %1$s · PID Zygote: %2$s</string>
+    <string name="fz_asset">Tài nguyên trong APK</string>
+    <string name="fz_match">Khớp với gói hiện tại</string>
+    <string name="fz_log_hint">Chỉ lưu các dòng phù hợp từ nhật ký khởi động cục bộ.</string>
+    <string name="fz_copy">Sao chép trạng thái JSON</string>
+    <string name="fz_copy_hint">Chỉ sao chép các trường chẩn đoán.</string>
+    <string name="fz_update_failed">Không cập nhật được bộ máy.</string>
+    <string name="fz_no_modules">Không có mô-đun nào cung cấp thư viện Zygisk.</string>
+    <string name="fz_module_bits">Kiến trúc: %1$s</string>
 </resources>

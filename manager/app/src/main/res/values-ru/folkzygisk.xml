@@ -33,4 +33,27 @@
     <string name="folkzygisk_failure_injection_unconfirmed">Последняя проблема: полная инъекция в zygote не подтверждена.</string>
     <string name="folkzygisk_failure_runtime_invalid">Последняя проблема: состояние среды выполнения недопустимо.</string>
     <string name="folkzygisk_failure_unknown">Последняя проблема: причина сбоя запуска не распознана.</string>
+    <string name="fz_reset">Сбросить защиту запуска</string>
+    <string name="fz_reset_hint">Очищает ошибки, не включая и не запуская движок.</string>
+    <string name="fz_install">Установить движок</string>
+    <string name="fz_install_hint">Устанавливает файлы из пакета без запуска движка.</string>
+    <string name="fz_healthy">Внедрение подтверждено для всех поддерживаемых ABI. Действия не требуются.</string>
+    <string name="fz_check_abi">Проверьте сведения об ABI и обновите вручную.</string>
+    <string name="fz_external">Внешний поставщик имеет приоритет</string>
+    <string name="fz_update">Установленные файлы отличаются от пакета</string>
+    <string name="fz_off_hint">Включите для попытки при следующей загрузке.</string>
+    <string name="fz_saved">Сохранено. Немедленная перезагрузка не запрошена.</string>
+    <string name="fz_log_error">Не удалось сохранить подходящие записи журнала.</string>
+    <string name="fz_checked">Последняя проверка: %1$s</string>
+    <string name="fz_failures">Ошибок запуска: %1$d · %2$s</string>
+    <string name="fz_abi">ABI: %1$s бит</string>
+    <string name="fz_pids">PID демона: %1$s · PID Zygote: %2$s</string>
+    <string name="fz_asset">Файлы из APK</string>
+    <string name="fz_match">Соответствуют текущему пакету</string>
+    <string name="fz_log_hint">Сохраняет подходящие строки локального журнала загрузки.</string>
+    <string name="fz_copy">Копировать состояние в JSON</string>
+    <string name="fz_copy_hint">Копирует только диагностические поля.</string>
+    <string name="fz_update_failed">Не удалось обновить движок.</string>
+    <string name="fz_no_modules">Ни один модуль не предоставляет библиотеку Zygisk.</string>
+    <string name="fz_module_bits">Архитектуры: %1$s</string>
 </resources>

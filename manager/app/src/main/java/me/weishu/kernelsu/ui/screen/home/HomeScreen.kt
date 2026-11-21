@@ -73,6 +73,7 @@ fun HomePager(
             // Returning to the home page re-reads the shared capability snapshot so the layout,
             // warnings and navigation agree again.
             CapabilityRepository.refresh()
+            viewModel.refreshZygisk()
             viewModel.refreshSusfs()
             if (!hasActivated) {
                 hasActivated = true
@@ -84,6 +85,7 @@ fun HomePager(
     LifecycleResumeEffect(Unit, activity ?: LocalLifecycleOwner.current) {
         if (!previewing && initialResumeHandled.value && latestIsCurrentPage) {
             CapabilityRepository.refresh()
+            viewModel.refreshZygisk()
             viewModel.refresh()
         }
         initialResumeHandled.value = true

@@ -33,4 +33,27 @@
     <string name="folkzygisk_failure_injection_unconfirmed">Último problema: no se confirmó la inyección completa en zygote.</string>
     <string name="folkzygisk_failure_runtime_invalid">Último problema: el estado de ejecución no era válido.</string>
     <string name="folkzygisk_failure_unknown">Último problema: no se reconoce el motivo del fallo de inicio.</string>
+    <string name="fz_reset">Quitar protección de arranque</string>
+    <string name="fz_reset_hint">Borra los fallos sin activar ni iniciar el motor.</string>
+    <string name="fz_install">Instalar el motor</string>
+    <string name="fz_install_hint">Instala los archivos incluidos sin iniciar el motor.</string>
+    <string name="fz_healthy">Inyección confirmada en todas las ABI compatibles. No se requiere ninguna acción.</string>
+    <string name="fz_check_abi">Revisa los detalles de cada ABI y actualiza manualmente.</string>
+    <string name="fz_external">Tiene prioridad un proveedor externo</string>
+    <string name="fz_update">Los archivos instalados difieren del paquete</string>
+    <string name="fz_off_hint">Activa el motor para probarlo en el próximo arranque.</string>
+    <string name="fz_saved">Guardado. No se solicitó un reinicio inmediato.</string>
+    <string name="fz_log_error">No se pudo guardar el registro de arranque correspondiente.</string>
+    <string name="fz_checked">Última comprobación: %1$s</string>
+    <string name="fz_failures">Fallos de arranque: %1$d · %2$s</string>
+    <string name="fz_abi">ABI de %1$s bits</string>
+    <string name="fz_pids">PID del demonio: %1$s · PID de Zygote: %2$s</string>
+    <string name="fz_asset">Archivos incluidos en el APK</string>
+    <string name="fz_match">Coincide con este paquete</string>
+    <string name="fz_log_hint">Guarda las líneas coincidentes del registro de arranque local.</string>
+    <string name="fz_copy">Copiar estado JSON</string>
+    <string name="fz_copy_hint">Solo se copian los campos de diagnóstico.</string>
+    <string name="fz_update_failed">Falló la actualización del motor.</string>
+    <string name="fz_no_modules">Ningún módulo aporta una biblioteca Zygisk.</string>
+    <string name="fz_module_bits">Arquitecturas: %1$s</string>
 </resources>

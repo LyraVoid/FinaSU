@@ -35,6 +35,7 @@ private val NavKey.wallpaperPage: Int?
         Route.UtsView,
         Route.NetIsolate,
         Route.Nomount,
+        Route.FolkZygisk,
         Route.UmountPaths,
         Route.SuiPermissions,
         Route.NomountExclusions,

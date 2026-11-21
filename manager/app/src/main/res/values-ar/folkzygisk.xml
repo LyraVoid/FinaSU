@@ -33,4 +33,27 @@
     <string name="folkzygisk_failure_injection_unconfirmed">آخر مشكلة: لم يتم تأكيد اكتمال حقن zygote.</string>
     <string name="folkzygisk_failure_runtime_invalid">آخر مشكلة: حالة التشغيل غير صالحة.</string>
     <string name="folkzygisk_failure_unknown">آخر مشكلة: سبب فشل البدء غير معروف.</string>
+    <string name="fz_reset">مسح حماية بدء التشغيل</string>
+    <string name="fz_reset_hint">يمسح سجل الإخفاقات دون تفعيل المحرك أو تشغيله.</string>
+    <string name="fz_install">تثبيت المحرك</string>
+    <string name="fz_install_hint">يثبت الملفات المرفقة دون تشغيل المحرك.</string>
+    <string name="fz_healthy">تم تأكيد الحقن لكل الواجهات المدعومة. لا يلزم إجراء.</string>
+    <string name="fz_check_abi">راجع تفاصيل الواجهات ثم حدّث يدوياً.</string>
+    <string name="fz_external">الأولوية للمزود الخارجي</string>
+    <string name="fz_update">الملفات المثبتة تختلف عن الحزمة</string>
+    <string name="fz_off_hint">فعّل المحرك للمحاولة عند الإقلاع التالي.</string>
+    <string name="fz_saved">تم الحفظ دون طلب إعادة تشغيل فورية.</string>
+    <string name="fz_log_error">تعذر حفظ سجل الإقلاع المطابق.</string>
+    <string name="fz_checked">آخر فحص: %1$s</string>
+    <string name="fz_failures">إخفاقات بدء التشغيل: %1$d · %2$s</string>
+    <string name="fz_abi">واجهة ABI ‏%1$s بت</string>
+    <string name="fz_pids">معرّف الخدمة: %1$s · معرّف Zygote: %2$s</string>
+    <string name="fz_asset">ملفات APK المرفقة</string>
+    <string name="fz_match">مطابقة للحزمة الحالية</string>
+    <string name="fz_log_hint">يحفظ الأسطر المطابقة من سجل الإقلاع المحلي.</string>
+    <string name="fz_copy">نسخ الحالة بصيغة JSON</string>
+    <string name="fz_copy_hint">تُنسخ حقول التشخيص فقط.</string>
+    <string name="fz_update_failed">فشل تحديث المحرك.</string>
+    <string name="fz_no_modules">لا توجد وحدة توفر مكتبة Zygisk.</string>
+    <string name="fz_module_bits">المعماريات: %1$s</string>
 </resources>

@@ -33,4 +33,27 @@
     <string name="folkzygisk_failure_injection_unconfirmed">Ostatni problem: nie potwierdzono pełnej iniekcji do zygote.</string>
     <string name="folkzygisk_failure_runtime_invalid">Ostatni problem: stan środowiska uruchomieniowego był nieprawidłowy.</string>
     <string name="folkzygisk_failure_unknown">Ostatni problem: nie rozpoznano przyczyny niepowodzenia rozruchu.</string>
+    <string name="fz_reset">Wyczyść ochronę rozruchu</string>
+    <string name="fz_reset_hint">Usuwa zapis błędów bez włączania i uruchamiania silnika.</string>
+    <string name="fz_install">Zainstaluj silnik</string>
+    <string name="fz_install_hint">Instaluje dołączone pliki bez uruchamiania silnika.</string>
+    <string name="fz_healthy">Potwierdzono wstrzyknięcie dla wszystkich obsługiwanych ABI. Nie trzeba nic robić.</string>
+    <string name="fz_check_abi">Sprawdź szczegóły ABI i odśwież ręcznie.</string>
+    <string name="fz_external">Pierwszeństwo ma zewnętrzny dostawca</string>
+    <string name="fz_update">Zainstalowane pliki różnią się od pakietu</string>
+    <string name="fz_off_hint">Włącz, aby spróbować przy następnym rozruchu.</string>
+    <string name="fz_saved">Zapisano. Natychmiastowy restart nie jest wymagany.</string>
+    <string name="fz_log_error">Nie udało się zapisać pasującego dziennika.</string>
+    <string name="fz_checked">Ostatnie sprawdzenie: %1$s</string>
+    <string name="fz_failures">Błędy rozruchu: %1$d · %2$s</string>
+    <string name="fz_abi">ABI %1$s-bitowe</string>
+    <string name="fz_pids">PID demona: %1$s · PID Zygote: %2$s</string>
+    <string name="fz_asset">Pliki w pakiecie APK</string>
+    <string name="fz_match">Zgodne z bieżącym pakietem</string>
+    <string name="fz_log_hint">Zapisuje pasujące wpisy lokalnego dziennika rozruchu.</string>
+    <string name="fz_copy">Kopiuj stan JSON</string>
+    <string name="fz_copy_hint">Kopiuje tylko pola diagnostyczne.</string>
+    <string name="fz_update_failed">Nie udało się zaktualizować silnika.</string>
+    <string name="fz_no_modules">Żaden moduł nie dostarcza biblioteki Zygisk.</string>
+    <string name="fz_module_bits">Architektury: %1$s</string>
 </resources>

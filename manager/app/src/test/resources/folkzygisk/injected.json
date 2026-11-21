@@ -1,0 +1,50 @@
+{
+  "schema_version": 1,
+  "enabled": true,
+  "engine_available": true,
+  "enable_blockers": [],
+  "external_providers": [],
+  "injection_state": "injected",
+  "reboot_required": null,
+  "runtime": {
+    "abis": {
+      "64": {
+        "supported": true,
+        "daemon_running": true,
+        "daemon_pid": 85,
+        "zygote_pid": 86,
+        "injected": true,
+        "reason": ""
+      },
+      "32": {
+        "supported": true,
+        "daemon_running": true,
+        "daemon_pid": 85,
+        "zygote_pid": 86,
+        "injected": true,
+        "reason": ""
+      }
+    },
+    "boot_id": "private-boot"
+  },
+  "startup_failures": 0,
+  "startup_blocked": false,
+  "startup_generation": 122,
+  "modules": [
+    {
+      "id": "sample-one",
+      "name": "Sample One",
+      "abis": [
+        "64",
+        "32"
+      ]
+    },
+    {
+      "id": "sample-two",
+      "name": "sample-two",
+      "abis": [
+        "64"
+      ]
+    }
+  ]
+}
