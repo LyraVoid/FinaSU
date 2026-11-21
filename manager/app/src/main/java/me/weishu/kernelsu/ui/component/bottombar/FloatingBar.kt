@@ -1,6 +1,5 @@
 package me.weishu.kernelsu.ui.component.bottombar
 
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.WindowInsets
@@ -70,11 +69,6 @@ internal fun FloatingBar(
     val wallpaperActive = LocalFolkWallpaperTokens.current != null
     val destinations = mainPagerState.destinations
     val selectedIndex = mainPagerState.selectedPage
-    // Outside wallpaper mode the pill's fill is derived from the page, so it does not carry the raised
-    // neutral's own lift and a tonal tint on top would only pull it back toward the canvas it was
-    // moved off of. It is given a hairline edge instead: an outline depends on nothing the theme
-    // painted behind the bar, so the shape stays legible even where the step is small. Wallpaper mode
-    // keeps the lift it has always had.
 
     BoxWithConstraints(
         modifier = modifier
@@ -99,10 +93,9 @@ internal fun FloatingBar(
             Surface(
                 modifier = Modifier
                     .wrapContentWidth()
-                    .clip(barShape)
                     .then(
                         if (useGlass) {
-                            Modifier.navBarGlassEffect(
+                            Modifier.clip(barShape).navBarGlassEffect(
                                 shape = barShape,
                                 blurStrength = glassBlurStrength,
                                 transparency = glassTransparency,
@@ -121,13 +114,7 @@ internal fun FloatingBar(
                 // A translucent surface cannot carry a shadow: the shadow is painted behind a fill that
                 // no longer hides it, so it reads as a dark halo around the capsule instead of a lift.
                 tonalElevation = 0.dp,
-                shadowElevation = if (useGlass || wallpaperActive) 0.dp else 8.dp,
-                // A white specular rim is invisible on a bright page, so the liquid pill keeps a
-                // hairline of its own to hold the edge in either polarity.
-                border = when {
-                    useGlass || wallpaperActive -> null
-                    else -> BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant)
-                },
+                shadowElevation = if (useGlass || wallpaperActive) 0.dp else 3.dp,
             ) {
                 if (style == FloatingBarConfig.Style.Drawer) {
                     FloatingBarDrawer(
