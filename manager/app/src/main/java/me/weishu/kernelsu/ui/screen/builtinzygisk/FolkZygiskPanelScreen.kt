@@ -8,9 +8,19 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Code
+import androidx.compose.material.icons.filled.ContentCopy
+import androidx.compose.material.icons.filled.Extension
+import androidx.compose.material.icons.filled.FolderOpen
+import androidx.compose.material.icons.filled.Memory
+import androidx.compose.material.icons.filled.RestartAlt
+import androidx.compose.material.icons.filled.Save
+import androidx.compose.material.icons.filled.Tag
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.semantics
@@ -33,8 +43,9 @@ import me.weishu.kernelsu.ui.navigation3.LocalNavigator
 import org.json.JSONObject
 
 @Composable
-private fun Detail(title: String, value: String, click: (() -> Unit)? = null, enabled: Boolean = true) {
+private fun Detail(icon: ImageVector, title: String, value: String, click: (() -> Unit)? = null, enabled: Boolean = true) {
     me.weishu.kernelsu.ui.component.material.SegmentedListItem(modifier = Modifier.semantics(mergeDescendants = true) {},
+        leadingContent = { Icon(icon, null) },
         headlineContent = { Text(title) }, supportingContent = { Text(value) }, onClick = click, enabled = enabled)
 }
 
@@ -81,7 +92,7 @@ fun FolkZygiskPanelScreen() {
                         null -> stringResource(if (state.readError) R.string.folkzygisk_read_error else R.string.folkzygisk_loading)
                         else -> stringResource(phase.hint)
                     }
-                    Detail(stringResource(phase?.title ?: R.string.folkzygisk_unverified), listOfNotNull(hint,
+                    Detail(Icons.Filled.Code, stringResource(phase?.title ?: R.string.folkzygisk_unverified), listOfNotNull(hint,
                         state.checked?.let { stringResource(R.string.fz_checked, DateFormat.getDateTimeInstance().format(Date(it))) },
                         status?.takeIf { !state.readError && (it.startupBlocked || it.startupFailures > 0 || it.startupFailureCode != null) }?.let {
                             stringResource(R.string.fz_failures, it.startupFailures, it.startupFailureCode ?: unknown)
@@ -92,38 +103,38 @@ fun FolkZygiskPanelScreen() {
             if (panel != null && status != null) {
                 SegmentedColumn {
                     for (abi in panel.abis) item {
-                        Detail(stringResource(R.string.fz_abi, abi.bits), listOfNotNull(stringResource(abi.label), abi.reason,
+                        Detail(Icons.Filled.Memory, stringResource(R.string.fz_abi, abi.bits), listOfNotNull(stringResource(abi.label), abi.reason,
                             stringResource(R.string.fz_pids, abi.daemonPid?.toString() ?: unknown,
                                 abi.zygotePid?.toString() ?: unknown)).joinToString("\n"))
                     }
                 }
                 SegmentedColumn {
-                    item { Detail(stringResource(R.string.home_version), status.engineVersion ?: unknown) }
-                    item { Detail(stringResource(R.string.fz_asset), when (status.matchesAssets) {
+                    item { Detail(Icons.Filled.Tag, stringResource(R.string.home_version), status.engineVersion ?: unknown) }
+                    item { Detail(Icons.Filled.FolderOpen, stringResource(R.string.fz_asset), when (status.matchesAssets) {
                         true -> stringResource(R.string.fz_match); false -> stringResource(R.string.fz_update); null -> unknown
                     }) }
-                    item { Detail(stringResource(if (status.enabled) R.string.folkzygisk_next_enabled else R.string.folkzygisk_next_disabled),
+                    item { Detail(Icons.Filled.RestartAlt, stringResource(if (status.enabled) R.string.folkzygisk_next_enabled else R.string.folkzygisk_next_disabled),
                         if (status.pendingRestart || status.rebootRequired == true) stringResource(R.string.folkzygisk_reboot_required) else unknown) }
                 }
                 SegmentedColumn(title = stringResource(R.string.module)) {
                     if (panel.modules.isEmpty()) item {
-                        Detail(stringResource(R.string.settings_folk_zygisk), stringResource(R.string.fz_no_modules))
+                        Detail(Icons.Filled.Extension, stringResource(R.string.settings_folk_zygisk), stringResource(R.string.fz_no_modules))
                     } else for (module in panel.modules) item {
-                        Detail(module.title, stringResource(R.string.fz_module_bits, module.abis))
+                        Detail(Icons.Filled.Extension, module.title, stringResource(R.string.fz_module_bits, module.abis))
                     }
                 }
                 if (panel.actions.isNotEmpty()) SegmentedColumn(title = stringResource(R.string.action)) {
                     for (action in panel.actions) item {
                         val title = stringResource(action.title); val hint = stringResource(action.consequence)
-                        Detail(title, hint, { scope.launch {
+                        Detail(action.icon, title, hint, { scope.launch {
                             if (confirm.awaitConfirm(title = title, content = hint) is ConfirmResult.Confirmed) vm.apply(action)
                         } }, !state.busy)
                     }
                 }
             }
             SegmentedColumn(title = stringResource(R.string.uts_view_diagnostics)) {
-                item { Detail(stringResource(R.string.save_log), stringResource(R.string.fz_log_hint), { export.launch("folkzygisk.log") }) }
-                if (panel != null && status != null) item { Detail(stringResource(R.string.fz_copy), stringResource(R.string.fz_copy_hint), {
+                item { Detail(Icons.Filled.Save, stringResource(R.string.save_log), stringResource(R.string.fz_log_hint), { export.launch("folkzygisk.log") }) }
+                if (panel != null && status != null) item { Detail(Icons.Filled.ContentCopy, stringResource(R.string.fz_copy), stringResource(R.string.fz_copy_hint), {
                     context.getSystemService(ClipboardManager::class.java).setPrimaryClip(ClipData.newPlainText("JSON", sanitized(status).toString(2)))
                 }) }
             }

@@ -1,15 +1,21 @@
 package me.weishu.kernelsu.ui.screen.builtinzygisk
 
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Build
+import androidx.compose.material.icons.filled.Download
+import androidx.compose.material.icons.filled.PowerSettingsNew
+import androidx.compose.material.icons.filled.RestartAlt
+import androidx.compose.ui.graphics.vector.ImageVector
 import me.weishu.kernelsu.R
 import me.weishu.kernelsu.data.model.FolkZygiskStatus
 import me.weishu.kernelsu.data.model.RuntimeStatus
 
-enum class PanelAction(val title: Int, val consequence: Int) {
-    Enable(R.string.folkzygisk_next_enabled, R.string.folkzygisk_reboot_required),
-    Disable(R.string.folkzygisk_next_disabled, R.string.folkzygisk_reboot_required),
-    Recover(R.string.folkzygisk_recover, R.string.folkzygisk_recover_summary),
-    Reset(R.string.fz_reset, R.string.fz_reset_hint),
-    Install(R.string.fz_install, R.string.fz_install_hint),
+enum class PanelAction(val title: Int, val consequence: Int, val icon: ImageVector) {
+    Enable(R.string.folkzygisk_next_enabled, R.string.folkzygisk_reboot_required, Icons.Filled.PowerSettingsNew),
+    Disable(R.string.folkzygisk_next_disabled, R.string.folkzygisk_reboot_required, Icons.Filled.PowerSettingsNew),
+    Recover(R.string.folkzygisk_recover, R.string.folkzygisk_recover_summary, Icons.Filled.Build),
+    Reset(R.string.fz_reset, R.string.fz_reset_hint, Icons.Filled.RestartAlt),
+    Install(R.string.fz_install, R.string.fz_install_hint, Icons.Filled.Download),
 }
 
 enum class Phase(val title: Int, val hint: Int) {

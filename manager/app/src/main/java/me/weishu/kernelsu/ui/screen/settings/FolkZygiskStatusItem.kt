@@ -1,10 +1,12 @@
 package me.weishu.kernelsu.ui.screen.settings
 
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Code
+import androidx.compose.material.icons.filled.Info
 import androidx.compose.ui.res.stringResource
 import kotlinx.coroutines.launch
 import me.weishu.kernelsu.R
@@ -37,6 +39,7 @@ internal fun FolkZygiskStatusItem(state: SettingsUiState, actions: SettingsScree
     if (!state.isFolkZygiskLoading) {
         SegmentedListItem(headlineContent = { Text(stringResource(R.string.uts_view_diagnostics)) },
             supportingContent = { Text(stringResource(if (showFolkZygiskRecovery(state)) R.string.folkzygisk_recover_summary else R.string.settings_folk_zygisk)) },
+            leadingContent = { Icon(Icons.Filled.Info, null) },
             onClick = actions.onOpenFolkZygisk)
     }
 }

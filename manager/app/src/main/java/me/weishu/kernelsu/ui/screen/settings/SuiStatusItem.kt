@@ -3,6 +3,12 @@ package me.weishu.kernelsu.ui.screen.settings
 import androidx.annotation.StringRes
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.OpenInNew
+import androidx.compose.material.icons.filled.AdminPanelSettings
+import androidx.compose.material.icons.filled.Build
+import androidx.compose.material.icons.filled.Download
+import androidx.compose.material.icons.filled.Extension
+import androidx.compose.material.icons.filled.Memory
+import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material.icons.filled.WaterDrop
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
@@ -100,14 +106,17 @@ private fun SuiDiagnostics(
         else -> stringResource(R.string.sui_diag_payload_stale)
     }
     SegmentedListItem(
+        leadingContent = { Icon(Icons.Filled.Extension, null) },
         headlineContent = { Text(stringResource(R.string.sui_diag_injection)) },
         supportingContent = { Text(stringResource(zygiskStateRes(status))) },
     )
     SegmentedListItem(
+        leadingContent = { Icon(Icons.Filled.Download, null) },
         headlineContent = { Text(stringResource(R.string.sui_diag_payload)) },
         supportingContent = { Text("$payload · ${status.payloadVersion.ifBlank { DEFAULT_VERSION }}") },
     )
     SegmentedListItem(
+        leadingContent = { Icon(Icons.Filled.Memory, null) },
         headlineContent = { Text(stringResource(R.string.sui_diag_daemons)) },
         supportingContent = {
             Text(
@@ -120,12 +129,14 @@ private fun SuiDiagnostics(
     )
     if (status.conflicts.isNotEmpty()) {
         SegmentedListItem(
+            leadingContent = { Icon(Icons.Filled.Warning, null) },
             headlineContent = { Text(stringResource(R.string.sui_diag_conflicts)) },
             supportingContent = { Text(status.conflicts.joinToString()) },
         )
     }
     managementAvailable?.let { available ->
         SegmentedListItem(
+            leadingContent = { Icon(Icons.Filled.AdminPanelSettings, null) },
             headlineContent = { Text(stringResource(R.string.sui_diag_management)) },
             supportingContent = {
                 Text(
@@ -139,6 +150,7 @@ private fun SuiDiagnostics(
     }
     if (!status.installed || !status.payloadCurrent) {
         SegmentedListItem(
+            leadingContent = { Icon(Icons.Filled.Build, null) },
             headlineContent = { Text(stringResource(R.string.sui_repair)) },
             supportingContent = { Text(stringResource(R.string.sui_repair_summary)) },
             enabled = !busy,
