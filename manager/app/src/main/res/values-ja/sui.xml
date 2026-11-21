@@ -32,6 +32,9 @@
     <string name="sui_zygisk_disabled">無効</string>
     <string name="sui_zygisk_injected">注入済み</string>
     <string name="sui_zygisk_pending">再起動待ち</string>
+    <string name="sui_error_bridge">Sui のブリッジがまだ応答していません</string>
+    <string name="sui_error_no_value">Sui がこの値を返しませんでした</string>
+    <string name="sui_error_rejected">Sui が変更を拒否しました</string>
     <string name="sui_write_failed">Sui の変更に失敗しました</string>
     <string name="sui_reboot_required">Sui は再起動後に有効になります</string>
     <string name="sui_disable_done">Sui を停止しました。再起動で注入済みコードが消去されます</string>

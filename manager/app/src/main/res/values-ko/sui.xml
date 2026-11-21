@@ -32,6 +32,9 @@
     <string name="sui_zygisk_disabled">비활성화됨</string>
     <string name="sui_zygisk_injected">주입됨</string>
     <string name="sui_zygisk_pending">재부팅 대기 중</string>
+    <string name="sui_error_bridge">Sui 브리지가 아직 응답하지 않습니다</string>
+    <string name="sui_error_no_value">Sui가 이 값을 보고하지 않았습니다</string>
+    <string name="sui_error_rejected">Sui가 변경을 거부했습니다</string>
     <string name="sui_write_failed">Sui 변경에 실패했습니다</string>
     <string name="sui_reboot_required">Sui는 재부팅 후 적용됩니다</string>
     <string name="sui_disable_done">Sui를 중지했습니다. 재부팅하면 주입된 코드가 제거됩니다</string>

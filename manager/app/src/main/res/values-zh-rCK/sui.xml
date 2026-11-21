@@ -32,6 +32,9 @@
     <string name="sui_zygisk_disabled">没开火</string>
     <string name="sui_zygisk_injected">已下锅</string>
     <string name="sui_zygisk_pending">等重新开火</string>
+    <string name="sui_error_bridge">传菜口还没回话</string>
+    <string name="sui_error_no_value">Sui 没报上这份量</string>
+    <string name="sui_error_rejected">Sui 不肯改这味</string>
     <string name="sui_write_failed">Sui 这手没炒成</string>
     <string name="sui_reboot_required">Sui 得重新开火才上桌</string>
     <string name="sui_disable_done">Sui 已停火；重新开火会清掉注入的料</string>

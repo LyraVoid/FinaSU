@@ -32,6 +32,9 @@
     <string name="sui_zygisk_disabled">wyłączony</string>
     <string name="sui_zygisk_injected">wstrzyknięty</string>
     <string name="sui_zygisk_pending">oczekuje na ponowne uruchomienie</string>
+    <string name="sui_error_bridge">Most Sui jeszcze nie odpowiada</string>
+    <string name="sui_error_no_value">Sui nie zgłosił tej wartości</string>
+    <string name="sui_error_rejected">Sui odrzucił zmianę</string>
     <string name="sui_write_failed">Zmiana Sui nie powiodła się</string>
     <string name="sui_reboot_required">Sui zadziała po ponownym uruchomieniu</string>
     <string name="sui_disable_done">Sui zatrzymane; ponowne uruchomienie usunie wstrzyknięty kod</string>

@@ -32,6 +32,9 @@
     <string name="sui_zygisk_disabled">desactivado</string>
     <string name="sui_zygisk_injected">inyectado</string>
     <string name="sui_zygisk_pending">esperando reinicio</string>
+    <string name="sui_error_bridge">El puente de Sui aún no responde</string>
+    <string name="sui_error_no_value">Sui no informó este valor</string>
+    <string name="sui_error_rejected">Sui rechazó el cambio</string>
     <string name="sui_write_failed">El cambio de Sui falló</string>
     <string name="sui_reboot_required">Sui se aplica tras reiniciar</string>
     <string name="sui_disable_done">Sui detenido; al reiniciar se limpia el código inyectado</string>

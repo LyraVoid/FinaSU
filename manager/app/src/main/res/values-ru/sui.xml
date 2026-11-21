@@ -32,6 +32,9 @@
     <string name="sui_zygisk_disabled">отключено</string>
     <string name="sui_zygisk_injected">внедрено</string>
     <string name="sui_zygisk_pending">ожидается перезагрузка</string>
+    <string name="sui_error_bridge">Мост Sui пока не отвечает</string>
+    <string name="sui_error_no_value">Sui не сообщил это значение</string>
+    <string name="sui_error_rejected">Sui отклонил изменение</string>
     <string name="sui_write_failed">Не удалось изменить Sui</string>
     <string name="sui_reboot_required">Sui вступит в силу после перезагрузки</string>
     <string name="sui_disable_done">Sui остановлен; перезагрузка очистит внедрённый код</string>

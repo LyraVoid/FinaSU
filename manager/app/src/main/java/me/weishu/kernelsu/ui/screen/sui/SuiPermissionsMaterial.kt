@@ -103,7 +103,7 @@ fun SuiPermissionsMaterial(
     val haptic = LocalHapticFeedback.current
     val snackbarHostState = remember { SnackbarHostState() }
     val statusMessage = when {
-        uiState.error != null -> uiState.error
+        uiState.error != null -> suiErrorText(uiState.error)
         uiState.loading -> stringResource(R.string.sui_permissions_loading)
         uiState.visible.isEmpty() -> stringResource(R.string.sui_permissions_empty)
         else -> null
@@ -311,6 +311,15 @@ fun SuiPermissionsMaterial(
             }
         }
     }
+}
+
+/** The Sui channel reports its own failures as codes; anything else is shown as it arrived. */
+@Composable
+private fun suiErrorText(message: String): String = when {
+    message == "sui_bridge_unavailable" -> stringResource(R.string.sui_error_bridge)
+    message.startsWith("sui_no_") -> stringResource(R.string.sui_error_no_value)
+    message == "sui_setting_rejected" -> stringResource(R.string.sui_error_rejected)
+    else -> message
 }
 
 /** Sui's own overflow menu, minus the entries that only open its project pages. */

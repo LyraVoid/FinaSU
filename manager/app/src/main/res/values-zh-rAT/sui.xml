@@ -32,6 +32,9 @@
     <string name="sui_zygisk_disabled">未启用</string>
     <string name="sui_zygisk_injected">已注入</string>
     <string name="sui_zygisk_pending">待神翼再生</string>
+    <string name="sui_error_bridge">Sui 之桥接尚未应答</string>
+    <string name="sui_error_no_value">Sui 未昭示此值</string>
+    <string name="sui_error_rejected">Sui 未允此项变更</string>
     <string name="sui_write_failed">Sui 之术施展未成</string>
     <string name="sui_reboot_required">Sui 将于重启后显现</string>
     <string name="sui_disable_done">Sui 已止息；重启可洗去注入之咒</string>

@@ -32,6 +32,9 @@
     <string name="sui_zygisk_disabled">đã tắt</string>
     <string name="sui_zygisk_injected">đã chèn</string>
     <string name="sui_zygisk_pending">chờ khởi động lại</string>
+    <string name="sui_error_bridge">Cầu nối của Sui chưa phản hồi</string>
+    <string name="sui_error_no_value">Sui không báo cáo giá trị này</string>
+    <string name="sui_error_rejected">Sui đã từ chối thay đổi</string>
     <string name="sui_write_failed">Thay đổi Sui thất bại</string>
     <string name="sui_reboot_required">Sui có hiệu lực sau khi khởi động lại</string>
     <string name="sui_disable_done">Đã dừng Sui; khởi động lại sẽ xóa mã đã chèn</string>

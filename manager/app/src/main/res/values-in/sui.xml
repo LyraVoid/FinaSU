@@ -32,6 +32,9 @@
     <string name="sui_zygisk_disabled">nonaktif</string>
     <string name="sui_zygisk_injected">tersuntik</string>
     <string name="sui_zygisk_pending">menunggu mulai ulang</string>
+    <string name="sui_error_bridge">Jembatan Sui belum merespons</string>
+    <string name="sui_error_no_value">Sui tidak melaporkan nilai ini</string>
+    <string name="sui_error_rejected">Sui menolak perubahan ini</string>
     <string name="sui_write_failed">Perubahan Sui gagal</string>
     <string name="sui_reboot_required">Sui berlaku setelah mulai ulang</string>
     <string name="sui_disable_done">Sui dihentikan; mulai ulang menghapus kode yang tersuntik</string>

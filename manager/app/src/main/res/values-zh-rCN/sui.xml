@@ -32,6 +32,9 @@
     <string name="sui_zygisk_disabled">未启用</string>
     <string name="sui_zygisk_injected">已注入</string>
     <string name="sui_zygisk_pending">等待重启</string>
+    <string name="sui_error_bridge">Sui 的桥接暂时没有响应</string>
+    <string name="sui_error_no_value">Sui 没有返回这项数据</string>
+    <string name="sui_error_rejected">Sui 拒绝了这次修改</string>
     <string name="sui_write_failed">Sui 操作失败</string>
     <string name="sui_reboot_required">Sui 将在重启后生效</string>
     <string name="sui_disable_done">Sui 已停止；重启后清除已注入的代码</string>

@@ -32,6 +32,9 @@
     <string name="sui_zygisk_disabled">disabled</string>
     <string name="sui_zygisk_injected">injected</string>
     <string name="sui_zygisk_pending">waiting for a reboot</string>
+    <string name="sui_error_bridge">Sui\'s bridge is not answering yet</string>
+    <string name="sui_error_no_value">Sui did not report this value</string>
+    <string name="sui_error_rejected">Sui refused the change</string>
     <string name="sui_write_failed">The Sui change failed</string>
     <string name="sui_reboot_required">Sui takes effect after a reboot</string>
     <string name="sui_disable_done">Sui stopped; a reboot clears the injected code</string>

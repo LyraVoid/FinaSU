@@ -32,6 +32,9 @@
     <string name="sui_zygisk_disabled">معطّل</string>
     <string name="sui_zygisk_injected">محقون</string>
     <string name="sui_zygisk_pending">بانتظار إعادة التشغيل</string>
+    <string name="sui_error_bridge">جسر Sui لا يستجيب بعد</string>
+    <string name="sui_error_no_value">لم يبلّغ Sui عن هذه القيمة</string>
+    <string name="sui_error_rejected">رفض Sui هذا التغيير</string>
     <string name="sui_write_failed">فشل تغيير Sui</string>
     <string name="sui_reboot_required">يسري Sui بعد إعادة التشغيل</string>
     <string name="sui_disable_done">تم إيقاف Sui؛ إعادة التشغيل تمسح الشيفرة المحقونة</string>

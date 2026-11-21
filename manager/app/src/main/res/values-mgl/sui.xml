@@ -32,6 +32,9 @@
     <string name="sui_zygisk_disabled">未启用</string>
     <string name="sui_zygisk_injected">已注入</string>
     <string name="sui_zygisk_pending">等待重新觉醒</string>
+    <string name="sui_error_bridge">Sui 的契约通道还没回应</string>
+    <string name="sui_error_no_value">Sui 没有回报这个数值</string>
+    <string name="sui_error_rejected">Sui 不肯接受这次变更</string>
     <string name="sui_write_failed">Sui 操作失败</string>
     <string name="sui_reboot_required">Sui 重新觉醒后生效</string>
     <string name="sui_disable_done">Sui 已停下；重新觉醒会抹掉注入的魔力</string>
