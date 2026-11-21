@@ -680,8 +680,8 @@ pub enum Command {
 }
 
 #[derive(Default, Deserialize, Serialize)]
-#[serde(deny_unknown_fields)]
 struct Config {
+    #[serde(default)]
     enabled: bool,
 }
 
@@ -697,11 +697,66 @@ pub struct ProviderStatus {
     // Unknown until boot integration records the effective provider selection.
     pub reboot_required: Option<bool>,
     pub runtime: Option<RuntimeStatus>,
+    pub engine: EngineStatus,
+    pub modules: Vec<ZygiskModule>,
     pub startup_failures: u32,
     pub startup_blocked: bool,
     pub startup_failure_code: Option<&'static str>,
     pub startup_failure_detail: Option<String>,
     pub startup_generation: u64,
+}
+
+#[derive(Default, Serialize)]
+pub struct EngineStatus {
+    installed_version: Option<String>,
+    matches_embedded_assets: Option<bool>,
+    can_install: bool,
+}
+
+#[derive(Serialize)]
+pub struct ZygiskModule {
+    id: String,
+    name: String,
+    abis: Vec<&'static str>,
+}
+
+/// Modules the engine would load: a readable library per ABI, not disabled. Same rule as startup.
+fn zygisk_modules(modules: &Path) -> Result<Vec<ZygiskModule>> {
+    let entries = match fs::read_dir(modules) {
+        Ok(entries) => entries,
+        Err(error) if error.kind() == std::io::ErrorKind::NotFound => return Ok(Vec::new()),
+        Err(error) => return Err(error).context("Scan Zygisk modules"),
+    };
+    let mut found = Vec::new();
+    for entry in entries {
+        let entry = entry?;
+        let Some(id) = entry.file_name().to_str().map(str::to_owned) else {
+            continue;
+        };
+        let root = modules.join(&id);
+        if !root.is_dir() || root.join("disable").exists() || root.join("remove").exists() {
+            continue;
+        }
+        let abis: Vec<&'static str> = [("64", "arm64-v8a"), ("32", "armeabi-v7a")]
+            .into_iter()
+            .filter(|(_, dir)| root.join("zygisk").join(dir).with_extension("so").is_file())
+            .map(|(bits, _)| bits)
+            .collect();
+        if !abis.is_empty() {
+            let name = fs::read_to_string(root.join("module.prop"))
+                .ok()
+                .and_then(|prop| {
+                    prop.lines()
+                        .find_map(|line| line.strip_prefix("name="))
+                        .map(|name| name.trim().to_owned())
+                })
+                .filter(|name| !name.is_empty())
+                .unwrap_or_else(|| id.clone());
+            found.push(ZygiskModule { id, name, abis });
+        }
+    }
+    found.sort_by(|left, right| left.id.cmp(&right.id));
+    Ok(found)
 }
 
 pub fn provider_status() -> Result<ProviderStatus> {
@@ -712,10 +767,22 @@ pub fn provider_status() -> Result<ProviderStatus> {
     let engine = engine_available(Path::new(ENGINE));
     let external = providers(Path::new(MODULES), Path::new(UPDATES))?;
     let enabled = read_config(Path::new(CONFIG))?.enabled;
-    let update_pending = (enabled && external.is_empty())
-        .then(|| engine_update_required(Path::new(ENGINE)))
-        .transpose()?
-        .unwrap_or(false);
+    let modules = zygisk_modules(Path::new(MODULES))?;
+    let installed_version = crate::zygisk_assets::installed_version(
+        Path::new(ENGINE).parent().context("Engine parent")?,
+    )
+    .ok()
+    .flatten();
+    let embedded_version = embedded_engine_files()
+        .and_then(|files| crate::zygisk_assets::asset_version(&files))
+        .ok();
+    let matches_embedded_assets = installed_version
+        .as_ref()
+        .zip(embedded_version.as_ref())
+        .map(|(installed, embedded)| installed == embedded);
+    let update_pending = enabled && external.is_empty() && matches_embedded_assets == Some(false);
+    let can_install = embedded_version.is_some()
+        && ensure_engine_installable(&epoch, &guard, runtime.is_some()).is_ok();
     let blocked = guard.blocked();
     Ok(ProviderStatus {
         schema_version: 1,
@@ -726,6 +793,12 @@ pub fn provider_status() -> Result<ProviderStatus> {
         injection_state: injection_state(runtime.as_ref()),
         reboot_required: update_pending.then_some(true),
         runtime,
+        engine: EngineStatus {
+            installed_version,
+            matches_embedded_assets,
+            can_install,
+        },
+        modules,
         startup_failures: guard.failures,
         startup_blocked: blocked,
         startup_failure_code: guard.last_issue.as_ref().map(|issue| issue.code.as_str()),
@@ -970,7 +1043,14 @@ fn engine_update_required_for(engine: &Path, files: &[(String, Vec<u8>)]) -> Res
 }
 
 fn write_config(path: &Path, config: &Config) -> Result<()> {
-    write_json(path, config)
+    // Fields written by another version belong to that version and must survive a toggle.
+    let mut fields = match fs::read(path) {
+        Ok(bytes) => serde_json::from_slice(&bytes).context("Invalid FolkZygisk configuration")?,
+        Err(error) if error.kind() == std::io::ErrorKind::NotFound => serde_json::Map::new(),
+        Err(error) => return Err(error).context("Read FolkZygisk configuration"),
+    };
+    fields.insert("enabled".to_owned(), config.enabled.into());
+    write_json(path, &fields)
 }
 
 fn write_json(path: &Path, value: &impl Serialize) -> Result<()> {
@@ -1523,8 +1603,51 @@ mod tests {
         assert!(!read_config(&path)?.enabled);
         write_config(&path, &Config { enabled: true })?;
         assert!(read_config(&path)?.enabled);
+        // A configuration written by another version stays readable, keeps its fields, and toggles.
+        fs::write(&path, r#"{"enabled":false,"extension":true}"#)?;
+        assert!(!read_config(&path)?.enabled);
+        write_config(&path, &Config { enabled: true })?;
+        let kept: serde_json::Value = serde_json::from_slice(&fs::read(&path)?)?;
+        assert_eq!(kept["enabled"], serde_json::json!(true));
+        assert_eq!(kept["extension"], serde_json::json!(true));
         fs::write(&path, "broken")?;
         assert!(read_config(&path).is_err());
+        assert!(write_config(&path, &Config { enabled: true }).is_err());
+        Ok(())
+    }
+
+    #[test]
+    fn modules_are_read_from_libraries_that_startup_would_load() -> Result<()> {
+        let dir = tempfile::tempdir()?;
+        for (id, abis) in [("with64", ["64"].as_slice()), ("withboth", &["64", "32"])] {
+            fs::create_dir_all(dir.path().join(id).join("zygisk"))?;
+            for bits in abis {
+                let arch = if *bits == "64" {
+                    "arm64-v8a"
+                } else {
+                    "armeabi-v7a"
+                };
+                fs::write(
+                    dir.path()
+                        .join(id)
+                        .join("zygisk")
+                        .join(format!("{arch}.so")),
+                    "",
+                )?;
+            }
+        }
+        fs::create_dir_all(dir.path().join("disabled").join("zygisk"))?;
+        fs::write(dir.path().join("disabled/zygisk/arm64-v8a.so"), "")?;
+        fs::write(dir.path().join("disabled/disable"), "")?;
+        fs::create_dir_all(dir.path().join("empty").join("zygisk"))?;
+        let found = zygisk_modules(dir.path())?;
+        assert_eq!(
+            found
+                .iter()
+                .map(|m| (m.id.as_str(), m.abis.clone()))
+                .collect::<Vec<_>>(),
+            vec![("with64", vec!["64"]), ("withboth", vec!["64", "32"])]
+        );
         Ok(())
     }
 

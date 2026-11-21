@@ -1019,6 +1019,8 @@ mod tests {
         ProviderStatus {
             schema_version: 1,
             enabled,
+            engine: crate::zygisk::EngineStatus::default(),
+            modules: Vec::new(),
             engine_available: engine,
             enable_blockers: Vec::new(),
             external_providers: Vec::new(),
