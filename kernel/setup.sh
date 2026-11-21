@@ -2,7 +2,7 @@
 set -eu
 
 GKI_ROOT=$(pwd)
-FINASU_URL="${FINASU_URL:-${FOLKSU_URL:-https://github.com/LyraVoid/FinaSU.git}}"
+FINASU_URL="${FINASU_URL:-${FOLKSU_URL:-https://github.com/Samo1408/FinaSU.git}}"
 FINASU_REF="${FINASU_REF:-${FOLKSU_REF:-dev}}"
 FINASU_DIR="${FINASU_DIR:-${FOLKSU_DIR:-}}"
 FINASU_KEEP_SOURCE="${FINASU_KEEP_SOURCE:-${FOLKSU_KEEP_SOURCE:-0}}"
@@ -47,8 +47,8 @@ perform_cleanup() {
         sed -i '/drivers\/kernelsu\/Kconfig/d' "$DRIVER_KCONFIG"
         echo "[-] Kconfig reverted."
     fi
-    if [ -d "$GKI_ROOT/FinaSU" ] && [ "$FINASU_KEEP_SOURCE" != "1" ]; then
-        rm -rf "$GKI_ROOT/FinaSU"
+    if [ -d "$GKI_ROOT/KernelSU" ] && [ "$FINASU_KEEP_SOURCE" != "1" ]; then
+        rm -rf "$GKI_ROOT/KernelSU"
         echo "[-] FinaSU directory deleted."
     fi
 }
@@ -59,7 +59,7 @@ setup_finasu() {
     if [ -n "$FINASU_DIR" ]; then
         SRC_DIR="$FINASU_DIR"
     else
-        SRC_DIR="$GKI_ROOT/FinaSU"
+        SRC_DIR="$GKI_ROOT/KernelSU"
         if [ ! -d "$SRC_DIR" ]; then
             git clone "$FINASU_URL" "$SRC_DIR"
         fi
