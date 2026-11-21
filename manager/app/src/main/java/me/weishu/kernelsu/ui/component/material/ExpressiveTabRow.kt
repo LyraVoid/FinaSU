@@ -22,6 +22,15 @@ import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.unit.dp
+import me.weishu.kernelsu.wallpaper.LocalFolkWallpaperTokens
+
+@Composable
+fun folkTabRowContainerColor(): Color =
+    if (LocalFolkWallpaperTokens.current != null) {
+        Color.Transparent
+    } else {
+        MaterialTheme.colorScheme.surfaceContainer
+    }
 
 @Composable
 fun ExpressiveTabRow(
@@ -29,13 +38,13 @@ fun ExpressiveTabRow(
     tabs: List<String>,
     onTabClick: (Int) -> Unit,
     modifier: Modifier = Modifier,
-    containerColor: Color = MaterialTheme.colorScheme.surfaceContainer,
+    containerColor: Color? = null,
 ) {
     val safeIndex = selectedTabIndex.coerceIn(0, (tabs.size - 1).coerceAtLeast(0))
     PrimaryTabRow(
         selectedTabIndex = safeIndex,
         modifier = modifier,
-        containerColor = containerColor,
+        containerColor = containerColor ?: folkTabRowContainerColor(),
     ) {
         tabs.forEachIndexed { index, label ->
             val selected = safeIndex == index

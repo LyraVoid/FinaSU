@@ -5,6 +5,7 @@
     <string name="feature_status_forced_summary">启动配置已经强制定好啦喵，在这里改不了哦</string>
     <string name="install_anykernel">刷入 AnyKernel3 ZIP 喵</string>
     <string name="install_anykernel_summary">用当前或未使用的 A/B 槽位跑受信任的内核安装器喵，需要 root 权限哦</string>
+    <string name="install_anykernel_page_hint">这个外部 ZIP 会以 root 权限跑喵，实际写哪些分区由安装脚本决定；只准用确认适配本机的包喵！</string>
     <string name="install_anykernel_warning">这个 ZIP 会以 root 权限执行喵，可能会改动好几个分区。具体写哪些分区和槽位由安装脚本说了算，FinaSU 不会覆盖槽位，也不会更新 ksud。装成功不保证开得了机，装失败了也可能已经写进去一部分了。现有的启动镜像备份未必兜得住这些改动。先确认设备兼容、准备好回滚镜像，再继续哦喵！</string>
     <string name="install_anykernel_root_required">刷 AnyKernel3 得先有 root 权限喵！</string>
     <string name="install_anykernel_read_failed">读不了这个 AnyKernel3 ZIP 喵…</string>
@@ -254,6 +255,8 @@
     <string name="jailbreak_flash_warning">现在是**越狱模式**喵。在**没解锁 Bootloader** 的设备上刷分区会弄坏 AVB（Android 验证启动），可能让设备**开不了机**哦。\n\n动手前先确认 Bootloader 已经解锁喵！</string>
     <string name="jailbreak_flash_warning_countdown">继续喵 (%1$d)</string>
     <string name="install_next">下一步喵</string>
+    <string name="install_mode_lkm">LKM 安装喵</string>
+    <string name="install_mode_anykernel">AnyKernel3</string>
     <string name="install_select_partition">选分区喵</string>
     <string name="install_upload_lkm_file">用本地 LKM 文件喵</string>
     <string name="install_force_backup">备份成原厂镜像喵</string>

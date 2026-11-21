@@ -3,9 +3,16 @@ package me.weishu.kernelsu.ui.screen.install
 import androidx.compose.runtime.Immutable
 import me.weishu.kernelsu.ui.util.LkmSelection
 
+internal enum class InstallMode {
+    Lkm,
+    AnyKernel,
+}
+
 @Immutable
 internal data class InstallUiState(
+    val installMode: InstallMode,
     val installMethod: InstallMethod?,
+    val anyKernelAvailable: Boolean,
     val lkmSelection: LkmSelection,
     val partitionSelectionIndex: Int,
     val displayPartitions: List<String>,
@@ -31,6 +38,7 @@ internal data class InstallUiState(
 @Immutable
 internal data class InstallScreenActions(
     val onBack: () -> Unit,
+    val onSelectMode: (InstallMode) -> Unit,
     val onSelectMethod: (InstallMethod) -> Unit,
     val onDownloadFile: () -> Unit,
     val onSelectBootImage: () -> Unit,

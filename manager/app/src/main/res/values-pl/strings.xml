@@ -5,6 +5,7 @@
     <string name="feature_status_forced_summary">Wymuszone przez konfigurację rozruchu; nie można tego tutaj zmienić</string>
     <string name="install_anykernel">Wgraj plik ZIP AnyKernel3</string>
     <string name="install_anykernel_summary">Uruchamia zaufany instalator jądra na bieżącym lub nieużywanym slocie A/B. Wymaga uprawnień Root.</string>
+    <string name="install_anykernel_page_hint">Ten zewnętrzny plik ZIP działa z uprawnieniami root. Instalator decyduje, które partycje zostaną zapisane; używaj wyłącznie pakietów zaufanych dla tego urządzenia.</string>
     <string name="install_anykernel_warning">Ten plik ZIP działa z uprawnieniami root i może modyfikować wiele partycji. To instalator decyduje, które partycje i sloty zostaną zapisane; FinaSU nie nadpisuje slotu ani nie odświeża ksud. Pomyślna instalacja nie gwarantuje możliwości uruchomienia, a niepowodzenie może pozostawić częściowe zmiany. Istniejące kopie zapasowe obrazu boot mogą nie obejmować tych zmian. Przed kontynuowaniem potwierdź zgodność urządzenia i przygotuj obraz do odzyskiwania.</string>
     <string name="install_anykernel_root_required">Do wgrania AnyKernel3 wymagane są uprawnienia root.</string>
     <string name="install_anykernel_read_failed">Nie można odczytać pliku ZIP AnyKernel3.</string>
@@ -258,6 +259,8 @@
 Przed kontynuowaniem upewnij się, że bootloader jest odblokowany!</string>
     <string name="jailbreak_flash_warning_countdown">Kontynuuj (%1$d)</string>
     <string name="install_next">Dalej</string>
+    <string name="install_mode_lkm">Instalacja LKM</string>
+    <string name="install_mode_anykernel">AnyKernel3</string>
     <string name="install_select_partition">Wybierz partycję</string>
     <string name="install_upload_lkm_file">Użyj lokalnego pliku LKM</string>
     <string name="install_force_backup">Utwórz kopię zapasową jako obraz fabryczny</string>

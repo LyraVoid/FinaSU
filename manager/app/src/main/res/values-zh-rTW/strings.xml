@@ -5,6 +5,7 @@
     <string name="feature_status_forced_summary">已由開機設定強制指定，無法在此變更</string>
     <string name="install_anykernel">刷入 AnyKernel3 ZIP</string>
     <string name="install_anykernel_summary">在目前或未使用的 A/B 槽位執行受信任的核心安裝程式，需要 Root 權限。</string>
+    <string name="install_anykernel_page_hint">此外部 ZIP 將以 root 執行，實際寫入哪些分割區由安裝程式決定；請只使用確認相容本裝置的可信套件。</string>
     <string name="install_anykernel_warning">此 ZIP 將以 root 執行，可能修改多個分割區。實際寫入的分割區與槽位由安裝程式決定；FinaSU 不會覆寫槽位，也不會重新整理 ksud。安裝成功不保證能開機，失敗也可能留下部分變更。現有的啟動映像備份未必涵蓋這些變更。請先確認裝置相容性並準備復原映像，再繼續。</string>
     <string name="install_anykernel_root_required">刷入 AnyKernel3 需要 Root 權限。</string>
     <string name="install_anykernel_read_failed">無法讀取 AnyKernel3 ZIP。</string>
@@ -255,6 +256,8 @@
     <string name="jailbreak_flash_warning">目前處於 **越獄模式**。在 **Bootloader 已上鎖** 的裝置上刷寫分割區會破壞 AVB（Android 驗證開機），並可能導致裝置 **無法開機**。\n\n請先確認 Bootloader 已解鎖再繼續操作！</string>
     <string name="jailbreak_flash_warning_countdown">繼續（%1$d）</string>
     <string name="install_next">繼續</string>
+    <string name="install_mode_lkm">LKM 安裝</string>
+    <string name="install_mode_anykernel">AnyKernel3</string>
     <string name="install_select_partition">選擇分割區</string>
     <string name="install_upload_lkm_file">使用本機 LKM 檔案</string>
     <string name="install_force_backup">備份為原廠映像</string>

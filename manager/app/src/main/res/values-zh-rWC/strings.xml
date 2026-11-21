@@ -5,6 +5,7 @@
     <string name="feature_status_forced_summary">已由启道之序强制钦定，此处不可更易</string>
     <string name="install_anykernel">炼化 AnyKernel3 ZIP</string>
     <string name="install_anykernel_summary">以当前仙槽或未使用的 A/B 仙槽运转可信之道核炼器，需 root 之权。</string>
+    <string name="install_anykernel_page_hint">此外部 ZIP 将以 root 运转，所书分区由炼器之符裁定；唯用确认相容本仙器之卷宗。</string>
     <string name="install_anykernel_warning">此 ZIP 将以 root 运转，或改多方分区。所书分区与仙槽皆由炼器之符决定，FinaSU 不夺仙槽，亦不更新 ksud。炼化功成不保可启，败陨亦可能已留残迹。现有仙躯镜像之拓印未必涵盖此番改动。请先验仙器之相容，备下回滚之镜像，再行继续。</string>
     <string name="install_anykernel_root_required">炼化 AnyKernel3 需 root 之权。</string>
     <string name="install_anykernel_read_failed">无法读取 AnyKernel3 ZIP。</string>
@@ -254,6 +255,8 @@
     <string name="jailbreak_flash_warning">道友现处**破禁模式**。于**未解引仙台**之仙器上炼化分区，将破 AVB（Android 验证启道），或致仙器**无法启道**。\n\n请确认引仙台已解，再行继续！</string>
     <string name="jailbreak_flash_warning_countdown">继续 (%1$d)</string>
     <string name="install_next">下一步</string>
+    <string name="install_mode_lkm">LKM 炼化</string>
+    <string name="install_mode_anykernel">AnyKernel3</string>
     <string name="install_select_partition">择分区</string>
     <string name="install_upload_lkm_file">用本地 LKM 卷宗</string>
     <string name="install_force_backup">拓印为原厂镜像</string>

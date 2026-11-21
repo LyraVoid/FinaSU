@@ -5,6 +5,7 @@
     <string name="feature_status_forced_summary">已由启动配置强制指定，无法在此修改</string>
     <string name="install_anykernel">锻造 AnyKernel3 ZIP</string>
     <string name="install_anykernel_summary">以当前或未使用的 A/B 槽运行可信基岩核心合成器，需要 OP 权限。</string>
+    <string name="install_anykernel_page_hint">这个外部 ZIP 会以 OP 权限执行，实际写入哪些分区由安装脚本决定；只使用确认适配本设备的可信整合包！</string>
     <string name="install_anykernel_warning">这个 ZIP 会以 OP 权限执行，可能改动多个分区。实际写入哪些分区和槽位由合成脚本决定，FinaSU 不会覆盖槽位，也不更新 ksud。合成成功不保证能启动，失败也可能已写入一部分。现有的启动镜像末影箱备份未必兜得住这些改动。合成与锻造有风险，请确保已备份存档到末影箱！</string>
     <string name="install_anykernel_root_required">锻造 AnyKernel3 需要 OP 权限。</string>
     <string name="install_anykernel_read_failed">无法读取 AnyKernel3 ZIP。</string>
@@ -254,6 +255,8 @@
     <string name="jailbreak_flash_warning">你当前处于**越狱模式**。在**未解锁 Bootloader** 的设备上锻造分区会破坏 AVB（Android 验证启动），可能导致设备**无法开机**。\n\n请先解锁 Bootloader，并确认已备份存档到末影箱，再继续操作！</string>
     <string name="jailbreak_flash_warning_countdown">继续 (%1$d)</string>
     <string name="install_next">下一步</string>
+    <string name="install_mode_lkm">LKM 合成</string>
+    <string name="install_mode_anykernel">AnyKernel3</string>
     <string name="install_select_partition">选择分区</string>
     <string name="install_upload_lkm_file">使用本地 LKM 文件</string>
     <string name="install_force_backup">把原厂镜像备份存档到末影箱</string>

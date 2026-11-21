@@ -5,6 +5,7 @@
     <string name="feature_status_forced_summary">Bị buộc bởi cấu hình khởi động; không thể thay đổi tại đây</string>
     <string name="install_anykernel">Flash ZIP AnyKernel3</string>
     <string name="install_anykernel_summary">Chạy trình cài hạt nhân đáng tin cậy trên slot hiện tại hoặc slot A/B chưa sử dụng. Yêu cầu quyền Root.</string>
+    <string name="install_anykernel_page_hint">File ZIP bên ngoài này chạy với quyền root. Trình cài đặt quyết định các phân vùng được ghi; chỉ dùng gói tin cậy dành cho thiết bị này.</string>
     <string name="install_anykernel_warning">File ZIP này chạy với quyền root và có thể sửa đổi nhiều phân vùng. Trình cài đặt kiểm soát những phân vùng và slot nào được ghi; FinaSU không ghi đè slot hay làm mới ksud. Cài đặt thành công không đảm bảo thiết bị khởi động được, và thất bại có thể để lại các thay đổi dở dang. Các bản sao lưu boot image hiện có có thể không bao phủ những thay đổi này. Hãy xác nhận khả năng tương thích của thiết bị và chuẩn bị một recovery image trước khi tiếp tục.</string>
     <string name="install_anykernel_root_required">Cần quyền Root để flash AnyKernel3.</string>
     <string name="install_anykernel_read_failed">Không thể đọc file ZIP AnyKernel3.</string>
@@ -254,6 +255,8 @@
     <string name="jailbreak_flash_warning">Bạn đang ở ** Chế độ Jailbreak**. Việc flash một phân vùng trên thiết bị có **bootloader bị khóa** sẽ làm hỏng AVB (Android Verified Boot) và có thể khiến thiết bị **không khởi động được**.\n\nHãy đảm bảo rằng bootloader của bạn đã được mở khoá trước khi tiếp tục!</string>
     <string name="jailbreak_flash_warning_countdown">Tiếp tục (%1$d)</string>
     <string name="install_next">Kế tiếp</string>
+    <string name="install_mode_lkm">Cài đặt LKM</string>
+    <string name="install_mode_anykernel">AnyKernel3</string>
     <string name="install_select_partition">Chọn phân vùng</string>
     <string name="install_upload_lkm_file">Sử dụng file LKM cục bộ</string>
     <string name="install_force_backup">Sao lưu stock image</string>

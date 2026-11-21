@@ -5,6 +5,7 @@
     <string name="feature_status_forced_summary">Önyükleme yapılandırması tarafından zorlandı; buradan değiştirilemez</string>
     <string name="install_anykernel">AnyKernel3 ZIP flaşla</string>
     <string name="install_anykernel_summary">Güvenilir çekirdek yükleyicisini geçerli veya kullanılmayan A/B yuvasında çalıştırır. Root yetkisi gerekir.</string>
+    <string name="install_anykernel_page_hint">Bu harici ZIP root yetkisiyle çalışır. Hangi bölümlerin yazılacağını yükleyici belirler; yalnızca bu cihaz için güvenilir bir paket kullanın.</string>
     <string name="install_anykernel_warning">Bu ZIP root ile çalışır ve birden fazla bölümü değiştirebilir. Hangi bölümlerin ve yuvaların yazılacağını yükleyici belirler; FinaSU yuvayı geçersiz kılmaz veya ksud\'u yenilemez. Başarılı bir kurulum açılabilirliği garanti etmez ve başarısızlık kısmi değişiklikler bırakabilir. Mevcut boot imajı yedekleri bu değişiklikleri kapsamayabilir. Devam etmeden önce cihaz uyumluluğunu doğrulayın ve bir kurtarma imajı hazırlayın.</string>
     <string name="install_anykernel_root_required">AnyKernel3 flaşlamak için root gerekir.</string>
     <string name="install_anykernel_read_failed">AnyKernel3 ZIP okunamadı.</string>
@@ -256,6 +257,8 @@
     <string name="jailbreak_flash_warning">Şu anda **Jailbreak modundasınız**. **Kilitli önyükleyicili** bir cihazda bir bölümü yeniden yazmak, AVB’yi (Android Verified Boot) bozacak ve cihazın **açılmamasına** neden olabilir.\n\nDevam etmeden önce önyükleyicinizin kilidinin açık olduğundan emin olun!</string>
     <string name="jailbreak_flash_warning_countdown">Devam et (%1$d)</string>
     <string name="install_next">Sonraki</string>
+    <string name="install_mode_lkm">LKM kurulumu</string>
+    <string name="install_mode_anykernel">AnyKernel3</string>
     <string name="install_select_partition">Bölümü(partition) seçin</string>
     <string name="install_upload_lkm_file">Yerel LKM dosyasını kullan</string>
     <string name="install_force_backup">Stok imaj olarak yedekle</string>

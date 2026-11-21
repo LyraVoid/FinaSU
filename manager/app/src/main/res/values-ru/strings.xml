@@ -5,6 +5,7 @@
     <string name="feature_status_forced_summary">Принудительно задано конфигурацией загрузки; изменить здесь нельзя</string>
     <string name="install_anykernel">Прошить ZIP AnyKernel3</string>
     <string name="install_anykernel_summary">Запускает доверенный установщик ядра в текущем или неиспользуемом слоте A/B. Требуются права Root.</string>
+    <string name="install_anykernel_page_hint">Этот внешний ZIP запускается с правами root. Установщик сам определяет записываемые разделы; используйте только доверенный пакет для этого устройства.</string>
     <string name="install_anykernel_warning">Этот ZIP запускается с правами root и может изменить несколько разделов. Установщик сам определяет, какие разделы и слоты будут записаны; FinaSU не переопределяет слот и не обновляет ksud. Успешная установка не гарантирует загрузку, а при сбое могут остаться частичные изменения. Существующие резервные копии boot-образа могут не покрывать эти изменения. Убедитесь в совместимости устройства и подготовьте образ для восстановления, прежде чем продолжать.</string>
     <string name="install_anykernel_root_required">Для прошивки AnyKernel3 требуются права root.</string>
     <string name="install_anykernel_read_failed">Не удалось прочитать ZIP-файл AnyKernel3.</string>
@@ -256,6 +257,8 @@
     <string name="jailbreak_flash_warning">Вы находитесь в **режиме Jailbreak**. Прошивка раздела на устройстве с **заблокированным загрузчиком** нарушит AVB (Android Verified Boot) и может привести к тому, что устройство **не сможет загрузиться**.\n\nУбедитесь, что загрузчик разблокирован, прежде чем продолжать!</string>
     <string name="jailbreak_flash_warning_countdown">Продолжить (%1$d)</string>
     <string name="install_next">Далее</string>
+    <string name="install_mode_lkm">Установка LKM</string>
+    <string name="install_mode_anykernel">AnyKernel3</string>
     <string name="install_select_partition">Выбрать раздел</string>
     <string name="install_upload_lkm_file">Использовать локальный LKM файл</string>
     <string name="install_force_backup">Сохранить резервную копию как оригинальный образ</string>

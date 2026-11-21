@@ -5,6 +5,7 @@
     <string name="feature_status_forced_summary">已由星界启动仪式强制指定，无法在此修改</string>
     <string name="install_anykernel">注入 AnyKernel3 ZIP</string>
     <string name="install_anykernel_summary">以当前星槽或未使用的 A/B 星槽运行可信的心之契约安装器，需要 root 权限。</string>
+    <string name="install_anykernel_page_hint">此外部圣匣将以 root 施法，所改星域由安装咒式裁定；唯用确认适配本法器之圣匣。</string>
     <string name="install_anykernel_warning">此 ZIP 将以 root 施法，可能改写多个星域分区。实际写入的分区与星槽由安装咒式决定，FinaSU 不会覆盖星槽，也不更新 ksud。变身成功不保证能够苏醒，变身失败也可能留下部分改写。已有的启动镜像备份未必覆盖这些改动。请先确认法器相容性并备好回滚镜像，再继续。</string>
     <string name="install_anykernel_root_required">注入 AnyKernel3 需要 root 权限。</string>
     <string name="install_anykernel_read_failed">无法读取 AnyKernel3 ZIP。</string>
@@ -254,6 +255,8 @@
     <string name="jailbreak_flash_warning">当前处于**越狱模式**。在**未解锁 Bootloader** 的法器上注入星域会破坏 AVB（Android 验证启动），可能导致法器**无法苏醒**。\n\n继续前请确认 Bootloader 已解锁！</string>
     <string name="jailbreak_flash_warning_countdown">继续 (%1$d)</string>
     <string name="install_next">下一步</string>
+    <string name="install_mode_lkm">LKM 结下</string>
+    <string name="install_mode_anykernel">AnyKernel3</string>
     <string name="install_select_partition">选择星域分区</string>
     <string name="install_upload_lkm_file">使用本地 LKM 文件</string>
     <string name="install_force_backup">备份为原厂镜像</string>

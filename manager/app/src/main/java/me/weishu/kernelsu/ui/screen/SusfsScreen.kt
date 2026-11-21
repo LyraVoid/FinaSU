@@ -54,7 +54,6 @@ import me.weishu.kernelsu.ui.viewmodel.SusfsUiState
 import me.weishu.kernelsu.ui.viewmodel.SusfsViewModel
 import org.json.JSONArray
 import org.json.JSONObject
-import me.weishu.kernelsu.wallpaper.LocalFolkWallpaperTokens
 
 @Composable
 internal fun susfsOperationLabel(status: String): String = stringResource(when (status) {
@@ -311,8 +310,7 @@ private fun SusfsNavigation(selected: Int, onSelect: (Int) -> Unit) {
     val haptic = LocalHapticFeedback.current
     PrimaryScrollableTabRow(
         selectedTabIndex = selected,
-        containerColor = LocalFolkWallpaperTokens.current?.group?.fill
-            ?: MaterialTheme.colorScheme.surfaceContainer,
+        containerColor = folkTabRowContainerColor(),
         contentColor = MaterialTheme.colorScheme.onSurface,
         edgePadding = 0.dp,
         modifier = Modifier.fillMaxWidth(),

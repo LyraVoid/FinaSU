@@ -52,7 +52,9 @@ fun InstallScreen() {
     var probeJob by remember { mutableStateOf<Job?>(null) }
     val loadingDialog = rememberLoadingDialog()
 
-    var installMethod by rememberSaveable { mutableStateOf<InstallMethod?>(null) }
+    var installMode by rememberSaveable { mutableStateOf(InstallMode.Lkm) }
+    var lkmInstallMethod by rememberSaveable { mutableStateOf<InstallMethod?>(null) }
+    var anyKernelInstallMethod by rememberSaveable { mutableStateOf<InstallMethod?>(null) }
     var downloadDialogShown by rememberSaveable { mutableStateOf(false) }
     var remotePartitions by rememberSaveable { mutableStateOf(emptyList<String>()) }
     var remotePartitionSelectionIndex by rememberSaveable { mutableIntStateOf(0) }
@@ -79,7 +81,7 @@ fun InstallScreen() {
     val selectFileTipNoGki = stringResource(id = R.string.select_file_tip_nogki)
     val downloadFileMsg = stringResource(id = R.string.download_dialog_msg)
     val anyKernelSummary = stringResource(R.string.install_anykernel_summary)
-    val installMethodOptions = remember(rootAvailable, isAbDevice, isGkiDevice, selectFileTip, selectFileTipNoGki, downloadFileMsg, anyKernelSummary) {
+    val allInstallMethodOptions = remember(rootAvailable, isAbDevice, isGkiDevice, selectFileTip, selectFileTipNoGki, downloadFileMsg, anyKernelSummary) {
         buildList {
             add(InstallMethod.SelectFile(summary = if (isGkiDevice) selectFileTip else selectFileTipNoGki))
             add(InstallMethod.DownloadFile(summary = downloadFileMsg))
@@ -88,6 +90,23 @@ fun InstallScreen() {
                 add(InstallMethod.DirectInstall)
                 if (isAbDevice) add(InstallMethod.DirectInstallToInactiveSlot)
             }
+        }
+    }
+    val installMethodOptions = allInstallMethodOptions.filter {
+        (it is InstallMethod.AnyKernel) == (installMode == InstallMode.AnyKernel)
+    }
+    val anyKernelAvailable = allInstallMethodOptions.any { it is InstallMethod.AnyKernel }
+    val installMethod = when (installMode) {
+        InstallMode.Lkm -> lkmInstallMethod
+        InstallMode.AnyKernel -> anyKernelInstallMethod
+    }
+    val anyKernelMethod = anyKernelInstallMethod as? InstallMethod.AnyKernel
+
+    fun setInstallMethod(method: InstallMethod) {
+        if (method is InstallMethod.AnyKernel) {
+            anyKernelInstallMethod = method
+        } else {
+            lkmInstallMethod = method
         }
     }
 
@@ -160,7 +179,7 @@ fun InstallScreen() {
             scope.launch {
                 val file = readAnyKernelFileInfo(context, it)
                 anyKernelSlotIndex = 0
-                installMethod = InstallMethod.AnyKernel(
+                anyKernelInstallMethod = InstallMethod.AnyKernel(
                     uri = it,
                     summary = anyKernelSummary,
                     displayName = file.displayName,
@@ -196,7 +215,7 @@ fun InstallScreen() {
                         val defaultIdx = result.partitions.indexOf(defaultPartition).coerceAtLeast(0)
                         remotePartitions = result.partitions
                         remotePartitionSelectionIndex = defaultIdx
-                        installMethod = InstallMethod.DownloadFile(
+                        lkmInstallMethod = InstallMethod.DownloadFile(
                             url = url,
                             partition = result.partitions[defaultIdx],
                             summary = downloadFileMsg,
@@ -235,13 +254,15 @@ fun InstallScreen() {
     ) {
         if (it.resultCode == Activity.RESULT_OK) {
             it.data?.data?.let { uri ->
-                installMethod = InstallMethod.SelectFile(uri, summary = if (isGkiDevice) selectFileTip else selectFileTipNoGki)
+                lkmInstallMethod = InstallMethod.SelectFile(uri, summary = if (isGkiDevice) selectFileTip else selectFileTipNoGki)
             }
         }
     }
 
     val state = InstallUiState(
+        installMode = installMode,
         installMethod = installMethod,
+        anyKernelAvailable = anyKernelAvailable,
         lkmSelection = lkmSelection,
         partitionSelectionIndex = partitionSelectionIndex,
         displayPartitions = displayPartitions,
@@ -259,8 +280,8 @@ fun InstallScreen() {
         forceBackup = forceBackup,
         canForceBackup = installMethod is InstallMethod.SelectFile,
         backupBeforeFlash = backupBeforeFlash,
-        anyKernelFileName = (installMethod as? InstallMethod.AnyKernel)?.displayName,
-        anyKernelSizeLabel = (installMethod as? InstallMethod.AnyKernel)?.sizeBytes?.let {
+        anyKernelFileName = anyKernelMethod?.displayName,
+        anyKernelSizeLabel = anyKernelMethod?.sizeBytes?.let {
             Formatter.formatShortFileSize(context, it)
         } ?: resources.getString(R.string.install_anykernel_size_unknown),
         anyKernelSlotOptions = if (isAbDevice) {
@@ -282,11 +303,12 @@ fun InstallScreen() {
             emptyList()
         },
         anyKernelSlotIndex = anyKernelSlotIndex,
-        showAnyKernelSlotSelector = isAbDevice && installMethod is InstallMethod.AnyKernel,
+        showAnyKernelSlotSelector = isAbDevice && anyKernelMethod != null,
     )
     val actions = InstallScreenActions(
         onBack = dropUnlessResumed { navigator.pop() },
-        onSelectMethod = { method -> installMethod = method },
+        onSelectMode = { installMode = it },
+        onSelectMethod = { setInstallMethod(it) },
         onDownloadFile = { downloadDialogShown = true },
         onSelectBootImage = {
             selectImageLauncher.launch(Intent(Intent.ACTION_GET_CONTENT).apply { type = "application/octet-stream" })
@@ -294,9 +316,9 @@ fun InstallScreen() {
         onSelectAnyKernel = { selectAnyKernelLauncher.launch("application/zip") },
         onSelectAnyKernelSlot = { index ->
             anyKernelSlotIndex = index.coerceIn(0, 1)
-            val method = installMethod
+            val method = anyKernelMethod
             if (method is InstallMethod.AnyKernel) {
-                installMethod = method.copy(inactiveSlot = anyKernelSlotIndex == 1)
+                anyKernelInstallMethod = method.copy(inactiveSlot = anyKernelSlotIndex == 1)
             }
         },
         onUploadLkm = {
@@ -305,10 +327,10 @@ fun InstallScreen() {
         onClearLkm = { lkmSelection = LkmSelection.KmiNone },
         onSelectPartition = { index ->
             hasCustomSelected = true
-            val method = installMethod
+            val method = lkmInstallMethod
             if (method is InstallMethod.DownloadFile) {
                 remotePartitionSelectionIndex = index
-                installMethod = method.copy(partition = remotePartitions.getOrNull(index))
+                lkmInstallMethod = method.copy(partition = remotePartitions.getOrNull(index))
             } else {
                 partitionSelectionIndex = index
             }

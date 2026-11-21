@@ -5,6 +5,7 @@
     <string name="feature_status_forced_summary">Forzado por la configuración de arranque; no se puede cambiar aquí</string>
     <string name="install_anykernel">Flashear ZIP de AnyKernel3</string>
     <string name="install_anykernel_summary">Ejecuta un instalador de kernel de confianza en la ranura actual o en una ranura A/B sin usar. Requiere Root.</string>
+    <string name="install_anykernel_page_hint">Este ZIP externo se ejecuta como root. Su instalador decide qué particiones se escriben; usa solo un paquete de confianza para este dispositivo.</string>
     <string name="install_anykernel_warning">Este ZIP se ejecuta con root y puede modificar varias particiones. El instalador controla qué particiones y ranuras se escriben; FinaSU no anula la ranura ni actualiza ksud. Una instalación correcta no garantiza que el dispositivo arranque, y si falla puede dejar cambios parciales. Es posible que las copias de seguridad existentes de la imagen de arranque no cubran estos cambios. Confirma la compatibilidad del dispositivo y prepara una imagen de recuperación antes de continuar.</string>
     <string name="install_anykernel_root_required">Se requiere root para flashear AnyKernel3.</string>
     <string name="install_anykernel_read_failed">No se pudo leer el ZIP de AnyKernel3.</string>
@@ -254,6 +255,8 @@
     <string name="jailbreak_flash_warning">Estás en **modo Jailbreak**. Flashear una partición en un dispositivo con el **bootloader bloqueado** romperá AVB (Android Verified Boot) y puede hacer que el dispositivo **no arranque**.\n\n¡Asegúrate de que tu bootloader esté desbloqueado antes de continuar!</string>
     <string name="jailbreak_flash_warning_countdown">Continuar (%1$d)</string>
     <string name="install_next">Siguiente</string>
+    <string name="install_mode_lkm">Instalación LKM</string>
+    <string name="install_mode_anykernel">AnyKernel3</string>
     <string name="install_select_partition">Seleccionar partición</string>
     <string name="install_upload_lkm_file">Usar archivo LKM local</string>
     <string name="install_force_backup">Respaldar como imagen original</string>

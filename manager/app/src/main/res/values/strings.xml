@@ -5,6 +5,7 @@
     <string name="feature_status_forced_summary">Forced by boot configuration; cannot be changed here</string>
     <string name="install_anykernel">Flash AnyKernel3 ZIP</string>
     <string name="install_anykernel_summary">Run a trusted kernel installer on the current or unused A/B slot. Root required.</string>
+    <string name="install_anykernel_page_hint">This external ZIP runs as root. Its installer decides which partitions are written; use only a package trusted for this device.</string>
     <string name="install_anykernel_warning">This ZIP runs with root and may modify multiple partitions. The installer controls which partitions and slots are written; FinaSU does not override the slot or refresh ksud. A successful install does not guarantee bootability, and failure may leave partial changes. Existing boot-image backups may not cover these changes. Confirm device compatibility and prepare a recovery image before continuing.</string>
     <string name="install_anykernel_root_required">Root is required to flash AnyKernel3.</string>
     <string name="install_anykernel_read_failed">Unable to read the AnyKernel3 ZIP.</string>
@@ -271,6 +272,8 @@
     <string name="jailbreak_flash_warning">You are in **Jailbreak mode**. Flashing a partition on a device with a **locked bootloader** will break AVB (Android Verified Boot) and may cause the device to **fail to boot**.\n\nMake sure your bootloader is unlocked before proceeding!</string>
     <string name="jailbreak_flash_warning_countdown">Continue (%1$d)</string>
     <string name="install_next">Next</string>
+    <string name="install_mode_lkm">LKM install</string>
+    <string name="install_mode_anykernel">AnyKernel3</string>
     <string name="install_select_partition">Select partition</string>
     <string name="install_upload_lkm_file">Use local LKM file</string>
     <string name="install_force_backup">Backup as stock image</string>

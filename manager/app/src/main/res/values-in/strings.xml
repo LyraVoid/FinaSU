@@ -5,6 +5,7 @@
     <string name="feature_status_forced_summary">Dipaksa oleh konfigurasi boot; tidak dapat diubah di sini</string>
     <string name="install_anykernel">Flash AnyKernel3 ZIP</string>
     <string name="install_anykernel_summary">Jalankan pemasang kernel tepercaya pada slot saat ini atau slot A/B yang tidak digunakan. Memerlukan Root.</string>
+    <string name="install_anykernel_page_hint">ZIP eksternal ini berjalan sebagai Root. Program pemasang menentukan partisi yang ditulis; gunakan hanya paket tepercaya untuk perangkat ini.</string>
     <string name="install_anykernel_warning">ZIP ini berjalan dengan Root dan dapat mengubah beberapa partisi. Program pemasang mengontrol partisi dan slot mana yang ditulis; FinaSU tidak menimpa slot atau menyegarkan ksud. Pemasangan yang berhasil tidak menjamin perangkat dapat boot, dan kegagalan dapat meninggalkan perubahan sebagian. Cadangan image boot yang ada mungkin tidak mencakup perubahan ini. Pastikan kompatibilitas perangkat dan siapkan image pemulihan sebelum melanjutkan.</string>
     <string name="install_anykernel_root_required">Root diperlukan untuk mem-flash AnyKernel3.</string>
     <string name="install_anykernel_read_failed">Tidak dapat membaca ZIP AnyKernel3.</string>
@@ -254,6 +255,8 @@
     <string name="jailbreak_flash_warning">Anda sedang berada dalam **Mode jailbreak**. Memasang partisi pada perangkat dengan **bootloader terkunci** akan merusak AVB (Android Verified Boot) dan dapat menyebabkan perangkat **gagal untuk boot**.\n\nPastikan bootloader Anda sudah terbuka sebelum melanjutkan!</string>
     <string name="jailbreak_flash_warning_countdown">Lanjutkan (%1$d)</string>
     <string name="install_next">Berikutnya</string>
+    <string name="install_mode_lkm">Pemasangan LKM</string>
+    <string name="install_mode_anykernel">AnyKernel3</string>
     <string name="install_select_partition">Pilih partisi</string>
     <string name="install_upload_lkm_file">Gunakan berkas LKM lokal</string>
     <string name="install_force_backup">Cadangkan sebagai image bawaan</string>

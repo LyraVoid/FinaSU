@@ -5,6 +5,7 @@
     <string name="feature_status_forced_summary">Forçado pela configuração de inicialização; não pode ser alterado aqui</string>
     <string name="install_anykernel">Instalar ZIP AnyKernel3</string>
     <string name="install_anykernel_summary">Executa um instalador de kernel confiável no slot atual ou em um slot A/B não utilizado. Requer Root.</string>
+    <string name="install_anykernel_page_hint">Este ZIP externo é executado como root. O instalador decide quais partições serão gravadas; use apenas um pacote confiável para este dispositivo.</string>
     <string name="install_anykernel_warning">Este ZIP é executado com root e pode modificar várias partições. O instalador controla quais partições e slots são gravados; o FinaSU não substitui o slot nem atualiza o ksud. Uma instalação bem-sucedida não garante a inicialização e uma falha pode deixar alterações parciais. Os backups existentes da imagem de boot podem não cobrir essas alterações. Confirme a compatibilidade do dispositivo e prepare uma imagem de recuperação antes de continuar.</string>
     <string name="install_anykernel_root_required">É necessário root para instalar o AnyKernel3.</string>
     <string name="install_anykernel_read_failed">Não foi possível ler o ZIP do AnyKernel3.</string>
@@ -256,6 +257,8 @@
     <string name="jailbreak_flash_warning">Você está no **modo jailbreak**. Gravar uma partição em um dispositivo com **bootloader bloqueado** quebrará o AVB (Android Verified Boot) e pode fazer o dispositivo **não inicializar**.\n\nCertifique-se de que o bootloader esteja desbloqueado antes de continuar!</string>
     <string name="jailbreak_flash_warning_countdown">Continuar (%1$d)</string>
     <string name="install_next">Próximo</string>
+    <string name="install_mode_lkm">Instalação do LKM</string>
+    <string name="install_mode_anykernel">AnyKernel3</string>
     <string name="install_select_partition">Selecionar partição</string>
     <string name="install_upload_lkm_file">Usar arquivo LKM local</string>
     <string name="install_force_backup">Fazer backup como imagem original</string>

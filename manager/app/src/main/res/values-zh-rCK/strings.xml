@@ -5,6 +5,7 @@
     <string name="feature_status_forced_summary">饭庄开张时就定死了，这儿改不了</string>
     <string name="install_anykernel">刷入 AnyKernel3 ZIP</string>
     <string name="install_anykernel_summary">拿当前灶台或未使用的 A/B 灶台跑可信的秘酱料安装器，得有大厨权限。</string>
+    <string name="install_anykernel_page_hint">这外部 ZIP 会以大厨身份下锅，真动哪几块分区全看安装脚本；只准用确认合本灶具的包，别乱下锅。</string>
     <string name="install_anykernel_warning">这 ZIP 会以大厨身份下锅，可能动好几个分区。真写哪块、哪个灶台，全看安装脚本，FinaSU 不插手灶台，也不更新 ksud。装成了也不保准能开机，翻车了也可能已经写了半截。现有的启动镜像备份未必罩得住这些改动。先确认灶具合不合得来、备好回滚镜像，再动手。</string>
     <string name="install_anykernel_root_required">刷 AnyKernel3 得有大厨权限。</string>
     <string name="install_anykernel_read_failed">这 AnyKernel3 ZIP 读不出来。</string>
@@ -254,6 +255,8 @@
     <string name="jailbreak_flash_warning">眼下是**越狱模式**。在**没解锁 Bootloader** 的灶具上刷分区，会砸了 AVB（Android 验证启动），没准儿直接**开不了机**。\n\n动手前先确认 Bootloader 解了锁！</string>
     <string name="jailbreak_flash_warning_countdown">接着来 (%1$d)</string>
     <string name="install_next">下一道</string>
+    <string name="install_mode_lkm">LKM 上灶</string>
+    <string name="install_mode_anykernel">AnyKernel3</string>
     <string name="install_select_partition">挑分区</string>
     <string name="install_upload_lkm_file">用本地 LKM 文件</string>
     <string name="install_force_backup">存成原厂镜像</string>

@@ -5,6 +5,7 @@
     <string name="feature_status_forced_summary">起動設定により強制されています。ここでは変更できません</string>
     <string name="install_anykernel">AnyKernel3 ZIP を書き込む</string>
     <string name="install_anykernel_summary">現在または未使用の A/B スロットで信頼済みカーネルインストーラーを実行します。Root 権限が必要です。</string>
+    <string name="install_anykernel_page_hint">この外部 ZIP は root 権限で実行されます。書き込むパーティションはインストーラーが決めるため、このデバイス向けに信頼できるパッケージだけを使用してください。</string>
     <string name="install_anykernel_warning">この ZIP は root 権限で実行され、複数のパーティションを変更する可能性があります。書き込まれるパーティションとスロットはインストーラーが制御し、FinaSU はスロットの上書きや ksud の更新を行いません。インストールが成功しても起動できるとは限らず、失敗すると変更が中途半端に残る可能性があります。既存の boot イメージのバックアップではこれらの変更をカバーできない場合があります。続行する前にデバイスの互換性を確認し、リカバリーイメージを用意してください。</string>
     <string name="install_anykernel_root_required">AnyKernel3 を書き込むには root 権限が必要です。</string>
     <string name="install_anykernel_read_failed">AnyKernel3 ZIP を読み込めませんでした。</string>
@@ -254,6 +255,8 @@
     <string name="jailbreak_flash_warning">**脱獄モード**中です。**ブートローダーがロックされた**デバイスでパーティションを書き込むと AVB (Android Verified Boot) が壊れ、デバイスが**起動できなくなる**可能性があります。\n\n続行する前に、ブートローダーがロック解除されていることを確認してください！</string>
     <string name="jailbreak_flash_warning_countdown">続行 (%1$d)</string>
     <string name="install_next">次へ</string>
+    <string name="install_mode_lkm">LKM インストール</string>
+    <string name="install_mode_anykernel">AnyKernel3</string>
     <string name="install_select_partition">パーティションを選択</string>
     <string name="install_upload_lkm_file">ローカル LKM ファイルを使用する</string>
     <string name="install_force_backup">純正イメージとしてバックアップ</string>

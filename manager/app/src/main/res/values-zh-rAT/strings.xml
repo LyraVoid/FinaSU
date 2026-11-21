@@ -5,6 +5,7 @@
     <string name="feature_status_forced_summary">天意已由圣启配置钦定，不可于此处更改</string>
     <string name="install_anykernel">铭刻 AnyKernel3 圣匣</string>
     <string name="install_anykernel_summary">以当前星辰槽或未使用的 A/B 星辰槽运转可信灵魂安装器，需 root 之权。</string>
+    <string name="install_anykernel_page_hint">此外部圣匣将以 root 施展，所刻圣域由安装符咒裁定；唯用确认相容本法器之圣匣。</string>
     <string name="install_anykernel_warning">此圣匣将以 root 施展，或改动多方圣域分区。实际铭刻之分区与星辰槽由安装符咒决定，FinaSU 不抢占星辰槽，亦不更新 ksud。铭刻功成未必可启，败陨亦可能留下残迹。现有圣启镜像拓印未必涵盖此番改动。请先确认圣器相容，备好归元镜像，再续行。</string>
     <string name="install_anykernel_root_required">铭刻 AnyKernel3 需 root 之权。</string>
     <string name="install_anykernel_read_failed">无法读取 AnyKernel3 圣匣。</string>
@@ -254,6 +255,8 @@
     <string name="jailbreak_flash_warning">今处**圣辉解禁模式**。于**未解锁 Bootloader** 之圣器上铭刻分区，将损毁 AVB（Android 验证启动），或致圣器**无法启圣**。\n\n请确认 Bootloader 已解锁后再续行！</string>
     <string name="jailbreak_flash_warning_countdown">续行 (%1$d)</string>
     <string name="install_next">下一步</string>
+    <string name="install_mode_lkm">LKM 蒙恩</string>
+    <string name="install_mode_anykernel">AnyKernel3</string>
     <string name="install_select_partition">遴选圣域分区</string>
     <string name="install_upload_lkm_file">施展本地 LKM 圣典</string>
     <string name="install_force_backup">封存为原厂镜像</string>
