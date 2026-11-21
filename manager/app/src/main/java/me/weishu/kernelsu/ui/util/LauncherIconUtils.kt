@@ -59,20 +59,21 @@ object LauncherIconUtils {
         val target = componentFor(context, style)
         val pm = context.packageManager
         return runCatching {
-            pm.setComponentEnabledSetting(
-                target,
-                PackageManager.COMPONENT_ENABLED_STATE_ENABLED,
-                PackageManager.DONT_KILL_APP
-            )
+            // Re-applying an unchanged alias restarts the process on some ROMs, which would kill
+            // the first launch after an update.
+            fun apply(component: ComponentName, enabled: Boolean) {
+                val wanted = if (enabled) {
+                    PackageManager.COMPONENT_ENABLED_STATE_ENABLED
+                } else {
+                    PackageManager.COMPONENT_ENABLED_STATE_DISABLED
+                }
+                if (pm.getComponentEnabledSetting(component) == wanted) return
+                pm.setComponentEnabledSetting(component, wanted, PackageManager.DONT_KILL_APP)
+            }
+            apply(target, true)
             ALL_ALIASES.map { alias(context, it) }
                 .filter { it != target }
-                .forEach {
-                    pm.setComponentEnabledSetting(
-                        it,
-                        PackageManager.COMPONENT_ENABLED_STATE_DISABLED,
-                        PackageManager.DONT_KILL_APP
-                    )
-                }
+                .forEach { apply(it, false) }
         }.onFailure {
             Log.e(TAG, "failed to update launcher icon state", it)
         }.isSuccess

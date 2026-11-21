@@ -209,6 +209,14 @@
             android:foregroundServiceType="dataSync" />
 
         <receiver
+            android:name=".ui.util.PackageReplacedReceiver"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="android.intent.action.MY_PACKAGE_REPLACED" />
+            </intent-filter>
+        </receiver>
+
+        <receiver
             android:name=".magica.BootCompletedReceiver"
             android:directBootAware="true"
             android:enabled="false"
