@@ -664,7 +664,9 @@ fun MainScreen(
             .distinctUntilChanged()
     }.collectAsStateWithLifecycle(0)
 
-    var startupPreloadStarted by rememberSaveable { mutableStateOf(false) }
+    // Not saveable on purpose: the preload has to run again after the activity is recreated, or a
+    // fresh empty ViewModel would keep the module count at zero until the process restarts.
+    var startupPreloadStarted by remember { mutableStateOf(false) }
     LaunchedEffect(isFullFeatured) {
         if (!isFullFeatured || startupPreloadStarted) {
             return@LaunchedEffect

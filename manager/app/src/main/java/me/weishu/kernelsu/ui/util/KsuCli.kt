@@ -327,9 +327,14 @@ fun install() {
 fun listModules(): String {
     val shell = getRootShell()
 
-    val out = shell.newJob()
-        .add("${getKsuDaemonPath()} module list").to(ArrayList(), null).exec().out
-    return out.joinToString("\n").ifBlank { "[]" }
+    val result = shell.newJob()
+        .add("${getKsuDaemonPath()} module list").to(ArrayList(), null).exec()
+    // A daemon that is not answering yet (cold start, a just re-granted root shell) must not look
+    // like "no modules installed": report the failure so the caller can keep what it had.
+    check(result.code == 0) {
+        "module list failed: code=${result.code} err=${result.err.joinToString(" ")}"
+    }
+    return result.out.joinToString("\n").ifBlank { "[]" }
 }
 
 fun getModuleCount(): Int {
