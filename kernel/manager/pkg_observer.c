@@ -53,7 +53,11 @@ static void ksu_defer_track_throne(void)
         cb = kzalloc(sizeof(*cb), GFP_KERNEL);
         if (cb) {
             cb->func = ksu_track_throne_tw_func;
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(5, 7, 0)
             if (!task_work_add(current, cb, TWA_RESUME))
+#else
+            if (!task_work_add(current, cb, false))
+#endif
                 return;
             kfree(cb);
         }
@@ -62,14 +66,22 @@ static void ksu_defer_track_throne(void)
     track_throne(false);
 }
 
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(5, 1, 0)
 static int ksu_handle_inode_event(struct fsnotify_mark *mark, u32 mask, struct inode *inode, struct inode *dir,
                                   const struct qstr *file_name, u32 cookie)
+#else
+static int ksu_handle_event(struct fsnotify_group *group, struct inode *inode,
+                            struct fsnotify_mark *inode_mark, struct fsnotify_mark *vfsmount_mark,
+                            u32 mask, const void *data, int data_type,
+                            const unsigned char *file_name, u32 cookie,
+                            struct fsnotify_iter_info *iter_info)
+#endif
 {
     if (!file_name)
         return 0;
     if (mask & FS_ISDIR)
         return 0;
-    if (file_name->len == 13 && !memcmp(file_name->name, "packages.list", 13)) {
+    if (file_name && strlen(file_name) == 13 && !memcmp(file_name, "packages.list", 13)) {
         pr_info("packages.list detected: %d\n", mask);
         ksu_defer_track_throne();
     }
@@ -77,7 +89,11 @@ static int ksu_handle_inode_event(struct fsnotify_mark *mark, u32 mask, struct i
 }
 
 static const struct fsnotify_ops ksu_ops = {
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(5, 1, 0)
     .handle_inode_event = ksu_handle_inode_event,
+#else
+    .handle_event = ksu_handle_event,
+#endif
 };
 
 static int add_mark_on_inode(struct inode *inode, u32 mask, struct fsnotify_mark **out)
@@ -91,7 +107,11 @@ static int add_mark_on_inode(struct inode *inode, u32 mask, struct fsnotify_mark
     fsnotify_init_mark(m, g);
     m->mask = mask;
 
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(5, 0, 0)
     if (fsnotify_add_inode_mark(m, inode, 0)) {
+#else
+    if (fsnotify_add_mark(m, inode, NULL, 0)) {
+#endif
         fsnotify_put_mark(m);
         return -EINVAL;
     }
