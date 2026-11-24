@@ -56,6 +56,22 @@ The result is that a manager built from this fork patches a boot image with
 root **and** SUSFS 2.3.0 in one step: no separate ReSuSFS module, no BRENE
 module, no AnyKernel3 zip, no kernel rebuild.
 
+## SUSFS versions
+
+Upstream `simonpunk/susfs4ksu` now reports **v2.4.0** on its GKI branches (the
+`-dev` branches report the same), and a **v2.5.0** beta is in flight. `ksud`
+already treats v2.4.0 as audited (`susfs/mod.rs`), so a kernel that carries it is
+detected and driven normally; v2.5.0 is reported as compatible but unaudited,
+which is what the beta deserves.
+
+The **guard** is a different matter. It is a prebuilt LKM from
+`inforcqb/susfs4ksu-lkm`, whose newest release is still `v2.3.0-r18.9` — there
+is no 2.4.0 LKM build to embed. This fork does not build guards from kernel
+sources, so the APK keeps `v2.3.0-r18.4`; bumping `GUARD_TAG` and the version
+check in CI is the entire change once that release exists. The one BRENE step
+the 2.3.0 guard cannot do (`set_priority_uid_filter`) is exactly what 2.4.0 adds
+on the kernel side.
+
 ## Checking that the APK really carries the modules
 
 `ksud` embeds `userspace/ksud/bin/aarch64/*` through rust-embed's `compression`
