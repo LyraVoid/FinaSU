@@ -74,6 +74,11 @@ enum Commands {
         #[command(subcommand)]
         command: crate::kernel_module::Command,
     },
+    /// Manage KernelPatch modules (KPM), built in instead of installed as a module
+    Kpm {
+        #[command(subcommand)]
+        command: crate::kpm::Command,
+    },
 
     /// Trigger `post-fs-data` event
     PostFsData,
@@ -821,6 +826,7 @@ pub fn run() -> Result<()> {
             crate::anykernel3::flash(&zip, inactive_slot)
         }
         Commands::Susfs { command } => crate::susfs::run(command),
+        Commands::Kpm { command } => crate::kpm::run(&command),
         Commands::UtsView { command } => crate::uts_view::run(&command),
         Commands::Netisolate { command } => crate::netisolate::run(&command),
         Commands::Zygisk { command } => crate::zygisk::run(&command),

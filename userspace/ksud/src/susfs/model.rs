@@ -510,8 +510,14 @@ impl Brene {
                 bail!("Invalid BRENE redirect");
             }
         }
-        text(&self.custom_uname_release, 65)?;
-        text(&self.custom_uname_version, 65)?;
+        // Empty means "generate from the running kernel"; only what the user
+        // actually typed has to be a sane single line.
+        if !self.custom_uname_release.is_empty() {
+            text(&self.custom_uname_release, 65)?;
+        }
+        if !self.custom_uname_version.is_empty() {
+            text(&self.custom_uname_version, 65)?;
+        }
         if self.verified_boot_hash.len() > 128
             || self
                 .verified_boot_hash

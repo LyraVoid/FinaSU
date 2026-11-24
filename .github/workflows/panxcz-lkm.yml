@@ -32,6 +32,9 @@ env:
   GUARD_TAG: v2.3.0-r18.4
   GUARD_REPO: inforcqb/susfs4ksu-lkm
   DDK_RELEASE: "20260828"
+  # KernelPatch tools that make KPM work without the KPatch-Next module.
+  # kpatch loads modules, kptools injects kpimg into the kernel image.
+  KPATCH_TAG: 0.13.5-2
   # Kernels older than GKI 5.10 cannot take the LKM pair: there is no
   # kernelsu.ko to load and no SUSFS guard to embed, so SUSFS has to be built
   # into the kernel. Those lines are served by upstream's own patch set.
@@ -231,6 +234,27 @@ jobs:
           grep -q 'statically linked' /tmp/ksuinit.file
           grep -qa '/susfs_guard_lkm.ko' target/aarch64-linux-android/release/ksuinit
           grep -qa 'expose_proc=1' target/aarch64-linux-android/release/ksuinit
+
+      - name: Fetch the KernelPatch tools for built-in KPM
+        run: |
+          set -euo pipefail
+          base="https://github.com/KernelSU-Next/KPatch-Next/releases/download/$KPATCH_TAG"
+          # Pinned hashes: these binaries are injected into a kernel image, so a
+          # moved release tag must not silently change what gets flashed.
+          cat >/tmp/kpatch.sums <<'EOF'
+          d6a654816f11c8d297ca59aaace9c61537238f26191738c14610d2dcf39bf3b0  kpatch-android
+          aced6809a27e61604934349396de33fc98c91ad8b0b3c10959750e1956a63660  kptools-android
+          943ce69cb00ed7aaff988da9a3fdda89004ba813b2c30aa4a843c642542d4cde  kpimg-linux
+          EOF
+          cd /tmp
+          while read -r sum asset; do
+            curl -sSL --fail -o "$asset" "$base/$asset"
+            echo "$sum  $asset" | sha256sum -c -
+          done </tmp/kpatch.sums
+          install -m 0755 /tmp/kpatch-android "$GITHUB_WORKSPACE/userspace/ksud/bin/aarch64/kpatch"
+          install -m 0755 /tmp/kptools-android "$GITHUB_WORKSPACE/userspace/ksud/bin/aarch64/kptools"
+          install -m 0644 /tmp/kpimg-linux "$GITHUB_WORKSPACE/userspace/ksud/bin/aarch64/kpimg"
+          file "$GITHUB_WORKSPACE/userspace/ksud/bin/aarch64/kpatch"
 
       - name: Stage the assets ksud embeds
         run: |

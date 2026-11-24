@@ -43,6 +43,15 @@ state this fork tracks), and the diff is deliberately small:
    them as `susfs-legacy-kernel-*.zip` next to the APK. See
    `panxcz/legacy-kernels.md` for what applies and what cannot.
 
+6. **KPM works without the KPatch-Next module.** The APK embeds KPatch-Next
+   0.13.5-2's `kpatch`, `kptools` and `kpimg`. `boot-patch --kpm` runs `kptools`
+   on the kernel block before repacking, which is what gives the kernel the
+   KernelPatch syscall; afterwards `ksud kpm install|load|unload|remove|status`
+   drives it, and `/data/adb/kp-next/kpm/*.kpm` is loaded at the service stage
+   the same way the module's `service.sh` did. No module, no WebUI, and the
+   existing `/data/adb/kp-next` layout keeps working. The tools are pinned by
+   sha256 in CI because these bytes end up inside a kernel image.
+
 The result is that a manager built from this fork patches a boot image with
 root **and** SUSFS 2.3.0 in one step: no separate ReSuSFS module, no BRENE
 module, no AnyKernel3 zip, no kernel rebuild.

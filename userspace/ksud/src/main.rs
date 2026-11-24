@@ -38,6 +38,8 @@ mod hot_install;
 mod init_event;
 #[cfg(any(target_os = "android", test))]
 mod kernel_module;
+#[cfg(any(target_os = "android", test))]
+mod kpm;
 #[cfg(target_os = "android")]
 mod ksucalls;
 #[cfg(target_os = "android")]

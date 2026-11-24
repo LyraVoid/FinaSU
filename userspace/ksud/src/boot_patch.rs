@@ -504,6 +504,12 @@ pub struct BootPatchArgs {
     #[arg(long, default_value = None)]
     pub cmdline: Option<String>,
 
+    /// Inject KernelPatch into the kernel so it can load KPMs (KernelPatch
+    /// modules). Needs CONFIG_KALLSYMS_ALL; refuses a kernel that has KPM
+    /// already built in. KPM files are then managed by `ksud kpm`.
+    #[arg(long, default_value = "false")]
+    pub kpm: bool,
+
     #[command(flatten)]
     config: KsuConfigArgs,
 
@@ -892,6 +898,7 @@ pub fn patch(args: BootPatchArgs) -> Result<()> {
             kmi,
             out_name,
             cmdline,
+            kpm,
             config,
             enable_adbd,
             adb_debug_prop,
@@ -1025,6 +1032,23 @@ pub fn patch(args: BootPatchArgs) -> Result<()> {
             println!("- Adding Kernel");
             let kernel_data = map_file(&kernel_path)?;
             patcher.replace_kernel(Box::new(Cursor::new(kernel_data)), false);
+        }
+
+        // KPM support is a property of the kernel image, not of the ramdisk:
+        // kptools injects KernelPatch into the kernel block before it is
+        // repacked. Without this, `kpatch` has no syscall to talk to and every
+        // .kpm would fail to load.
+        if kpm {
+            println!("- Injecting KernelPatch for KPM");
+            let kernel_image = boot_image
+                .get_blocks()
+                .get_kernel()
+                .context("No kernel block in this boot image")?;
+            let mut kernel_bytes = Vec::new();
+            kernel_image.dump(&mut kernel_bytes, false)?;
+            let patched =
+                crate::kpm::patch_kernel(&kernel_bytes).context("Patch the kernel for KPM")?;
+            patcher.replace_kernel(Box::new(Cursor::new(patched)), false);
         }
 
         let kernelsu_ko: Box<dyn AsRef<[u8]>> = if no_install {

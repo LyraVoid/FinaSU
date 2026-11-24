@@ -253,6 +253,9 @@ pub fn on_services() {
     }
 
     info!("on_services triggered!");
+    // KPM files stored in /data/adb/kp-next/kpm, the layout the KPatch-Next
+    // module used. A kernel without KernelPatch is left alone silently.
+    crate::kpm::boot_load();
     if let Err(e) = crate::zygisk::services() {
         warn!("FolkZygisk health check failed: {e:#}");
     }
