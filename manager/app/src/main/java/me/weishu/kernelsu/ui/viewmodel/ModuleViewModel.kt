@@ -5,6 +5,7 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
@@ -89,6 +90,10 @@ class ModuleViewModel(
     private val collator = Collator.getInstance(Locale.getDefault())
 
     private var fetchJob: Job? = null
+
+    /** How often a module read is retried while the daemon is still coming up. */
+    private val moduleListAttempts = 3
+    private val moduleListRetryDelayMs = 600L
 
     var isNeedRefresh = false
         private set
@@ -294,14 +299,19 @@ class ModuleViewModel(
         ) { it.toSortFacts() }
     }
 
-    suspend fun loadModuleList(resort: Boolean = true) {
+    suspend fun loadModuleList(resort: Boolean = true): Boolean {
         val zygiskAvailable = settingsRepo.getFolkZygiskStatus().getOrNull()?.providesImplementation()
+        // The daemon can be a beat late, so retry briefly instead of believing that nothing is
+        // installed. A failed read keeps whatever the screen already shows.
         val parsedModules = withContext(Dispatchers.IO) {
-            repo.getModules().getOrElse {
-                Log.e(TAG, "fetchModuleList: ", it)
-                emptyList()
+            repeat(moduleListAttempts) { attempt ->
+                val result = repo.getModules()
+                if (result.isSuccess) return@withContext result.getOrNull().orEmpty()
+                Log.e(TAG, "loadModuleList attempt ${attempt + 1}: ", result.exceptionOrNull())
+                if (attempt < moduleListAttempts - 1) delay(moduleListRetryDelayMs)
             }
-        }
+            null
+        } ?: return false
 
         withContext(Dispatchers.Main) {
             _uiState.update {
@@ -318,6 +328,7 @@ class ModuleViewModel(
             updateModuleList(resort)
             isNeedRefresh = false
         }
+        return true
     }
 
     private fun reconcileStoredCustomOrder(modules: List<Module>) {
@@ -334,16 +345,19 @@ class ModuleViewModel(
         fetchJob?.cancel()
         _uiState.update { it.copy(isRefreshing = true) }
         fetchJob = viewModelScope.launch {
+            var loaded = false
             try {
                 val start = SystemClock.elapsedRealtime()
 
-                loadModuleList(resort)
+                loaded = loadModuleList(resort)
 
                 if (checkUpdate) syncModuleUpdateInfo(_uiState.value.modules)
 
-                Log.i(TAG, "load cost: ${SystemClock.elapsedRealtime() - start}, modules: ${_uiState.value.modules}")
+                Log.i(TAG, "load cost: ${SystemClock.elapsedRealtime() - start}, loaded: $loaded, modules: ${_uiState.value.modules}")
             } finally {
-                _uiState.update { it.copy(isRefreshing = false, hasLoaded = true) }
+                // Only a successful read counts as loaded, so a later visit retries instead of
+                // pinning an empty list on screen.
+                _uiState.update { it.copy(isRefreshing = false, hasLoaded = it.hasLoaded || loaded) }
             }
         }
     }
