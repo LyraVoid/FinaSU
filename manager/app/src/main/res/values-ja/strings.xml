@@ -442,9 +442,14 @@
     <string name="nomount_clear_exclusions_summary">すべてのアプリが再び注入されたファイルを参照します。</string>
     <string name="nomount_exclusions_title">除外するアプリ</string>
     <string name="nomount_search_apps">アプリを検索</string>
+    <string name="nomount_selected_only">選択したアプリのみ表示</string>
+    <string name="nomount_no_matching_apps">一致するアプリはありません</string>
+    <string name="nomount_no_apps">表示するアプリはありません</string>
+    <string name="nomount_no_selected_apps">アプリが選択されていません</string>
     <string name="nomount_show_system_apps">システムアプリを表示</string>
     <string name="nomount_selected_count">%1$d 個のアプリを選択中</string>
     <string name="nomount_app_uid">%1$s · uid %2$d</string>
+    <string name="nomount_app_uid_grouped">%1$s · uid %2$d · アプリ %3$d 件</string>
     <string name="nomount_save">保存</string>
     <string name="nomount_select_all">すべて選択</string>
     <string name="nomount_invert_selection">選択を反転</string>
@@ -686,6 +691,8 @@
     <string name="sort_by_package_name">パッケージ名</string>
     <string name="sort_by_install_time">インストール日時</string>
     <string name="sort_by_update_time">更新日時</string>
+    <string name="sort_asc">昇順</string>
+    <string name="sort_desc">降順</string>
     <string name="profile_flags_desc_no_new_privs">この root プロファイルのコンテキスト内で、KernelSU を介したさらなる権限昇格を防止します。</string>
     <string name="module_shortcut_copy_scheme">URL スキームをコピー</string>
     <string name="module_shortcut_scheme_copied">URL スキームをコピーしました</string>

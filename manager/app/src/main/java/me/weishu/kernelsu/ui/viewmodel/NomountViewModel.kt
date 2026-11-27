@@ -3,6 +3,7 @@ package me.weishu.kernelsu.ui.viewmodel
 import androidx.compose.runtime.Immutable
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -14,7 +15,8 @@ import me.weishu.kernelsu.data.model.FolkMountStatus
 import me.weishu.kernelsu.data.model.NomountStatus
 import me.weishu.kernelsu.data.repository.SettingsRepository
 import me.weishu.kernelsu.data.repository.SettingsRepositoryImpl
-import me.weishu.kernelsu.ui.util.execKsudResult
+import me.weishu.kernelsu.ui.util.ownerNameForUid
+import me.weishu.kernelsu.ui.util.pickPrimary
 
 /** One row of the exclusion picker. */
 @Immutable
@@ -23,9 +25,9 @@ data class ExclusionApp(
     val label: String,
     val packageName: String,
     val isSystem: Boolean,
-    val excluded: Boolean,
     /** Source package, so the picker can show the app icon without another lookup. */
     val packageInfo: android.content.pm.PackageInfo?,
+    val appCount: Int = 1,
 )
 
 /**
@@ -42,6 +44,7 @@ data class NomountUiState(
     val folkMountStatus: FolkMountStatus? = null,
     val readError: Boolean = false,
     val actionError: Boolean = false,
+    val exclusionsSaved: Boolean = false,
     val apps: List<ExclusionApp> = emptyList(),
     val appsLoading: Boolean = true,
     val showSystemApps: Boolean = false,
@@ -53,6 +56,7 @@ class NomountViewModel(
 
     private val _uiState = MutableStateFlow(NomountUiState())
     val uiState: StateFlow<NomountUiState> = _uiState.asStateFlow()
+    private var appsJob: Job? = null
 
     init {
         refresh()
@@ -118,16 +122,34 @@ class NomountViewModel(
     }
 
     /** Load the installed apps so the exclusion picker can offer them. */
-    fun loadApps() {
-        if (_uiState.value.apps.isNotEmpty() || !_uiState.value.appsLoading) return
-        viewModelScope.launch {
-            val apps = NomountAppList.load()
-            _uiState.update { it.copy(apps = apps, appsLoading = false) }
+    fun loadApps(force: Boolean = false) {
+        if (appsJob?.isActive == true) return
+        if (!force && _uiState.value.apps.isNotEmpty()) return
+        _uiState.update { it.copy(appsLoading = true) }
+        appsJob = viewModelScope.launch {
+            val apps = runCatching { NomountAppList.load() }.getOrElse { emptyList() }
+            _uiState.update {
+                it.copy(
+                    apps = if (apps.isNotEmpty()) apps else it.apps,
+                    appsLoading = false,
+                    actionError = apps.isEmpty() || it.actionError,
+                )
+            }
         }
     }
 
+    /** Refresh both driver status and the installed-app list. */
+    fun refreshAll() {
+        refresh()
+        loadApps(force = true)
+    }
+
     /** Persist the exclusions chosen in the picker. */
-    fun saveExclusions(uids: List<Int>) = runAction { repo.setNomountUids(uids) }
+    fun saveExclusions(uids: List<Int>) = runAction(savingExclusions = true) { repo.setNomountUids(uids) }
+
+    fun consumeExclusionsSaved() {
+        _uiState.update { it.copy(exclusionsSaved = false) }
+    }
 
     /** Drop every exclusion. */
     fun clearExclusions() = runAction { repo.setNomountUids(emptyList()) }
@@ -150,9 +172,9 @@ class NomountViewModel(
             .map { app -> app.uid }
     }
 
-    private fun runAction(block: suspend () -> Result<Unit>) {
+    private fun runAction(savingExclusions: Boolean = false, block: suspend () -> Result<Unit>) {
         if (_uiState.value.isWriting) return
-        _uiState.update { it.copy(isWriting = true, actionError = false) }
+        _uiState.update { it.copy(isWriting = true, actionError = false, exclusionsSaved = false) }
         viewModelScope.launch {
             val result = block()
             // Re-read instead of assuming the action produced the state we asked
@@ -162,6 +184,7 @@ class NomountViewModel(
                 it.copy(
                     isWriting = false,
                     actionError = result.isFailure,
+                    exclusionsSaved = savingExclusions && result.isSuccess,
                     status = refreshed.getOrNull() ?: it.status,
                     readError = refreshed.isFailure,
                 )
@@ -186,26 +209,22 @@ internal fun shouldShowNomountSetup(
  */
 private object NomountAppList {
     suspend fun load(): List<ExclusionApp> = withContext(kotlinx.coroutines.Dispatchers.IO) {
-        val result = execKsudResult("nomount status --json")
-        val excluded = runCatching {
-            org.json.JSONObject(result.out.firstOrNull { it.isNotBlank() }.orEmpty())
-                .optJSONArray("uids")
-                ?.let { array -> List(array.length()) { index -> array.optInt(index, 0) } }
-                .orEmpty()
-        }.getOrDefault(emptyList())
         SuperUserViewModel().let { vm ->
             if (SuperUserViewModel.apps.isEmpty()) vm.fetchAppList()
         }
-        SuperUserViewModel.apps.map { app ->
+        SuperUserViewModel.apps.groupBy { it.uid }.map { (uid, apps) ->
+            val primary = pickPrimary(apps)
             ExclusionApp(
-                uid = app.uid,
-                label = app.label,
-                packageName = app.packageName,
-                isSystem = ((app.packageInfo.applicationInfo?.flags ?: 0)
-                    and android.content.pm.ApplicationInfo.FLAG_SYSTEM) != 0,
-                excluded = excluded.contains(app.uid),
-                packageInfo = app.packageInfo,
+                uid = uid,
+                label = if (apps.size > 1) ownerNameForUid(uid, apps) else primary.label,
+                packageName = primary.packageName,
+                isSystem = apps.any { app ->
+                    ((app.packageInfo.applicationInfo?.flags ?: 0)
+                        and android.content.pm.ApplicationInfo.FLAG_SYSTEM) != 0
+                },
+                packageInfo = primary.packageInfo,
+                appCount = apps.size,
             )
-        }.distinctBy { it.uid }
+        }
     }
 }

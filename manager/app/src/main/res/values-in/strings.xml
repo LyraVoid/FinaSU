@@ -442,9 +442,14 @@
     <string name="nomount_clear_exclusions_summary">Setiap aplikasi melihat berkas yang disuntikkan lagi.</string>
     <string name="nomount_exclusions_title">Aplikasi dikecualikan</string>
     <string name="nomount_search_apps">Cari aplikasi</string>
+    <string name="nomount_selected_only">Hanya tampilkan aplikasi yang dipilih</string>
+    <string name="nomount_no_matching_apps">Tidak ada aplikasi yang cocok</string>
+    <string name="nomount_no_apps">Tidak ada aplikasi untuk ditampilkan</string>
+    <string name="nomount_no_selected_apps">Belum ada aplikasi yang dipilih</string>
     <string name="nomount_show_system_apps">Tampilkan aplikasi sistem</string>
     <string name="nomount_selected_count">%1$d aplikasi dipilih</string>
     <string name="nomount_app_uid">%1$s · uid %2$d</string>
+    <string name="nomount_app_uid_grouped">%1$s · uid %2$d · %3$d aplikasi</string>
     <string name="nomount_save">Simpan</string>
     <string name="nomount_select_all">Pilih semua</string>
     <string name="nomount_invert_selection">Balikkan pilihan</string>
@@ -686,6 +691,8 @@
     <string name="sort_by_package_name">Nama paket</string>
     <string name="sort_by_install_time">Waktu pemasangan</string>
     <string name="sort_by_update_time">Waktu pembaruan</string>
+    <string name="sort_asc">Menaik</string>
+    <string name="sort_desc">Menurun</string>
     <string name="profile_flags_desc_no_new_privs">Mencegah peningkatan hak akses lebih lanjut melalui KernelSU dalam konteks profil root ini</string>
     <string name="module_shortcut_copy_scheme">Salin skema URL</string>
     <string name="module_shortcut_scheme_copied">Skema URL disalin</string>

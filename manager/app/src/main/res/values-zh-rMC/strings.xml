@@ -442,9 +442,14 @@
     <string name="nomount_clear_exclusions_summary">所有应用重新看到注入的文件。</string>
     <string name="nomount_exclusions_title">例外应用</string>
     <string name="nomount_search_apps">搜索应用</string>
+    <string name="nomount_selected_only">仅显示已选择的应用</string>
+    <string name="nomount_no_matching_apps">没有匹配的应用</string>
+    <string name="nomount_no_apps">没有可显示的应用</string>
+    <string name="nomount_no_selected_apps">没有已选择的应用</string>
     <string name="nomount_show_system_apps">显示红石系统应用</string>
     <string name="nomount_selected_count">已选择 %1$d 个应用</string>
     <string name="nomount_app_uid">%1$s · uid %2$d</string>
+    <string name="nomount_app_uid_grouped">%1$s · uid %2$d · %3$d 个应用</string>
     <string name="nomount_save">保存</string>
     <string name="nomount_select_all">全选</string>
     <string name="nomount_invert_selection">反选</string>
@@ -695,6 +700,8 @@
     <string name="sort_by_package_name">包名</string>
     <string name="sort_by_install_time">合成时间</string>
     <string name="sort_by_update_time">更新时间</string>
+    <string name="sort_asc">升序</string>
+    <string name="sort_desc">降序</string>
     <string name="profile_flags_desc_no_new_privs">禁止从此 OP Profile 的上下文中通过 KernelSU 进一步提升权限</string>
     <string name="module_shortcut_copy_scheme">复制 URL Scheme</string>
     <string name="module_shortcut_scheme_copied">已复制 URL Scheme</string>

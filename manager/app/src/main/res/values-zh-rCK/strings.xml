@@ -442,9 +442,14 @@
     <string name="nomount_clear_exclusions_summary">所有应用又都看得见注入的菜了。</string>
     <string name="nomount_exclusions_title">例外应用</string>
     <string name="nomount_search_apps">翻找应用</string>
+    <string name="nomount_selected_only">只看已挑的应用</string>
+    <string name="nomount_no_matching_apps">没找到合适的应用</string>
+    <string name="nomount_no_apps">没有可列出的应用</string>
+    <string name="nomount_no_selected_apps">还没挑选应用</string>
     <string name="nomount_show_system_apps">摆出饭庄自带的菜</string>
     <string name="nomount_selected_count">已挑 %1$d 个应用</string>
     <string name="nomount_app_uid">%1$s · uid %2$d</string>
+    <string name="nomount_app_uid_grouped">%1$s · uid %2$d · %3$d 个应用</string>
     <string name="nomount_save">存下</string>
     <string name="nomount_select_all">全点</string>
     <string name="nomount_invert_selection">反点</string>
@@ -695,6 +700,8 @@
     <string name="sort_by_package_name">招牌号</string>
     <string name="sort_by_install_time">上灶时辰</string>
     <string name="sort_by_update_time">换新时辰</string>
+    <string name="sort_asc">升序</string>
+    <string name="sort_desc">降序</string>
     <string name="profile_flags_desc_no_new_privs">别让这道 Root Profile 里的菜再借 KernelSU 往上爬权</string>
     <string name="module_shortcut_copy_scheme">抄下 URL Scheme</string>
     <string name="module_shortcut_scheme_copied">URL Scheme 抄好了</string>

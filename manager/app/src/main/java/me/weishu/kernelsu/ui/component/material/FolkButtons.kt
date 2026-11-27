@@ -3,6 +3,7 @@ package me.weishu.kernelsu.ui.component.material
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonColors
@@ -20,12 +21,16 @@ import androidx.compose.material3.SmallExtendedFloatingActionButton
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.State
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalHapticFeedback
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.unit.dp
 
 /**
  * Button-family wrappers that replace the ripple with the shared scale-on-press feedback.
@@ -233,5 +238,41 @@ fun FolkSmallExtendedFloatingActionButton(
             icon = icon,
             text = text,
         )
+    }
+}
+
+@Composable
+fun rememberListFabExpanded(listState: LazyListState): State<Boolean> {
+    val threshold = with(LocalDensity.current) { 100.dp.toPx() }
+    return remember(listState, threshold) {
+        var lastIndex = 0
+        var lastOffset = 0
+        var scrollDelta = 0f
+        var expanded = true
+        derivedStateOf {
+            val currentIndex = listState.firstVisibleItemIndex
+            val currentOffset = listState.firstVisibleItemScrollOffset
+            val delta = if (currentIndex == lastIndex) {
+                (currentOffset - lastOffset).toFloat()
+            } else if (currentIndex > lastIndex) {
+                100f
+            } else {
+                -100f
+            }
+            scrollDelta = (scrollDelta + delta).coerceIn(-threshold, threshold)
+            lastIndex = currentIndex
+            lastOffset = currentOffset
+            if (currentIndex == 0) {
+                expanded = true
+                scrollDelta = 0f
+            } else if (expanded && scrollDelta >= threshold) {
+                expanded = false
+                scrollDelta = 0f
+            } else if (!expanded && scrollDelta <= -threshold) {
+                expanded = true
+                scrollDelta = 0f
+            }
+            expanded
+        }
     }
 }

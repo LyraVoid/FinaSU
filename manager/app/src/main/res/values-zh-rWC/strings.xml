@@ -442,9 +442,14 @@
     <string name="nomount_clear_exclusions_summary">诸凡器复得见所注之文卷。</string>
     <string name="nomount_exclusions_title">例外凡器</string>
     <string name="nomount_search_apps">搜寻凡器</string>
+    <string name="nomount_selected_only">唯示已择之器</string>
+    <string name="nomount_no_matching_apps">无相合之器</string>
+    <string name="nomount_no_apps">无器可示</string>
+    <string name="nomount_no_selected_apps">尚未择器</string>
     <string name="nomount_show_system_apps">现天道凡器</string>
     <string name="nomount_selected_count">已择 %1$d 部凡器</string>
     <string name="nomount_app_uid">%1$s · uid %2$d</string>
+    <string name="nomount_app_uid_grouped">%1$s · uid %2$d · 凡器 %3$d 部</string>
     <string name="nomount_save">封存</string>
     <string name="nomount_select_all">全擇</string>
     <string name="nomount_invert_selection">反擇</string>
@@ -695,6 +700,8 @@
     <string name="sort_by_package_name">包名</string>
     <string name="sort_by_install_time">炼化之时</string>
     <string name="sort_by_update_time">更新之时</string>
+    <string name="sort_asc">递升</string>
+    <string name="sort_desc">递降</string>
     <string name="profile_flags_desc_no_new_privs">禁于此 Root Profile 之境中借 KernelSU 再提权位</string>
     <string name="module_shortcut_copy_scheme">誊录 URL 令式</string>
     <string name="module_shortcut_scheme_copied">URL 令式已誊</string>

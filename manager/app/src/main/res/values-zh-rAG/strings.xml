@@ -442,9 +442,14 @@
     <string name="nomount_clear_exclusions_summary">所有应用又能看到注入的文件了喵</string>
     <string name="nomount_exclusions_title">例外应用</string>
     <string name="nomount_search_apps">搜索应用喵</string>
+    <string name="nomount_selected_only">只看选中的应用喵</string>
+    <string name="nomount_no_matching_apps">没找到匹配的应用喵</string>
+    <string name="nomount_no_apps">没有可显示的应用喵</string>
+    <string name="nomount_no_selected_apps">还没选中应用喵</string>
     <string name="nomount_show_system_apps">显示系统应用喵</string>
     <string name="nomount_selected_count">已选择 %1$d 个应用喵</string>
     <string name="nomount_app_uid">%1$s · uid %2$d</string>
+    <string name="nomount_app_uid_grouped">%1$s · uid %2$d · %3$d 个应用</string>
     <string name="nomount_save">保存喵</string>
     <string name="nomount_select_all">全选喵</string>
     <string name="nomount_invert_selection">反选喵</string>
@@ -695,6 +700,8 @@
     <string name="sort_by_package_name">包名喵</string>
     <string name="sort_by_install_time">安装时间喵</string>
     <string name="sort_by_update_time">更新时间喵</string>
+    <string name="sort_asc">升序喵</string>
+    <string name="sort_desc">降序喵</string>
     <string name="profile_flags_desc_no_new_privs">不许从这个 Root Profile 的上下文里通过 KernelSU 再往上提权喵</string>
     <string name="module_shortcut_copy_scheme">复制 URL Scheme 喵</string>
     <string name="module_shortcut_scheme_copied">URL Scheme 复制好啦喵</string>

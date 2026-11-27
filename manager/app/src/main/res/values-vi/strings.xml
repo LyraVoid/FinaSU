@@ -442,9 +442,14 @@
     <string name="nomount_clear_exclusions_summary">Mọi ứng dụng lại thấy các tệp được chèn.</string>
     <string name="nomount_exclusions_title">Ứng dụng bị loại trừ</string>
     <string name="nomount_search_apps">Tìm ứng dụng</string>
+    <string name="nomount_selected_only">Chỉ hiển thị ứng dụng đã chọn</string>
+    <string name="nomount_no_matching_apps">Không có ứng dụng phù hợp</string>
+    <string name="nomount_no_apps">Không có ứng dụng để hiển thị</string>
+    <string name="nomount_no_selected_apps">Chưa chọn ứng dụng nào</string>
     <string name="nomount_show_system_apps">Hiển thị các ứng dụng hệ thống</string>
     <string name="nomount_selected_count">Đã chọn %1$d ứng dụng</string>
     <string name="nomount_app_uid">%1$s · uid %2$d</string>
+    <string name="nomount_app_uid_grouped">%1$s · uid %2$d · %3$d ứng dụng</string>
     <string name="nomount_save">Lưu</string>
     <string name="nomount_select_all">Chọn tất cả</string>
     <string name="nomount_invert_selection">Đảo ngược lựa chọn</string>
@@ -686,6 +691,8 @@
     <string name="sort_by_package_name">Tên gói</string>
     <string name="sort_by_install_time">Thời gian cài đặt</string>
     <string name="sort_by_update_time">Thời gian cập nhật</string>
+    <string name="sort_asc">Tăng dần</string>
+    <string name="sort_desc">Giảm dần</string>
     <string name="profile_flags_desc_no_new_privs">Ngăn chặn việc leo thang đặc quyền thông qua KernelSU từ bên trong phạm vi Hồ sơ người dùng Root này.</string>
     <string name="module_shortcut_copy_scheme">Sao chép URL Scheme</string>
     <string name="module_shortcut_scheme_copied">Đã sao chép URL Scheme</string>

@@ -444,9 +444,14 @@
     <string name="nomount_clear_exclusions_summary">Todos os apps voltam a ver os arquivos injetados.</string>
     <string name="nomount_exclusions_title">Apps excluídos</string>
     <string name="nomount_search_apps">Pesquisar apps</string>
+    <string name="nomount_selected_only">Mostrar apenas os apps selecionados</string>
+    <string name="nomount_no_matching_apps">Nenhum app correspondente</string>
+    <string name="nomount_no_apps">Nenhum app para exibir</string>
+    <string name="nomount_no_selected_apps">Nenhum app selecionado</string>
     <string name="nomount_show_system_apps">Mostrar apps do sistema</string>
     <string name="nomount_selected_count">%1$d apps selecionados</string>
     <string name="nomount_app_uid">%1$s · uid %2$d</string>
+    <string name="nomount_app_uid_grouped">%1$s · uid %2$d · Apps: %3$d</string>
     <string name="nomount_save">Salvar</string>
     <string name="nomount_select_all">Selecionar tudo</string>
     <string name="nomount_invert_selection">Inverter seleção</string>
@@ -688,6 +693,8 @@
     <string name="sort_by_package_name">Nome do pacote</string>
     <string name="sort_by_install_time">Data de instalação</string>
     <string name="sort_by_update_time">Data de atualização</string>
+    <string name="sort_asc">Crescente</string>
+    <string name="sort_desc">Decrescente</string>
     <string name="profile_flags_desc_no_new_privs">Impede uma escalada adicional de privilégios via KernelSU no contexto deste perfil root.</string>
     <string name="module_shortcut_copy_scheme">Copiar esquema de URL</string>
     <string name="module_shortcut_scheme_copied">Esquema de URL copiado</string>

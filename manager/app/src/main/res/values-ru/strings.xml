@@ -444,9 +444,14 @@
     <string name="nomount_clear_exclusions_summary">Все приложения снова видят внедрённые файлы.</string>
     <string name="nomount_exclusions_title">Исключённые приложения</string>
     <string name="nomount_search_apps">Поиск приложений</string>
+    <string name="nomount_selected_only">Показывать только выбранные приложения</string>
+    <string name="nomount_no_matching_apps">Нет подходящих приложений</string>
+    <string name="nomount_no_apps">Нет приложений для отображения</string>
+    <string name="nomount_no_selected_apps">Приложения не выбраны</string>
     <string name="nomount_show_system_apps">Показать системные приложения</string>
     <string name="nomount_selected_count">Выбрано приложений: %1$d</string>
     <string name="nomount_app_uid">%1$s · uid %2$d</string>
+    <string name="nomount_app_uid_grouped">%1$s · uid %2$d · Приложений: %3$d</string>
     <string name="nomount_save">Сохранить</string>
     <string name="nomount_select_all">Выбрать все</string>
     <string name="nomount_invert_selection">Инвертировать выбор</string>
@@ -688,6 +693,8 @@
     <string name="sort_by_package_name">Имя пакета</string>
     <string name="sort_by_install_time">Время установки</string>
     <string name="sort_by_update_time">Время обновления</string>
+    <string name="sort_asc">По возрастанию</string>
+    <string name="sort_desc">По убыванию</string>
     <string name="profile_flags_desc_no_new_privs">Предотвращает дальнейшее повышение привилегий через KernelSU в контексте этого root-профиля.</string>
     <string name="module_shortcut_copy_scheme">Копировать URL-схему</string>
     <string name="module_shortcut_scheme_copied">URL-схема скопирована</string>

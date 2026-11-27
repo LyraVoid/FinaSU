@@ -446,9 +446,14 @@ Przed kontynuowaniem upewnij się, że bootloader jest odblokowany!</string>
     <string name="nomount_clear_exclusions_summary">Każda aplikacja znów widzi wstrzyknięte pliki.</string>
     <string name="nomount_exclusions_title">Wykluczone aplikacje</string>
     <string name="nomount_search_apps">Szukaj aplikacji</string>
+    <string name="nomount_selected_only">Pokaż tylko wybrane aplikacje</string>
+    <string name="nomount_no_matching_apps">Brak pasujących aplikacji</string>
+    <string name="nomount_no_apps">Brak aplikacji do wyświetlenia</string>
+    <string name="nomount_no_selected_apps">Nie wybrano żadnych aplikacji</string>
     <string name="nomount_show_system_apps">Pokaż aplikacje systemowe</string>
     <string name="nomount_selected_count">Wybrano %1$d aplikacji</string>
     <string name="nomount_app_uid">%1$s · uid %2$d</string>
+    <string name="nomount_app_uid_grouped">%1$s · uid %2$d · Liczba aplikacji: %3$d</string>
     <string name="nomount_save">Zapisz</string>
     <string name="nomount_select_all">Zaznacz wszystko</string>
     <string name="nomount_invert_selection">Odwróć zaznaczenie</string>
@@ -690,6 +695,8 @@ Przed kontynuowaniem upewnij się, że bootloader jest odblokowany!</string>
     <string name="sort_by_package_name">Nazwa pakietu</string>
     <string name="sort_by_install_time">Czas instalacji</string>
     <string name="sort_by_update_time">Czas aktualizacji</string>
+    <string name="sort_asc">Rosnąco</string>
+    <string name="sort_desc">Malejąco</string>
     <string name="profile_flags_desc_no_new_privs">Zapobiega dalszemu podnoszeniu uprawnień przez KernelSU w kontekście tego profilu root.</string>
     <string name="module_shortcut_copy_scheme">Kopiuj schemat URL</string>
     <string name="module_shortcut_scheme_copied">Skopiowano schemat URL</string>

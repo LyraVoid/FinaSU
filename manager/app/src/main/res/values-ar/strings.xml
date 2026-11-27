@@ -444,9 +444,14 @@
     <string name="nomount_clear_exclusions_summary">كل التطبيقات ترى الملفات المحقونة مجددًا.</string>
     <string name="nomount_exclusions_title">التطبيقات المستثناة</string>
     <string name="nomount_search_apps">ابحث عن التطبيقات</string>
+    <string name="nomount_selected_only">عرض التطبيقات المحددة فقط</string>
+    <string name="nomount_no_matching_apps">لا توجد تطبيقات مطابقة</string>
+    <string name="nomount_no_apps">لا توجد تطبيقات لعرضها</string>
+    <string name="nomount_no_selected_apps">لم يتم تحديد أي تطبيق</string>
     <string name="nomount_show_system_apps">إظهار تطبيقات النظام</string>
     <string name="nomount_selected_count">%1$d تطبيق محدد</string>
     <string name="nomount_app_uid">%1$s · uid %2$d</string>
+    <string name="nomount_app_uid_grouped">%1$s · uid %2$d · عدد التطبيقات: %3$d</string>
     <string name="nomount_save">حفظ</string>
     <string name="nomount_select_all">تحديد الكل</string>
     <string name="nomount_invert_selection">عكس التحديد</string>
@@ -688,6 +693,8 @@
     <string name="sort_by_package_name">اسم الحزمة</string>
     <string name="sort_by_install_time">وقت التثبيت</string>
     <string name="sort_by_update_time">وقت التحديث</string>
+    <string name="sort_asc">تصاعدي</string>
+    <string name="sort_desc">تنازلي</string>
     <string name="profile_flags_desc_no_new_privs">يمنع المزيد من تصعيد الصلاحيات عبر KernelSU من داخل سياق ملف تعريف الروت هذا.</string>
     <string name="module_shortcut_copy_scheme">نسخ مخطط URL</string>
     <string name="module_shortcut_scheme_copied">تم نسخ مخطط URL</string>

@@ -84,7 +84,6 @@ import androidx.compose.material3.rememberBottomSheetState
 import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -146,6 +145,7 @@ import me.weishu.kernelsu.ui.component.material.ExpressiveScaffold
 import me.weishu.kernelsu.ui.component.material.FolkButton
 import me.weishu.kernelsu.ui.component.material.FolkIconButton
 import me.weishu.kernelsu.ui.component.material.FolkOutlinedButton
+import me.weishu.kernelsu.ui.component.material.rememberListFabExpanded
 import me.weishu.kernelsu.ui.component.material.FolkSmallExtendedFloatingActionButton
 import me.weishu.kernelsu.ui.component.material.FolkTextButton
 import me.weishu.kernelsu.ui.component.material.SearchAppBar
@@ -191,38 +191,7 @@ fun ModulePagerMaterial(
     val topAppBarScrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior(rememberTopAppBarState())
     val searchBarScrollBehavior = rememberSearchAppBarScrollBehavior(topAppBarScrollBehavior)
     val refreshTick = remember { mutableIntStateOf(0) }
-    val threshold = with(LocalDensity.current) { 100.dp.toPx() }
-    val fabExpanded by remember {
-        var lastIndex = 0
-        var lastOffset = 0
-        var scrollDelta = 0f
-        var expanded = true
-        derivedStateOf {
-            val currentIndex = listState.firstVisibleItemIndex
-            val currentOffset = listState.firstVisibleItemScrollOffset
-            val delta = if (currentIndex == lastIndex) {
-                (currentOffset - lastOffset).toFloat()
-            } else if (currentIndex > lastIndex) {
-                100f
-            } else {
-                -100f
-            }
-            scrollDelta = (scrollDelta + delta).coerceIn(-threshold, threshold)
-            lastIndex = currentIndex
-            lastOffset = currentOffset
-            if (currentIndex == 0) {
-                expanded = true
-                scrollDelta = 0f
-            } else if (expanded && scrollDelta >= threshold) {
-                expanded = false
-                scrollDelta = 0f
-            } else if (!expanded && scrollDelta <= -threshold) {
-                expanded = true
-                scrollDelta = 0f
-            }
-            expanded
-        }
-    }
+    val fabExpanded by rememberListFabExpanded(listState)
 
     val shortcutState = rememberModuleShortcutState(context)
     val showShortcutDialog = remember { mutableStateOf(false) }
