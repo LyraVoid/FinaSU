@@ -197,6 +197,7 @@ pub fn convert(value: serde_json::Value) -> Result<Migration> {
             },
             rules,
             lkm: Lkm::default(),
+            brene: super::model::Brene::default(),
         },
         warnings: vec![
             "Legacy enabled state becomes automatic boot application",

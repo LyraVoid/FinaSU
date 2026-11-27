@@ -504,6 +504,12 @@ pub struct BootPatchArgs {
     #[arg(long, default_value = None)]
     pub cmdline: Option<String>,
 
+    /// Inject KernelPatch into the kernel so it can load KPMs (KernelPatch
+    /// modules). Needs CONFIG_KALLSYMS_ALL; refuses a kernel that has KPM
+    /// already built in. KPM files are then managed by `ksud kpm`.
+    #[arg(long, default_value = "false")]
+    pub kpm: bool,
+
     #[command(flatten)]
     config: KsuConfigArgs,
 
@@ -892,6 +898,7 @@ pub fn patch(args: BootPatchArgs) -> Result<()> {
             kmi,
             out_name,
             cmdline,
+            kpm,
             config,
             enable_adbd,
             adb_debug_prop,
@@ -1027,6 +1034,23 @@ pub fn patch(args: BootPatchArgs) -> Result<()> {
             patcher.replace_kernel(Box::new(Cursor::new(kernel_data)), false);
         }
 
+        // KPM support is a property of the kernel image, not of the ramdisk:
+        // kptools injects KernelPatch into the kernel block before it is
+        // repacked. Without this, `kpatch` has no syscall to talk to and every
+        // .kpm would fail to load.
+        if kpm {
+            println!("- Injecting KernelPatch for KPM");
+            let kernel_image = boot_image
+                .get_blocks()
+                .get_kernel()
+                .context("No kernel block in this boot image")?;
+            let mut kernel_bytes = Vec::new();
+            kernel_image.dump(&mut kernel_bytes, false)?;
+            let patched =
+                crate::kpm::patch_kernel(&kernel_bytes).context("Patch the kernel for KPM")?;
+            patcher.replace_kernel(Box::new(Cursor::new(patched)), false);
+        }
+
         let kernelsu_ko: Box<dyn AsRef<[u8]>> = if no_install {
             Box::new(Vec::<u8>::new())
         } else if let Some(kmod_path) = kmod {
@@ -1085,6 +1109,22 @@ pub fn patch(args: BootPatchArgs) -> Result<()> {
 
             cpio.add("init", CpioEntry::regular(0o755, ksu_init))?;
             cpio.add("kernelsu.ko", CpioEntry::regular(0o755, kernelsu_ko))?;
+
+            // SUSFS rides in the same ramdisk, next to kernelsu.ko.  The
+            // ksuinit above loads it with expose_proc=1 immediately after
+            // kernelsu.ko, so the hidden paths are covered before Android's
+            // init starts scanning /proc and /sys.
+            #[cfg(target_os = "android")]
+            let guard_asset = assets::get_asset(&format!("{kmi}_susfs_guard.ko"));
+            #[cfg(not(target_os = "android"))]
+            let guard_asset = assets::get_asset(&format!("{arch}/{kmi}_susfs_guard.ko"));
+            match guard_asset {
+                Ok(guard) => {
+                    cpio.add("susfs_guard_lkm.ko", CpioEntry::regular(0o644, guard))?;
+                    println!("- Added SUSFS guard LKM");
+                }
+                Err(_) => println!("- No SUSFS guard asset for {kmi}"),
+            }
 
             #[cfg(target_os = "android")]
             if (backup || (!is_kernelsu_patched && flash))
@@ -1374,6 +1414,7 @@ fn rebuild_without_ksu(
 ) -> Result<Vec<u8>> {
     println!("- Removing KernelSU from boot image");
     cpio.rm("kernelsu.ko", false);
+    cpio.rm("susfs_guard_lkm.ko", false);
     if cpio.exists("init.real") {
         cpio.mv("init.real", "init")?;
     }
